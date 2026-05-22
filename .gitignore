@@ -24,6 +24,7 @@ frontend/.env.*
 backend/.env
 backend/.env.*
 !.env.example
+!.env.hostinger-single.example
 !frontend/.env.example
 !backend/.env.example
 !frontend/.env.hostinger.example

@@ -17,9 +17,42 @@ Do not commit real `.env` files. Use Hostinger environment variables or private 
 
 ## Recommended Hostinger Setup
 
-For this full-stack app, the cleanest Hostinger path is a VPS or Hostinger Node.js Web App Hosting plan that supports Node.js apps from GitHub.
+For one public website URL, deploy from the repository root and run both the Next.js frontend and Express API in one Node process.
 
-### Option 1: Hostinger VPS With Docker
+### Option 1: Single Hostinger Node App, One Domain
+
+Use this when you want:
+
+- `https://yourdomain.com` for the website
+- `https://yourdomain.com/api/v1` for the API on the same domain
+
+Hostinger settings:
+
+- Framework preset: `Express`
+- Branch: `main`
+- Root directory: leave blank or use repository root
+- Node version: `22.x`
+- Entry file: `server.js`
+- Build command: `npm run build`
+- Start command: `npm start`
+
+Environment variables:
+
+Copy `.env.hostinger-single.example` into Hostinger and replace only:
+
+```bash
+MYSQL_PASSWORD=your_real_hostinger_database_password
+```
+
+Important:
+
+```bash
+NEXT_PUBLIC_API_URL=/api/v1
+```
+
+This keeps frontend and backend on the same public domain.
+
+### Option 2: Hostinger VPS With Docker
 
 Use this if you want frontend, backend, and MySQL together.
 
@@ -41,7 +74,7 @@ Set frontend environment:
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com/api/v1
 ```
 
-### Option 2: Hostinger Node.js Web App Hosting
+### Option 3: Separate Hostinger Node.js Web Apps
 
 Deploy two Node apps from the same GitHub repository.
 

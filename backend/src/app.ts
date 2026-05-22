@@ -14,7 +14,7 @@ import engagementRoutes from './routes/engagement';
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 const apiPrefix = process.env.API_PREFIX || '/api/v1';
 
 app.use(helmet());
@@ -32,9 +32,11 @@ app.use(`${apiPrefix}/search`, searchRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes);
 app.use(`${apiPrefix}/engagement`, engagementRoutes);
 
-app.get('/', (req, res) => {
-  res.json({ status: 'ok', service: 'k-cube-backend', health: `${apiPrefix}/health` });
-});
+if (process.env.KCUBE_SERVE_FRONTEND !== 'true') {
+  app.get('/', (req, res) => {
+    res.json({ status: 'ok', service: 'k-cube-backend', health: `${apiPrefix}/health` });
+  });
+}
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'k-cube-backend' });
@@ -49,7 +51,11 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
-const port = Number(process.env.PORT || 4000);
-app.listen(port, () => {
-  console.log(`K-CUBE backend running on http://localhost:${port}${apiPrefix}`);
-});
+if (require.main === module) {
+  const port = Number(process.env.PORT || 4000);
+  app.listen(port, () => {
+    console.log(`K-CUBE backend running on http://localhost:${port}${apiPrefix}`);
+  });
+}
+
+export default app;
