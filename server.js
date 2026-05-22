@@ -4,7 +4,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 process.env.API_PREFIX = process.env.API_PREFIX || '/api/v1';
 process.env.KCUBE_SERVE_FRONTEND = 'true';
 
-const next = require('./frontend/node_modules/next');
+const next = require('next');
 const backendModule = require('./backend/dist/app.js');
 const app = backendModule.default || backendModule.app;
 
