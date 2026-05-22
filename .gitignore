@@ -26,6 +26,8 @@ backend/.env.*
 !.env.example
 !frontend/.env.example
 !backend/.env.example
+!frontend/.env.hostinger.example
+!backend/.env.hostinger.example
 
 # OS/editor
 .DS_Store
