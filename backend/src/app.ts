@@ -32,6 +32,14 @@ app.use(`${apiPrefix}/search`, searchRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes);
 app.use(`${apiPrefix}/engagement`, engagementRoutes);
 
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'k-cube-backend', health: `${apiPrefix}/health` });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: 'k-cube-backend' });
+});
+
 app.get(`${apiPrefix}/health`, (req, res) => {
   res.json({ status: 'ok', service: 'k-cube-backend' });
 });
