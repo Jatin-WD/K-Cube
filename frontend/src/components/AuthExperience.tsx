@@ -1,0 +1,336 @@
+"use client";
+
+import { FormEvent, useState } from 'react';
+import Link from 'next/link';
+import { Check, Lock, Mail, Phone, ShieldCheck } from 'lucide-react';
+import api from '@/lib/api';
+import { copy } from '@/lib/kcubeContent';
+import { useAppStore, type AuthMethod } from '@/store/useAppStore';
+
+interface AuthExperienceProps {
+  mode: 'signin' | 'signup' | 'admin';
+}
+
+const authCopy = {
+  en: {
+    signinTitle: 'Sign in to your K-CUBE account',
+    signupTitle: 'Create your K-CUBE account',
+    adminTitle: 'Admin CMS login',
+    subtitle: 'Use email/password or mobile OTP. Google login is ready for a Google Identity token integration.',
+    name: 'Full name',
+    username: 'Username',
+    email: 'Email address',
+    password: 'Password',
+    phone: 'Mobile number',
+    otp: 'OTP code',
+    sendOtp: 'Send OTP',
+    verifyOtp: 'Verify OTP',
+    emailLogin: 'Email login',
+    phoneLogin: 'Mobile OTP',
+    google: 'Google Identity',
+    submitSignin: 'Sign in',
+    submitSignup: 'Create account',
+    submitAdmin: 'Enter CMS',
+    signedIn: 'Signed in successfully',
+    switchSignup: 'Need a new account?',
+    switchSignin: 'Already have an account?',
+    realNote: 'Real Gmail requires Google Client ID and frontend identity token. Real OTP requires SMS provider configuration in backend.',
+    otpSent: 'OTP sent. Check SMS provider/backend response in development.',
+  },
+  ko: {
+    signinTitle: 'K-CUBE 계정 로그인',
+    signupTitle: 'K-CUBE 계정 만들기',
+    adminTitle: '관리자 CMS 로그인',
+    subtitle: '이메일/비밀번호 또는 휴대폰 OTP를 사용하세요. Google 로그인은 Google Identity 토큰 연동 준비가 되어 있습니다.',
+    name: '이름',
+    username: '사용자 이름',
+    email: '이메일 주소',
+    password: '비밀번호',
+    phone: '휴대폰 번호',
+    otp: 'OTP 코드',
+    sendOtp: 'OTP 보내기',
+    verifyOtp: 'OTP 확인',
+    emailLogin: '이메일 로그인',
+    phoneLogin: '휴대폰 OTP',
+    google: 'Google Identity',
+    submitSignin: '로그인',
+    submitSignup: '계정 만들기',
+    submitAdmin: 'CMS 입장',
+    signedIn: '로그인 성공',
+    switchSignup: '새 계정이 필요하신가요?',
+    switchSignin: '이미 계정이 있으신가요?',
+    realNote: '실제 Gmail은 Google Client ID와 Identity 토큰이 필요합니다. 실제 OTP는 백엔드 SMS 제공자 설정이 필요합니다.',
+    otpSent: 'OTP가 전송되었습니다. 개발 중에는 SMS 제공자/백엔드 응답을 확인하세요.',
+  },
+  hi: {
+    signinTitle: 'अपने K-CUBE खाते में साइन इन करें',
+    signupTitle: 'अपना K-CUBE खाता बनाएँ',
+    adminTitle: 'एडमिन CMS लॉगिन',
+    subtitle: 'ईमेल/पासवर्ड या मोबाइल OTP का उपयोग करें। Google लॉगिन के लिए Google Identity टोकन इंटीग्रेशन तैयार है।',
+    name: 'पूरा नाम',
+    username: 'यूज़रनेम',
+    email: 'ईमेल पता',
+    password: 'पासवर्ड',
+    phone: 'मोबाइल नंबर',
+    otp: 'OTP कोड',
+    sendOtp: 'OTP भेजें',
+    verifyOtp: 'OTP सत्यापित करें',
+    emailLogin: 'ईमेल लॉगिन',
+    phoneLogin: 'मोबाइल OTP',
+    google: 'Google Identity',
+    submitSignin: 'साइन इन करें',
+    submitSignup: 'खाता बनाएँ',
+    submitAdmin: 'CMS में प्रवेश करें',
+    signedIn: 'सफलतापूर्वक साइन इन हो गया',
+    switchSignup: 'नया खाता चाहिए?',
+    switchSignin: 'पहले से खाता है?',
+    realNote: 'वास्तविक Gmail लॉगिन के लिए Google Client ID और Identity टोकन चाहिए। वास्तविक OTP के लिए बैकएंड SMS प्रदाता कॉन्फ़िगरेशन चाहिए।',
+    otpSent: 'OTP भेज दिया गया है। विकास के दौरान SMS प्रदाता/बैकएंड प्रतिक्रिया जाँचें।',
+  },
+};
+
+const readRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+
+const normalizeUser = (payload: unknown, method: AuthMethod) => {
+  const record = readRecord(payload);
+  const nestedUser = readRecord(record.user);
+
+  return {
+  id: String(record.id ?? nestedUser.id ?? crypto.randomUUID()),
+  fullName: String(record.full_name ?? record.fullName ?? nestedUser.full_name ?? record.username ?? 'K-CUBE Member'),
+  email: typeof (record.email ?? nestedUser.email) === 'string' ? String(record.email ?? nestedUser.email) : undefined,
+  phone: typeof (record.phone ?? nestedUser.phone) === 'string' ? String(record.phone ?? nestedUser.phone) : undefined,
+  referralCode: typeof (record.referral_code ?? nestedUser.referral_code) === 'string' ? String(record.referral_code ?? nestedUser.referral_code) : undefined,
+  role: (record.role ?? nestedUser.role ?? 'member') as 'admin' | 'member' | 'manager' | 'guest',
+  method,
+  };
+};
+
+const getErrorMessage = (error: unknown) => {
+  const response = readRecord(readRecord(error).response);
+  const data = readRecord(response.data);
+  return typeof data.error === 'string' ? data.error : 'Unable to complete request.';
+};
+
+const AuthExperience = ({ mode }: AuthExperienceProps) => {
+  const language = useAppStore((state) => state.language);
+  const user = useAppStore((state) => state.user);
+  const points = useAppStore((state) => state.points);
+  const signIn = useAppStore((state) => state.signIn);
+  const signOut = useAppStore((state) => state.signOut);
+  const t = authCopy[language];
+  const global = copy[language];
+  const [method, setMethod] = useState<AuthMethod>(mode === 'admin' ? 'admin' : 'email');
+  const [message, setMessage] = useState('');
+  const [form, setForm] = useState({
+    fullName: '',
+    username: '',
+    email: '',
+    password: '',
+    phone: '',
+    otp: '',
+    googleId: '',
+    referralCode: '',
+  });
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMessage('');
+
+    try {
+      let response;
+
+      if (method === 'phone') {
+        response = await api.post('/auth/otp/verify', { phone: form.phone, otp_code: form.otp });
+      } else if (method === 'google') {
+        response = await api.post('/auth/google', {
+          google_id: form.googleId,
+          email: form.email,
+          full_name: form.fullName || 'K-CUBE Member',
+        });
+      } else if (mode === 'signup') {
+        response = await api.post('/auth/register', {
+          full_name: form.fullName,
+          username: form.username,
+          email: form.email,
+          phone: form.phone || undefined,
+          password: form.password,
+          referral_code: form.referralCode || undefined,
+        });
+      } else {
+        response = await api.post('/auth/login', {
+          email: form.email,
+          password: form.password,
+        });
+      }
+
+      const data = response.data;
+      const nextUser = normalizeUser(data.user ?? data, method);
+
+      if (mode === 'admin' && nextUser.role !== 'admin') {
+        setMessage('Admin access required.');
+        return;
+      }
+
+      signIn(nextUser, data.token, data.refreshToken, data.user?.points);
+      setMessage(t.signedIn);
+    } catch (error: unknown) {
+      setMessage(getErrorMessage(error));
+    }
+  };
+
+  const sendOtp = async () => {
+    setMessage('');
+    try {
+      await api.post('/auth/otp/send', { phone: form.phone });
+      setMessage(t.otpSent);
+    } catch (error: unknown) {
+      setMessage(getErrorMessage(error));
+    }
+  };
+
+  const title = mode === 'admin' ? t.adminTitle : mode === 'signup' ? t.signupTitle : t.signinTitle;
+
+  return (
+    <main className="min-h-screen bg-[#070708] px-5 py-14 text-white lg:px-10 lg:py-20">
+      <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+        <section>
+          <p className="inline-flex rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#ffc400]">
+            {mode === 'admin' ? global.admin : mode === 'signup' ? global.signUp : global.signIn}
+          </p>
+          <h1 className="mt-6 text-4xl font-black leading-tight text-white lg:text-6xl">{title}</h1>
+          <p className="mt-5 text-lg leading-8 text-[#d4dbe7]">{t.subtitle}</p>
+          <p className="mt-5 rounded-xl border border-white/10 bg-[#111113] p-4 text-sm leading-6 text-[#aab5c6]">{t.realNote}</p>
+        </section>
+
+        <section className="rounded-xl border border-white/10 bg-[#111113] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+          {user ? (
+            <div>
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#ffc400] text-[#090909]">
+                <Check className="h-7 w-7" />
+              </div>
+              <h2 className="mt-5 text-3xl font-black text-white">{t.signedIn}</h2>
+              <p className="mt-2 text-[#aab5c6]">
+                {user.fullName} · {user.email ?? user.phone} · {user.role ?? 'member'}
+              </p>
+              <div className="mt-6 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-5">
+                <p className="text-sm text-[#d4dbe7]">{global.pointsWallet}</p>
+                <p className="mt-1 text-4xl font-black text-[#ffc400]">{points}</p>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link href={mode === 'admin' ? '/admin' : '/rewards'} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">
+                  {mode === 'admin' ? 'Open CMS' : 'Continue'}
+                </Link>
+                <button type="button" onClick={signOut} className="rounded-lg border border-white/15 px-5 py-3 text-sm font-bold text-white">
+                  {global.signOut}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={submit}>
+              {mode !== 'admin' ? (
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { key: 'email' as AuthMethod, label: t.emailLogin, icon: Mail },
+                    { key: 'phone' as AuthMethod, label: t.phoneLogin, icon: Phone },
+                    { key: 'google' as AuthMethod, label: t.google, icon: ShieldCheck },
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setMethod(item.key)}
+                        className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-3 text-sm font-black transition ${
+                          method === item.key ? 'border-[#ffc400] bg-[#ffc400] text-[#090909]' : 'border-white/10 bg-white/[0.04] text-white'
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+
+              <div className="mt-6 grid gap-4">
+                {mode === 'signup' || method === 'google' ? (
+                  <label className="grid gap-2 text-sm font-bold text-white">
+                    {t.name}
+                    <input value={form.fullName} onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                  </label>
+                ) : null}
+
+                {mode === 'signup' ? (
+                  <label className="grid gap-2 text-sm font-bold text-white">
+                    {t.username}
+                    <input value={form.username} onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                  </label>
+                ) : null}
+
+                {mode === 'signup' ? (
+                  <label className="grid gap-2 text-sm font-bold text-white">
+                    Referral code
+                    <input value={form.referralCode} onChange={(event) => setForm((current) => ({ ...current, referralCode: event.target.value.toUpperCase() }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" placeholder="KC-XXXXXXXX" />
+                  </label>
+                ) : null}
+
+                {method === 'phone' ? (
+                  <>
+                    <label className="grid gap-2 text-sm font-bold text-white">
+                      {t.phone}
+                      <input value={form.phone} onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" placeholder="+91 99999 99999" />
+                    </label>
+                    <button type="button" onClick={sendOtp} className="rounded-lg border border-[#ffc400]/40 bg-[#ffc400]/10 px-4 py-3 text-sm font-black text-[#ffc400]">
+                      {t.sendOtp}
+                    </button>
+                    <label className="grid gap-2 text-sm font-bold text-white">
+                      {t.otp}
+                      <input value={form.otp} onChange={(event) => setForm((current) => ({ ...current, otp: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                    </label>
+                  </>
+                ) : (
+                  <>
+                    <label className="grid gap-2 text-sm font-bold text-white">
+                      {t.email}
+                      <input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                    </label>
+                    {method === 'google' ? (
+                      <label className="grid gap-2 text-sm font-bold text-white">
+                        Google ID token / subject
+                        <input value={form.googleId} onChange={(event) => setForm((current) => ({ ...current, googleId: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                      </label>
+                    ) : (
+                      <label className="grid gap-2 text-sm font-bold text-white">
+                        {t.password}
+                        <input type="password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                      </label>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {message ? <p className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-[#d4dbe7]">{message}</p> : null}
+
+              <button type="submit" className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-5 py-4 text-sm font-black text-[#090909] transition hover:bg-[#ffd84a]">
+                <Lock className="h-4 w-4" />
+                {mode === 'admin' ? t.submitAdmin : mode === 'signup' ? t.submitSignup : method === 'phone' ? t.verifyOtp : t.submitSignin}
+              </button>
+
+              <div className="mt-5 text-center text-sm text-[#aab5c6]">
+                {mode === 'signin' ? (
+                  <Link href="/signup" className="font-bold text-[#ffc400]">{t.switchSignup}</Link>
+                ) : mode === 'signup' ? (
+                  <Link href="/signin" className="font-bold text-[#ffc400]">{t.switchSignin}</Link>
+                ) : null}
+              </div>
+            </form>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default AuthExperience;

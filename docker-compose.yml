@@ -1,0 +1,41 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: kcube-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: kcube
+      MYSQL_USER: kcube_user
+      MYSQL_PASSWORD: change_me_securely
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    ports:
+      - '3306:3306'
+
+  backend:
+    build: ./backend
+    container_name: kcube-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env.example
+    depends_on:
+      - mysql
+    ports:
+      - '4000:4000'
+
+  frontend:
+    build: ./frontend
+    container_name: kcube-frontend
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
