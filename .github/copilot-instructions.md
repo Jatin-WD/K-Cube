@@ -1,5 +1,0 @@
-- [ ] Create full-stack K-CUBE architecture with frontend and backend.
-- [ ] Frontend should include Next.js, TypeScript, Tailwind, Framer Motion, Three.js, Zustand, React Query.
-- [ ] Backend should include Express, MySQL, JWT auth, role-based access, rate limiting, and security middleware.
-- [ ] Add database schema and deployment instructions.
-- [ ] Keep architecture modular and production-ready.

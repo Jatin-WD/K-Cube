@@ -1,25 +1,90 @@
-# K-CUBE — India’s Korean Digital Ecosystem
+# K-CUBE
 
-This workspace contains the full-stack architecture for the K-CUBE platform.
+K-CUBE is a full-stack Korean culture, learning, events, rewards, and K-Food engagement platform for India.
 
-## Structure
-- `frontend/` - Next.js 16 app with TypeScript, TailwindCSS, Framer Motion, Three.js, Zustand, and React Query
-- `backend/` - Node.js Express API with TypeScript, MySQL, JWT auth, and security middleware
-- `database/` - MySQL schema for users, chapters, rewards, learning, search, and analytics
+## Project Structure
 
-## Getting Started
-1. Install dependencies in each folder:
-   - `cd frontend && npm install`
-   - `cd backend && npm install`
-2. Create a MySQL database and run `database/schema.sql`
-3. Copy `backend/.env.example` to `backend/.env` and update credentials
-4. Copy `frontend/.env.example` to `frontend/.env` if needed
-5. Start backend: `cd backend && npm run dev`
-6. Start frontend: `cd frontend && npm run dev`
+```text
+k-cube/
+  backend/        Express + TypeScript API
+  frontend/       Next.js app
+  database/       MySQL schema
+  docs/           Technical documentation and dated deliverables
+  server.js       Single-domain production entrypoint
+  docker-compose.yml
+```
 
-## Docker Deployment
-- `docker compose up --build`
+## Core Stack
 
-## Notes
-- Frontend uses premium cinematic UI with mega-navigation and search suggestions.
-- Backend uses JWT auth, role/category access, rate limiting, and MySQL schema for gamification.
+- Frontend: Next.js, TypeScript, Tailwind CSS, React Query, Zustand
+- Backend: Node.js, Express, TypeScript, JWT auth, MySQL
+- Database: MySQL 8
+- Deployment options: Docker, single-domain Node app, separate frontend/backend apps
+
+## Local Development
+
+Install dependencies:
+
+```bash
+npm install --prefix backend
+npm install --prefix frontend
+```
+
+Run backend and frontend separately:
+
+```bash
+cd backend
+npm run dev
+```
+
+```bash
+cd frontend
+npm run dev
+```
+
+Default local URLs:
+
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:4000/api/v1`
+
+## Docker
+
+Run the complete local stack:
+
+```bash
+docker compose up -d --build
+```
+
+Docker services:
+
+- `kcube-frontend` on port `3000`
+- `kcube-backend` on port `4000`
+- `kcube-mysql` on port `3306`
+
+## Database
+
+The canonical schema is:
+
+```text
+database/schema.sql
+```
+
+The backend connects to MySQL through environment variables in `backend/.env.example`.
+
+## Documentation
+
+Current technical deliverables are stored by date:
+
+```text
+docs/2026-05-30/
+```
+
+That folder contains the current database ERD/schema, API specification, Google Workspace integration plan, technical foundation review, and matching PDFs.
+
+## Production Notes
+
+- Keep real `.env` files out of git.
+- Set strong `JWT_SECRET` and `JWT_REFRESH_SECRET`.
+- Use `NEXT_PUBLIC_API_URL=/api/v1` for single-domain deployment.
+- Use `MYSQL_HOST=mysql` only inside Docker Compose.
+- Use a real MySQL host such as `127.0.0.1` or the hosting provider hostname outside Docker.

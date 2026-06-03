@@ -38,3 +38,6 @@ frontend/next-env.d.ts
 
 # local screenshots / generated scratch assets
 screencapture.png
+
+# generated document intermediates
+docs/**/*.html
