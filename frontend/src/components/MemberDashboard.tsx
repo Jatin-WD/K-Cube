@@ -69,7 +69,8 @@ const MemberDashboard = () => {
     setMessage('');
     try {
       const response = await api.post('/engagement/lessons/complete', { lesson_id: lessonId, accuracy: 100 });
-      setMessage(`Lesson complete. Points awarded: ${response.data.pointsAwarded ?? 0}.`);
+      const data = response.data?.data ?? response.data;
+      setMessage(`Lesson complete. Points awarded: ${data.pointsAwarded ?? 0}.`);
     } catch {
       setMessage('Lesson completion save nahi ho paya. Shayad ye lesson already complete hai ya login required hai.');
     }
@@ -78,7 +79,8 @@ const MemberDashboard = () => {
   const visitKFood = async () => {
     try {
       const response = await api.post('/engagement/kfood/click', { item_slug: 'korean-food-store', source: 'dashboard' });
-      window.open(response.data.redirectUrl || 'https://k-food.in', '_blank', 'noopener,noreferrer');
+      const data = response.data?.data ?? response.data;
+      window.open(data.redirectUrl || 'https://k-food.in', '_blank', 'noopener,noreferrer');
     } catch {
       window.open('https://k-food.in', '_blank', 'noopener,noreferrer');
     }
@@ -93,7 +95,8 @@ const MemberDashboard = () => {
         order_total: Number(purchase.order_total || 0),
         coupon_code: purchase.coupon_code || undefined,
       });
-      setMessage(`K-Food purchase claim submitted. Estimated points: ${response.data.estimatedPoints}.`);
+      const data = response.data?.data ?? response.data;
+      setMessage(`K-Food purchase claim submitted. Estimated points: ${data.estimatedPoints}.`);
       setPurchase({ order_id: '', order_total: '', coupon_code: '' });
     } catch {
       setMessage('Purchase claim submit nahi ho paya. Order ID already claimed ho sakta hai.');
@@ -118,13 +121,13 @@ const MemberDashboard = () => {
 
   return (
     <main className="min-h-screen bg-[#070708] text-white">
-      <section className="px-5 py-10 lg:px-10">
+      <section className="px-4 py-8 sm:px-5 sm:py-10 lg:px-10">
         <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[1fr_360px]">
           <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111113]">
             <div className="grid min-h-[420px] gap-0 lg:grid-cols-[1fr_0.9fr]">
               <div className="p-8 lg:p-10">
                 <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Member command center</p>
-                <h1 className="mt-4 text-4xl font-black leading-tight lg:text-6xl">Earn points from culture, learning, food and referrals.</h1>
+                <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl lg:text-6xl">Earn points from culture, learning, food and referrals.</h1>
                 <p className="mt-5 max-w-2xl text-sm leading-7 text-[#aab5c6]">K-CUBE tracks every meaningful action toward the Korea trip leaderboard. Upload your Korean culture content, complete daily learning, refer friends, and claim K-Food purchases.</p>
                 <div className="mt-8 grid gap-3 sm:grid-cols-3">
                   <div className="rounded-lg border border-[#ffc400]/25 bg-[#ffc400]/10 p-4">
@@ -169,7 +172,7 @@ const MemberDashboard = () => {
         </div>
       </section>
 
-      <section className="px-5 pb-12 lg:px-10">
+      <section className="px-4 pb-12 sm:px-5 lg:px-10">
         <div className="mx-auto grid max-w-[1480px] gap-6 xl:grid-cols-3">
           <form onSubmit={submitUpload} className="rounded-xl border border-white/10 bg-[#111113] p-6">
             <Clapperboard className="h-7 w-7 text-[#ffc400]" />

@@ -1,7 +1,7 @@
-import KCubePage from '@/components/KCubePage';
+import LearningGame from '@/components/LearningGame';
 
 const LearningPage = () => {
-  return <KCubePage pageKey="learning" />;
+  return <LearningGame />;
 };
 
 export default LearningPage;

@@ -17,6 +17,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -28,10 +29,34 @@ body {
     linear-gradient(180deg, #03050d 0%, #070915 100%);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: clip;
 }
 
 * {
   box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+a,
+button,
+input,
+textarea,
+select,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span {
+  overflow-wrap: anywhere;
 }
 
 button,
@@ -44,4 +69,13 @@ select {
 ::selection {
   background: rgba(56, 189, 248, 0.3);
   color: #ffffff;
+}
+
+body.learning-game-mode {
+  background: #07181c;
+}
+
+body.learning-game-mode > div > header,
+body.learning-game-mode > div > footer {
+  display: none;
 }

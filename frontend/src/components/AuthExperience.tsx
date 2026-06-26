@@ -110,7 +110,12 @@ const normalizeUser = (payload: unknown, method: AuthMethod) => {
 const getErrorMessage = (error: unknown) => {
   const response = readRecord(readRecord(error).response);
   const data = readRecord(response.data);
-  return typeof data.error === 'string' ? data.error : 'Unable to complete request.';
+  const structuredError = readRecord(data.error);
+  return typeof structuredError.message === 'string'
+    ? structuredError.message
+    : typeof data.error === 'string'
+      ? data.error
+      : 'Unable to complete request.';
 };
 
 const AuthExperience = ({ mode }: AuthExperienceProps) => {
@@ -145,7 +150,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
         response = await api.post('/auth/otp/verify', { phone: form.phone, otp_code: form.otp });
       } else if (method === 'google') {
         response = await api.post('/auth/google', {
-          google_id: form.googleId,
+          credential: form.googleId,
           email: form.email,
           full_name: form.fullName || 'K-CUBE Member',
         });
@@ -165,7 +170,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
         });
       }
 
-      const data = response.data;
+      const data = response.data?.data ?? response.data;
       const nextUser = normalizeUser(data.user ?? data, method);
 
       if (mode === 'admin' && nextUser.role !== 'admin') {
@@ -193,14 +198,14 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
   const title = mode === 'admin' ? t.adminTitle : mode === 'signup' ? t.signupTitle : t.signinTitle;
 
   return (
-    <main className="min-h-screen bg-[#070708] px-5 py-14 text-white lg:px-10 lg:py-20">
+    <main className="min-h-screen bg-[#070708] px-4 py-10 text-white sm:px-5 sm:py-14 lg:px-10 lg:py-20">
       <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
         <section>
           <p className="inline-flex rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#ffc400]">
             {mode === 'admin' ? global.admin : mode === 'signup' ? global.signUp : global.signIn}
           </p>
-          <h1 className="mt-6 text-4xl font-black leading-tight text-white lg:text-6xl">{title}</h1>
-          <p className="mt-5 text-lg leading-8 text-[#d4dbe7]">{t.subtitle}</p>
+          <h1 className="mt-6 text-3xl font-black leading-tight text-white sm:text-4xl lg:text-6xl">{title}</h1>
+          <p className="mt-5 text-base leading-7 text-[#d4dbe7] sm:text-lg sm:leading-8">{t.subtitle}</p>
           <p className="mt-5 rounded-xl border border-white/10 bg-[#111113] p-4 text-sm leading-6 text-[#aab5c6]">{t.realNote}</p>
         </section>
 
@@ -230,7 +235,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
           ) : (
             <form onSubmit={submit}>
               {mode !== 'admin' ? (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid gap-3 sm:grid-cols-3">
                   {[
                     { key: 'email' as AuthMethod, label: t.emailLogin, icon: Mail },
                     { key: 'phone' as AuthMethod, label: t.phoneLogin, icon: Phone },

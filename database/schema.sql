@@ -326,6 +326,115 @@ CREATE TABLE IF NOT EXISTS point_transactions (
   CONSTRAINT fk_point_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS platform_events (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL UNIQUE,
+  description TEXT DEFAULT NULL,
+  category VARCHAR(80) NOT NULL DEFAULT 'k_culture',
+  starts_at DATETIME NOT NULL,
+  ends_at DATETIME NOT NULL,
+  timezone VARCHAR(80) NOT NULL DEFAULT 'Asia/Kolkata',
+  location_name VARCHAR(255) DEFAULT NULL,
+  location_address TEXT DEFAULT NULL,
+  online_meeting_url VARCHAR(1024) DEFAULT NULL,
+  capacity INT UNSIGNED DEFAULT NULL,
+  points_reward INT UNSIGNED NOT NULL DEFAULT 0,
+  status ENUM('draft','published','cancelled','archived') NOT NULL DEFAULT 'draft',
+  google_calendar_event_id VARCHAR(255) DEFAULT NULL,
+  google_calendar_html_link VARCHAR(1024) DEFAULT NULL,
+  sync_status ENUM('not_requested','pending','synced','failed') NOT NULL DEFAULT 'not_requested',
+  created_by BIGINT UNSIGNED DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_platform_events_status_start (status, starts_at),
+  CONSTRAINT fk_platform_event_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS platform_event_rsvps (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  event_id BIGINT UNSIGNED NOT NULL,
+  user_id BIGINT UNSIGNED NOT NULL,
+  status ENUM('registered','cancelled','checked_in','no_show') NOT NULL DEFAULT 'registered',
+  checked_in_at DATETIME DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_platform_event_user (event_id, user_id),
+  INDEX idx_platform_event_rsvp_user (user_id),
+  CONSTRAINT fk_platform_event_rsvp_event FOREIGN KEY (event_id) REFERENCES platform_events(id) ON DELETE CASCADE,
+  CONSTRAINT fk_platform_event_rsvp_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS google_calendar_connections (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  provider VARCHAR(40) NOT NULL DEFAULT 'google',
+  calendar_id VARCHAR(255) NOT NULL,
+  calendar_name VARCHAR(255) DEFAULT NULL,
+  sync_mode ENUM('admin_oauth','service_account') NOT NULL DEFAULT 'admin_oauth',
+  status ENUM('active','disabled','error') NOT NULL DEFAULT 'active',
+  token_encrypted TEXT DEFAULT NULL,
+  created_by BIGINT UNSIGNED DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_google_calendar (provider, calendar_id),
+  CONSTRAINT fk_calendar_connection_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS google_calendar_sync_jobs (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  event_id BIGINT UNSIGNED NOT NULL,
+  action ENUM('upsert','cancel','delete') NOT NULL DEFAULT 'upsert',
+  status ENUM('queued','running','completed','failed') NOT NULL DEFAULT 'queued',
+  attempts INT UNSIGNED NOT NULL DEFAULT 0,
+  payload JSON DEFAULT (JSON_OBJECT()),
+  response_payload JSON DEFAULT NULL,
+  error_message TEXT DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_calendar_jobs_status (status, created_at),
+  CONSTRAINT fk_calendar_job_event FOREIGN KEY (event_id) REFERENCES platform_events(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS petpooja_order_events (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  external_order_id VARCHAR(160) NOT NULL,
+  event_type VARCHAR(120) NOT NULL,
+  order_status VARCHAR(80) DEFAULT NULL,
+  order_total DECIMAL(12,2) NOT NULL DEFAULT 0,
+  coupon_code VARCHAR(80) DEFAULT NULL,
+  customer_email VARCHAR(255) DEFAULT NULL,
+  customer_phone VARCHAR(30) DEFAULT NULL,
+  user_id BIGINT UNSIGNED DEFAULT NULL,
+  raw_payload JSON DEFAULT (JSON_OBJECT()),
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_petpooja_order (external_order_id),
+  INDEX idx_petpooja_user (user_id),
+  CONSTRAINT fk_petpooja_event_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS learning_course_orders (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED DEFAULT NULL,
+  course_id VARCHAR(160) NOT NULL,
+  course_title VARCHAR(255) NOT NULL,
+  track_slug VARCHAR(160) NOT NULL,
+  action ENUM('cart','trial','purchase') NOT NULL,
+  price DECIMAL(12,2) NOT NULL DEFAULT 0,
+  points_reward INT UNSIGNED NOT NULL DEFAULT 0,
+  status ENUM('pending','confirmed','cancelled') NOT NULL DEFAULT 'pending',
+  metadata JSON DEFAULT (JSON_OBJECT()),
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_learning_order_user (user_id),
+  INDEX idx_learning_order_course (course_id),
+  CONSTRAINT fk_learning_course_order_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS cms_pages (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   slug VARCHAR(255) NOT NULL UNIQUE,

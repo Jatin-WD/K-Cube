@@ -36,35 +36,47 @@ export const awardPoints = async ({
     throw new Error('Points must be a non-zero number');
   }
 
-  if (once) {
-    const [existing] = await pool.query(
-      'SELECT id FROM point_transactions WHERE user_id = ? AND source_type = ? AND source_slug = ? LIMIT 1',
-      [userId, sourceType, sourceSlug],
-    );
-    if ((existing as any[]).length) {
-      return { awarded: false };
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    if (once) {
+      const [existing] = await connection.query(
+        'SELECT id FROM point_transactions WHERE user_id = ? AND source_type = ? AND source_slug = ? LIMIT 1 FOR UPDATE',
+        [userId, sourceType, sourceSlug],
+      );
+      if ((existing as any[]).length) {
+        await connection.rollback();
+        return { awarded: false };
+      }
     }
+
+    const shouldApplyBalance = status === 'approved';
+    if (shouldApplyBalance) {
+      await connection.query('UPDATE users SET points = GREATEST(points + ?, 0), xp = GREATEST(xp + ?, 0), korea_score = GREATEST(korea_score + ?, 0) WHERE id = ?', [
+        points,
+        Math.max(points, 0),
+        Math.max(points, 0),
+        userId,
+      ]);
+    }
+
+    const [rows] = await connection.query('SELECT points FROM users WHERE id = ? LIMIT 1', [userId]);
+    const balance = Number((rows as any[])[0]?.points ?? 0);
+
+    await connection.query(
+      `INSERT INTO point_transactions
+        (user_id, source_type, source_slug, points_delta, balance_after, status, metadata, created_by, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [userId, sourceType, sourceSlug, points, balance, status, JSON.stringify(metadata), createdBy],
+    );
+
+    await connection.commit();
+    return { awarded: true, balance };
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
   }
-
-  const shouldApplyBalance = status === 'approved';
-  if (shouldApplyBalance) {
-    await pool.query('UPDATE users SET points = GREATEST(points + ?, 0), xp = GREATEST(xp + ?, 0), korea_score = GREATEST(korea_score + ?, 0) WHERE id = ?', [
-      points,
-      Math.max(points, 0),
-      Math.max(points, 0),
-      userId,
-    ]);
-  }
-
-  const [rows] = await pool.query('SELECT points FROM users WHERE id = ? LIMIT 1', [userId]);
-  const balance = Number((rows as any[])[0]?.points ?? 0);
-
-  await pool.query(
-    `INSERT INTO point_transactions
-      (user_id, source_type, source_slug, points_delta, balance_after, status, metadata, created_by, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
-    [userId, sourceType, sourceSlug, points, balance, status, JSON.stringify(metadata), createdBy],
-  );
-
-  return { awarded: true, balance };
 };

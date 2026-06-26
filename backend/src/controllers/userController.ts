@@ -1,25 +1,46 @@
 import { Request, Response } from 'express';
 import pool from '../db/pool';
 import { AuthRequest } from '../middleware/auth';
+import { fail, ok } from '../lib/apiResponse';
+
+const profileFields = 'id, full_name, username, email, phone, profile_image, role, category_access, xp, points, level, badges, streak, korea_score, city, state, country, referral_code, referred_by, created_at, last_login, status';
 
 export const getUserProfile = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
-  const [rows] = await pool.query('SELECT id, full_name, username, email, phone, profile_image, xp, points, level, badges, streak, korea_score, city, state, country, referral_code, referred_by, created_at, last_login, status, category_access FROM users WHERE id = ? LIMIT 1', [userId]);
+  const [rows] = await pool.query(`SELECT ${profileFields} FROM users WHERE id = ? LIMIT 1`, [userId]);
   const user = (rows as any[])[0];
-  return res.json({ user });
+  if (!user) return fail(res, 404, 'NOT_FOUND', 'User not found');
+  return ok(res, user);
 };
 
 export const listUsers = async (req: Request, res: Response) => {
-  const [rows] = await pool.query('SELECT id, full_name, username, city, state, country, level, badges, category_access, role FROM users ORDER BY created_at DESC LIMIT 200');
-  return res.json({ data: rows });
+  const { role, status, q } = req.query;
+  const where: string[] = [];
+  const values: unknown[] = [];
+  if (role) {
+    where.push('role = ?');
+    values.push(role);
+  }
+  if (status) {
+    where.push('status = ?');
+    values.push(status);
+  }
+  if (q) {
+    where.push('(full_name LIKE ? OR email LIKE ? OR username LIKE ?)');
+    values.push(`%${q}%`, `%${q}%`, `%${q}%`);
+  }
+  const [rows] = await pool.query(
+    `SELECT ${profileFields} FROM users ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY created_at DESC LIMIT 300`,
+    values,
+  );
+  return ok(res, rows);
 };
 
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updates = req.body;
-  const fields = Object.keys(updates).map((key) => `${key} = ?`).join(', ');
-  const values = Object.values(updates);
-  if (!fields) return res.status(400).json({ error: 'No changes provided' });
-  await pool.query(`UPDATE users SET ${fields} WHERE id = ?`, [...values, id]);
-  return res.json({ success: true });
+  const allowed = ['full_name', 'phone', 'role', 'category_access', 'status', 'city', 'state', 'country', 'profile_image'];
+  const entries = Object.entries(req.body).filter(([key]) => allowed.includes(key));
+  if (!entries.length) return fail(res, 400, 'VALIDATION_ERROR', 'No valid changes provided');
+  await pool.query(`UPDATE users SET ${entries.map(([key]) => `${key} = ?`).join(', ')} WHERE id = ?`, [...entries.map(([, value]) => value), id]);
+  return ok(res, { id: Number(id) });
 };

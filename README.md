@@ -49,6 +49,12 @@ Default local URLs:
 
 ## Docker
 
+Before running Docker Compose locally, copy the backend example env file to a real `.env` file and update the secrets:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
 Run the complete local stack:
 
 ```bash

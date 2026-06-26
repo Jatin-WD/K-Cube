@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import DetailPage from '@/components/DetailPage';
-import { detailItems, findDetail } from '@/lib/kcubeContent';
+import { findDetail } from '@/lib/kcubeContent';
 
 export const dynamic = 'force-dynamic';
 

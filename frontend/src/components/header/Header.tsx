@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { Bell, BriefcaseBusiness, ChevronDown, ExternalLink, Globe2, Languages, Phone, Plane, Search, User } from 'lucide-react';
+import { Bell, BriefcaseBusiness, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import { copy, navItems } from '@/lib/kcubeContent';
 import { useAppStore, type Language } from '@/store/useAppStore';
@@ -13,6 +14,7 @@ const languageLabels: Record<Language, string> = {
 };
 
 const Header = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
   const user = useAppStore((state) => state.user);
@@ -20,58 +22,67 @@ const Header = () => {
   const t = copy[language];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#232f3e] bg-[#131921] text-white shadow-[0_10px_24px_rgba(0,0,0,0.24)]">
-      <div className="border-b border-[#232f3e] bg-[#131921]">
-        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center justify-end gap-5 px-5 py-2 text-sm text-[#d5d9d9] lg:px-10">
-          <Link href="/apply-for-manpower" className="inline-flex items-center gap-2 transition hover:text-[#f3a847]">
+    <header className="relative z-50 border-b border-[#232f3e] bg-[#131921] text-white shadow-[0_10px_24px_rgba(0,0,0,0.24)] md:sticky md:top-0">
+      <div className="hidden border-b border-[#232f3e] bg-[#131921] sm:block">
+        <div className="mx-auto flex max-w-[1760px] items-center gap-4 overflow-x-auto px-4 py-2 text-xs text-[#d5d9d9] sm:justify-end sm:text-sm lg:px-10">
+          <Link href="/apply-for-manpower" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[#f3a847]">
             <BriefcaseBusiness className="h-4 w-4" />
             {t.manpower}
           </Link>
-          <Link href="/about#contact" className="inline-flex items-center gap-2 transition hover:text-[#f3a847]">
+          <Link href="/about#contact" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[#f3a847]">
             <Phone className="h-4 w-4" />
             {t.contact}
           </Link>
-          <Link href="/admin" className="font-bold text-[#f3a847] transition hover:text-white">
+          <Link href="/admin" className="shrink-0 font-bold text-[#f3a847] transition hover:text-white">
             {t.admin}
           </Link>
         </div>
       </div>
 
       <div className="border-b border-[#232f3e] bg-[#131921]">
-        <div className="mx-auto grid max-w-[1760px] gap-4 px-5 py-3 lg:grid-cols-[260px_minmax(340px,1fr)_auto] lg:items-center lg:px-10">
-          <Link href="/" className="flex items-center gap-4">
-            <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#f3a847] text-lg font-black text-[#111827]">
+        <div className="mx-auto grid max-w-[1760px] grid-cols-[1fr_auto] gap-3 px-3 py-3 sm:px-4 md:grid-cols-[220px_minmax(260px,1fr)] xl:grid-cols-[260px_minmax(360px,1fr)_auto] xl:items-center xl:px-10">
+          <Link href="/" className="flex min-w-0 items-center gap-3 sm:gap-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-[#f3a847] text-lg font-black text-[#111827] sm:h-10 sm:w-10">
               K
             </span>
-            <span>
-              <span className="block text-[22px] font-black leading-none tracking-tight text-white">K-CUBE</span>
-              <span className="block text-[11px] font-bold uppercase tracking-[0.34em] text-[#f3a847]">Korean Ecosystem</span>
+            <span className="min-w-0">
+              <span className="block text-[18px] font-black leading-none tracking-tight text-white sm:text-[22px]">K-CUBE</span>
+              <span className="block text-[9px] font-bold uppercase tracking-[0.18em] text-[#f3a847] sm:text-[11px] sm:tracking-[0.34em]">Korean Ecosystem</span>
             </span>
           </Link>
 
-          <form className="flex min-h-[48px] overflow-hidden rounded-sm border-2 border-transparent bg-white text-[#101012] shadow-[0_8px_18px_rgba(0,0,0,0.2)] focus-within:border-[#f3a847]">
+          <form className="order-3 col-span-full flex min-h-[42px] overflow-hidden rounded-sm border-2 border-transparent bg-white text-[#101012] shadow-[0_8px_18px_rgba(0,0,0,0.2)] focus-within:border-[#f3a847] md:order-none md:col-span-1 md:min-h-[46px]">
             <label className="sr-only" htmlFor="header-search">
               Search K-CUBE
             </label>
             <input
               id="header-search"
-              className="min-w-0 flex-1 px-5 text-base text-[#171717] outline-none placeholder:text-[#8f95a3]"
+              className="min-w-0 flex-1 px-3 text-sm text-[#171717] outline-none placeholder:text-[#8f95a3] sm:px-5 sm:text-base"
               placeholder={t.search}
             />
             <button
               type="submit"
               aria-label="Search"
-              className="flex w-16 items-center justify-center bg-[#f3a847] text-[#111827] transition hover:bg-[#ffa41c]"
+              className="flex w-12 items-center justify-center bg-[#f3a847] text-[#111827] transition hover:bg-[#ffa41c] sm:w-16"
             >
               <Search className="h-6 w-6" />
             </button>
           </form>
 
-          <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+          <div className="order-2 flex min-w-0 flex-wrap items-center justify-end gap-2 md:order-3 md:col-span-2 md:justify-start xl:order-none xl:col-span-1 xl:justify-end">
+            <button
+              type="button"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[#232f3e] text-white transition hover:bg-[#37475a] md:hidden"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
             <div className="group/lang relative">
               <button
                 type="button"
-                className="inline-flex h-10 items-center gap-2 rounded-sm border border-[#f3a847]/50 bg-[#232f3e] px-4 text-sm font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827]"
+                className="inline-flex h-9 shrink-0 items-center gap-2 rounded-sm border border-[#f3a847]/50 bg-[#232f3e] px-3 text-xs font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:h-10 xl:text-sm"
               >
                 <Languages className="h-4 w-4" />
                 {languageLabels[language]}
@@ -96,18 +107,18 @@ const Header = () => {
 
             <Link
               href="/trip-to-korea"
-              className="inline-flex h-10 items-center gap-2 rounded-sm bg-[#ffd814] px-4 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
+              className="hidden h-9 shrink-0 items-center gap-2 rounded-sm bg-[#ffd814] px-3 text-xs font-black text-[#111827] transition hover:bg-[#f7ca00] sm:inline-flex xl:h-10 xl:px-4 xl:text-sm"
             >
               <Plane className="h-4 w-4" />
               {t.koreaTrip}
             </Link>
-            <button aria-label="Notifications" className="relative flex h-10 w-10 items-center justify-center rounded-sm bg-[#232f3e] transition hover:bg-[#37475a]">
+            <button aria-label="Notifications" className="relative hidden h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[#232f3e] transition hover:bg-[#37475a] sm:flex xl:h-10 xl:w-10">
               <Bell className="h-5 w-5" />
               <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-[#ff4d4d]" />
             </button>
             {user ? (
               <div className="group/account relative">
-                <button className="flex items-center gap-2 text-sm leading-tight">
+                <button className="flex shrink-0 items-center gap-2 text-xs leading-tight xl:text-sm">
                   <User className="h-5 w-5 text-[#c8d2e1]" />
                   <span>
                     <span className="block text-[#b9c5d6]">{t.hello}</span>
@@ -129,11 +140,11 @@ const Header = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link href="/signin" className="rounded-sm border border-white/30 px-3 py-2 text-sm font-bold text-white hover:border-[#f3a847] hover:text-[#f3a847]">
+              <div className="hidden items-center gap-2 sm:flex">
+                <Link href="/signin" className="shrink-0 rounded-sm border border-white/30 px-3 py-2 text-xs font-bold text-white hover:border-[#f3a847] hover:text-[#f3a847] xl:text-sm">
                   {t.signIn}
                 </Link>
-                <Link href="/signup" className="rounded-sm bg-[#ffd814] px-3 py-2 text-sm font-black text-[#111827] hover:bg-[#f7ca00]">
+                <Link href="/signup" className="shrink-0 rounded-sm bg-[#ffd814] px-3 py-2 text-xs font-black text-[#111827] hover:bg-[#f7ca00] xl:text-sm">
                   {t.signUp}
                 </Link>
               </div>
@@ -142,13 +153,92 @@ const Header = () => {
         </div>
       </div>
 
-      <nav aria-label="Primary navigation" className="relative border-b border-[#232f3e] bg-[#232f3e]">
-        <div className="mx-auto flex max-w-[1760px] min-h-[54px] items-center gap-1 overflow-x-auto px-5 lg:px-10">
+      {mobileMenuOpen ? (
+        <div className="border-b border-[#232f3e] bg-[#232f3e] px-3 py-3 md:hidden">
+          <div className="grid gap-3">
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/signin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center justify-center rounded-sm border border-white/20 px-3 py-2 text-sm font-bold text-white"
+              >
+                {t.signIn}
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center justify-center rounded-sm bg-[#ffd814] px-3 py-2 text-sm font-black text-[#111827]"
+              >
+                {t.signUp}
+              </Link>
+            </div>
+            <Link
+              href="/trip-to-korea"
+              onClick={() => setMobileMenuOpen(false)}
+              className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-3 py-3 text-sm font-black text-[#111827]"
+            >
+              <Plane className="h-4 w-4" />
+              {t.koreaTrip}
+            </Link>
+            <div className="grid gap-1 rounded-sm border border-white/10 bg-[#131921] p-2">
+              {navItems.map((item) => (
+                <div key={item.label.en} className="border-b border-white/10 last:border-b-0">
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-2 py-3 text-sm font-black text-white"
+                  >
+                    {item.label[language]}
+                    {item.dropdown ? <ChevronDown className="h-4 w-4 text-[#8792a3]" /> : null}
+                  </Link>
+                  {item.dropdown ? (
+                    <div className="grid gap-1 px-2 pb-2">
+                      {item.dropdown.flatMap((section) =>
+                        section.links.slice(0, 3).map((link) => (
+                          <Link
+                            key={`${section.title.en}-${link.label.en}`}
+                            href={link.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="rounded-sm bg-white/[0.04] px-3 py-2 text-xs font-semibold text-[#d5d9d9]"
+                          >
+                            {link.label[language]}
+                          </Link>
+                        )),
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/apply-for-manpower"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/10 bg-[#131921] px-3 py-2 text-xs font-bold text-[#d5d9d9]"
+              >
+                <BriefcaseBusiness className="h-4 w-4" />
+                {t.manpower}
+              </Link>
+              <Link
+                href="/about#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/10 bg-[#131921] px-3 py-2 text-xs font-bold text-[#d5d9d9]"
+              >
+                <Phone className="h-4 w-4" />
+                {t.contact}
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <nav aria-label="Primary navigation" className="relative hidden border-b border-[#232f3e] bg-[#232f3e] md:block">
+        <div className="mx-auto flex max-w-[1760px] min-h-[42px] items-center gap-1 overflow-x-auto px-2 sm:px-4 lg:min-h-[54px] lg:px-10">
           {navItems.map((item) => (
             <div key={item.label.en} className="group/menu">
               <Link
                 href={item.href}
-                className="flex h-[54px] items-center gap-2 whitespace-nowrap px-4 text-base font-bold text-white transition hover:outline hover:outline-1 hover:outline-white focus-visible:text-[#f3a847] focus-visible:outline-none"
+                className="flex h-[42px] items-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-bold text-white transition hover:outline hover:outline-1 hover:outline-white focus-visible:text-[#f3a847] focus-visible:outline-none sm:h-[48px] sm:px-3 sm:text-sm lg:h-[54px] lg:px-4 lg:text-base"
               >
                 {item.label[language]}
                 {item.dropdown ? <ChevronDown className="h-3.5 w-3.5 text-[#8792a3]" /> : null}

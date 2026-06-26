@@ -21,25 +21,25 @@ const DetailPage = ({ item }: DetailPageProps) => {
 
   return (
     <main className="min-h-screen bg-[#e7e7e7] text-[#111827]">
-      <section className="border-b border-[#d5d9d9] bg-[#131921] px-5 py-3 text-sm text-white lg:px-10">
-        <div className="mx-auto flex max-w-[1760px] items-center gap-3">
+      <section className="border-b border-[#d5d9d9] bg-[#131921] px-4 py-3 text-sm text-white lg:px-10">
+        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-3">
           <span className="rounded-sm bg-[#f3a847] px-3 py-1 font-black text-[#111827]">K-CUBE Detail</span>
           <span className="font-semibold">{item.eyebrow[language]}</span>
         </div>
       </section>
 
-      <section className="px-5 py-8 lg:px-10">
+      <section className="px-4 py-6 sm:py-8 lg:px-10">
         <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[minmax(420px,0.92fr)_1fr_350px]">
           <div className="overflow-hidden rounded-sm border border-[#d5d9d9] bg-white p-4 shadow-sm">
-            <div className="h-[420px] bg-cover bg-center" style={{ backgroundImage: `url(${image})` }} />
+            <div className="h-64 bg-cover bg-center sm:h-[420px]" style={{ backgroundImage: `url(${image})` }} />
           </div>
 
           <div className="rounded-sm border border-[#d5d9d9] bg-white p-6 shadow-sm">
           <p className="inline-flex rounded-sm border border-[#f3a847]/60 bg-[#fff4cc] px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#b12704]">
             {item.eyebrow[language]}
           </p>
-          <h1 className="mt-5 text-4xl font-black leading-tight text-[#111827] lg:text-5xl">{item.title[language]}</h1>
-          <p className="mt-5 max-w-4xl text-lg leading-8 text-[#565959]">{item.summary[language]}</p>
+          <h1 className="mt-5 text-3xl font-black leading-tight text-[#111827] sm:text-4xl lg:text-5xl">{item.title[language]}</h1>
+          <p className="mt-5 max-w-4xl text-base leading-7 text-[#565959] sm:text-lg sm:leading-8">{item.summary[language]}</p>
           <div className="mt-5 flex items-center gap-1 text-[#ffa41c]">
             {Array.from({ length: 5 }).map((_, index) => <span key={index}>★</span>)}
             <span className="ml-2 text-sm font-bold text-[#007185]">Verified point activity</span>
@@ -89,7 +89,7 @@ const DetailPage = ({ item }: DetailPageProps) => {
         </div>
       </section>
 
-      <section className="px-5 pb-12 lg:px-10">
+      <section className="px-4 pb-12 lg:px-10">
         <div className="mx-auto max-w-[1760px]">
           <article className="rounded-sm border border-[#d5d9d9] bg-white p-6 shadow-sm">
             <h2 className="text-2xl font-black text-[#111827]">Detailed content</h2>

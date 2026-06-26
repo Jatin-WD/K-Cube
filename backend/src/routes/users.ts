@@ -4,7 +4,7 @@ import { getUserProfile, listUsers, updateUser } from '../controllers/userContro
 
 const router = Router();
 
-router.get('/', requireAuth(['admin', 'manager', 'member']), listUsers);
+router.get('/', requireAuth(['admin', 'manager']), listUsers);
 router.get('/profile', requireAuth(), getUserProfile);
 router.patch('/:id', requireAuth(['admin']), updateUser);
 
