@@ -15,6 +15,10 @@ const signToken = (payload: object, secret: Secret, expiresIn: string) => jwt.si
 const normalizeEmail = (email?: string) => String(email || '').trim().toLowerCase();
 const normalizeUsername = (username?: string) => String(username || '').trim();
 const normalizeName = (name?: string) => String(name || '').trim();
+const generateReferralCode = (username: string) => {
+  const slug = username.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 10) || 'kcube';
+  return `${slug}${crypto.randomBytes(3).toString('hex')}`.toUpperCase();
+};
 
 const verifyGoogleCredential = async (body: any) => {
   const clientId = GOOGLE_CLIENT_ID;
@@ -103,9 +107,9 @@ export const register = async (req: Request, res: Response) => {
     return fail(res, 409, 'ACCOUNT_EXISTS', 'Email or username already registered');
   }
   const result = await pool.query(
-    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, created_at, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'pending')`,
-    [normalizedFullName, normalizedUsername, normalizedEmail, phone || null, passwordHash, 'member', categoryAccess]
+    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, created_at, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'pending')`,
+    [normalizedFullName, normalizedUsername, normalizedEmail, phone || null, passwordHash, 'member', categoryAccess, generateReferralCode(normalizedUsername)]
   );
   const userId = (result as any)[0].insertId;
   await pool.query(
