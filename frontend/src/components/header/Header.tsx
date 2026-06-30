@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Bell, BriefcaseBusiness, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
@@ -15,14 +15,55 @@ const languageLabels: Record<Language, string> = {
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeMenuKey, setActiveMenuKey] = useState<string | null>(null);
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
   const user = useAppStore((state) => state.user);
   const signOut = useAppStore((state) => state.signOut);
   const t = copy[language];
+  const activeMenu = navItems.find((item) => item.label.en === activeMenuKey && item.dropdown?.length) ?? null;
+
+  useEffect(
+    () => {
+      const handlePointerDown = (event: MouseEvent | PointerEvent) => {
+        if (!headerRef.current) return;
+        if (!headerRef.current.contains(event.target as Node)) {
+          setActiveMenuKey(null);
+          setLanguageMenuOpen(false);
+        }
+      };
+
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          setActiveMenuKey(null);
+          setLanguageMenuOpen(false);
+        }
+      };
+
+      document.addEventListener('pointerdown', handlePointerDown);
+      document.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.removeEventListener('pointerdown', handlePointerDown);
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    },
+    [],
+  );
+
+  const openMenu = (key: string) => {
+    setActiveMenuKey(key);
+  };
+
+  const closeAllMenus = () => {
+    setActiveMenuKey(null);
+    setLanguageMenuOpen(false);
+  };
 
   return (
-    <header className="relative z-50 border-b border-[#232f3e] bg-[#131921] text-white shadow-[0_10px_24px_rgba(0,0,0,0.24)] md:sticky md:top-0">
+    <header ref={headerRef} className="relative z-50 border-b border-[#232f3e] bg-[#131921] text-white shadow-[0_10px_24px_rgba(0,0,0,0.24)] md:sticky md:top-0">
       <div className="hidden border-b border-[#232f3e] bg-[#131921] sm:block">
         <div className="mx-auto flex max-w-[1760px] items-center gap-4 overflow-x-auto px-4 py-2 text-xs text-[#d5d9d9] sm:justify-end sm:text-sm lg:px-10">
           <Link href="/apply-for-manpower" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[#f3a847]">
@@ -79,21 +120,36 @@ const Header = () => {
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-            <div className="group/lang relative">
+            <div
+              className="relative"
+              onMouseEnter={() => setLanguageMenuOpen(true)}
+              onMouseLeave={() => setLanguageMenuOpen(false)}
+            >
               <button
                 type="button"
+                aria-haspopup="menu"
+                aria-expanded={languageMenuOpen}
+                onClick={() => setLanguageMenuOpen((open) => !open)}
                 className="inline-flex h-9 shrink-0 items-center gap-2 rounded-sm border border-[#f3a847]/50 bg-[#232f3e] px-3 text-xs font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:h-10 xl:text-sm"
               >
                 <Languages className="h-4 w-4" />
                 {languageLabels[language]}
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
-              <div className="invisible absolute right-0 top-full z-20 mt-2 w-52 rounded-sm border border-[#d5d9d9] bg-white p-2 opacity-0 shadow-2xl transition group-hover/lang:visible group-hover/lang:opacity-100 group-focus-within/lang:visible group-focus-within/lang:opacity-100">
+              <div
+                className={`absolute right-0 top-full z-[140] w-52 pt-2 transition ${
+                  languageMenuOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
+                }`}
+              >
+                <div className="rounded-sm border border-[#d5d9d9] bg-white p-2 shadow-2xl">
                 {(['en', 'ko', 'hi'] as Language[]).map((option) => (
                   <button
                     key={option}
                     type="button"
-                    onClick={() => setLanguage(option)}
+                    onClick={() => {
+                      setLanguage(option);
+                      setLanguageMenuOpen(false);
+                    }}
                     className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-bold transition ${
                       language === option ? 'bg-[#ffd814] text-[#111827]' : 'text-[#111827] hover:bg-[#f7fafa]'
                     }`}
@@ -102,6 +158,7 @@ const Header = () => {
                     {languageLabels[option]}
                   </button>
                 ))}
+                </div>
               </div>
             </div>
 
@@ -192,19 +249,39 @@ const Header = () => {
                     {item.dropdown ? <ChevronDown className="h-4 w-4 text-[#8792a3]" /> : null}
                   </Link>
                   {item.dropdown ? (
-                    <div className="grid gap-1 px-2 pb-2">
-                      {item.dropdown.flatMap((section) =>
-                        section.links.slice(0, 3).map((link) => (
-                          <Link
-                            key={`${section.title.en}-${link.label.en}`}
-                            href={link.href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="rounded-sm bg-white/[0.04] px-3 py-2 text-xs font-semibold text-[#d5d9d9]"
-                          >
-                            {link.label[language]}
-                          </Link>
-                        )),
-                      )}
+                    <div className="grid gap-3 px-2 pb-2">
+                      {item.dropdown.map((section) => (
+                        <div key={section.title.en} className="grid gap-2 rounded-sm border border-white/10 bg-white/[0.03] p-2">
+                          <p className="px-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#f3a847]">
+                            {section.title[language]}
+                          </p>
+                          {section.links.slice(0, 3).map((link) => (
+                            <div key={`${section.title.en}-${link.label.en}`} className="grid gap-1">
+                              <Link
+                                href={link.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="rounded-sm bg-white/[0.04] px-3 py-2 text-xs font-semibold text-[#d5d9d9]"
+                              >
+                                {link.label[language]}
+                              </Link>
+                              {link.children?.length ? (
+                                <div className="grid gap-1 pl-2">
+                                  {link.children.slice(0, 2).map((child) => (
+                                    <Link
+                                      key={`${section.title.en}-${link.label.en}-${child.label.en}`}
+                                      href={child.href}
+                                      onClick={() => setMobileMenuOpen(false)}
+                                      className="rounded-sm border border-white/10 bg-white/[0.02] px-3 py-2 text-[11px] font-medium text-[#b9c5d6]"
+                                    >
+                                      {child.label[language]}
+                                    </Link>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+                          ))}
+                        </div>
+                      ))}
                     </div>
                   ) : null}
                 </div>
@@ -232,25 +309,57 @@ const Header = () => {
         </div>
       ) : null}
 
-      <nav aria-label="Primary navigation" className="relative hidden border-b border-[#232f3e] bg-[#232f3e] md:block">
-        <div className="mx-auto flex max-w-[1760px] min-h-[42px] items-center gap-1 overflow-x-auto px-2 sm:px-4 lg:min-h-[54px] lg:px-10">
-          {navItems.map((item) => (
-            <div key={item.label.en} className="group/menu">
-              <Link
-                href={item.href}
-                className="flex h-[42px] items-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-bold text-white transition hover:outline hover:outline-1 hover:outline-white focus-visible:text-[#f3a847] focus-visible:outline-none sm:h-[48px] sm:px-3 sm:text-sm lg:h-[54px] lg:px-4 lg:text-base"
-              >
-                {item.label[language]}
-                {item.dropdown ? <ChevronDown className="h-3.5 w-3.5 text-[#8792a3]" /> : null}
-              </Link>
+      <nav
+        aria-label="Primary navigation"
+        className="group/nav relative hidden border-b border-[#232f3e] bg-[#232f3e] md:block"
+        onMouseLeave={() => setActiveMenuKey(null)}
+      >
+        <div className="mx-auto relative max-w-[1760px] px-3 sm:px-4 lg:px-10">
+          <div className="flex min-h-[42px] items-center gap-1 overflow-x-hidden px-0 lg:min-h-[54px]">
+            {navItems.map((item) => {
+              const isActive = activeMenuKey === item.label.en;
+              if (item.dropdown) {
+                return (
+                  <Link
+                    key={item.label.en}
+                    href={item.href}
+                    aria-haspopup="menu"
+                    aria-expanded={isActive}
+                    onMouseEnter={() => openMenu(item.label.en)}
+                    onFocus={() => openMenu(item.label.en)}
+                    onClick={closeAllMenus}
+                    className={`flex h-[42px] items-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-bold transition focus-visible:outline-none sm:h-[48px] sm:px-3 sm:text-sm lg:h-[54px] lg:px-4 lg:text-base ${
+                      isActive
+                        ? 'bg-white/5 text-[#f3a847] outline outline-1 outline-white/30'
+                        : 'text-white hover:outline hover:outline-1 hover:outline-white'
+                    }`}
+                  >
+                    {item.label[language]}
+                    <ChevronDown className={`h-3.5 w-3.5 transition ${isActive ? 'text-[#f3a847]' : 'text-[#8792a3]'}`} />
+                  </Link>
+                );
+              }
 
-              {item.dropdown ? (
-                <div className="invisible absolute left-0 top-full w-full translate-y-2 border-y border-[#d5d9d9] bg-white opacity-0 shadow-[0_24px_50px_rgba(0,0,0,0.28)] transition duration-150 group-hover/menu:visible group-hover/menu:translate-y-0 group-hover/menu:opacity-100 group-focus-within/menu:visible group-focus-within/menu:translate-y-0 group-focus-within/menu:opacity-100">
-                  <MegaMenu sections={item.dropdown} language={language} />
-                </div>
-              ) : null}
+              return (
+                <Link
+                  key={item.label.en}
+                  href={item.href}
+                  onClick={closeAllMenus}
+                  className="flex h-[42px] items-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-bold text-white transition hover:outline hover:outline-1 hover:outline-white focus-visible:text-[#f3a847] focus-visible:outline-none sm:h-[48px] sm:px-3 sm:text-sm lg:h-[54px] lg:px-4 lg:text-base"
+                >
+                  {item.label[language]}
+                </Link>
+              );
+            })}
+          </div>
+          {activeMenu?.dropdown ? (
+            <div
+              className="absolute inset-x-0 top-full z-[130] pt-0"
+              onMouseEnter={() => setActiveMenuKey(activeMenu.label.en)}
+            >
+              <MegaMenu sections={activeMenu.dropdown} language={language} />
             </div>
-          ))}
+          ) : null}
         </div>
       </nav>
     </header>

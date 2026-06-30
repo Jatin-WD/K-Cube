@@ -1,0 +1,2143 @@
+[
+  {
+    "id": "brown-rice-green-tea-100t",
+    "slug": "brown-rice-green-tea-100t",
+    "sku": "TC-101",
+    "title": {
+      "en": "Brown Rice Green Tea (100T)",
+      "ko": "현미녹차 100T",
+      "hi": "Brown Rice Green Tea (100T)"
+    },
+    "subtitle": {
+      "en": "Roasted rice and green tea sachets for an everyday calming cup.",
+      "ko": "현미와 녹차가 어우러진 데일리 티입니다.",
+      "hi": "Roasted rice aur green tea sachets ka daily pack."
+    },
+    "description": {
+      "en": "A mellow tea box that works for pantry shoppers, gifting and repeat beverage orders.",
+      "ko": "잔잔한 풍미로 재구매가 잘 나오는 차 상품입니다.",
+      "hi": "Mild tea box jo gifting aur repeat orders dono ke liye strong hai."
+    },
+    "categoryKey": "tea-coffee",
+    "category": {
+      "en": "Tea & Coffee",
+      "ko": "차와 커피",
+      "hi": "Tea & Coffee"
+    },
+    "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+    "price": 720,
+    "rewardPoints": 72,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Tea staple",
+        "ko": "차 스테디셀러",
+        "hi": "Tea staple"
+      }
+    ],
+    "includes": [
+      {
+        "en": "100 tea bags",
+        "ko": "티백 100개",
+        "hi": "100 tea bags"
+      },
+      {
+        "en": "Smooth roasted finish",
+        "ko": "고소한 마무리",
+        "hi": "Smooth roasted finish"
+      },
+      {
+        "en": "Reward eligible on checkout",
+        "ko": "결제 리워드 대상",
+        "hi": "Reward eligible on checkout"
+      }
+    ]
+  },
+  {
+    "id": "bibigo-kimchi-jar",
+    "slug": "bibigo-kimchi-jar",
+    "sku": "PN-202",
+    "title": {
+      "en": "Bibigo Kimchi Jar",
+      "ko": "비비고 김치 자",
+      "hi": "Bibigo Kimchi Jar"
+    },
+    "subtitle": {
+      "en": "Crunchy fermented kimchi jar for bowls, grills and side dishes.",
+      "ko": "그릴과 밥상에 잘 어울리는 아삭한 김치입니다.",
+      "hi": "Crunchy kimchi jar jo bowls aur meals ke saath perfect hai."
+    },
+    "description": {
+      "en": "Balanced spice, clean tang and a pantry-ready size make this an easy first basket add-on.",
+      "ko": "깔끔한 산미와 적당한 매운맛으로 첫 장바구니 진입 상품입니다.",
+      "hi": "Balanced spice aur clean tang ke saath easy first cart add-on."
+    },
+    "categoryKey": "sauces",
+    "category": {
+      "en": "Sauces & Pantry",
+      "ko": "소스/팬트리",
+      "hi": "Sauces & Pantry"
+    },
+    "image": "https://images.unsplash.com/photo-1607301405390-d831c242f59b?auto=format&fit=crop&w=1200&q=80",
+    "price": 549,
+    "compareAtPrice": 620,
+    "rewardPoints": 55,
+    "inStock": true,
+    "stockLabel": {
+      "en": "Low stock",
+      "ko": "재고 적음",
+      "hi": "Low stock"
+    },
+    "badges": [
+      {
+        "en": "Best for first-time buyers",
+        "ko": "첫 구매 추천",
+        "hi": "Best for first-time buyers"
+      }
+    ],
+    "includes": [
+      {
+        "en": "450g glass jar",
+        "ko": "450g 유리병",
+        "hi": "450g glass jar"
+      },
+      {
+        "en": "Cold-side serving",
+        "ko": "차갑게 바로 서빙",
+        "hi": "Cold-side serving"
+      },
+      {
+        "en": "High reward multiplier",
+        "ko": "높은 리워드 배수",
+        "hi": "High reward multiplier"
+      }
+    ]
+  },
+  {
+    "id": "buldak-hot-chicken-topokki",
+    "slug": "buldak-hot-chicken-topokki",
+    "sku": "SN-301",
+    "title": {
+      "en": "Buldak Hot Chicken Flavour Topokki",
+      "ko": "불닭 핫치킨 떡볶이",
+      "hi": "Buldak Hot Chicken Flavour Topokki"
+    },
+    "subtitle": {
+      "en": "Spicy rice cake cup for fast Korean street-food cravings.",
+      "ko": "매콤한 컵 떡볶이로 빠르게 즐기는 길거리 맛입니다.",
+      "hi": "Spicy rice cake cup for quick street-food cravings."
+    },
+    "description": {
+      "en": "Heat, chew and finish in minutes. Great as a hero product on snack collections.",
+      "ko": "빠르게 조리되는 대표 스낵형 떡볶이 상품입니다.",
+      "hi": "Minutes me ready hone wala strong hero snack product."
+    },
+    "categoryKey": "snacks",
+    "category": {
+      "en": "Snacks",
+      "ko": "스낵",
+      "hi": "Snacks"
+    },
+    "image": "https://images.unsplash.com/photo-1583224964978-2f4f7aaf4230?auto=format&fit=crop&w=1200&q=80",
+    "price": 290,
+    "compareAtPrice": 350,
+    "rewardPoints": 45,
+    "inStock": true,
+    "stockLabel": {
+      "en": "Fast moving",
+      "ko": "빠르게 판매 중",
+      "hi": "Fast moving"
+    },
+    "badges": [
+      {
+        "en": "Street-food style",
+        "ko": "길거리 간식",
+        "hi": "Street-food style"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Single heat-and-eat cup",
+        "ko": "즉석 컵 1개",
+        "hi": "Single heat-and-eat cup"
+      },
+      {
+        "en": "Hot chicken profile",
+        "ko": "핫치킨 풍미",
+        "hi": "Hot chicken profile"
+      },
+      {
+        "en": "Checkout rewards enabled",
+        "ko": "결제 리워드 적용",
+        "hi": "Checkout rewards enabled"
+      }
+    ]
+  },
+  {
+    "id": "buldak-sauce",
+    "slug": "buldak-sauce",
+    "sku": "SC-401",
+    "title": {
+      "en": "Buldak Sauce",
+      "ko": "불닭 소스",
+      "hi": "Buldak Sauce"
+    },
+    "subtitle": {
+      "en": "A fiery finishing sauce for noodles, fried rice and Korean bowls.",
+      "ko": "면과 볶음밥에 잘 맞는 매운 마무리 소스입니다.",
+      "hi": "Fiery finishing sauce for noodles aur bowls."
+    },
+    "description": {
+      "en": "A small bottle with high repeat-purchase potential and strong cross-sell performance.",
+      "ko": "반복 구매와 크로스셀에 강한 팬트리 상품입니다.",
+      "hi": "Small bottle but strong repeat-purchase pantry item."
+    },
+    "categoryKey": "sauces",
+    "category": {
+      "en": "Sauces & Pantry",
+      "ko": "소스/팬트리",
+      "hi": "Sauces & Pantry"
+    },
+    "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=80",
+    "price": 290,
+    "compareAtPrice": 450,
+    "rewardPoints": 38,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Pantry booster",
+        "ko": "팬트리 부스터",
+        "hi": "Pantry booster"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Table-side drizzle",
+        "ko": "테이블 드리즐용",
+        "hi": "Table-side drizzle"
+      },
+      {
+        "en": "Spice-heavy finish",
+        "ko": "강한 매운맛",
+        "hi": "Spice-heavy finish"
+      },
+      {
+        "en": "Bundle friendly",
+        "ko": "번들 구성 적합",
+        "hi": "Bundle friendly"
+      }
+    ]
+  },
+  {
+    "id": "buldak-sauce-2x-spice",
+    "slug": "buldak-sauce-2x-spice",
+    "sku": "SC-402",
+    "title": {
+      "en": "Buldak Sauce 2x Spice",
+      "ko": "불닭 소스 2배 매운맛",
+      "hi": "Buldak Sauce 2x Spice"
+    },
+    "subtitle": {
+      "en": "Extra-hot sauce built for spicy challenge lovers.",
+      "ko": "더 강한 매운맛을 원하는 고객용 소스입니다.",
+      "hi": "Extra-hot sauce for spice challenge lovers."
+    },
+    "description": {
+      "en": "A hotter version for challenge bundles, spicy events and high-energy product drops.",
+      "ko": "도전형 캠페인과 이벤트에 적합한 강매운맛 소스입니다.",
+      "hi": "Challenge bundles aur spicy campaigns ke liye hotter version."
+    },
+    "categoryKey": "sauces",
+    "category": {
+      "en": "Sauces & Pantry",
+      "ko": "소스/팬트리",
+      "hi": "Sauces & Pantry"
+    },
+    "image": "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?auto=format&fit=crop&w=1200&q=80",
+    "price": 250,
+    "compareAtPrice": 450,
+    "rewardPoints": 36,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Challenge pick",
+        "ko": "도전용 상품",
+        "hi": "Challenge pick"
+      }
+    ],
+    "includes": [
+      {
+        "en": "2x spice profile",
+        "ko": "2배 매운맛",
+        "hi": "2x spice profile"
+      },
+      {
+        "en": "Ideal cart booster",
+        "ko": "장바구니 상승 상품",
+        "hi": "Ideal cart booster"
+      },
+      {
+        "en": "Reward eligible on checkout",
+        "ko": "결제 리워드 대상",
+        "hi": "Reward eligible on checkout"
+      }
+    ]
+  },
+  {
+    "id": "cream-carbonara-buldak-pack-of-5",
+    "slug": "cream-carbonara-buldak-pack-of-5",
+    "sku": "ND-501",
+    "title": {
+      "en": "Cream Carbonara Buldak (Pack Of 5)",
+      "ko": "크림 카르보나라 불닭 5입",
+      "hi": "Cream Carbonara Buldak (Pack Of 5)"
+    },
+    "subtitle": {
+      "en": "Creamy spicy noodles for shoppers who want heat with a softer finish.",
+      "ko": "부드러운 크림감과 매운맛을 함께 즐기는 라면입니다.",
+      "hi": "Creamy-spicy noodle pack with softer finish."
+    },
+    "description": {
+      "en": "A strong premium instant-noodle entry for multipack buyers and gifting-focused orders.",
+      "ko": "묶음 구매 수요가 높은 프리미엄 라면 상품입니다.",
+      "hi": "Premium instant noodle multipack for bundle buyers."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&w=1200&q=80",
+    "price": 716,
+    "compareAtPrice": 750,
+    "rewardPoints": 80,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Multipack",
+        "ko": "멀티팩",
+        "hi": "Multipack"
+      }
+    ],
+    "includes": [
+      {
+        "en": "5 noodle packs",
+        "ko": "라면 5개",
+        "hi": "5 noodle packs"
+      },
+      {
+        "en": "Creamy spice balance",
+        "ko": "크림 매운맛 밸런스",
+        "hi": "Creamy spice balance"
+      },
+      {
+        "en": "Giftable box format",
+        "ko": "선물용 구성",
+        "hi": "Giftable box format"
+      }
+    ]
+  },
+  {
+    "id": "dongsuh-instant-coffee-mix-white-gold-100t",
+    "slug": "dongsuh-instant-coffee-mix-white-gold-100t",
+    "sku": "TC-102",
+    "title": {
+      "en": "Dongsuh Instant Coffee Mix White Gold (100T)",
+      "ko": "동서 화이트골드 100T",
+      "hi": "Dongsuh Instant Coffee Mix White Gold (100T)"
+    },
+    "subtitle": {
+      "en": "A cafe-style Korean coffee mix box for office, pantry and gifting demand.",
+      "ko": "사무실과 홈팬트리에 잘 맞는 커피믹스 박스입니다.",
+      "hi": "Cafe-style Korean coffee mix box for pantry aur gifting."
+    },
+    "description": {
+      "en": "Creamy sticks with strong repeat demand and reliable order value support.",
+      "ko": "재구매가 강한 커피 스틱형 상품입니다.",
+      "hi": "Creamy coffee sticks with strong repeat demand."
+    },
+    "categoryKey": "tea-coffee",
+    "category": {
+      "en": "Tea & Coffee",
+      "ko": "차와 커피",
+      "hi": "Tea & Coffee"
+    },
+    "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+    "price": 3200,
+    "rewardPoints": 210,
+    "inStock": true,
+    "stockLabel": {
+      "en": "In stock",
+      "ko": "재고 있음",
+      "hi": "In stock"
+    },
+    "badges": [
+      {
+        "en": "Premium beverage",
+        "ko": "프리미엄 음료",
+        "hi": "Premium beverage"
+      }
+    ],
+    "includes": [
+      {
+        "en": "100 coffee sticks",
+        "ko": "커피 스틱 100개",
+        "hi": "100 coffee sticks"
+      },
+      {
+        "en": "Office pantry fit",
+        "ko": "오피스 팬트리 적합",
+        "hi": "Office pantry fit"
+      },
+      {
+        "en": "High reward multiplier",
+        "ko": "높은 리워드 배수",
+        "hi": "High reward multiplier"
+      }
+    ]
+  },
+  {
+    "id": "ginseng-tea-100t",
+    "slug": "ginseng-tea-100t",
+    "sku": "TC-103",
+    "title": {
+      "en": "Ginseng Tea (100T)",
+      "ko": "인삼차 100T",
+      "hi": "Ginseng Tea (100T)"
+    },
+    "subtitle": {
+      "en": "Sweet herbal tea sticks with a classic Korean gift-store profile.",
+      "ko": "전통 선물형 감성의 인삼차 스틱 세트입니다.",
+      "hi": "Classic Korean herbal tea sticks with gift-store feel."
+    },
+    "description": {
+      "en": "Popular for premium baskets, family orders and wellness-themed campaigns.",
+      "ko": "프리미엄 바스켓과 웰니스 캠페인에 잘 어울립니다.",
+      "hi": "Premium basket aur wellness campaign friendly tea."
+    },
+    "categoryKey": "tea-coffee",
+    "category": {
+      "en": "Tea & Coffee",
+      "ko": "차와 커피",
+      "hi": "Tea & Coffee"
+    },
+    "image": "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=1200&q=80",
+    "price": 700,
+    "compareAtPrice": 800,
+    "rewardPoints": 68,
+    "inStock": true,
+    "stockLabel": {
+      "en": "In stock",
+      "ko": "재고 있음",
+      "hi": "In stock"
+    },
+    "badges": [
+      {
+        "en": "Gift favorite",
+        "ko": "선물 인기",
+        "hi": "Gift favorite"
+      }
+    ],
+    "includes": [
+      {
+        "en": "100 sachets",
+        "ko": "스틱 100개",
+        "hi": "100 sachets"
+      },
+      {
+        "en": "Herbal profile",
+        "ko": "허브/인삼 풍미",
+        "hi": "Herbal profile"
+      },
+      {
+        "en": "Checkout rewards enabled",
+        "ko": "결제 리워드 적용",
+        "hi": "Checkout rewards enabled"
+      }
+    ]
+  },
+  {
+    "id": "glass-noodles-300g-pack-of-1",
+    "slug": "glass-noodles-300g-pack-of-1",
+    "sku": "ND-502",
+    "title": {
+      "en": "Glass Noodles (300g)",
+      "ko": "당면 300g",
+      "hi": "Glass Noodles (300g)"
+    },
+    "subtitle": {
+      "en": "Springy Korean glass noodles for japchae and stir-fry meals.",
+      "ko": "잡채와 볶음요리에 적합한 당면입니다.",
+      "hi": "Springy Korean glass noodles for japchae aur stir-fry."
+    },
+    "description": {
+      "en": "A pantry staple for recipe-led shopping and repeat family baskets.",
+      "ko": "레시피 기반 구매에 강한 기본 팬트리 상품입니다.",
+      "hi": "Pantry staple for recipe-led shopping."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&w=1200&q=80",
+    "price": 240,
+    "rewardPoints": 22,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Pantry essential",
+        "ko": "기본 팬트리",
+        "hi": "Pantry essential"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Japchae ready",
+        "ko": "잡채용",
+        "hi": "Japchae ready"
+      },
+      {
+        "en": "300g pack",
+        "ko": "300g 포장",
+        "hi": "300g pack"
+      },
+      {
+        "en": "Repeat purchase friendly",
+        "ko": "재구매 친화적",
+        "hi": "Repeat purchase friendly"
+      }
+    ]
+  },
+  {
+    "id": "glass-noodles-500g",
+    "slug": "glass-noodles-500g",
+    "sku": "ND-503",
+    "title": {
+      "en": "Glass Noodles (500g)",
+      "ko": "당면 500g",
+      "hi": "Glass Noodles (500g)"
+    },
+    "subtitle": {
+      "en": "Larger format noodles for families and meal-prep shoppers.",
+      "ko": "가정용과 대용량 요리에 맞는 큰 포장입니다.",
+      "hi": "Larger format noodles for family buyers."
+    },
+    "description": {
+      "en": "A family-size pantry line that raises basket size without changing the shopping flow.",
+      "ko": "장바구니 금액을 자연스럽게 높이는 패밀리형 상품입니다.",
+      "hi": "Family-size pantry line that lifts basket value."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=80",
+    "price": 650,
+    "rewardPoints": 40,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Family size",
+        "ko": "가정용 대용량",
+        "hi": "Family size"
+      }
+    ],
+    "includes": [
+      {
+        "en": "500g pack",
+        "ko": "500g 포장",
+        "hi": "500g pack"
+      },
+      {
+        "en": "Meal-prep friendly",
+        "ko": "밀프렙 적합",
+        "hi": "Meal-prep friendly"
+      },
+      {
+        "en": "Bundle ready",
+        "ko": "번들 구성 가능",
+        "hi": "Bundle ready"
+      }
+    ]
+  },
+  {
+    "id": "hong-sam-won-pouch-50ml-5pc",
+    "slug": "hong-sam-won-pouch-50ml-5pc",
+    "sku": "HL-601",
+    "title": {
+      "en": "Hong Sam Won Pouch 50ml 5pc",
+      "ko": "홍삼원 50ml 5포",
+      "hi": "Hong Sam Won Pouch 50ml 5pc"
+    },
+    "subtitle": {
+      "en": "Portable Korean red ginseng drink pouches with a wellness-first profile.",
+      "ko": "휴대가 쉬운 홍삼 음료 파우치 세트입니다.",
+      "hi": "Portable Korean red ginseng drink pouches."
+    },
+    "description": {
+      "en": "A high-trust wellness product for premium baskets, gifting and account-reward purchases.",
+      "ko": "웰니스 중심의 프리미엄 장바구니 상품입니다.",
+      "hi": "Wellness-focused premium product for gifting and reward purchases."
+    },
+    "categoryKey": "health",
+    "category": {
+      "en": "Health & Supplements",
+      "ko": "건강식품",
+      "hi": "Health & Supplements"
+    },
+    "image": "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=1200&q=80",
+    "price": 550,
+    "rewardPoints": 58,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Wellness pick",
+        "ko": "웰니스 상품",
+        "hi": "Wellness pick"
+      }
+    ],
+    "includes": [
+      {
+        "en": "5 portable pouches",
+        "ko": "휴대용 5포",
+        "hi": "5 portable pouches"
+      },
+      {
+        "en": "Premium gifting fit",
+        "ko": "프리미엄 선물 적합",
+        "hi": "Premium gifting fit"
+      },
+      {
+        "en": "Reward eligible on checkout",
+        "ko": "결제 리워드 대상",
+        "hi": "Reward eligible on checkout"
+      }
+    ]
+  },
+  {
+    "id": "instant-coffee-mix-100t",
+    "slug": "instant-coffee-mix-100t",
+    "sku": "TC-104",
+    "title": {
+      "en": "Instant Coffee Mix (100T)",
+      "ko": "인스턴트 커피믹스 100T",
+      "hi": "Instant Coffee Mix (100T)"
+    },
+    "subtitle": {
+      "en": "Classic mild Korean coffee sticks for office and home pantry stocking.",
+      "ko": "사무실과 집에서 많이 찾는 기본 커피믹스입니다.",
+      "hi": "Classic mild Korean coffee sticks for office and home."
+    },
+    "description": {
+      "en": "A reliable beverage anchor for repeat orders and practical grocery baskets.",
+      "ko": "반복 주문과 생활형 장바구니에 적합한 커피 상품입니다.",
+      "hi": "Reliable beverage anchor for repeat orders."
+    },
+    "categoryKey": "tea-coffee",
+    "category": {
+      "en": "Tea & Coffee",
+      "ko": "차와 커피",
+      "hi": "Tea & Coffee"
+    },
+    "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+    "price": 2100,
+    "rewardPoints": 150,
+    "inStock": true,
+    "stockLabel": {
+      "en": "In stock",
+      "ko": "재고 있음",
+      "hi": "In stock"
+    },
+    "badges": [
+      {
+        "en": "Office favorite",
+        "ko": "사무실 인기",
+        "hi": "Office favorite"
+      }
+    ],
+    "includes": [
+      {
+        "en": "100 sticks",
+        "ko": "100 스틱",
+        "hi": "100 sticks"
+      },
+      {
+        "en": "Mild roast profile",
+        "ko": "부드러운 로스트",
+        "hi": "Mild roast profile"
+      },
+      {
+        "en": "Same-site rewards",
+        "ko": "사이트 내 리워드",
+        "hi": "Same-site rewards"
+      }
+    ]
+  },
+  {
+    "id": "k-gim-kimchi-seasoned-seaweed-25g-x-5",
+    "slug": "k-gim-kimchi-seasoned-seaweed-25g-x-5",
+    "sku": "SW-701",
+    "title": {
+      "en": "K-Gim Kimchi Flavour Seasoned Seaweed (25g x 5)",
+      "ko": "김치맛 조미김 25g x 5",
+      "hi": "K-Gim Kimchi Flavour Seasoned Seaweed (25g x 5)"
+    },
+    "subtitle": {
+      "en": "Snackable roasted seaweed with a savory kimchi seasoning finish.",
+      "ko": "김치 풍미가 더해진 간식형 조미김입니다.",
+      "hi": "Snackable roasted seaweed with kimchi-seasoning finish."
+    },
+    "description": {
+      "en": "A grab-and-go pack that works as a light add-on and intro-to-Korean-snacks purchase.",
+      "ko": "가볍게 담기 좋은 입문형 한국 스낵 상품입니다.",
+      "hi": "Light add-on seaweed pack for snack discovery."
+    },
+    "categoryKey": "seaweed",
+    "category": {
+      "en": "Seaweed",
+      "ko": "김/해조류",
+      "hi": "Seaweed"
+    },
+    "image": "https://images.unsplash.com/photo-1615485737651-7d3f7f0d2e9f?auto=format&fit=crop&w=1200&q=80",
+    "price": 720,
+    "rewardPoints": 48,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Snackable",
+        "ko": "간식형",
+        "hi": "Snackable"
+      }
+    ],
+    "includes": [
+      {
+        "en": "5 seaweed packs",
+        "ko": "김 5팩",
+        "hi": "5 seaweed packs"
+      },
+      {
+        "en": "Kimchi seasoning",
+        "ko": "김치 시즈닝",
+        "hi": "Kimchi seasoning"
+      },
+      {
+        "en": "Cart booster",
+        "ko": "장바구니 상승",
+        "hi": "Cart booster"
+      }
+    ]
+  },
+  {
+    "id": "k-gim-mini-kimchi-seasoned-seaweed-pack",
+    "slug": "k-gim-mini-kimchi-seasoned-seaweed-pack",
+    "sku": "SW-702",
+    "title": {
+      "en": "K-Gim Mini Kimchi Seasoned Seaweed Pack",
+      "ko": "미니 김치맛 조미김 팩",
+      "hi": "K-Gim Mini Kimchi Seasoned Seaweed Pack"
+    },
+    "subtitle": {
+      "en": "Mini-format seaweed pouches built for lunchbox and snack bundles.",
+      "ko": "도시락과 간식 번들에 맞는 미니 조미김입니다.",
+      "hi": "Mini seaweed pouches for lunchbox and snack bundles."
+    },
+    "description": {
+      "en": "Good for multipack campaigns and lower-ticket add-on recommendations.",
+      "ko": "낮은 단가의 추가 구매 추천 상품입니다.",
+      "hi": "Great low-ticket add-on for multipack campaigns."
+    },
+    "categoryKey": "seaweed",
+    "category": {
+      "en": "Seaweed",
+      "ko": "김/해조류",
+      "hi": "Seaweed"
+    },
+    "image": "https://images.unsplash.com/photo-1516684669134-de6f7c473a2a?auto=format&fit=crop&w=1200&q=80",
+    "price": 700,
+    "rewardPoints": 44,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Lunchbox fit",
+        "ko": "도시락 적합",
+        "hi": "Lunchbox fit"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Mini pouches",
+        "ko": "미니 파우치",
+        "hi": "Mini pouches"
+      },
+      {
+        "en": "Multipack campaign fit",
+        "ko": "멀티팩 캠페인 적합",
+        "hi": "Multipack campaign fit"
+      },
+      {
+        "en": "Reward eligible on checkout",
+        "ko": "결제 리워드 대상",
+        "hi": "Reward eligible on checkout"
+      }
+    ]
+  },
+  {
+    "id": "k-gim-roasted-seaweed-20g",
+    "slug": "k-gim-roasted-seaweed-20g",
+    "sku": "SW-703",
+    "title": {
+      "en": "K-Gim Roasted Seaweed 20g",
+      "ko": "구운 김 20g",
+      "hi": "K-Gim Roasted Seaweed 20g"
+    },
+    "subtitle": {
+      "en": "Classic roasted seaweed sheets for rice bowls, kimbap and daily snacks.",
+      "ko": "김밥과 밥반찬용으로 좋은 기본 구운 김입니다.",
+      "hi": "Classic roasted seaweed for rice bowls and kimbap."
+    },
+    "description": {
+      "en": "A staple pantry seaweed line with strong repeat value and recipe relevance.",
+      "ko": "기본 팬트리 카테고리를 잡아주는 반복 구매 상품입니다.",
+      "hi": "Staple pantry seaweed line with repeat value."
+    },
+    "categoryKey": "seaweed",
+    "category": {
+      "en": "Seaweed",
+      "ko": "김/해조류",
+      "hi": "Seaweed"
+    },
+    "image": "https://images.unsplash.com/photo-1615485737651-7d3f7f0d2e9f?auto=format&fit=crop&w=1200&q=80",
+    "price": 200,
+    "rewardPoints": 18,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Staple pantry line",
+        "ko": "기본 팬트리 상품",
+        "hi": "Staple pantry line"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Roasted sheets",
+        "ko": "구운 김 시트",
+        "hi": "Roasted sheets"
+      },
+      {
+        "en": "20g pack",
+        "ko": "20g 포장",
+        "hi": "20g pack"
+      },
+      {
+        "en": "Recipe-friendly",
+        "ko": "레시피 활용도 높음",
+        "hi": "Recipe-friendly"
+      }
+    ]
+  },
+  {
+    "id": "kimchi-ramen-pack-of-5-600g",
+    "slug": "kimchi-ramen-pack-of-5-600g",
+    "sku": "ND-504",
+    "title": {
+      "en": "Kimchi Ramen (Pack of 5) 600g",
+      "ko": "김치라면 5입 600g",
+      "hi": "Kimchi Ramen (Pack of 5) 600g"
+    },
+    "subtitle": {
+      "en": "Tangy-spicy ramen bundle for kimchi lovers and pantry stocking.",
+      "ko": "김치 풍미를 좋아하는 고객용 멀티팩 라면입니다.",
+      "hi": "Tangy-spicy ramen bundle for kimchi lovers."
+    },
+    "description": {
+      "en": "A familiar Korean pantry item that makes the noodle section feel complete.",
+      "ko": "라면 카테고리를 더 풍성하게 만드는 익숙한 상품입니다.",
+      "hi": "Familiar Korean pantry item that rounds out noodles."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=80",
+    "price": 380,
+    "rewardPoints": 35,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Pantry noodle",
+        "ko": "팬트리 라면",
+        "hi": "Pantry noodle"
+      }
+    ],
+    "includes": [
+      {
+        "en": "5 pack bundle",
+        "ko": "5입 번들",
+        "hi": "5 pack bundle"
+      },
+      {
+        "en": "Kimchi broth profile",
+        "ko": "김치 국물 풍미",
+        "hi": "Kimchi broth profile"
+      },
+      {
+        "en": "A-Z catalog staple",
+        "ko": "카탈로그 기본 상품",
+        "hi": "A-Z catalog staple"
+      }
+    ]
+  },
+  {
+    "id": "korean-red-ginseng-10ml-10sticks",
+    "slug": "korean-red-ginseng-10ml-10sticks",
+    "sku": "HL-602",
+    "title": {
+      "en": "Korean Red Ginseng (10ml 10sticks)",
+      "ko": "홍삼 10ml 10스틱",
+      "hi": "Korean Red Ginseng (10ml 10sticks)"
+    },
+    "subtitle": {
+      "en": "Premium red ginseng stick set for wellness gifting and high-value orders.",
+      "ko": "고가치 웰니스 주문을 위한 프리미엄 홍삼 스틱입니다.",
+      "hi": "Premium red ginseng stick set for high-value wellness orders."
+    },
+    "description": {
+      "en": "A premium anchor product for corporate hampers, family gifting and rewards-led upsell.",
+      "ko": "프리미엄 업셀과 기업형 선물 세트에 적합합니다.",
+      "hi": "Premium anchor for hampers and reward-led upsell."
+    },
+    "categoryKey": "health",
+    "category": {
+      "en": "Health & Supplements",
+      "ko": "건강식품",
+      "hi": "Health & Supplements"
+    },
+    "image": "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=1200&q=80",
+    "price": 4200,
+    "rewardPoints": 280,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Premium wellness",
+        "ko": "프리미엄 웰니스",
+        "hi": "Premium wellness"
+      }
+    ],
+    "includes": [
+      {
+        "en": "10 ginseng sticks",
+        "ko": "홍삼 스틱 10개",
+        "hi": "10 ginseng sticks"
+      },
+      {
+        "en": "Gift box format",
+        "ko": "선물 박스 구성",
+        "hi": "Gift box format"
+      },
+      {
+        "en": "High reward multiplier",
+        "ko": "높은 리워드 배수",
+        "hi": "High reward multiplier"
+      }
+    ]
+  },
+  {
+    "id": "korean-red-ginseng-powder",
+    "slug": "korean-red-ginseng-powder",
+    "sku": "HL-603",
+    "title": {
+      "en": "Korean Red Ginseng Powder",
+      "ko": "홍삼 분말",
+      "hi": "Korean Red Ginseng Powder"
+    },
+    "subtitle": {
+      "en": "A premium powdered ginseng jar for wellness-first households.",
+      "ko": "건강식 중심 고객을 위한 프리미엄 분말형 홍삼입니다.",
+      "hi": "Premium ginseng powder jar for wellness households."
+    },
+    "description": {
+      "en": "Large-ticket premium item that helps the internal K-CUBE shop feel serious and complete.",
+      "ko": "스토어 신뢰도를 높여주는 고가 건강식 상품입니다.",
+      "hi": "Large-ticket premium item for a more complete internal shop."
+    },
+    "categoryKey": "health",
+    "category": {
+      "en": "Health & Supplements",
+      "ko": "건강식품",
+      "hi": "Health & Supplements"
+    },
+    "image": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80",
+    "price": 5120,
+    "compareAtPrice": 6400,
+    "rewardPoints": 320,
+    "inStock": true,
+    "stockLabel": {
+      "en": "In stock",
+      "ko": "재고 있음",
+      "hi": "In stock"
+    },
+    "badges": [
+      {
+        "en": "High value cart",
+        "ko": "고가 장바구니",
+        "hi": "High value cart"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Powder jar format",
+        "ko": "분말 자 타입",
+        "hi": "Powder jar format"
+      },
+      {
+        "en": "Wellness pantry",
+        "ko": "웰니스 팬트리",
+        "hi": "Wellness pantry"
+      },
+      {
+        "en": "Rewards on completion",
+        "ko": "완료 시 리워드",
+        "hi": "Rewards on completion"
+      }
+    ]
+  },
+  {
+    "id": "korean-red-ginseng-powder-capsule",
+    "slug": "korean-red-ginseng-powder-capsule",
+    "sku": "HL-604",
+    "title": {
+      "en": "Korean Red Ginseng Powder Capsule",
+      "ko": "홍삼 캡슐",
+      "hi": "Korean Red Ginseng Powder Capsule"
+    },
+    "subtitle": {
+      "en": "Easy daily ginseng capsules for practical wellness shoppers.",
+      "ko": "매일 간편하게 섭취하는 캡슐형 홍삼입니다.",
+      "hi": "Easy daily ginseng capsules for practical wellness buyers."
+    },
+    "description": {
+      "en": "Capsule format opens a simpler entry point into the premium wellness category.",
+      "ko": "프리미엄 웰니스 카테고리의 입문형 포맷입니다.",
+      "hi": "Simpler entry point into premium wellness category."
+    },
+    "categoryKey": "health",
+    "category": {
+      "en": "Health & Supplements",
+      "ko": "건강식품",
+      "hi": "Health & Supplements"
+    },
+    "image": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1200&q=80",
+    "price": 3500,
+    "compareAtPrice": 6900,
+    "rewardPoints": 220,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Easy daily use",
+        "ko": "매일 복용형",
+        "hi": "Easy daily use"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Capsule format",
+        "ko": "캡슐 타입",
+        "hi": "Capsule format"
+      },
+      {
+        "en": "Wellness basket add-on",
+        "ko": "웰니스 바스켓 추가",
+        "hi": "Wellness basket add-on"
+      },
+      {
+        "en": "Same-site rewards",
+        "ko": "사이트 내 리워드",
+        "hi": "Same-site rewards"
+      }
+    ]
+  },
+  {
+    "id": "korean-red-ginseng-tablet",
+    "slug": "korean-red-ginseng-tablet",
+    "sku": "HL-605",
+    "title": {
+      "en": "Korean Red Ginseng Tablet",
+      "ko": "홍삼 정제",
+      "hi": "Korean Red Ginseng Tablet"
+    },
+    "subtitle": {
+      "en": "Tablet-format red ginseng for customers who prefer simple routines.",
+      "ko": "간단한 루틴을 선호하는 고객용 홍삼 정제입니다.",
+      "hi": "Tablet-format red ginseng for simple daily routines."
+    },
+    "description": {
+      "en": "Balanced between premium value and easy repeat use, ideal for health-category depth.",
+      "ko": "건강식 카테고리를 깊게 만들어 주는 반복형 상품입니다.",
+      "hi": "Balances premium value with easy repeat use."
+    },
+    "categoryKey": "health",
+    "category": {
+      "en": "Health & Supplements",
+      "ko": "건강식품",
+      "hi": "Health & Supplements"
+    },
+    "image": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1200&q=80",
+    "price": 5120,
+    "compareAtPrice": 6700,
+    "rewardPoints": 250,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Routine-friendly",
+        "ko": "루틴형 상품",
+        "hi": "Routine-friendly"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Tablet bottle",
+        "ko": "정제 병",
+        "hi": "Tablet bottle"
+      },
+      {
+        "en": "Repeat-use format",
+        "ko": "반복 복용 포맷",
+        "hi": "Repeat-use format"
+      },
+      {
+        "en": "Checkout rewards enabled",
+        "ko": "결제 리워드 적용",
+        "hi": "Checkout rewards enabled"
+      }
+    ]
+  },
+  {
+    "id": "korean-red-ginseng-with-pomegranate-10ml-10sticks",
+    "slug": "korean-red-ginseng-with-pomegranate-10ml-10sticks",
+    "sku": "HL-606",
+    "title": {
+      "en": "Korean Red Ginseng with Pomegranate (10ml 10sticks)",
+      "ko": "석류 홍삼 10ml 10스틱",
+      "hi": "Korean Red Ginseng with Pomegranate (10ml 10sticks)"
+    },
+    "subtitle": {
+      "en": "A sweeter wellness stick blend designed for gifting and lighter taste preference.",
+      "ko": "석류를 더해 더 부드럽게 즐기는 홍삼 스틱입니다.",
+      "hi": "Sweeter wellness stick blend with pomegranate."
+    },
+    "description": {
+      "en": "A softer wellness profile that broadens the supplement category beyond core ginseng buyers.",
+      "ko": "웰니스 카테고리의 선택 폭을 넓혀주는 확장형 상품입니다.",
+      "hi": "Broader supplement option beyond core ginseng buyers."
+    },
+    "categoryKey": "health",
+    "category": {
+      "en": "Health & Supplements",
+      "ko": "건강식품",
+      "hi": "Health & Supplements"
+    },
+    "image": "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=1200&q=80",
+    "price": 1340,
+    "compareAtPrice": 1490,
+    "rewardPoints": 96,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Gift-ready wellness",
+        "ko": "선물형 웰니스",
+        "hi": "Gift-ready wellness"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Pomegranate blend",
+        "ko": "석류 블렌드",
+        "hi": "Pomegranate blend"
+      },
+      {
+        "en": "10 stick box",
+        "ko": "10스틱 박스",
+        "hi": "10 stick box"
+      },
+      {
+        "en": "Internal rewards",
+        "ko": "내부 리워드 적용",
+        "hi": "Internal rewards"
+      }
+    ]
+  },
+  {
+    "id": "majjoeum-tteokpokki-hot-spicy-flavor-240g",
+    "slug": "majjoeum-tteokpokki-hot-spicy-flavor-240g",
+    "sku": "SN-302",
+    "title": {
+      "en": "Majjoeum Tteokpokki Hot Spicy Flavor (240g)",
+      "ko": "마조음 떡볶이 매운맛 240g",
+      "hi": "Majjoeum Tteokpokki Hot Spicy Flavor (240g)"
+    },
+    "subtitle": {
+      "en": "A hot-and-chewy topokki box for street-food focused snack lovers.",
+      "ko": "매운맛을 선호하는 고객용 박스형 떡볶이입니다.",
+      "hi": "Hot-and-chewy topokki box for spicy snack lovers."
+    },
+    "description": {
+      "en": "A smart companion product beside cup topokki for deeper snack assortment.",
+      "ko": "컵 떡볶이와 함께 보여주기 좋은 확장형 스낵 상품입니다.",
+      "hi": "Great companion product beside cup topokki."
+    },
+    "categoryKey": "snacks",
+    "category": {
+      "en": "Snacks",
+      "ko": "스낵",
+      "hi": "Snacks"
+    },
+    "image": "https://images.unsplash.com/photo-1583224964978-2f4f7aaf4230?auto=format&fit=crop&w=1200&q=80",
+    "price": 200,
+    "compareAtPrice": 280,
+    "rewardPoints": 24,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Snack assortment",
+        "ko": "스낵 카테고리 확장",
+        "hi": "Snack assortment"
+      }
+    ],
+    "includes": [
+      {
+        "en": "240g box",
+        "ko": "240g 박스",
+        "hi": "240g box"
+      },
+      {
+        "en": "Spicy flavor",
+        "ko": "매운맛",
+        "hi": "Spicy flavor"
+      },
+      {
+        "en": "A-Z catalog staple",
+        "ko": "카탈로그 기본 상품",
+        "hi": "A-Z catalog staple"
+      }
+    ]
+  },
+  {
+    "id": "majjoeum-tteokpokki-original-240g",
+    "slug": "majjoeum-tteokpokki-original-240g",
+    "sku": "SN-303",
+    "title": {
+      "en": "Majjoeum Tteokpokki Original (240g)",
+      "ko": "마조음 떡볶이 오리지널 240g",
+      "hi": "Majjoeum Tteokpokki Original (240g)"
+    },
+    "subtitle": {
+      "en": "Original topokki flavor for broader snack appeal and lower spice preference.",
+      "ko": "조금 더 대중적인 오리지널 떡볶이 맛입니다.",
+      "hi": "Original topokki flavor with broader appeal."
+    },
+    "description": {
+      "en": "Balances the spicy variant and helps the internal catalog serve more taste profiles.",
+      "ko": "매운맛 제품과 균형을 맞추는 대중형 떡볶이 상품입니다.",
+      "hi": "Balances spicy variant and broadens appeal."
+    },
+    "categoryKey": "snacks",
+    "category": {
+      "en": "Snacks",
+      "ko": "스낵",
+      "hi": "Snacks"
+    },
+    "image": "https://images.unsplash.com/photo-1583224964978-2f4f7aaf4230?auto=format&fit=crop&w=1200&q=80",
+    "price": 180,
+    "rewardPoints": 20,
+    "inStock": true,
+    "stockLabel": {
+      "en": "In stock",
+      "ko": "재고 있음",
+      "hi": "In stock"
+    },
+    "badges": [
+      {
+        "en": "Broader taste appeal",
+        "ko": "대중형 맛",
+        "hi": "Broader taste appeal"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Original flavor",
+        "ko": "오리지널 맛",
+        "hi": "Original flavor"
+      },
+      {
+        "en": "240g pack",
+        "ko": "240g 포장",
+        "hi": "240g pack"
+      },
+      {
+        "en": "Quick cook",
+        "ko": "빠른 조리",
+        "hi": "Quick cook"
+      }
+    ]
+  },
+  {
+    "id": "maxim-coffee-original-red-100t",
+    "slug": "maxim-coffee-original-red-100t",
+    "sku": "TC-105",
+    "title": {
+      "en": "Maxim Coffee (Original Red) 100T",
+      "ko": "맥심 오리지널 레드 100T",
+      "hi": "Maxim Coffee (Original Red) 100T"
+    },
+    "subtitle": {
+      "en": "Classic Maxim coffee sticks with familiar Korean pantry recall.",
+      "ko": "한국 마트 감성을 살리는 기본 맥심 커피입니다.",
+      "hi": "Classic Maxim coffee sticks with familiar Korean pantry recall."
+    },
+    "description": {
+      "en": "One of the most recognizable Korean grocery beverage lines for internal shop trust.",
+      "ko": "스토어 신뢰감을 올려주는 인지도 높은 음료 상품입니다.",
+      "hi": "Recognizable Korean grocery beverage line for shop trust."
+    },
+    "categoryKey": "tea-coffee",
+    "category": {
+      "en": "Tea & Coffee",
+      "ko": "차와 커피",
+      "hi": "Tea & Coffee"
+    },
+    "image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
+    "price": 2800,
+    "rewardPoints": 180,
+    "inStock": true,
+    "stockLabel": {
+      "en": "In stock",
+      "ko": "재고 있음",
+      "hi": "In stock"
+    },
+    "badges": [
+      {
+        "en": "Recognizable staple",
+        "ko": "인지도 높은 상품",
+        "hi": "Recognizable staple"
+      }
+    ],
+    "includes": [
+      {
+        "en": "100 coffee sticks",
+        "ko": "커피 100스틱",
+        "hi": "100 coffee sticks"
+      },
+      {
+        "en": "Classic Maxim taste",
+        "ko": "맥심 기본 맛",
+        "hi": "Classic Maxim taste"
+      },
+      {
+        "en": "Same-site rewards",
+        "ko": "사이트 내 리워드",
+        "hi": "Same-site rewards"
+      }
+    ]
+  },
+  {
+    "id": "ndk-dried-seaweed-k-miyeok",
+    "slug": "ndk-dried-seaweed-k-miyeok",
+    "sku": "SW-704",
+    "title": {
+      "en": "NDK Dried Seaweed (K-Miyeok)",
+      "ko": "건미역",
+      "hi": "NDK Dried Seaweed (K-Miyeok)"
+    },
+    "subtitle": {
+      "en": "Soup-ready dried seaweed for Korean home cooking baskets.",
+      "ko": "국과 반찬에 쓰기 좋은 건미역입니다.",
+      "hi": "Soup-ready dried seaweed for Korean cooking."
+    },
+    "description": {
+      "en": "A recipe-oriented pantry product that adds authenticity to the catalog.",
+      "ko": "레시피 신뢰도를 높여주는 정통 팬트리 상품입니다.",
+      "hi": "Recipe-oriented pantry product adding authenticity."
+    },
+    "categoryKey": "seaweed",
+    "category": {
+      "en": "Seaweed",
+      "ko": "김/해조류",
+      "hi": "Seaweed"
+    },
+    "image": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=80",
+    "price": 325,
+    "compareAtPrice": 580,
+    "rewardPoints": 28,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Recipe pantry",
+        "ko": "레시피 팬트리",
+        "hi": "Recipe pantry"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Soup-ready seaweed",
+        "ko": "국용 미역",
+        "hi": "Soup-ready seaweed"
+      },
+      {
+        "en": "Authentic home-cooking pick",
+        "ko": "가정식 추천",
+        "hi": "Authentic home-cooking pick"
+      },
+      {
+        "en": "Internal rewards",
+        "ko": "내부 리워드 적용",
+        "hi": "Internal rewards"
+      }
+    ]
+  },
+  {
+    "id": "nongshim-instant-cup-noodles",
+    "slug": "nongshim-instant-cup-noodles",
+    "sku": "ND-505",
+    "title": {
+      "en": "Nongshim Instant Cup Noodles",
+      "ko": "농심 컵라면",
+      "hi": "Nongshim Instant Cup Noodles"
+    },
+    "subtitle": {
+      "en": "Easy cup noodles for on-the-go snack and office pantry demand.",
+      "ko": "간편식 수요에 맞는 기본 컵라면 상품입니다.",
+      "hi": "Easy cup noodles for office and on-the-go demand."
+    },
+    "description": {
+      "en": "A practical low-friction item that supports fast cart starts and low-ticket orders.",
+      "ko": "빠른 장바구니 시작에 좋은 저마찰 상품입니다.",
+      "hi": "Practical low-friction item for fast cart starts."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=80",
+    "price": 129,
+    "rewardPoints": 16,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Quick add-on",
+        "ko": "빠른 추가 상품",
+        "hi": "Quick add-on"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Single cup format",
+        "ko": "컵 타입",
+        "hi": "Single cup format"
+      },
+      {
+        "en": "Office pantry fit",
+        "ko": "오피스 팬트리 적합",
+        "hi": "Office pantry fit"
+      },
+      {
+        "en": "Bundle friendly",
+        "ko": "번들 구성 적합",
+        "hi": "Bundle friendly"
+      }
+    ]
+  },
+  {
+    "id": "nongshim-shin-red-super-spicy-instant-noodles-5pack",
+    "slug": "nongshim-shin-red-super-spicy-instant-noodles-5pack",
+    "sku": "ND-506",
+    "title": {
+      "en": "Nongshim Shin Red Super Spicy Instant Noodles 5 Pack",
+      "ko": "농심 신 레드 5입",
+      "hi": "Nongshim Shin Red Super Spicy Instant Noodles 5 Pack"
+    },
+    "subtitle": {
+      "en": "A hotter Shin profile for customers who want premium spice intensity.",
+      "ko": "더 강한 매운맛을 원하는 고객용 프리미엄 라면입니다.",
+      "hi": "Hotter Shin profile for premium spice seekers."
+    },
+    "description": {
+      "en": "Adds depth to the noodle aisle and creates a stronger spicy ladder inside the shop.",
+      "ko": "라면 카테고리의 매운맛 스펙트럼을 넓혀줍니다.",
+      "hi": "Adds depth to the noodle category."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=80",
+    "price": 600,
+    "rewardPoints": 52,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Spice ladder",
+        "ko": "매운맛 단계 확장",
+        "hi": "Spice ladder"
+      }
+    ],
+    "includes": [
+      {
+        "en": "5 pack format",
+        "ko": "5입 구성",
+        "hi": "5 pack format"
+      },
+      {
+        "en": "Super spicy broth",
+        "ko": "강매운 국물",
+        "hi": "Super spicy broth"
+      },
+      {
+        "en": "Reward eligible on checkout",
+        "ko": "결제 리워드 대상",
+        "hi": "Reward eligible on checkout"
+      }
+    ]
+  },
+  {
+    "id": "nongshim-soon-veggie-noodle-soup",
+    "slug": "nongshim-soon-veggie-noodle-soup",
+    "sku": "ND-507",
+    "title": {
+      "en": "Nongshim Soon Veggie Noodle Soup",
+      "ko": "농심 순 비건 컵면",
+      "hi": "Nongshim Soon Veggie Noodle Soup"
+    },
+    "subtitle": {
+      "en": "Lighter veggie-forward noodles for a softer pantry assortment.",
+      "ko": "좀 더 가벼운 채소 중심 컵면 상품입니다.",
+      "hi": "Lighter veggie-forward noodle cup."
+    },
+    "description": {
+      "en": "Helps the K-CUBE catalog feel more complete by serving milder and non-meaty preferences.",
+      "ko": "더 다양한 식성에 대응하는 균형형 상품입니다.",
+      "hi": "Makes catalog feel more complete for milder preferences."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=80",
+    "price": 129,
+    "rewardPoints": 14,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Milder option",
+        "ko": "순한 옵션",
+        "hi": "Milder option"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Veggie profile",
+        "ko": "채소 풍미",
+        "hi": "Veggie profile"
+      },
+      {
+        "en": "Single cup",
+        "ko": "컵 타입",
+        "hi": "Single cup"
+      },
+      {
+        "en": "Quick checkout item",
+        "ko": "빠른 결제 상품",
+        "hi": "Quick checkout item"
+      }
+    ]
+  },
+  {
+    "id": "nongshim-super-spicy-cup",
+    "slug": "nongshim-super-spicy-cup",
+    "sku": "ND-508",
+    "title": {
+      "en": "Nongshim Super Spicy Cup",
+      "ko": "농심 슈퍼 스파이시 컵",
+      "hi": "Nongshim Super Spicy Cup"
+    },
+    "subtitle": {
+      "en": "Single cup spicy noodles for challenge shelves and impulse shopping.",
+      "ko": "도전형 매운맛 컵라면 상품입니다.",
+      "hi": "Single cup spicy noodle for impulse and challenge shelves."
+    },
+    "description": {
+      "en": "Great for hot-product groupings, campaign drops and front-of-catalog excitement.",
+      "ko": "캠페인 전면 배치에 어울리는 자극적인 컵라면입니다.",
+      "hi": "Great for hot-product groupings and campaign drops."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&w=1200&q=80",
+    "price": 129,
+    "rewardPoints": 18,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Impulse pick",
+        "ko": "충동 구매형",
+        "hi": "Impulse pick"
+      }
+    ],
+    "includes": [
+      {
+        "en": "Single spicy cup",
+        "ko": "매운 컵 1개",
+        "hi": "Single spicy cup"
+      },
+      {
+        "en": "Challenge shelf fit",
+        "ko": "도전 상품 구성",
+        "hi": "Challenge shelf fit"
+      },
+      {
+        "en": "Same-site rewards",
+        "ko": "사이트 내 리워드",
+        "hi": "Same-site rewards"
+      }
+    ]
+  },
+  {
+    "id": "olive-seasoned-seaweed-large-25g",
+    "slug": "olive-seasoned-seaweed-large-25g",
+    "sku": "SW-705",
+    "title": {
+      "en": "Olive Seasoned Seaweed (Large) 25g",
+      "ko": "올리브 조미김 25g",
+      "hi": "Olive Seasoned Seaweed (Large) 25g"
+    },
+    "subtitle": {
+      "en": "Savory olive-seasoned gim with a familiar retail-friendly profile.",
+      "ko": "대중적인 풍미의 올리브 조미김입니다.",
+      "hi": "Savory olive-seasoned gim with mass appeal."
+    },
+    "description": {
+      "en": "A clean snack pantry line that pairs well with rice, lunchboxes and sampler bundles.",
+      "ko": "밥반찬과 런치박스, 샘플러 번들에 잘 맞습니다.",
+      "hi": "Pairs well with rice, lunchboxes and sampler bundles."
+    },
+    "categoryKey": "seaweed",
+    "category": {
+      "en": "Seaweed",
+      "ko": "김/해조류",
+      "hi": "Seaweed"
+    },
+    "image": "https://images.unsplash.com/photo-1615485737651-7d3f7f0d2e9f?auto=format&fit=crop&w=1200&q=80",
+    "price": 200,
+    "rewardPoints": 20,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Mass appeal",
+        "ko": "대중형 상품",
+        "hi": "Mass appeal"
+      }
+    ],
+    "includes": [
+      {
+        "en": "25g large pack",
+        "ko": "25g 대용량",
+        "hi": "25g large pack"
+      },
+      {
+        "en": "Olive seasoning",
+        "ko": "올리브 시즈닝",
+        "hi": "Olive seasoning"
+      },
+      {
+        "en": "Bundle ready",
+        "ko": "번들 구성 가능",
+        "hi": "Bundle ready"
+      }
+    ]
+  },
+  {
+    "id": "olive-seasoned-seaweed-3pack",
+    "slug": "olive-seasoned-seaweed-3pack",
+    "sku": "SW-706",
+    "title": {
+      "en": "Olive Seasoned Seaweed 3 Pack",
+      "ko": "올리브 조미김 3팩",
+      "hi": "Olive Seasoned Seaweed 3 Pack"
+    },
+    "subtitle": {
+      "en": "A multipack seaweed choice for households and lunch prep.",
+      "ko": "가정용과 도시락 준비에 좋은 3팩 구성입니다.",
+      "hi": "Multipack seaweed choice for households."
+    },
+    "description": {
+      "en": "Supports basket building with a low-risk, family-friendly repeat product.",
+      "ko": "가족형 반복 구매를 위한 안정적인 상품입니다.",
+      "hi": "Family-friendly repeat product with low buying friction."
+    },
+    "categoryKey": "seaweed",
+    "category": {
+      "en": "Seaweed",
+      "ko": "김/해조류",
+      "hi": "Seaweed"
+    },
+    "image": "https://images.unsplash.com/photo-1516684669134-de6f7c473a2a?auto=format&fit=crop&w=1200&q=80",
+    "price": 210,
+    "rewardPoints": 22,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Family multipack",
+        "ko": "가정용 멀티팩",
+        "hi": "Family multipack"
+      }
+    ],
+    "includes": [
+      {
+        "en": "3 seaweed packs",
+        "ko": "김 3팩",
+        "hi": "3 seaweed packs"
+      },
+      {
+        "en": "Lunch-prep fit",
+        "ko": "도시락 준비 적합",
+        "hi": "Lunch-prep fit"
+      },
+      {
+        "en": "A-Z catalog staple",
+        "ko": "카탈로그 기본 상품",
+        "hi": "A-Z catalog staple"
+      }
+    ]
+  },
+  {
+    "id": "ottogi-cheese-ramen-pack-of-5",
+    "slug": "ottogi-cheese-ramen-pack-of-5",
+    "sku": "ND-509",
+    "title": {
+      "en": "Ottogi Cheese Ramen (Pack Of 5)",
+      "ko": "오뚜기 치즈라면 5입",
+      "hi": "Ottogi Cheese Ramen (Pack Of 5)"
+    },
+    "subtitle": {
+      "en": "Cheesy Korean noodles for softer spice and family-friendly comfort meals.",
+      "ko": "치즈 풍미로 더 부드럽게 즐기는 라면입니다.",
+      "hi": "Cheesy Korean noodles for family-friendly comfort meals."
+    },
+    "description": {
+      "en": "A great contrast to extra-spicy lines and a strong entry for broader taste preferences.",
+      "ko": "매운 라인업과 대비되는 대중형 라면 상품입니다.",
+      "hi": "Strong contrast to extra-spicy lines for broader appeal."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=80",
+    "price": 600,
+    "rewardPoints": 48,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Broader noodle appeal",
+        "ko": "대중형 라면",
+        "hi": "Broader noodle appeal"
+      }
+    ],
+    "includes": [
+      {
+        "en": "5 pack box",
+        "ko": "5입 박스",
+        "hi": "5 pack box"
+      },
+      {
+        "en": "Cheese flavor",
+        "ko": "치즈 풍미",
+        "hi": "Cheese flavor"
+      },
+      {
+        "en": "Internal rewards",
+        "ko": "내부 리워드 적용",
+        "hi": "Internal rewards"
+      }
+    ]
+  },
+  {
+    "id": "plain-roasted-sushi-seaweed-25-sheets",
+    "slug": "plain-roasted-sushi-seaweed-25-sheets",
+    "sku": "SW-707",
+    "title": {
+      "en": "Plain Roasted Sushi Seaweed (25 Sheets)",
+      "ko": "김밥용 구운김 25장",
+      "hi": "Plain Roasted Sushi Seaweed (25 Sheets)"
+    },
+    "subtitle": {
+      "en": "A sushi and kimbap seaweed pack built for recipe shoppers.",
+      "ko": "김밥과 롤 요리를 위한 구운 김 상품입니다.",
+      "hi": "Sushi and kimbap seaweed pack for recipe shoppers."
+    },
+    "description": {
+      "en": "Recipe-led buyers often add this with noodles, kimchi and sauce for higher-value carts.",
+      "ko": "레시피 동반 구매를 잘 만드는 시너지 상품입니다.",
+      "hi": "Often paired with noodles, kimchi and sauces."
+    },
+    "categoryKey": "seaweed",
+    "category": {
+      "en": "Seaweed",
+      "ko": "김/해조류",
+      "hi": "Seaweed"
+    },
+    "image": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=80",
+    "price": 405,
+    "rewardPoints": 32,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Recipe cross-sell",
+        "ko": "레시피 크로스셀",
+        "hi": "Recipe cross-sell"
+      }
+    ],
+    "includes": [
+      {
+        "en": "25 sushi sheets",
+        "ko": "김 25장",
+        "hi": "25 sushi sheets"
+      },
+      {
+        "en": "Kimbap ready",
+        "ko": "김밥용",
+        "hi": "Kimbap ready"
+      },
+      {
+        "en": "Basket builder",
+        "ko": "장바구니 확장",
+        "hi": "Basket builder"
+      }
+    ]
+  },
+  {
+    "id": "samyang-3x-spicy-hot-chicken-noodles-pack-of-5",
+    "slug": "samyang-3x-spicy-hot-chicken-noodles-pack-of-5",
+    "sku": "ND-510",
+    "title": {
+      "en": "Samyang 3x Spicy Hot Chicken Noodles (Pack Of 5)",
+      "ko": "삼양 3배 매운 불닭 5입",
+      "hi": "Samyang 3x Spicy Hot Chicken Noodles (Pack Of 5)"
+    },
+    "subtitle": {
+      "en": "A challenge-level spicy multipack for heat-focused noodle buyers.",
+      "ko": "극강 매운맛을 찾는 고객을 위한 도전형 라면입니다.",
+      "hi": "Challenge-level spicy multipack for heat-focused buyers."
+    },
+    "description": {
+      "en": "A hero product for spicy campaigns, content-led promotions and high-attention merchandising.",
+      "ko": "매운맛 캠페인과 콘텐츠형 프로모션에 강한 히어로 상품입니다.",
+      "hi": "Hero product for spicy campaigns and merchandising."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=80",
+    "price": 650,
+    "rewardPoints": 64,
+    "inStock": false,
+    "stockLabel": {
+      "en": "Out of stock",
+      "ko": "품절",
+      "hi": "Out of stock"
+    },
+    "badges": [
+      {
+        "en": "Challenge hero",
+        "ko": "도전형 히어로",
+        "hi": "Challenge hero"
+      }
+    ],
+    "includes": [
+      {
+        "en": "3x spice profile",
+        "ko": "3배 매운맛",
+        "hi": "3x spice profile"
+      },
+      {
+        "en": "5 pack format",
+        "ko": "5입 구성",
+        "hi": "5 pack format"
+      },
+      {
+        "en": "Same-site rewards",
+        "ko": "사이트 내 리워드",
+        "hi": "Same-site rewards"
+      }
+    ]
+  },
+  {
+    "id": "shin-ramyun-family-pack",
+    "slug": "shin-ramyun-family-pack",
+    "sku": "ND-511",
+    "title": {
+      "en": "Shin Ramyun Family Pack",
+      "ko": "신라면 패밀리팩",
+      "hi": "Shin Ramyun Family Pack"
+    },
+    "subtitle": {
+      "en": "The classic spicy Korean noodle multipack for fast pantry starts.",
+      "ko": "가장 익숙한 매운 한국 라면 멀티팩입니다.",
+      "hi": "Classic spicy Korean noodle multipack."
+    },
+    "description": {
+      "en": "A core traffic-driving product that makes the internal K-CUBE shop instantly recognizable.",
+      "ko": "내부 K-CUBE 숍의 신뢰를 올려주는 핵심 유입 상품입니다.",
+      "hi": "Core traffic-driving product for the internal shop."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=80",
+    "price": 699,
+    "rewardPoints": 70,
+    "inStock": true,
+    "stockLabel": {
+      "en": "Fast moving",
+      "ko": "빠르게 판매 중",
+      "hi": "Fast moving"
+    },
+    "badges": [
+      {
+        "en": "Top seller",
+        "ko": "상위 판매",
+        "hi": "Top seller"
+      },
+      {
+        "en": "Starter pack",
+        "ko": "스타터 팩",
+        "hi": "Starter pack"
+      }
+    ],
+    "includes": [
+      {
+        "en": "6 ramen packs",
+        "ko": "라면 6개",
+        "hi": "6 ramen packs"
+      },
+      {
+        "en": "Classic spicy broth",
+        "ko": "기본 매운 국물",
+        "hi": "Classic spicy broth"
+      },
+      {
+        "en": "Reward eligible on checkout",
+        "ko": "결제 리워드 대상",
+        "hi": "Reward eligible on checkout"
+      }
+    ]
+  },
+  {
+    "id": "wheat-noodle-jungmyeon-900g",
+    "slug": "wheat-noodle-jungmyeon-900g",
+    "sku": "ND-512",
+    "title": {
+      "en": "Wheat Noodle (Jungmyeon) 900g",
+      "ko": "중면 900g",
+      "hi": "Wheat Noodle (Jungmyeon) 900g"
+    },
+    "subtitle": {
+      "en": "Traditional wheat noodles for Korean soups, cold bowls and family cooking.",
+      "ko": "국수와 냉면 응용에 좋은 전통 면 상품입니다.",
+      "hi": "Traditional wheat noodles for soups and family cooking."
+    },
+    "description": {
+      "en": "Adds breadth beyond ramen so the catalog feels like a real Korean grocery shop.",
+      "ko": "라면 외 품목을 채워 실제 마트형 카탈로그 완성도를 높입니다.",
+      "hi": "Adds grocery depth beyond ramen."
+    },
+    "categoryKey": "noodles",
+    "category": {
+      "en": "Noodles",
+      "ko": "면류",
+      "hi": "Noodles"
+    },
+    "image": "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=80",
+    "price": 330,
+    "rewardPoints": 26,
+    "inStock": true,
+    "stockLabel": {
+      "en": "In stock",
+      "ko": "재고 있음",
+      "hi": "In stock"
+    },
+    "badges": [
+      {
+        "en": "Pantry depth",
+        "ko": "팬트리 확장",
+        "hi": "Pantry depth"
+      }
+    ],
+    "includes": [
+      {
+        "en": "900g family pack",
+        "ko": "900g 가정용",
+        "hi": "900g family pack"
+      },
+      {
+        "en": "Soup and cold-bowl fit",
+        "ko": "국물/비빔 활용",
+        "hi": "Soup and cold-bowl fit"
+      },
+      {
+        "en": "Internal rewards",
+        "ko": "내부 리워드 적용",
+        "hi": "Internal rewards"
+      }
+    ]
+  }
+]

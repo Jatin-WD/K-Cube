@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, CheckCircle2, Clapperboard, Copy, ExternalLink, Gift, Plane, Trophy, UploadCloud, Utensils } from 'lucide-react';
+import { BookOpen, CheckCircle2, Clapperboard, ExternalLink, Gift, Plane, Trophy, UploadCloud, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -46,12 +46,6 @@ const MemberDashboard = () => {
     thumbnail_url: '',
   });
   const [purchase, setPurchase] = useState({ order_id: '', order_total: '', coupon_code: '' });
-
-  const copyReferral = async () => {
-    if (!user?.referralCode) return;
-    await navigator.clipboard.writeText(user.referralCode);
-    setMessage('Referral code copied.');
-  };
 
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -109,7 +103,7 @@ const MemberDashboard = () => {
         <section className="mx-auto max-w-3xl rounded-xl border border-white/10 bg-[#111113] p-8 text-center">
           <Gift className="mx-auto h-12 w-12 text-[#ffc400]" />
           <h1 className="mt-5 text-3xl font-black">Member dashboard locked</h1>
-          <p className="mt-3 text-sm leading-7 text-[#aab5c6]">Register or sign in to earn welcome points, referral rewards, learning points, K-Food points and Korea trip ranking.</p>
+          <p className="mt-3 text-sm leading-7 text-[#aab5c6]">Register or sign in to earn welcome points, learning points, K-Food points and Korea trip ranking.</p>
           <div className="mt-6 flex justify-center gap-3">
             <Link href="/signup" className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">Create account</Link>
             <Link href="/signin" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">Sign in</Link>
@@ -127,7 +121,7 @@ const MemberDashboard = () => {
             <div className="grid min-h-[420px] gap-0 lg:grid-cols-[1fr_0.9fr]">
               <div className="p-8 lg:p-10">
                 <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Member command center</p>
-                <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl lg:text-6xl">Earn points from culture, learning, food and referrals.</h1>
+                <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl lg:text-6xl">Earn points from culture, learning, food and purchases.</h1>
                 <p className="mt-5 max-w-2xl text-sm leading-7 text-[#aab5c6]">K-CUBE tracks every meaningful action toward the Korea trip leaderboard. Upload your Korean culture content, complete daily learning, refer friends, and claim K-Food purchases.</p>
                 <div className="mt-8 grid gap-3 sm:grid-cols-3">
                   <div className="rounded-lg border border-[#ffc400]/25 bg-[#ffc400]/10 p-4">
@@ -142,10 +136,8 @@ const MemberDashboard = () => {
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                     <Gift className="h-5 w-5 text-[#ffc400]" />
-                    <p className="mt-3 text-xl font-black">{user.referralCode || 'KC-CODE'}</p>
-                    <button type="button" onClick={copyReferral} className="mt-2 inline-flex items-center gap-2 text-xs font-black text-[#ffc400]">
-                      <Copy className="h-3.5 w-3.5" /> Copy referral
-                    </button>
+                    <p className="mt-3 text-sm font-black text-[#ffc400]">Signup rewards only</p>
+                    <p className="mt-2 text-xs leading-5 text-[#aab5c6]">Welcome points are credited automatically after successful account creation.</p>
                   </div>
                 </div>
               </div>
@@ -161,7 +153,7 @@ const MemberDashboard = () => {
 
           <aside className="rounded-xl border border-white/10 bg-[#111113] p-6">
             <h2 className="text-2xl font-black">Korea trip ranking</h2>
-            <p className="mt-3 text-sm leading-7 text-[#aab5c6]">Winner announce hone se pehle admin all point sources verify karega: referrals, uploads, learning, K-Food and manual adjustments.</p>
+            <p className="mt-3 text-sm leading-7 text-[#aab5c6]">Winner announce hone se pehle admin all point sources verify karega: uploads, learning, K-Food and manual adjustments.</p>
             <div className="mt-6 h-3 overflow-hidden rounded-full bg-white/10">
               <div className="h-full rounded-full bg-[#ffc400]" style={{ width: `${Math.min(points / 20, 100)}%` }} />
             </div>
@@ -221,7 +213,7 @@ const MemberDashboard = () => {
             <div className="mt-5 grid gap-3">
               <input value={purchase.order_id} onChange={(event) => setPurchase((current) => ({ ...current, order_id: event.target.value }))} placeholder="K-Food order ID" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
               <input value={purchase.order_total} onChange={(event) => setPurchase((current) => ({ ...current, order_total: event.target.value }))} placeholder="Order total" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-              <input value={purchase.coupon_code} onChange={(event) => setPurchase((current) => ({ ...current, coupon_code: event.target.value.toUpperCase() }))} placeholder="Coupon / referral code" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <input value={purchase.coupon_code} onChange={(event) => setPurchase((current) => ({ ...current, coupon_code: event.target.value.toUpperCase() }))} placeholder="Coupon code" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
             </div>
             <button className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909]">
               <Gift className="h-4 w-4" /> Submit claim

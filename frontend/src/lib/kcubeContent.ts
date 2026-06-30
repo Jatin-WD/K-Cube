@@ -1,4 +1,5 @@
 import type { Language } from '@/store/useAppStore';
+import { shopMenuLinks } from '@/lib/shopCatalog';
 
 export type PageKey = 'home' | 'activities' | 'learning' | 'kfood' | 'rewards' | 'events' | 'about' | 'apply' | 'trip';
 export type DetailCategory = 'activities' | 'learning' | 'kfood' | 'rewards' | 'events';
@@ -11,6 +12,7 @@ export interface MenuLink {
   description: LocalText;
   points?: number;
   external?: boolean;
+  children?: MenuLink[];
 }
 
 export interface MegaSection {
@@ -673,6 +675,25 @@ export const detailItems: DetailItem[] = [
 
 const detailHref = (category: DetailCategory, slug: string) => `/${category}/${slug}`;
 
+const buildSectionPreviewLinks = (item: DetailItem): MenuLink[] =>
+  item.sections?.slice(0, 3).map((section) => ({
+    label: section.title,
+    href: detailHref(item.category, item.slug),
+    description: section.content[0] ?? item.summary,
+    points: item.points,
+  })) ?? [];
+
+const buildCategoryPreviewLinks = (category: DetailCategory): MenuLink[] =>
+  detailItems
+    .filter((item) => item.category === category)
+    .slice(0, 3)
+    .map((item) => ({
+      label: item.title,
+      href: detailHref(item.category, item.slug),
+      description: item.summary,
+      points: item.points,
+    }));
+
 export const navItems: NavItem[] = [
   {
     label: txt('All', '전체', 'All'),
@@ -681,11 +702,12 @@ export const navItems: NavItem[] = [
       {
         title: txt('Explore K-CUBE', 'K-CUBE 둘러보기', 'K-CUBE Explore'),
         links: [
-          { label: txt('Activities', '활동', 'Activities'), href: '/activities', description: txt('K-Pop, K-Dance, culture and food missions.', 'K-Pop, K-Dance, 문화와 음식 미션.', 'K-Pop, K-Dance, culture aur food missions.') },
-          { label: txt('Korean Learning', '한국어 학습', 'Korean Learning'), href: '/learning', description: txt('Beginner lessons, vocabulary and speaking practice.', '초급 수업, 단어, 말하기 연습.', 'Beginner lessons, vocabulary aur speaking practice.') },
-          { label: txt('K-Food', 'K-푸드', 'K-Food'), href: '/kfood', description: txt('Recipes, food missions and K-Food.in commerce bridge.', '레시피, 음식 미션, K-Food.in 연결.', 'Recipes, food missions aur K-Food.in bridge.') },
-          { label: txt('Rewards', '리워드', 'Rewards'), href: '/rewards', description: txt('Points wallet, redemption and Korea trip progress.', '포인트 지갑, 교환, 한국 여행 진행.', 'Points wallet, redemption aur Korea trip progress.') },
-          { label: txt('Events', '이벤트', 'Events'), href: '/events', description: txt('Culture workshops and RSVP-based points.', '문화 워크숍과 RSVP 포인트.', 'Culture workshops aur RSVP based points.') },
+          { label: txt('Activities', '활동', 'Activities'), href: '/activities', description: txt('K-Pop, K-Dance, culture and food missions.', 'K-Pop, K-Dance, 문화와 음식 미션.', 'K-Pop, K-Dance, culture aur food missions.'), children: buildCategoryPreviewLinks('activities') },
+          { label: txt('Korean Learning', '한국어 학습', 'Korean Learning'), href: '/learning', description: txt('Beginner lessons, vocabulary and speaking practice.', '초급 수업, 단어, 말하기 연습.', 'Beginner lessons, vocabulary aur speaking practice.'), children: buildCategoryPreviewLinks('learning') },
+          { label: txt('K-Food', 'K-푸드', 'K-Food'), href: '/kfood', description: txt('Recipes, food missions and K-Food.in commerce bridge.', '레시피, 음식 미션, K-Food.in 연결.', 'Recipes, food missions aur K-Food.in bridge.'), children: buildCategoryPreviewLinks('kfood') },
+          { label: txt('Shop', '샵', 'Shop'), href: '/shop', description: txt('Buy Korean products directly on K-CUBE with account rewards.', 'K-CUBE에서 한국 상품을 직접 구매하고 계정 리워드를 받으세요.', 'K-CUBE par Korean products directly buy karo aur account rewards pao.'), children: shopMenuLinks.slice(0, 4) },
+          { label: txt('Rewards', '리워드', 'Rewards'), href: '/rewards', description: txt('Points wallet, redemption and Korea trip progress.', '포인트 지갑, 교환, 한국 여행 진행.', 'Points wallet, redemption aur Korea trip progress.'), children: buildCategoryPreviewLinks('rewards') },
+          { label: txt('Events', '이벤트', 'Events'), href: '/events', description: txt('Culture workshops and RSVP-based points.', '문화 워크숍과 RSVP 포인트.', 'Culture workshops aur RSVP based points.'), children: buildCategoryPreviewLinks('events') },
         ],
       },
     ],
@@ -702,6 +724,7 @@ export const navItems: NavItem[] = [
           href: detailHref(item.category, item.slug),
           description: item.summary,
           points: item.points,
+          children: buildSectionPreviewLinks(item),
         })),
       },
     ],
@@ -717,6 +740,7 @@ export const navItems: NavItem[] = [
           href: detailHref(item.category, item.slug),
           description: item.summary,
           points: item.points,
+          children: buildSectionPreviewLinks(item),
         })),
       },
     ],
@@ -733,11 +757,16 @@ export const navItems: NavItem[] = [
             href: detailHref(item.category, item.slug),
             description: item.summary,
             points: item.points,
+            children: buildSectionPreviewLinks(item),
           })),
-          { label: txt('Shop on K-Food.in', 'K-Food.in 쇼핑', 'K-Food.in Shop'), href: 'https://www.k-food.in', external: true, description: txt('Buy Korean food from the connected ecommerce store.', '연결된 쇼핑몰에서 한국 식품 구매.', 'Connected ecommerce store se Korean food buy karein.') },
+          { label: txt('Shop on K-CUBE', 'K-CUBE 쇼핑', 'K-CUBE Shop'), href: '/shop', description: txt('Buy Korean food directly on K-CUBE with login-gated checkout and rewards.', 'K-CUBE에서 로그인 기반 결제와 리워드로 한국 식품을 직접 구매하세요.', 'K-CUBE par login-gated checkout aur rewards ke saath Korean food kharidein.'), children: shopMenuLinks.slice(0, 4) },
         ],
       },
     ],
+  },
+  {
+    label: txt('Shop', '샵', 'Shop'),
+    href: '/shop',
   },
   {
     label: txt('Rewards', '리워드', 'Rewards'),
@@ -750,6 +779,7 @@ export const navItems: NavItem[] = [
             label: item.title,
             href: detailHref(item.category, item.slug),
             description: item.summary,
+            children: buildSectionPreviewLinks(item),
           })),
           { label: txt('Trip to Korea', '한국 여행', 'Trip to Korea'), href: '/trip-to-korea', description: txt('Grand reward page for highest point holders.', '상위 포인트 회원을 위한 대표 리워드 페이지.', 'Highest point holders ke liye grand reward page.') },
         ],
@@ -767,6 +797,7 @@ export const navItems: NavItem[] = [
           href: detailHref(item.category, item.slug),
           description: item.summary,
           points: item.points,
+          children: buildSectionPreviewLinks(item),
         })),
       },
     ],
@@ -785,7 +816,7 @@ export const pages: Record<PageKey, PageContent> = {
     cards: [
       { title: txt('Culture activities', '문화 활동', 'Culture activities'), description: txt('K-Pop, K-Dance, drama, culture and food missions.', 'K-Pop, K-Dance, 드라마, 문화, 음식 미션.', 'K-Pop, K-Dance, drama, culture aur food missions.'), href: '/activities', cta: txt('Explore activities', '활동 보기', 'Activities dekhein') },
       { title: txt('Korean learning', '한국어 학습', 'Korean learning'), description: txt('SEO-friendly Korean lessons with points-based progress.', '포인트 기반 진도를 가진 SEO 친화 한국어 수업.', 'SEO-friendly Korean lessons with points progress.'), href: '/learning', cta: txt('Start learning', '학습 시작', 'Learning start karein') },
-      { title: txt('K-Food bridge', 'K-Food 연결', 'K-Food bridge'), description: txt('Recipes and food content guide users toward K-Food.in purchases.', '레시피와 음식 콘텐츠가 K-Food.in 구매로 이어집니다.', 'Recipes users ko K-Food.in purchase tak guide karte hain.'), href: '/kfood', cta: txt('Discover K-Food', 'K-Food 보기', 'K-Food dekhein') },
+      { title: txt('K-Food bridge', 'K-Food 연결', 'K-Food bridge'), description: txt('Recipes and food content guide users toward K-CUBE shop purchases.', '레시피와 음식 콘텐츠가 K-CUBE 쇼핑 구매로 이어집니다.', 'Recipes users ko K-CUBE shop purchase tak guide karte hain.'), href: '/shop', cta: txt('Discover K-Food', 'K-Food 보기', 'K-Food dekhein') },
     ],
   },
   activities: {
@@ -818,11 +849,11 @@ export const pages: Record<PageKey, PageContent> = {
   },
   kfood: {
     badge: txt('K-Food', 'K-푸드', 'K-Food'),
-    title: txt('Korean food content that connects to K-Food.in', 'K-Food.in과 연결되는 한국 음식 콘텐츠', 'K-Food.in se connected Korean food content'),
+    title: txt('Korean food content that connects to the K-CUBE shop', 'K-CUBE 샵과 연결되는 한국 음식 콘텐츠', 'K-CUBE shop se connected Korean food content'),
     subtitle: txt('Recipes and food missions attract users, then guide high-intent visitors toward ecommerce.', '레시피와 음식 미션이 사용자를 끌어오고 구매 의도가 높은 방문자를 커머스로 안내합니다.', 'Recipes aur food missions users ko attract karke ecommerce tak guide karte hain.'),
-    description: txt('K-CUBE handles discovery and points. K-Food.in handles shopping and product purchase journeys.', 'K-CUBE는 발견과 포인트를 담당하고 K-Food.in은 쇼핑과 구매 여정을 담당합니다.', 'K-CUBE discovery/points handle karega, K-Food.in shopping journey.'),
-    primaryCta: txt('Open recipes', '레시피 열기', 'Recipes kholo'),
-    primaryHref: '/kfood/korean-recipes',
+    description: txt('K-CUBE now handles discovery, shopping, login-gated checkout, and product purchase rewards in one place.', 'K-CUBE가 이제 탐색, 쇼핑, 로그인 기반 결제, 상품 구매 리워드를 한 곳에서 처리합니다.', 'K-CUBE ab discovery, shopping, login-gated checkout aur product purchase rewards ek hi jagah handle karega.'),
+    primaryCta: txt('Open shop', '샵 열기', 'Shop kholo'),
+    primaryHref: '/shop',
     cards: detailItems.filter((item) => item.category === 'kfood').map((item) => ({
       title: item.title,
       description: item.summary,
@@ -861,12 +892,12 @@ export const pages: Record<PageKey, PageContent> = {
     badge: txt('About K-CUBE', 'K-CUBE 소개', 'About K-CUBE'),
     title: txt('K-CUBE connects Korean culture, learning, rewards, and commerce', 'K-CUBE는 한국 문화, 학습, 리워드, 커머스를 연결합니다', 'K-CUBE Korean culture, learning, rewards aur commerce connect karta hai'),
     subtitle: txt('About is a direct page, not a dropdown. It explains the full website concept for users, partners, and admins.', '소개는 드롭다운이 아닌 직접 페이지이며 사용자, 파트너, 관리자를 위한 전체 개념을 설명합니다.', 'About direct page hai, dropdown nahi. Ye full website concept explain karta hai.'),
-    description: txt('K-CUBE.store drives engagement. K-Food.in captures commerce. Points connect both and build the Korea trip race.', 'K-CUBE.store는 참여를 만들고 K-Food.in은 커머스를 담당합니다. 포인트가 둘을 연결하고 한국 여행 레이스를 만듭니다.', 'K-CUBE.store engagement, K-Food.in commerce, points dono ko connect karte hain.'),
+    description: txt('K-CUBE.store now combines engagement and commerce so points, products, and checkout all stay in one ecosystem.', 'K-CUBE.store는 이제 참여와 커머스를 결합해 포인트, 상품, 결제가 모두 하나의 생태계 안에 머물도록 합니다.', 'K-CUBE.store ab engagement aur commerce ko ek saath laata hai taaki points, products aur checkout sab ek hi ecosystem me rahein.'),
     primaryCta: txt('Contact K-CUBE', 'K-CUBE 문의', 'K-CUBE contact'),
     primaryHref: '#contact',
     cards: [
       { title: txt('Mission', '미션', 'Mission'), description: txt('Make Korean culture discoverable, participatory, and rewarding.', '한국 문화를 발견 가능하고 참여적이며 보상 있게 만듭니다.', 'Korean culture ko discoverable, participatory aur rewarding banana.'), href: '#mission', cta: txt('Read mission', '미션 보기', 'Mission padhein') },
-      { title: txt('Commerce bridge', '커머스 연결', 'Commerce bridge'), description: txt('Attach food content to K-Food.in buying journeys.', '음식 콘텐츠를 K-Food.in 구매 여정에 연결합니다.', 'Food content ko K-Food.in buying journeys se attach karna.'), href: '/kfood', cta: txt('See K-Food', 'K-Food 보기', 'K-Food dekhein') },
+      { title: txt('Commerce bridge', '커머스 연결', 'Commerce bridge'), description: txt('Attach food content to K-CUBE shop buying journeys.', '음식 콘텐츠를 K-CUBE 샵 구매 여정에 연결합니다.', 'Food content ko K-CUBE shop buying journeys se attach karna.'), href: '/shop', cta: txt('See K-Food', 'K-Food 보기', 'K-Food dekhein') },
       { title: txt('CMS operations', 'CMS 운영', 'CMS operations'), description: txt('Admins manage content, users, points, events, lessons and rewards.', '관리자는 콘텐츠, 사용자, 포인트, 이벤트, 수업, 리워드를 관리합니다.', 'Admins content, users, points, events, lessons aur rewards manage karte hain.'), href: '/admin', cta: txt('Admin panel', '관리자 패널', 'Admin panel') },
     ],
   },

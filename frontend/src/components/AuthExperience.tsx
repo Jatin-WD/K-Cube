@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, Lock, Mail, Phone, ShieldCheck } from 'lucide-react';
 import api from '@/lib/api';
 import { copy } from '@/lib/kcubeContent';
@@ -16,7 +17,7 @@ const authCopy = {
     signinTitle: 'Sign in to your K-CUBE account',
     signupTitle: 'Create your K-CUBE account',
     adminTitle: 'Admin CMS login',
-    subtitle: 'Use email/password or mobile OTP. Google login is ready for a Google Identity token integration.',
+    subtitle: 'Use email/password, mobile OTP, or Google Identity. Your points balance is restored from the server after login.',
     name: 'Full name',
     username: 'Username',
     email: 'Email address',
@@ -92,18 +93,30 @@ const authCopy = {
 const readRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
 
+const readPoints = (value: unknown) => {
+  const points = Number(value);
+  return Number.isFinite(points) ? points : undefined;
+};
+
+const sanitizeReturnTo = (target: string | null) => {
+  if (!target || !target.startsWith('/') || target.startsWith('//')) {
+    return null;
+  }
+  return target;
+};
+
 const normalizeUser = (payload: unknown, method: AuthMethod) => {
   const record = readRecord(payload);
   const nestedUser = readRecord(record.user);
 
   return {
-  id: String(record.id ?? nestedUser.id ?? crypto.randomUUID()),
-  fullName: String(record.full_name ?? record.fullName ?? nestedUser.full_name ?? record.username ?? 'K-CUBE Member'),
-  email: typeof (record.email ?? nestedUser.email) === 'string' ? String(record.email ?? nestedUser.email) : undefined,
-  phone: typeof (record.phone ?? nestedUser.phone) === 'string' ? String(record.phone ?? nestedUser.phone) : undefined,
-  referralCode: typeof (record.referral_code ?? nestedUser.referral_code) === 'string' ? String(record.referral_code ?? nestedUser.referral_code) : undefined,
-  role: (record.role ?? nestedUser.role ?? 'member') as 'admin' | 'member' | 'manager' | 'guest',
-  method,
+    id: String(record.id ?? nestedUser.id ?? crypto.randomUUID()),
+    fullName: String(record.full_name ?? record.fullName ?? nestedUser.full_name ?? record.username ?? 'K-CUBE Member'),
+    email: typeof (record.email ?? nestedUser.email) === 'string' ? String(record.email ?? nestedUser.email) : undefined,
+    phone: typeof (record.phone ?? nestedUser.phone) === 'string' ? String(record.phone ?? nestedUser.phone) : undefined,
+    points: readPoints(record.points ?? nestedUser.points),
+    role: (record.role ?? nestedUser.role ?? 'member') as 'admin' | 'member' | 'manager' | 'guest',
+    method,
   };
 };
 
@@ -119,15 +132,18 @@ const getErrorMessage = (error: unknown) => {
 };
 
 const AuthExperience = ({ mode }: AuthExperienceProps) => {
+  const router = useRouter();
   const language = useAppStore((state) => state.language);
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
   const signIn = useAppStore((state) => state.signIn);
   const signOut = useAppStore((state) => state.signOut);
+  const searchParams = useSearchParams();
   const t = authCopy[language];
   const global = copy[language];
   const [method, setMethod] = useState<AuthMethod>(mode === 'admin' ? 'admin' : 'email');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     fullName: '',
     username: '',
@@ -136,23 +152,42 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
     phone: '',
     otp: '',
     googleId: '',
-    referralCode: '',
   });
+  const returnTo = sanitizeReturnTo(searchParams.get('returnTo'));
+
+  useEffect(() => {
+    if (!user || mode === 'admin') return;
+    router.replace(returnTo || '/dashboard');
+  }, [mode, returnTo, router, user]);
+
+  const returnHref = useMemo(() => returnTo || '/dashboard', [returnTo]);
+
+  const authSwitchHref = (target: 'signin' | 'signup') => {
+    const base = target === 'signin' ? '/signin' : '/signup';
+    return returnTo ? `${base}?returnTo=${encodeURIComponent(returnTo)}` : base;
+  };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage('');
+    setIsSubmitting(true);
 
     try {
       let response;
 
       if (method === 'phone') {
-        response = await api.post('/auth/otp/verify', { phone: form.phone, otp_code: form.otp });
+        response = await api.post('/auth/otp/verify', {
+          phone: form.phone,
+          otp_code: form.otp,
+          full_name: form.fullName || undefined,
+          username: form.username || undefined,
+          email: form.email || undefined,
+        });
       } else if (method === 'google') {
         response = await api.post('/auth/google', {
           credential: form.googleId,
-          email: form.email,
-          full_name: form.fullName || 'K-CUBE Member',
+          email: form.email || undefined,
+          full_name: form.fullName || undefined,
         });
       } else if (mode === 'signup') {
         response = await api.post('/auth/register', {
@@ -161,7 +196,6 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
           email: form.email,
           phone: form.phone || undefined,
           password: form.password,
-          referral_code: form.referralCode || undefined,
         });
       } else {
         response = await api.post('/auth/login', {
@@ -172,21 +206,33 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
 
       const data = response.data?.data ?? response.data;
       const nextUser = normalizeUser(data.user ?? data, method);
+      const nextPoints = readPoints(data.user?.points ?? data.points ?? nextUser.points);
 
       if (mode === 'admin' && nextUser.role !== 'admin') {
         setMessage('Admin access required.');
         return;
       }
 
-      signIn(nextUser, data.token, data.refreshToken, data.user?.points);
+      signIn(nextUser, data.token, data.refreshToken, nextPoints);
       setMessage(t.signedIn);
+      if (mode === 'admin') {
+        router.replace('/admin');
+      } else {
+        router.replace(returnTo || '/dashboard');
+      }
     } catch (error: unknown) {
       setMessage(getErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const sendOtp = async () => {
     setMessage('');
+    if (!form.phone.trim()) {
+      setMessage('Phone number is required.');
+      return;
+    }
     try {
       await api.post('/auth/otp/send', { phone: form.phone });
       setMessage(t.otpSent);
@@ -224,7 +270,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
                 <p className="mt-1 text-4xl font-black text-[#ffc400]">{points}</p>
               </div>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href={mode === 'admin' ? '/admin' : '/rewards'} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">
+                <Link href={mode === 'admin' ? '/admin' : returnHref} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">
                   {mode === 'admin' ? 'Open CMS' : 'Continue'}
                 </Link>
                 <button type="button" onClick={signOut} className="rounded-lg border border-white/15 px-5 py-3 text-sm font-bold text-white">
@@ -274,19 +320,24 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
                   </label>
                 ) : null}
 
-                {mode === 'signup' ? (
-                  <label className="grid gap-2 text-sm font-bold text-white">
-                    Referral code
-                    <input value={form.referralCode} onChange={(event) => setForm((current) => ({ ...current, referralCode: event.target.value.toUpperCase() }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" placeholder="KC-XXXXXXXX" />
-                  </label>
-                ) : null}
-
                 {method === 'phone' ? (
                   <>
                     <label className="grid gap-2 text-sm font-bold text-white">
                       {t.phone}
                       <input value={form.phone} onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" placeholder="+91 99999 99999" />
                     </label>
+                    {mode === 'signup' ? (
+                      <label className="grid gap-2 text-sm font-bold text-white">
+                        {t.email}
+                        <input
+                          type="email"
+                          value={form.email}
+                          onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+                          className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]"
+                          placeholder="optional@email.com"
+                        />
+                      </label>
+                    ) : null}
                     <button type="button" onClick={sendOtp} className="rounded-lg border border-[#ffc400]/40 bg-[#ffc400]/10 px-4 py-3 text-sm font-black text-[#ffc400]">
                       {t.sendOtp}
                     </button>
@@ -318,16 +369,16 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
 
               {message ? <p className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-[#d4dbe7]">{message}</p> : null}
 
-              <button type="submit" className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-5 py-4 text-sm font-black text-[#090909] transition hover:bg-[#ffd84a]">
+              <button type="submit" disabled={isSubmitting} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-5 py-4 text-sm font-black text-[#090909] transition hover:bg-[#ffd84a] disabled:cursor-not-allowed disabled:opacity-70">
                 <Lock className="h-4 w-4" />
-                {mode === 'admin' ? t.submitAdmin : mode === 'signup' ? t.submitSignup : method === 'phone' ? t.verifyOtp : t.submitSignin}
+                {isSubmitting ? 'Please wait...' : mode === 'admin' ? t.submitAdmin : mode === 'signup' ? t.submitSignup : method === 'phone' ? t.verifyOtp : t.submitSignin}
               </button>
 
               <div className="mt-5 text-center text-sm text-[#aab5c6]">
                 {mode === 'signin' ? (
-                  <Link href="/signup" className="font-bold text-[#ffc400]">{t.switchSignup}</Link>
+                  <Link href={authSwitchHref('signup')} className="font-bold text-[#ffc400]">{t.switchSignup}</Link>
                 ) : mode === 'signup' ? (
-                  <Link href="/signin" className="font-bold text-[#ffc400]">{t.switchSignin}</Link>
+                  <Link href={authSwitchHref('signin')} className="font-bold text-[#ffc400]">{t.switchSignin}</Link>
                 ) : null}
               </div>
             </form>

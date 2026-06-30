@@ -1,7 +1,12 @@
+import { Suspense } from 'react';
 import AuthExperience from '@/components/AuthExperience';
 
 const SignInPage = () => {
-  return <AuthExperience mode="signin" />;
+  return (
+    <Suspense fallback={null}>
+      <AuthExperience mode="signin" />
+    </Suspense>
+  );
 };
 
 export default SignInPage;

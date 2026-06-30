@@ -12,6 +12,8 @@ const refreshSecret: Secret = JWT_REFRESH_SECRET;
 
 const signToken = (payload: object, secret: Secret, expiresIn: string) => jwt.sign(payload as any, secret as any, { expiresIn } as any);
 const normalizeEmail = (email?: string) => String(email || '').trim().toLowerCase();
+const normalizeUsername = (username?: string) => String(username || '').trim();
+const normalizeName = (name?: string) => String(name || '').trim();
 
 const verifyGoogleCredential = async (body: any) => {
   const clientId = GOOGLE_CLIENT_ID;
@@ -49,7 +51,7 @@ const verifyGoogleCredential = async (body: any) => {
   return claims;
 };
 
-const publicUserSelect = 'id, email, username, full_name, role, category_access, points, xp, level, referral_code, profile_image';
+const publicUserSelect = 'id, email, username, full_name, role, category_access, points, xp, level, profile_image';
 
 const issueTokens = (user: any) => ({
   token: signToken({ id: user.id, role: user.role, category_access: user.category_access }, jwtSecret, '1h'),
@@ -67,65 +69,56 @@ const awardWelcomePoints = async (userId: number) => {
 };
 
 export const register = async (req: Request, res: Response) => {
-  const { full_name, username, email, phone, password, category_access, referral_code } = req.body;
-  if (!email || !password || !username || !full_name) {
+  const { full_name, username, email, phone, password, category_access } = req.body;
+  const normalizedEmail = normalizeEmail(email);
+  const normalizedUsername = normalizeUsername(username);
+  const normalizedFullName = normalizeName(full_name);
+  const categoryAccess = category_access || 'category_c';
+  if (!normalizedEmail || !password || !normalizedUsername || !normalizedFullName) {
     return fail(res, 400, 'VALIDATION_ERROR', 'Missing required fields');
   }
   const passwordHash = await bcrypt.hash(password, 12);
-  const referralCode = `KC-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
-  const [existing] = await pool.query('SELECT id FROM users WHERE email = ? OR username = ? LIMIT 1', [email, username]);
+  const [existing] = await pool.query('SELECT id FROM users WHERE LOWER(email) = ? OR LOWER(username) = ? LIMIT 1', [normalizedEmail, normalizedUsername.toLowerCase()]);
   if ((existing as any[]).length) {
     return fail(res, 409, 'ACCOUNT_EXISTS', 'Email or username already registered');
   }
-  let referrer: any = null;
-  if (referral_code) {
-    const [referrerRows] = await pool.query('SELECT id, referral_code FROM users WHERE referral_code = ? AND status = ? LIMIT 1', [referral_code, 'active']);
-    referrer = (referrerRows as any[])[0] || null;
-    if (!referrer) return fail(res, 400, 'INVALID_REFERRAL', 'Invalid referral code');
-  }
   const result = await pool.query(
-    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, referred_by, created_at, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'active')`,
-    [full_name, username, email, phone || null, passwordHash, 'member', category_access || 'category_c', referralCode, referrer?.referral_code || null]
+    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, created_at, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'active')`,
+    [normalizedFullName, normalizedUsername, normalizedEmail, phone || null, passwordHash, 'member', categoryAccess]
   );
   const userId = (result as any)[0].insertId;
   await awardWelcomePoints(userId);
-  if (referrer) {
-    await pool.query(
-      'INSERT INTO referrals (referrer_user_id, referred_user_id, referral_code, status, referrer_points, referred_points, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())',
-      [referrer.id, userId, referrer.referral_code, 'qualified', 150, 100],
-    );
-    await awardPoints({
-      userId: referrer.id,
-      sourceType: 'referral',
-      sourceSlug: `referral-${userId}`,
-      points: 150,
-      metadata: { referred_user_id: userId, referral_code: referrer.referral_code },
-      once: true,
-    });
-    await awardPoints({
-      userId,
-      sourceType: 'referral',
-      sourceSlug: `referred-by-${referrer.id}`,
-      points: 100,
-      metadata: { referrer_user_id: referrer.id, referral_code: referrer.referral_code },
-      once: true,
-    });
-  }
-  const token = signToken({ id: userId, role: 'member', category_access: category_access || 'category_c' }, jwtSecret, '1h');
+  const token = signToken({ id: userId, role: 'member', category_access: categoryAccess }, jwtSecret, '1h');
   const refreshToken = signToken({ id: userId }, refreshSecret, '30d');
-  const [userRows] = await pool.query('SELECT points, referral_code FROM users WHERE id = ? LIMIT 1', [userId]);
+  const [userRows] = await pool.query('SELECT points FROM users WHERE id = ? LIMIT 1', [userId]);
   const savedUser = (userRows as any[])[0] || {};
   await pool.query(
     'INSERT IGNORE INTO auth_identities (user_id, provider, provider_user_id, email, verified, created_at, updated_at) VALUES (?, ?, ?, ?, TRUE, NOW(), NOW())',
     [userId, 'password', normalizeEmail(email), normalizeEmail(email)],
   );
-  return created(res, { user: { id: userId, email, username, full_name, role: 'member', category_access, points: savedUser.points ?? 250, referral_code: savedUser.referral_code }, token, refreshToken });
+  return created(res, {
+    user: {
+      id: userId,
+      email: normalizedEmail,
+      username: normalizedUsername,
+      full_name: normalizedFullName,
+      role: 'member',
+      category_access: categoryAccess,
+      points: Number(savedUser.points ?? 250),
+    },
+    token,
+    refreshToken,
+  });
 };
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const [rows] = await pool.query('SELECT * FROM users WHERE email = ? LIMIT 1', [email]);
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail || !password) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Email and password are required');
+  }
+  const [rows] = await pool.query('SELECT * FROM users WHERE LOWER(email) = ? LIMIT 1', [normalizedEmail]);
   const user = (rows as any[])[0];
   if (!user) {
     return fail(res, 401, 'INVALID_CREDENTIALS', 'Invalid credentials');
@@ -137,7 +130,19 @@ export const login = async (req: Request, res: Response) => {
   const token = signToken({ id: user.id, role: user.role, category_access: user.category_access }, jwtSecret, '1h');
   const refreshToken = signToken({ id: user.id }, refreshSecret, '30d');
   await pool.query('INSERT INTO session_logs (user_id, ip_address, device, created_at) VALUES (?, ?, ?, NOW())', [user.id, req.ip, req.headers['user-agent'] || 'unknown']);
-  return ok(res, { user: { id: user.id, email: user.email, username: user.username, full_name: user.full_name, role: user.role, category_access: user.category_access, points: user.points, referral_code: user.referral_code }, token, refreshToken });
+  return ok(res, {
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      full_name: user.full_name,
+      role: user.role,
+      category_access: user.category_access,
+      points: Number(user.points ?? 0),
+    },
+    token,
+    refreshToken,
+  });
 };
 
 const generateOtpCode = () => crypto.randomInt(100000, 999999).toString();
@@ -157,7 +162,7 @@ export const sendOtp = async (req: Request, res: Response) => {
 };
 
 export const verifyOtp = async (req: Request, res: Response) => {
-  const { phone, otp_code } = req.body;
+  const { phone, otp_code, full_name, username, email, category_access } = req.body;
   if (!phone || !otp_code) return fail(res, 400, 'VALIDATION_ERROR', 'Phone and OTP are required');
 
   const [rows] = await pool.query(
@@ -171,14 +176,51 @@ export const verifyOtp = async (req: Request, res: Response) => {
 
   let userId = request.user_id;
   if (!userId) {
-    const username = `kcube_${crypto.randomBytes(4).toString('hex')}`;
-    const referralCode = `KC-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
+    const normalizedEmail = normalizeEmail(email) || null;
+    const normalizedUsername = normalizeUsername(username) || `kcube_${crypto.randomBytes(4).toString('hex')}`;
+    const normalizedFullName = normalizeName(full_name) || 'K-CUBE Member';
+    const categoryAccess = category_access || 'category_c';
+    if (normalizedEmail) {
+      const [existingEmailRows] = await pool.query('SELECT id FROM users WHERE LOWER(email) = ? LIMIT 1', [normalizedEmail]);
+      userId = (existingEmailRows as any[])[0]?.id || null;
+    }
+    if (!userId) {
+      const [existingPhoneRows] = await pool.query('SELECT id FROM users WHERE phone = ? LIMIT 1', [phone]);
+      userId = (existingPhoneRows as any[])[0]?.id || null;
+    }
     const result = await pool.query(
-      'INSERT INTO users (full_name, username, phone, password_hash, role, category_access, referral_code, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
-      ['K-CUBE Member', username, phone, '', 'member', 'category_c', referralCode, 'active']
+      'INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
+      [normalizedFullName, normalizedUsername, normalizedEmail, phone, '', 'member', categoryAccess, 'active']
     );
     userId = (result as any)[0].insertId;
     await awardWelcomePoints(userId);
+  } else {
+    const updateFields: string[] = [];
+    const updateValues: unknown[] = [];
+    const normalizedFullName = normalizeName(full_name);
+    const normalizedUsername = normalizeUsername(username);
+    const normalizedEmail = normalizeEmail(email);
+    const categoryAccess = category_access || 'category_c';
+
+    if (normalizedFullName) {
+      updateFields.push('full_name = ?');
+      updateValues.push(normalizedFullName);
+    }
+    if (normalizedUsername) {
+      updateFields.push('username = ?');
+      updateValues.push(normalizedUsername);
+    }
+    if (normalizedEmail) {
+      updateFields.push('email = COALESCE(email, ?)');
+      updateValues.push(normalizedEmail);
+    }
+    if (categoryAccess) {
+      updateFields.push('category_access = COALESCE(category_access, ?)');
+      updateValues.push(categoryAccess);
+    }
+    if (updateFields.length) {
+      await pool.query(`UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`, [...updateValues, userId]);
+    }
   }
 
   const [userRows] = await pool.query('SELECT id, email, username, full_name, role, category_access, points FROM users WHERE id = ? LIMIT 1', [userId]);
@@ -190,7 +232,14 @@ export const verifyOtp = async (req: Request, res: Response) => {
     'INSERT IGNORE INTO auth_identities (user_id, provider, provider_user_id, phone, verified, created_at, updated_at) VALUES (?, ?, ?, ?, TRUE, NOW(), NOW())',
     [user.id, 'phone_otp', phone, phone],
   );
-  return ok(res, { user, token, refreshToken });
+  return ok(res, {
+    user: {
+      ...user,
+      points: Number(user.points ?? 0),
+    },
+    token,
+    refreshToken,
+  });
 };
 
 export const googleAuth = async (req: Request, res: Response) => {
@@ -206,7 +255,7 @@ export const googleAuth = async (req: Request, res: Response) => {
     let isNewUser = false;
 
     if (!userId) {
-      const [emailRows] = await pool.query(`SELECT ${publicUserSelect}, google_id FROM users WHERE email = ? LIMIT 1`, [email]);
+      const [emailRows] = await pool.query(`SELECT ${publicUserSelect}, google_id FROM users WHERE LOWER(email) = ? LIMIT 1`, [email]);
       const existingUser = (emailRows as any[])[0];
       if (existingUser?.google_id && existingUser.google_id !== googleSub) {
         return fail(res, 409, 'GOOGLE_ACCOUNT_CONFLICT', 'This email is linked to another Google account');
@@ -217,10 +266,9 @@ export const googleAuth = async (req: Request, res: Response) => {
         await pool.query('UPDATE users SET google_id = ?, profile_image = COALESCE(profile_image, ?) WHERE id = ?', [googleSub, profileImage, userId]);
       } else {
         const username = `kcube_${crypto.randomBytes(4).toString('hex')}`;
-        const referralCode = `KC-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
         const result = await pool.query(
-          'INSERT INTO users (full_name, username, email, google_id, profile_image, role, category_access, referral_code, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
-          [fullName, username, email, googleSub, profileImage, 'member', 'category_c', referralCode, 'active']
+          'INSERT INTO users (full_name, username, email, google_id, profile_image, role, category_access, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
+          [fullName, username, email, googleSub, profileImage, 'member', 'category_c', 'active']
         );
         userId = (result as any)[0].insertId;
         isNewUser = true;
@@ -236,7 +284,14 @@ export const googleAuth = async (req: Request, res: Response) => {
     const [userRows] = await pool.query(`SELECT ${publicUserSelect} FROM users WHERE id = ? LIMIT 1`, [userId]);
     const user = (userRows as any[])[0];
     const tokens = issueTokens(user);
-    return ok(res, { user, ...tokens, isNewUser });
+    return ok(res, {
+      user: {
+        ...user,
+        points: Number(user.points ?? 0),
+      },
+      ...tokens,
+      isNewUser,
+    });
   } catch (error: any) {
     return fail(res, error.status || 500, error.code || 'GOOGLE_AUTH_FAILED', error.message || 'Google authentication failed');
   }

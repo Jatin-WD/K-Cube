@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, Check, Coins, Gift, Plane, ShoppingBag, Sparkles, Star } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
+import { shopProducts } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
 
 interface KCubePageProps {
@@ -30,7 +31,7 @@ const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string
   },
   kfood: {
     hero: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=1800&q=80',
-    strip: 'Korean snacks, sauces, recipes and K-Food.in purchase rewards',
+    strip: 'Korean snacks, sauces, recipes and K-CUBE shop rewards',
     accent: 'Food Store',
   },
   rewards: {
@@ -73,8 +74,10 @@ const marketplaceTiles = [
   { title: 'Welcome bonus', value: '+250 points', image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=700&q=80' },
   { title: 'Refer friends', value: '+150 / +100', image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=700&q=80' },
   { title: 'Upload videos', value: 'Admin reviewed', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=80' },
-  { title: 'Shop K-Food', value: 'Claim rewards', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=700&q=80' },
+  { title: 'Shop Korean Products', value: 'Earn purchase rewards', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=700&q=80' },
 ];
+
+const featuredShopProducts = shopProducts.slice(0, 3);
 
 const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const language = useAppStore((state) => state.language);
@@ -217,6 +220,44 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
               </div>
             </article>
           ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
+        <div className="mx-auto max-w-[1760px] rounded-sm border border-[#d5d9d9] bg-[#111827] p-4 text-white shadow-sm sm:p-5">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f3a847]">Shop spotlight</p>
+              <h2 className="text-xl font-black sm:text-2xl">Featured products on the homepage</h2>
+            </div>
+            <Link href="/shop" className="inline-flex items-center gap-2 text-sm font-bold text-[#f3a847]">
+              Open shop <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid auto-cols-[84%] grid-flow-col gap-3 overflow-x-auto pb-1 md:auto-cols-auto md:grid-flow-row md:grid-cols-3 md:gap-4 md:overflow-visible md:pb-0">
+            {featuredShopProducts.map((product) => (
+              <article key={product.id} className="overflow-hidden rounded-sm border border-white/10 bg-white/[0.04]">
+                <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(180deg, rgba(17,24,39,0.08), rgba(17,24,39,0.72)), url(${product.image})` }} />
+                <div className="p-4 sm:p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f3a847]">{product.category.en}</p>
+                    <span className="rounded-full bg-[#ffd814] px-3 py-1 text-xs font-black text-[#111827]">+{product.rewardPoints} pts</span>
+                  </div>
+                  <h3 className="mt-3 text-lg font-black text-white">{product.title.en}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#d5d9d9]">{product.subtitle.en}</p>
+                  <div className="mt-4 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-bold text-[#f3a847]">₹{product.price}</p>
+                      {product.compareAtPrice ? <p className="text-xs text-[#9ca3af] line-through">₹{product.compareAtPrice}</p> : null}
+                    </div>
+                    <Link href="/shop" className="inline-flex items-center gap-2 rounded-sm bg-[#ffd814] px-4 py-2 text-sm font-black text-[#111827]">
+                      View in shop <ShoppingBag className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>

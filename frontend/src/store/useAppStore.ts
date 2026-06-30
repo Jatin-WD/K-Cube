@@ -10,8 +10,29 @@ export interface KCubeUser {
   email?: string;
   phone?: string;
   referralCode?: string;
+  points?: number;
   role?: 'admin' | 'member' | 'manager' | 'guest';
   method: AuthMethod;
+}
+
+export interface ShopCartItem {
+  productId: string;
+  quantity: number;
+}
+
+export interface ShopOrderItem {
+  productId: string;
+  title: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface ShopOrder {
+  id: string;
+  total: number;
+  rewardPoints: number;
+  createdAt: string;
+  items: ShopOrderItem[];
 }
 
 interface AppState {
@@ -21,11 +42,18 @@ interface AppState {
   completedActions: string[];
   token: string | null;
   refreshToken: string | null;
+  shopCart: ShopCartItem[];
+  shopOrders: ShopOrder[];
   setLanguage: (language: Language) => void;
   toggleLanguage: () => void;
   signIn: (user: KCubeUser, token?: string | null, refreshToken?: string | null, points?: number) => void;
   signOut: () => void;
   awardPoints: (actionId: string, points: number) => void;
+  addToCart: (productId: string, quantity?: number) => void;
+  removeFromCart: (productId: string) => void;
+  updateCartQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
+  checkoutShopOrder: (order: ShopOrder) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -37,6 +65,8 @@ export const useAppStore = create<AppState>()(
       completedActions: [],
       token: null,
       refreshToken: null,
+      shopCart: [],
+      shopOrders: [],
       setLanguage: (language) => set({ language }),
       toggleLanguage: () =>
         set({
@@ -45,18 +75,26 @@ export const useAppStore = create<AppState>()(
       signIn: (user, token = null, refreshToken = null, serverPoints) =>
         set((state) => {
           const hasWelcomeBonus = state.completedActions.includes('welcome-bonus');
+          const resolvedPoints =
+            typeof serverPoints === 'number'
+              ? serverPoints
+              : typeof user.points === 'number'
+                ? user.points
+                : hasWelcomeBonus
+                  ? state.points
+                  : state.points + 250;
 
           return {
-            user,
+            user: { ...user, points: resolvedPoints },
             token,
             refreshToken,
-            points: typeof serverPoints === 'number' ? serverPoints : hasWelcomeBonus ? state.points : state.points + 250,
+            points: resolvedPoints,
             completedActions: hasWelcomeBonus
               ? state.completedActions
               : [...state.completedActions, 'welcome-bonus'],
           };
         }),
-      signOut: () => set({ user: null, token: null, refreshToken: null, points: 0, completedActions: [] }),
+      signOut: () => set({ user: null, token: null, refreshToken: null, points: 0, completedActions: [], shopCart: [], shopOrders: [] }),
       awardPoints: (actionId, points) =>
         set((state) => {
           if (!state.user) {
@@ -72,6 +110,44 @@ export const useAppStore = create<AppState>()(
             completedActions: [...state.completedActions, actionId],
           };
         }),
+      addToCart: (productId, quantity = 1) =>
+        set((state) => {
+          const existing = state.shopCart.find((item) => item.productId === productId);
+          if (existing) {
+            return {
+              shopCart: state.shopCart.map((item) =>
+                item.productId === productId ? { ...item, quantity: item.quantity + quantity } : item,
+              ),
+            };
+          }
+
+          return {
+            shopCart: [...state.shopCart, { productId, quantity }],
+          };
+        }),
+      removeFromCart: (productId) =>
+        set((state) => ({
+          shopCart: state.shopCart.filter((item) => item.productId !== productId),
+        })),
+      updateCartQuantity: (productId, quantity) =>
+        set((state) => ({
+          shopCart: quantity <= 0
+            ? state.shopCart.filter((item) => item.productId !== productId)
+            : state.shopCart.map((item) => (item.productId === productId ? { ...item, quantity } : item)),
+        })),
+      clearCart: () => set({ shopCart: [] }),
+      checkoutShopOrder: (order) =>
+        set((state) => {
+          if (!state.user || !order.items.length) {
+            return state;
+          }
+
+          return {
+            points: state.points + order.rewardPoints,
+            shopCart: [],
+            shopOrders: [order, ...state.shopOrders],
+          };
+        }),
     }),
     {
       name: 'kcube-app-state',
@@ -83,6 +159,8 @@ export const useAppStore = create<AppState>()(
         completedActions: state.completedActions,
         token: state.token,
         refreshToken: state.refreshToken,
+        shopCart: state.shopCart,
+        shopOrders: state.shopOrders,
       }),
     },
   ),
