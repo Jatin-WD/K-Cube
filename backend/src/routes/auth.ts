@@ -8,6 +8,8 @@ import {
   verifyOtp,
   googleAuth,
   logout,
+  verifyEmail,
+  resendVerification,
 } from '../controllers/authController';
 import { requireAuth } from '../middleware/auth';
 
@@ -15,6 +17,8 @@ const router = Router();
 
 router.post('/register', register);
 router.post('/login', login);
+router.post('/verify-email', verifyEmail);
+router.post('/resend-verification', resendVerification);
 router.post('/otp/send', sendOtp);
 router.post('/otp/verify', verifyOtp);
 router.post('/google', googleAuth);

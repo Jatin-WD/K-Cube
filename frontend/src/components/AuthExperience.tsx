@@ -139,10 +139,13 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
   const signIn = useAppStore((state) => state.signIn);
   const signOut = useAppStore((state) => state.signOut);
   const searchParams = useSearchParams();
+  const verifiedParam = searchParams.get('verified');
+  const verifiedEmailParam = searchParams.get('email');
   const t = authCopy[language];
   const global = copy[language];
   const [method, setMethod] = useState<AuthMethod>(mode === 'admin' ? 'admin' : 'email');
   const [message, setMessage] = useState('');
+  const [verificationLink, setVerificationLink] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     fullName: '',
@@ -160,6 +163,14 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
     router.replace(returnTo || '/dashboard');
   }, [mode, returnTo, router, user]);
 
+  useEffect(() => {
+    if (mode !== 'signin' || verifiedParam !== '1') return;
+    setMessage('Email verified successfully. You can sign in now.');
+    if (verifiedEmailParam) {
+      setForm((current) => ({ ...current, email: verifiedEmailParam }));
+    }
+  }, [mode, verifiedEmailParam, verifiedParam]);
+
   const returnHref = useMemo(() => returnTo || '/dashboard', [returnTo]);
 
   const authSwitchHref = (target: 'signin' | 'signup') => {
@@ -170,6 +181,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage('');
+    setVerificationLink('');
     setIsSubmitting(true);
 
     try {
@@ -207,6 +219,14 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
       const data = response.data?.data ?? response.data;
       const nextUser = normalizeUser(data.user ?? data, method);
       const nextPoints = readPoints(data.user?.points ?? data.points ?? nextUser.points);
+
+      if (mode === 'signup' && data.verificationRequired) {
+        setMessage(data.message || 'Verification email sent. Please check your inbox before signing in.');
+        if (typeof data.verificationUrl === 'string') {
+          setVerificationLink(data.verificationUrl);
+        }
+        return;
+      }
 
       if (mode === 'admin' && nextUser.role !== 'admin') {
         setMessage('Admin access required.');
@@ -367,7 +387,16 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
                 )}
               </div>
 
-              {message ? <p className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-[#d4dbe7]">{message}</p> : null}
+              {message ? (
+                <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-[#d4dbe7]">
+                  <p>{message}</p>
+                  {verificationLink ? (
+                    <a href={verificationLink} className="mt-3 inline-flex font-bold text-[#ffc400]" target="_blank" rel="noreferrer">
+                      Open verification link
+                    </a>
+                  ) : null}
+                </div>
+              ) : null}
 
               <button type="submit" disabled={isSubmitting} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-5 py-4 text-sm font-black text-[#090909] transition hover:bg-[#ffd84a] disabled:cursor-not-allowed disabled:opacity-70">
                 <Lock className="h-4 w-4" />

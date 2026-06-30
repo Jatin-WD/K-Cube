@@ -6,6 +6,7 @@ import pool from '../db/pool';
 import { awardPoints } from '../services/pointsService';
 import { created, fail, ok } from '../lib/apiResponse';
 import { JWT_SECRET, JWT_REFRESH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_AUTH_REDIRECT_URI, GOOGLE_ALLOWED_WORKSPACE_DOMAIN } from '../config';
+import { buildVerificationUrl, createVerificationToken, hashVerificationToken, sendVerificationEmail } from '../services/mailer';
 
 const jwtSecret: Secret = JWT_SECRET;
 const refreshSecret: Secret = JWT_REFRESH_SECRET;
@@ -68,6 +69,25 @@ const awardWelcomePoints = async (userId: number) => {
   });
 };
 
+const issueEmailVerification = async (userId: number, email: string, fullName: string) => {
+  const token = createVerificationToken();
+  const tokenHash = hashVerificationToken(token);
+  const verificationUrl = buildVerificationUrl(token);
+
+  await pool.query('DELETE FROM email_verification_tokens WHERE user_id = ?', [userId]);
+  await pool.query(
+    'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at, created_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR), NOW())',
+    [userId, tokenHash]
+  );
+  try {
+    await sendVerificationEmail(email, fullName, verificationUrl);
+  } catch (error) {
+    console.error('Failed to send verification email', error);
+  }
+
+  return { verificationUrl };
+};
+
 export const register = async (req: Request, res: Response) => {
   const { full_name, username, email, phone, password, category_access } = req.body;
   const normalizedEmail = normalizeEmail(email);
@@ -84,19 +104,15 @@ export const register = async (req: Request, res: Response) => {
   }
   const result = await pool.query(
     `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, created_at, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'active')`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), 'pending')`,
     [normalizedFullName, normalizedUsername, normalizedEmail, phone || null, passwordHash, 'member', categoryAccess]
   );
   const userId = (result as any)[0].insertId;
-  await awardWelcomePoints(userId);
-  const token = signToken({ id: userId, role: 'member', category_access: categoryAccess }, jwtSecret, '1h');
-  const refreshToken = signToken({ id: userId }, refreshSecret, '30d');
-  const [userRows] = await pool.query('SELECT points FROM users WHERE id = ? LIMIT 1', [userId]);
-  const savedUser = (userRows as any[])[0] || {};
   await pool.query(
-    'INSERT IGNORE INTO auth_identities (user_id, provider, provider_user_id, email, verified, created_at, updated_at) VALUES (?, ?, ?, ?, TRUE, NOW(), NOW())',
-    [userId, 'password', normalizeEmail(email), normalizeEmail(email)],
+    'INSERT IGNORE INTO auth_identities (user_id, provider, provider_user_id, email, verified, created_at, updated_at) VALUES (?, ?, ?, ?, FALSE, NOW(), NOW())',
+    [userId, 'password', normalizedEmail, normalizedEmail],
   );
+  const { verificationUrl } = await issueEmailVerification(userId, normalizedEmail, normalizedFullName);
   return created(res, {
     user: {
       id: userId,
@@ -105,10 +121,12 @@ export const register = async (req: Request, res: Response) => {
       full_name: normalizedFullName,
       role: 'member',
       category_access: categoryAccess,
-      points: Number(savedUser.points ?? 250),
+      points: 0,
+      status: 'pending',
     },
-    token,
-    refreshToken,
+    verificationRequired: true,
+    message: 'Verification email sent. Please confirm your email before signing in.',
+    verificationUrl: process.env.NODE_ENV === 'production' ? undefined : verificationUrl,
   });
 };
 
@@ -122,6 +140,9 @@ export const login = async (req: Request, res: Response) => {
   const user = (rows as any[])[0];
   if (!user) {
     return fail(res, 401, 'INVALID_CREDENTIALS', 'Invalid credentials');
+  }
+  if (user.status !== 'active') {
+    return fail(res, 403, 'EMAIL_NOT_VERIFIED', 'Please verify your email address before signing in');
   }
   const isValid = await bcrypt.compare(password, user.password_hash);
   if (!isValid) {
@@ -142,6 +163,67 @@ export const login = async (req: Request, res: Response) => {
     },
     token,
     refreshToken,
+  });
+};
+
+export const resendVerification = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Email is required');
+  }
+
+  const [rows] = await pool.query(
+    'SELECT id, full_name, email, status FROM users WHERE LOWER(email) = ? LIMIT 1',
+    [normalizedEmail]
+  );
+  const user = (rows as any[])[0];
+  if (!user) {
+    return fail(res, 404, 'NOT_FOUND', 'Account not found');
+  }
+  if (user.status === 'active') {
+    return ok(res, { alreadyVerified: true, message: 'Account is already verified.' });
+  }
+
+  const { verificationUrl } = await issueEmailVerification(user.id, user.email, user.full_name);
+  return ok(res, {
+    resent: true,
+    message: 'Verification email sent again. Please check your inbox.',
+    verificationUrl: process.env.NODE_ENV === 'production' ? undefined : verificationUrl,
+  });
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  const token = String(req.body?.token || req.query?.token || '').trim();
+  if (!token) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Verification token is required');
+  }
+
+  const tokenHash = hashVerificationToken(token);
+  const [rows] = await pool.query(
+    `SELECT email_verification_tokens.id as token_id, email_verification_tokens.user_id, users.email, users.full_name, users.status
+     FROM email_verification_tokens
+     INNER JOIN users ON users.id = email_verification_tokens.user_id
+     WHERE email_verification_tokens.token_hash = ? AND email_verification_tokens.used_at IS NULL AND email_verification_tokens.expires_at > NOW()
+     LIMIT 1`,
+    [tokenHash]
+  );
+  const record = (rows as any[])[0];
+  if (!record) {
+    return fail(res, 400, 'INVALID_VERIFICATION_TOKEN', 'Verification link is invalid or expired');
+  }
+
+  if (record.status !== 'active') {
+    await pool.query('UPDATE users SET status = ? WHERE id = ?', ['active', record.user_id]);
+    await awardWelcomePoints(record.user_id);
+  }
+  await pool.query('UPDATE email_verification_tokens SET used_at = NOW() WHERE id = ?', [record.token_id]);
+  await pool.query('UPDATE auth_identities SET verified = TRUE, updated_at = NOW() WHERE user_id = ? AND provider = ?', [record.user_id, 'password']);
+
+  return ok(res, {
+    verified: true,
+    message: 'Email verified successfully. You can now sign in.',
+    email: record.email,
   });
 };
 
