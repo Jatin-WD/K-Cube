@@ -44,3 +44,13 @@ export const updateUser = async (req: Request, res: Response) => {
   await pool.query(`UPDATE users SET ${entries.map(([key]) => `${key} = ?`).join(', ')} WHERE id = ?`, [...entries.map(([, value]) => value), id]);
   return ok(res, { id: Number(id) });
 };
+
+export const deleteUser = async (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  if (!id) return fail(res, 400, 'VALIDATION_ERROR', 'Valid user id is required');
+  if (req.user?.id === id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot delete your own account');
+  const [rows] = await pool.query('SELECT id FROM users WHERE id = ? LIMIT 1', [id]);
+  if (!(rows as any[])[0]) return fail(res, 404, 'NOT_FOUND', 'User not found');
+  await pool.query('DELETE FROM users WHERE id = ?', [id]);
+  return ok(res, { id });
+};

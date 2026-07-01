@@ -400,6 +400,13 @@ const safeJsonObject = (value: string, fallback: Record<string, unknown> = {}) =
   }
 };
 
+const normalize = (value: unknown) => String(value ?? '').toLowerCase();
+
+const matchesQuery = (query: string, values: Array<unknown>) => {
+  if (!query) return true;
+  return values.some((value) => normalize(value).includes(query));
+};
+
 const readPayload = <T,>(result: PromiseSettledResult<any>, fallback: T): T => {
   if (result.status !== 'fulfilled') return fallback;
   return (result.value?.data?.data ?? result.value?.data ?? fallback) as T;
@@ -450,6 +457,7 @@ const AdminControlCenter = () => {
   const user = useAppStore((state) => state.user);
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [notice, setNotice] = useState('');
+  const [adminQuery, setAdminQuery] = useState('');
 
   const [dashboardMetrics, setDashboardMetrics] = useState<Record<string, number>>({});
   const [analytics, setAnalytics] = useState<Record<string, number>>({});
@@ -486,17 +494,23 @@ const AdminControlCenter = () => {
   const [claimReview, setClaimReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
   const [selectedPageId, setSelectedPageId] = useState<number | null>(null);
 
+  const query = adminQuery.trim().toLowerCase();
+
   const selectedTrack = useMemo(
     () => tracks.find((track) => track.id === selectedTrackId) || null,
     [selectedTrackId, tracks],
   );
   const visibleQuestions = useMemo(
-    () => questions.filter((question) => question.trackId === selectedTrackId),
-    [questions, selectedTrackId],
+    () => questions.filter((question) => question.trackId === selectedTrackId && matchesQuery(query, [question.questionKey, question.type, question.tag, question.prompt, question.korean, question.answer, question.trackTitle, question.trackSlug])),
+    [questions, query, selectedTrackId],
   );
   const selectedUser = useMemo(
     () => users.find((entry) => entry.id === Number(userForm.id)) || null,
     [userForm.id, users],
+  );
+  const topWinner = useMemo(
+    () => [...users].sort((left, right) => right.points - left.points || right.xp - left.xp)[0] || null,
+    [users],
   );
   const selectedReward = useMemo(
     () => rewards.find((entry) => entry.id === Number(rewardForm.id)) || null,
@@ -525,6 +539,50 @@ const AdminControlCenter = () => {
   const visibleBlocks = useMemo(
     () => blocks.filter((block) => !selectedPageId || block.page_id === selectedPageId),
     [blocks, selectedPageId],
+  );
+  const filteredUsers = useMemo(
+    () => users.filter((entry) => matchesQuery(query, [entry.full_name, entry.username, entry.email, entry.role, entry.status, entry.city, entry.state, entry.country])),
+    [query, users],
+  );
+  const filteredChapters = useMemo(
+    () => chapters.filter((entry) => matchesQuery(query, [entry.name, entry.slug, entry.city, entry.state, entry.country, entry.status, entry.leader_name, entry.leader_email])),
+    [chapters, query],
+  );
+  const filteredPages = useMemo(
+    () => pages.filter((entry) => matchesQuery(query, [entry.slug, entry.pageType, entry.titleEn, entry.titleKo, entry.titleHi, entry.status])),
+    [pages, query],
+  );
+  const filteredBlocks = useMemo(
+    () => visibleBlocks.filter((entry) => matchesQuery(query, [entry.block_key, entry.block_type, entry.status, entry.page_title, entry.page_slug])),
+    [query, visibleBlocks],
+  );
+  const filteredEvents = useMemo(
+    () => events.filter((entry) => matchesQuery(query, [entry.title, entry.slug, entry.category, entry.status, entry.location_name, entry.location_address])),
+    [events, query],
+  );
+  const filteredRewards = useMemo(
+    () => rewards.filter((entry) => matchesQuery(query, [entry.name, entry.tier, entry.description, entry.active ? 'active' : 'inactive', entry.cost_points])),
+    [query, rewards],
+  );
+  const filteredAnnouncements = useMemo(
+    () => announcements.filter((entry) => matchesQuery(query, [entry.title, entry.body, entry.status, entry.creator_name, entry.creator_email])),
+    [announcements, query],
+  );
+  const filteredUploads = useMemo(
+    () => uploads.filter((entry) => matchesQuery(query, [entry.title, entry.category, entry.status, entry.full_name, entry.email])),
+    [query, uploads],
+  );
+  const filteredClaims = useMemo(
+    () => claims.filter((entry) => matchesQuery(query, [entry.order_id, entry.status, entry.full_name, entry.email, entry.order_total])),
+    [claims, query],
+  );
+  const filteredPoints = useMemo(
+    () => pointTransactions.filter((entry) => matchesQuery(query, [entry.source_type, entry.source_slug, entry.full_name, entry.email, entry.points_delta, entry.balance_after])),
+    [pointTransactions, query],
+  );
+  const filteredTracks = useMemo(
+    () => tracks.filter((entry) => matchesQuery(query, [entry.slug, entry.title, entry.eyebrow, entry.intro, entry.active ? 'active' : 'inactive'])),
+    [query, tracks],
   );
 
   const loadAdminData = async () => {
@@ -924,6 +982,14 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
+  const deleteUser = async () => {
+    if (!userForm.id) return;
+    await api.delete(`/users/${userForm.id}`);
+    setNotice('User deleted.');
+    setUserForm(emptyUserForm);
+    await loadAdminData();
+  };
+
   const saveChapter = async () => {
     const payload = {
       id: chapterForm.id ? Number(chapterForm.id) : undefined,
@@ -1068,6 +1134,18 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
+  const prepareWinnerAnnouncement = () => {
+    const winner = topWinner || selectedUser || users[0] || null;
+    const winnerName = winner?.full_name || 'K-CUBE Admin';
+    const winnerPoints = winner?.points ?? 0;
+    setAnnouncementForm({
+      title: 'Korea Trip Winner Announcement',
+      body: `Congratulations to ${winnerName} for leading the K-CUBE leaderboard with ${winnerPoints} points. This winner announcement is ready for publication from the admin panel.`,
+      created_by: String(user?.id || ''),
+    });
+    setNotice('Winner announcement template loaded.');
+  };
+
   const saveCalendar = async () => {
     await api.post('/admin/google-calendar/connections', calendarForm);
     setNotice('Google Calendar connection saved.');
@@ -1149,9 +1227,9 @@ const AdminControlCenter = () => {
         </div>
       </SectionShell>
 
-      <SectionShell title="CMS pages" description="Pick a page first, then edit its metadata and attached CMS blocks.">
+      <SectionShell title="CMS pages" description="Pick a page first, then edit its metadata and attached CMS blocks." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPages.length} pages</span>}>
         <div className="grid gap-3 md:grid-cols-2">
-          {pages.map((page) => (
+          {filteredPages.map((page) => (
             <button
               key={page.id}
               type="button"
@@ -1294,9 +1372,9 @@ const AdminControlCenter = () => {
         </div>
       </SectionShell>
 
-      <SectionShell title="Block library" description="All blocks attached to the selected page are listed below.">
+      <SectionShell title="Block library" description="All blocks attached to the selected page are listed below." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredBlocks.length} blocks</span>}>
         <div className="space-y-3">
-          {visibleBlocks.map((block) => (
+          {filteredBlocks.map((block) => (
             <button
               key={block.id}
               type="button"
@@ -1332,9 +1410,9 @@ const AdminControlCenter = () => {
 
   const renderLearning = () => (
     <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
-      <SectionShell title="Learning track editor" description="Create and maintain lesson tracks, reward points and JSON copy blocks used by the learning journeys.">
+      <SectionShell title="Learning track editor" description="Create and maintain lesson tracks, reward points and JSON copy blocks used by the learning journeys." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredTracks.length} tracks</span>}>
         <div className="space-y-3">
-          {tracks.map((track) => (
+          {filteredTracks.map((track) => (
             <button
               key={track.id}
               type="button"
@@ -1445,7 +1523,7 @@ const AdminControlCenter = () => {
                 <p className="mt-1 text-sm text-[#aab5c6]">{question.prompt}</p>
               </button>
             ))}
-            {!visibleQuestions.length ? <p className="text-sm text-[#aab5c6]">Select a track and start creating questions.</p> : null}
+          {!visibleQuestions.length ? <p className="text-sm text-[#aab5c6]">Select a track and start creating questions.</p> : null}
           </div>
 
           <div className="space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4">
@@ -1525,7 +1603,7 @@ const AdminControlCenter = () => {
 
   const renderUsers = () => (
     <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-      <SectionShell title="Users" description="Review roles, account state, city/state, profile image and membership classification." actions={<span className="text-sm font-bold text-[#ffc400]">{users.length} records</span>}>
+      <SectionShell title="Users" description="Review roles, account state, city/state, profile image and membership classification." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span>}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead className="text-[#ffc400]">
@@ -1539,7 +1617,7 @@ const AdminControlCenter = () => {
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
-              {users.map((entry) => (
+              {filteredUsers.map((entry) => (
                 <tr
                   key={entry.id}
                   className="cursor-pointer hover:bg-white/5"
@@ -1620,9 +1698,16 @@ const AdminControlCenter = () => {
               <input className={inputClass} value={userForm.profile_image} onChange={(event) => setUserForm((state) => ({ ...state, profile_image: event.target.value }))} />
             </Field>
           </div>
-          <button type="button" onClick={saveUser} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
-            <Save className="h-4 w-4" /> Save user
-          </button>
+          <div className="flex gap-3">
+            <button type="button" onClick={saveUser} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+              <Save className="h-4 w-4" /> Save user
+            </button>
+            {userForm.id ? (
+              <button type="button" onClick={deleteUser} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                <Trash2 className="h-4 w-4" /> Delete user
+              </button>
+            ) : null}
+          </div>
         </div>
       </SectionShell>
     </div>
@@ -1630,7 +1715,7 @@ const AdminControlCenter = () => {
 
   const renderChapters = () => (
     <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-      <SectionShell title="Chapter directory" description="Manage branch chapters, leaders and member counts from the admin panel." actions={<span className="text-sm font-bold text-[#ffc400]">{chapters.length} records</span>}>
+      <SectionShell title="Chapter directory" description="Manage branch chapters, leaders and member counts from the admin panel." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredChapters.length} records</span>}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[940px] text-left text-sm">
             <thead className="text-[#ffc400]">
@@ -1644,7 +1729,7 @@ const AdminControlCenter = () => {
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
-              {chapters.map((chapter) => (
+              {filteredChapters.map((chapter) => (
                 <tr
                   key={chapter.id}
                   className="cursor-pointer hover:bg-white/5"
@@ -1748,7 +1833,7 @@ const AdminControlCenter = () => {
 
   const renderPoints = () => (
     <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-      <SectionShell title="Points ledger" description="Manual adjustments and audit history for point balance changes.">
+      <SectionShell title="Points ledger" description="Manual adjustments and audit history for point balance changes." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPoints.length} records</span>}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead className="text-[#ffc400]">
@@ -1761,7 +1846,7 @@ const AdminControlCenter = () => {
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
-              {pointTransactions.map((tx) => (
+              {filteredPoints.map((tx) => (
                 <tr key={tx.id}>
                   <td className="border-b border-white/10 py-3">{tx.full_name}</td>
                   <td className="border-b border-white/10 py-3">{tx.source_type}</td>
@@ -1796,9 +1881,9 @@ const AdminControlCenter = () => {
 
   const renderUploads = () => (
     <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-      <SectionShell title="Content upload review" description="Approve or reject user generated uploads and attach verified points.">
+      <SectionShell title="Content upload review" description="Approve or reject user generated uploads and attach verified points." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUploads.length} records</span>}>
         <div className="space-y-3">
-          {uploads.map((entry) => (
+          {filteredUploads.map((entry) => (
             <button
               key={entry.id}
               type="button"
@@ -1852,9 +1937,9 @@ const AdminControlCenter = () => {
 
   const renderKFood = () => (
     <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-      <SectionShell title="K-Food claims" description="Audit purchase claims, coupon references and reward eligibility.">
+      <SectionShell title="K-Food claims" description="Audit purchase claims, coupon references and reward eligibility." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredClaims.length} records</span>}>
         <div className="space-y-3">
-          {claims.map((entry) => (
+          {filteredClaims.map((entry) => (
             <button
               key={entry.id}
               type="button"
@@ -1908,9 +1993,9 @@ const AdminControlCenter = () => {
 
   const renderEvents = () => (
     <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-      <SectionShell title="Event inventory" description="Create, edit and archive platform events from one place.">
+      <SectionShell title="Event inventory" description="Create, edit and archive platform events from one place." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredEvents.length} records</span>}>
         <div className="space-y-3">
-          {events.map((entry) => (
+          {filteredEvents.map((entry) => (
             <button
               key={entry.id}
               type="button"
@@ -2023,9 +2108,9 @@ const AdminControlCenter = () => {
 
   const renderRewards = () => (
     <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-      <SectionShell title="Reward catalog" description="Add, update or disable rewards from the same control center.">
+      <SectionShell title="Reward catalog" description="Add, update or disable rewards from the same control center." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredRewards.length} records</span>}>
         <div className="space-y-3">
-          {rewards.map((entry) => (
+          {filteredRewards.map((entry) => (
             <button
               key={entry.id}
               type="button"
@@ -2109,9 +2194,9 @@ const AdminControlCenter = () => {
 
   const renderAnnouncements = () => (
     <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-      <SectionShell title="Recent announcements" description="Broadcast urgent CMS notes, release updates or internal notices.">
+      <SectionShell title="Recent announcements" description="Broadcast urgent CMS notes, release updates or internal notices." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredAnnouncements.length} records</span>}>
         <div className="space-y-3">
-          {announcements.map((entry) => (
+          {filteredAnnouncements.map((entry) => (
             <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="font-black">{entry.title}</h3>
@@ -2126,6 +2211,18 @@ const AdminControlCenter = () => {
 
       <SectionShell title="Publish announcement" description="Create a sitewide message visible to your admin team.">
         <div className="space-y-3">
+          <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-[#ffc400]">Winner helper</p>
+            <p className="mt-2 text-sm text-[#aab5c6]">
+              Load a prefilled winner announcement for the current top user or leaderboard leader.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <button type="button" onClick={prepareWinnerAnnouncement} className="rounded-xl border border-white/10 px-4 py-2.5 text-sm font-bold text-white">
+                Fill winner template
+              </button>
+              {topWinner ? <span className="rounded-xl bg-white/5 px-4 py-2.5 text-sm text-[#d4dbe7]">{topWinner.full_name} · {topWinner.points} pts</span> : null}
+            </div>
+          </div>
           <Field label="Title">
             <input className={inputClass} value={announcementForm.title} onChange={(event) => setAnnouncementForm((state) => ({ ...state, title: event.target.value }))} />
           </Field>
@@ -2300,7 +2397,15 @@ const AdminControlCenter = () => {
                   </p>
                   {notice ? <p className="mt-4 text-sm font-bold text-[#ffcf86]">{notice}</p> : null}
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="min-w-[260px] flex-1">
+                    <input
+                      value={adminQuery}
+                      onChange={(event) => setAdminQuery(event.target.value)}
+                      placeholder="Search users, pages, rewards, events..."
+                      className={inputClass}
+                    />
+                  </div>
                   <button type="button" onClick={() => setActiveSection('overview')} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">
                     Overview
                   </button>
