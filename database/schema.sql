@@ -32,6 +32,55 @@ CREATE TABLE IF NOT EXISTS users (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Bootstrap admin account for a fresh install.
+-- Login:
+--   email: admin@kcube.local
+--   password: Admin@12345!
+-- If you want a different admin, change these values before importing the schema.
+INSERT IGNORE INTO users (
+  full_name,
+  username,
+  email,
+  phone,
+  password_hash,
+  role,
+  category_access,
+  referral_code,
+  created_at,
+  status
+) VALUES (
+  'K-CUBE Admin',
+  'admin',
+  'admin@kcube.local',
+  NULL,
+  '$2b$12$6iCqRAiIiov6zndYDe3cfeEsC4RweWIvpHEt1z0jCQ2LCzfXX8yCu',
+  'admin',
+  'category_c',
+  'KCUBEADMIN',
+  NOW(),
+  'active'
+);
+
+INSERT IGNORE INTO auth_identities (
+  user_id,
+  provider,
+  provider_user_id,
+  email,
+  verified,
+  created_at,
+  updated_at
+) SELECT
+  id,
+  'password',
+  'admin@kcube.local',
+  'admin@kcube.local',
+  TRUE,
+  NOW(),
+  NOW()
+FROM users
+WHERE email = 'admin@kcube.local'
+LIMIT 1;
+
 CREATE TABLE IF NOT EXISTS referrals (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   referrer_user_id BIGINT UNSIGNED NOT NULL,
