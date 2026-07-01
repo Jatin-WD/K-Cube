@@ -1,4 +1,4 @@
-import AdminCms from '@/components/AdminCms';
+import AdminControlCenter from '@/components/AdminControlCenter';
 
 export const metadata = {
   title: 'Admin CMS | K-CUBE',
@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 const AdminPage = () => {
-  return <AdminCms />;
+  return <AdminControlCenter />;
 };
 
 export default AdminPage;

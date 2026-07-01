@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, Lock, Mail, Phone, ShieldCheck } from 'lucide-react';
+import { Check, Eye, EyeOff, Lock, Mail, Phone, ShieldCheck } from 'lucide-react';
 import api from '@/lib/api';
 import { copy } from '@/lib/kcubeContent';
 import { useAppStore, type AuthMethod } from '@/store/useAppStore';
@@ -147,6 +147,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
   const [message, setMessage] = useState('');
   const [verificationLink, setVerificationLink] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     fullName: '',
     username: '',
@@ -380,7 +381,22 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
                     ) : (
                       <label className="grid gap-2 text-sm font-bold text-white">
                         {t.password}
-                        <input type="password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                        <div className="relative">
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={form.password}
+                            onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+                            className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 pr-12 text-white outline-none focus:border-[#ffc400]"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((current) => !current)}
+                            className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-[#aab5c6] transition hover:text-white"
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
                       </label>
                     )}
                   </>

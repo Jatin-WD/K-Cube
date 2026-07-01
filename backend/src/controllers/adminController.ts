@@ -53,6 +53,17 @@ export const getSystemAnalytics = async (_req: Request, res: Response) => {
   return ok(res, { analytics: (results as any[])[0] || {} });
 };
 
+export const listAnnouncements = async (_req: Request, res: Response) => {
+  const [rows] = await pool.query(`
+    SELECT announcements.*, users.full_name as creator_name, users.email as creator_email
+    FROM admin_announcements announcements
+    LEFT JOIN users ON users.id = announcements.created_by
+    ORDER BY announcements.created_at DESC
+    LIMIT 200
+  `);
+  return ok(res, rows);
+};
+
 export const listContentUploads = async (_req: Request, res: Response) => {
   const [rows] = await pool.query(`
     SELECT uploads.*, users.full_name, users.email
@@ -158,4 +169,49 @@ export const reviewKFoodClaim = async (req: any, res: Response) => {
   }
 
   return ok(res, { id: Number(id), status });
+};
+
+export const listRewards = async (_req: Request, res: Response) => {
+  const [rows] = await pool.query(`
+    SELECT id, name, description, tier, cost_points, active, image_url, metadata, created_at
+    FROM rewards
+    ORDER BY created_at DESC
+    LIMIT 300
+  `);
+  return ok(res, rows);
+};
+
+export const upsertReward = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const body = req.body || {};
+  if (!body.name) return fail(res, 400, 'VALIDATION_ERROR', 'name is required');
+
+  const payload = [
+    body.name,
+    body.description || null,
+    body.tier || 'bronze',
+    Number(body.cost_points || 0),
+    body.active === false ? 0 : 1,
+    body.image_url || null,
+    JSON.stringify(body.metadata || {}),
+  ];
+
+  if (id) {
+    await pool.query(
+      'UPDATE rewards SET name = ?, description = ?, tier = ?, cost_points = ?, active = ?, image_url = ?, metadata = ? WHERE id = ?',
+      [...payload, id],
+    );
+    return ok(res, { id: Number(id) });
+  }
+
+  const [result] = await pool.query(
+    'INSERT INTO rewards (name, description, tier, cost_points, active, image_url, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
+    payload,
+  );
+  return ok(res, { id: (result as any).insertId });
+};
+
+export const retireReward = async (req: Request, res: Response) => {
+  await pool.query('UPDATE rewards SET active = FALSE WHERE id = ?', [req.params.id]);
+  return ok(res, { id: Number(req.params.id), active: false });
 };

@@ -24,6 +24,11 @@ export const listEvents = async (_req: AuthRequest, res: Response) => {
   return ok(res, rows);
 };
 
+export const listAdminEvents = async (_req: AuthRequest, res: Response) => {
+  const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events ORDER BY updated_at DESC LIMIT 300`);
+  return ok(res, rows);
+};
+
 export const getEventBySlug = async (req: AuthRequest, res: Response) => {
   const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events WHERE slug = ? AND status IN ('published','cancelled') LIMIT 1`, [req.params.slug]);
   const event = (rows as any[])[0];
@@ -86,6 +91,11 @@ export const updateEvent = async (req: AuthRequest, res: Response) => {
     JSON.stringify({ reason: 'event_updated', fields: updates.map(([key]) => key) }),
   ]);
   return ok(res, { id: Number(req.params.id), sync_status: 'pending' });
+};
+
+export const archiveEvent = async (req: AuthRequest, res: Response) => {
+  await pool.query('UPDATE platform_events SET status = ?, updated_at = NOW() WHERE id = ?', ['archived', req.params.id]);
+  return ok(res, { id: Number(req.params.id), status: 'archived' });
 };
 
 export const rsvpEvent = async (req: AuthRequest, res: Response) => {

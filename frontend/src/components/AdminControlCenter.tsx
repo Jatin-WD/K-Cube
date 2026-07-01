@@ -1,0 +1,1863 @@
+"use client";
+
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import Link from 'next/link';
+import {
+  Activity,
+  BarChart3,
+  Bell,
+  BookOpen,
+  CalendarDays,
+  CheckCircle2,
+  CircleDollarSign,
+  Clapperboard,
+  Coins,
+  FilePenLine,
+  Gift,
+  LayoutDashboard,
+  Save,
+  Settings2,
+  ShieldCheck,
+  ShoppingBag,
+  Trash2,
+  Users,
+} from 'lucide-react';
+import api from '@/lib/api';
+import { detailItems } from '@/lib/kcubeContent';
+import { useAppStore } from '@/store/useAppStore';
+
+type AdminSection =
+  | 'overview'
+  | 'website'
+  | 'learning'
+  | 'users'
+  | 'points'
+  | 'uploads'
+  | 'kfood'
+  | 'events'
+  | 'rewards'
+  | 'announcements'
+  | 'calendar'
+  | 'analytics';
+
+type LearningTrackRow = {
+  id: number;
+  slug: string;
+  title: string;
+  eyebrow: string;
+  intro: string;
+  accent: string;
+  rewardPoints: number;
+  bankSize: number;
+  stepSize: number;
+  overview: string[];
+  loginCopy: string[];
+  active: boolean;
+  sortOrder: number;
+};
+
+type LearningQuestionRow = {
+  id: number;
+  trackId: number;
+  trackSlug: string;
+  trackTitle: string;
+  questionKey: string;
+  type: string;
+  tag: string;
+  prompt: string;
+  korean: string;
+  answer: string;
+  options: string[];
+  words: string[];
+  cards: Array<{ korean: string; label: string; visual: string }>;
+  pairs: Array<{ korean: string; label: string }>;
+  hint: string;
+  points: number;
+  sortOrder: number;
+  active: boolean;
+};
+
+type CmsPageRow = {
+  id: number;
+  slug: string;
+  pageType: string;
+  titleEn: string;
+  titleKo: string | null;
+  titleHi: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  status: string;
+  publishedAt: string | null;
+};
+
+type UserRow = {
+  id: number;
+  full_name: string;
+  username: string;
+  email: string;
+  phone: string | null;
+  role: string;
+  category_access: string;
+  xp: number;
+  points: number;
+  level: number;
+  streak: number;
+  status: string;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  profile_image: string | null;
+  created_at: string;
+  last_login: string | null;
+};
+
+type UploadRow = {
+  id: number;
+  title: string;
+  category: string;
+  status: string;
+  points_reward: number;
+  review_note: string | null;
+  full_name: string;
+  email: string;
+  created_at: string;
+};
+
+type PointTxRow = {
+  id: number;
+  source_type: string;
+  source_slug: string | null;
+  points_delta: number;
+  balance_after: number;
+  status: string;
+  full_name: string;
+  email: string;
+  created_at: string;
+};
+
+type KFoodClaimRow = {
+  id: number;
+  order_id: string;
+  order_total: string;
+  status: string;
+  points_reward: number;
+  review_note: string | null;
+  full_name: string;
+  email: string;
+  created_at: string;
+};
+
+type EventRow = {
+  id: number;
+  title: string;
+  slug: string;
+  description: string | null;
+  category: string;
+  starts_at: string;
+  ends_at: string;
+  timezone: string;
+  location_name: string | null;
+  location_address: string | null;
+  online_meeting_url: string | null;
+  capacity: number | null;
+  points_reward: number;
+  status: string;
+  sync_status: string;
+  google_calendar_html_link: string | null;
+};
+
+type RewardRow = {
+  id: number;
+  name: string;
+  description: string | null;
+  tier: string;
+  cost_points: number;
+  active: boolean;
+  image_url: string | null;
+  created_at: string;
+};
+
+type AnnouncementRow = {
+  id: number;
+  title: string;
+  body: string;
+  status: string;
+  creator_name: string | null;
+  creator_email: string | null;
+  created_at: string;
+};
+
+type CalendarConnectionRow = {
+  id: number;
+  provider: string;
+  calendar_id: string;
+  calendar_name: string | null;
+  sync_mode: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
+const adminNav = [
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Live metrics and shortcuts.' },
+  { id: 'website', label: 'Website CMS', icon: FilePenLine, description: 'Pages, inventory, copy blocks.' },
+  { id: 'learning', label: 'Learning', icon: BookOpen, description: 'Tracks and question bank.' },
+  { id: 'users', label: 'Users', icon: Users, description: 'Profiles, roles and access.' },
+  { id: 'points', label: 'Points', icon: Coins, description: 'Ledger and manual adjustments.' },
+  { id: 'uploads', label: 'Uploads', icon: Clapperboard, description: 'Content moderation.' },
+  { id: 'kfood', label: 'K-Food', icon: ShoppingBag, description: 'Purchase claims and review.' },
+  { id: 'events', label: 'Events', icon: CalendarDays, description: 'Event builder and archive.' },
+  { id: 'rewards', label: 'Rewards', icon: Gift, description: 'Reward catalog control.' },
+  { id: 'announcements', label: 'Announcements', icon: Bell, description: 'CMS notices and broadcasts.' },
+  { id: 'calendar', label: 'Calendar', icon: Settings2, description: 'Google Calendar sync.' },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'Usage and activity summary.' },
+] as const;
+
+const emptyTrackForm = {
+  id: '',
+  slug: '',
+  title: '',
+  eyebrow: '',
+  intro: '',
+  accent: '#19c37d',
+  rewardPoints: 0,
+  stepSize: 10,
+  overview: '[]',
+  loginCopy: '[]',
+  active: true,
+  sortOrder: 0,
+};
+
+const emptyQuestionForm = {
+  id: '',
+  trackId: '',
+  questionKey: '',
+  type: 'choice',
+  tag: '',
+  prompt: '',
+  korean: '',
+  answer: '',
+  options: '[]',
+  words: '[]',
+  cards: '[]',
+  pairs: '[]',
+  hint: '',
+  points: 0,
+  sortOrder: 0,
+  active: true,
+};
+
+const emptyPageForm = {
+  id: '',
+  slug: '',
+  pageType: 'learning',
+  titleEn: '',
+  titleKo: '',
+  titleHi: '',
+  seoTitle: '',
+  seoDescription: '',
+  status: 'draft',
+};
+
+const emptyUserForm = {
+  id: '',
+  full_name: '',
+  phone: '',
+  role: 'member',
+  category_access: 'category_c',
+  status: 'active',
+  city: '',
+  state: '',
+  country: '',
+  profile_image: '',
+};
+
+const emptyPointsForm = {
+  user_id: '',
+  points_delta: 0,
+  reason: '',
+};
+
+const emptyAnnouncementForm = {
+  title: '',
+  body: '',
+  created_by: '',
+};
+
+const emptyRewardForm = {
+  id: '',
+  name: '',
+  description: '',
+  tier: 'bronze',
+  cost_points: 0,
+  active: true,
+  image_url: '',
+  metadata: '[]',
+};
+
+const emptyEventForm = {
+  id: '',
+  title: '',
+  slug: '',
+  description: '',
+  category: 'k_culture',
+  starts_at: '',
+  ends_at: '',
+  timezone: 'Asia/Kolkata',
+  location_name: '',
+  location_address: '',
+  online_meeting_url: '',
+  capacity: '',
+  points_reward: 0,
+  status: 'draft',
+};
+
+const emptyCalendarForm = {
+  calendar_id: 'primary',
+  calendar_name: 'K-CUBE Calendar',
+  sync_mode: 'admin_oauth',
+};
+
+const safeJson = (value: string, fallback: unknown[]) => {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const readPayload = <T,>(result: PromiseSettledResult<any>, fallback: T): T => {
+  if (result.status !== 'fulfilled') return fallback;
+  return (result.value?.data?.data ?? result.value?.data ?? fallback) as T;
+};
+
+const SectionShell = ({
+  title,
+  description,
+  children,
+  actions,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+  actions?: ReactNode;
+}) => (
+  <section className="rounded-2xl border border-white/10 bg-[#101014] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+    <div className="flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <h2 className="text-2xl font-black text-white">{title}</h2>
+        {description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-[#aab5c6]">{description}</p> : null}
+      </div>
+      {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
+    </div>
+    <div className="pt-5">{children}</div>
+  </section>
+);
+
+const Field = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <label className="block">
+    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[#ffc400]">{label}</span>
+    {children}
+  </label>
+);
+
+const inputClass =
+  'w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-[#627085] focus:border-[#ffc400]';
+const selectClass =
+  'w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none transition focus:border-[#ffc400]';
+
+const AdminControlCenter = () => {
+  const user = useAppStore((state) => state.user);
+  const [activeSection, setActiveSection] = useState<AdminSection>('overview');
+  const [notice, setNotice] = useState('');
+
+  const [dashboardMetrics, setDashboardMetrics] = useState<Record<string, number>>({});
+  const [analytics, setAnalytics] = useState<Record<string, number>>({});
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [uploads, setUploads] = useState<UploadRow[]>([]);
+  const [pointTransactions, setPointTransactions] = useState<PointTxRow[]>([]);
+  const [claims, setClaims] = useState<KFoodClaimRow[]>([]);
+  const [tracks, setTracks] = useState<LearningTrackRow[]>([]);
+  const [questions, setQuestions] = useState<LearningQuestionRow[]>([]);
+  const [pages, setPages] = useState<CmsPageRow[]>([]);
+  const [events, setEvents] = useState<EventRow[]>([]);
+  const [rewards, setRewards] = useState<RewardRow[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncementRow[]>([]);
+  const [calendarConnections, setCalendarConnections] = useState<CalendarConnectionRow[]>([]);
+
+  const [selectedTrackId, setSelectedTrackId] = useState<number | null>(null);
+  const [trackForm, setTrackForm] = useState(emptyTrackForm);
+  const [questionForm, setQuestionForm] = useState(emptyQuestionForm);
+  const [pageForm, setPageForm] = useState(emptyPageForm);
+  const [userForm, setUserForm] = useState(emptyUserForm);
+  const [pointsForm, setPointsForm] = useState(emptyPointsForm);
+  const [announcementForm, setAnnouncementForm] = useState(emptyAnnouncementForm);
+  const [rewardForm, setRewardForm] = useState(emptyRewardForm);
+  const [eventForm, setEventForm] = useState(emptyEventForm);
+  const [calendarForm, setCalendarForm] = useState(emptyCalendarForm);
+
+  const [selectedUploadId, setSelectedUploadId] = useState<number | null>(null);
+  const [uploadReview, setUploadReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
+  const [selectedClaimId, setSelectedClaimId] = useState<number | null>(null);
+  const [claimReview, setClaimReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
+
+  const selectedTrack = useMemo(
+    () => tracks.find((track) => track.id === selectedTrackId) || null,
+    [selectedTrackId, tracks],
+  );
+  const visibleQuestions = useMemo(
+    () => questions.filter((question) => question.trackId === selectedTrackId),
+    [questions, selectedTrackId],
+  );
+  const selectedUser = useMemo(
+    () => users.find((entry) => entry.id === Number(userForm.id)) || null,
+    [userForm.id, users],
+  );
+  const selectedReward = useMemo(
+    () => rewards.find((entry) => entry.id === Number(rewardForm.id)) || null,
+    [rewardForm.id, rewards],
+  );
+  const selectedEvent = useMemo(
+    () => events.find((entry) => entry.id === Number(eventForm.id)) || null,
+    [eventForm.id, events],
+  );
+  const selectedUpload = useMemo(
+    () => uploads.find((entry) => entry.id === selectedUploadId) || null,
+    [selectedUploadId, uploads],
+  );
+  const selectedClaim = useMemo(
+    () => claims.find((entry) => entry.id === selectedClaimId) || null,
+    [claims, selectedClaimId],
+  );
+
+  const loadAdminData = async () => {
+    const requests = await Promise.allSettled([
+      api.get('/admin/dashboard'),
+      api.get('/admin/analytics'),
+      api.get('/users'),
+      api.get('/admin/uploads'),
+      api.get('/admin/points'),
+      api.get('/admin/kfood/claims'),
+      api.get('/learning/admin/tracks'),
+      api.get('/learning/admin/questions'),
+      api.get('/learning/cms/pages'),
+      api.get('/admin/events'),
+      api.get('/admin/rewards'),
+      api.get('/admin/announcements'),
+      api.get('/admin/google-calendar/connections'),
+    ]);
+
+    const dashboardPayload = readPayload<any>(requests[0], {});
+    const analyticsPayload = readPayload<Record<string, number>>(requests[1], {});
+    const userRows = readPayload<UserRow[]>(requests[2], []);
+    const uploadRows = readPayload<UploadRow[]>(requests[3], []);
+    const pointRows = readPayload<PointTxRow[]>(requests[4], []);
+    const claimRows = readPayload<KFoodClaimRow[]>(requests[5], []);
+    const trackRows = readPayload<LearningTrackRow[]>(requests[6], []);
+    const questionRows = readPayload<LearningQuestionRow[]>(requests[7], []);
+    const pageRows = readPayload<CmsPageRow[]>(requests[8], []);
+    const eventRows = readPayload<EventRow[]>(requests[9], []);
+    const rewardRows = readPayload<RewardRow[]>(requests[10], []);
+    const announcementRows = readPayload<AnnouncementRow[]>(requests[11], []);
+    const connectionRows = readPayload<CalendarConnectionRow[]>(requests[12], []);
+
+    setDashboardMetrics(dashboardPayload.metrics || {});
+    setAnalytics(analyticsPayload);
+    setUsers(userRows);
+    setUploads(uploadRows);
+    setPointTransactions(pointRows);
+    setClaims(claimRows);
+    setTracks(trackRows);
+    setQuestions(questionRows);
+    setPages(pageRows);
+    setEvents(eventRows);
+    setRewards(rewardRows);
+    setAnnouncements(announcementRows);
+    setCalendarConnections(connectionRows);
+
+    if (!selectedTrackId && trackRows.length) {
+      setSelectedTrackId(trackRows[0].id);
+    }
+    if (!userForm.id && userRows.length) {
+      const first = userRows[0];
+      setUserForm({
+        id: String(first.id),
+        full_name: first.full_name,
+        phone: first.phone || '',
+        role: first.role,
+        category_access: first.category_access,
+        status: first.status,
+        city: first.city || '',
+        state: first.state || '',
+        country: first.country || '',
+        profile_image: first.profile_image || '',
+      });
+    }
+    if (!rewardForm.id && rewardRows.length) {
+      const first = rewardRows[0];
+      setRewardForm({
+        id: String(first.id),
+        name: first.name,
+        description: first.description || '',
+        tier: first.tier,
+        cost_points: first.cost_points,
+        active: first.active,
+        image_url: first.image_url || '',
+        metadata: '[]',
+      });
+    }
+    if (!eventForm.id && eventRows.length) {
+      const first = eventRows[0];
+      setEventForm({
+        id: String(first.id),
+        title: first.title,
+        slug: first.slug,
+        description: first.description || '',
+        category: first.category,
+        starts_at: first.starts_at.slice(0, 16),
+        ends_at: first.ends_at.slice(0, 16),
+        timezone: first.timezone,
+        location_name: first.location_name || '',
+        location_address: first.location_address || '',
+        online_meeting_url: first.online_meeting_url || '',
+        capacity: first.capacity ? String(first.capacity) : '',
+        points_reward: first.points_reward,
+        status: first.status,
+      });
+    }
+    if (!calendarConnections.length && connectionRows.length) {
+      const first = connectionRows[0];
+      setCalendarForm({
+        calendar_id: first.calendar_id,
+        calendar_name: first.calendar_name || 'K-CUBE Calendar',
+        sync_mode: first.sync_mode,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!user || user.role !== 'admin') return;
+    loadAdminData().catch(() => setNotice('Failed to load admin data.'));
+  }, [user]);
+
+  useEffect(() => {
+    if (!selectedTrack) return;
+    setTrackForm({
+      id: String(selectedTrack.id),
+      slug: selectedTrack.slug,
+      title: selectedTrack.title,
+      eyebrow: selectedTrack.eyebrow,
+      intro: selectedTrack.intro,
+      accent: selectedTrack.accent,
+      rewardPoints: selectedTrack.rewardPoints,
+      stepSize: selectedTrack.stepSize,
+      overview: JSON.stringify(selectedTrack.overview, null, 2),
+      loginCopy: JSON.stringify(selectedTrack.loginCopy, null, 2),
+      active: selectedTrack.active,
+      sortOrder: selectedTrack.sortOrder,
+    });
+    setQuestionForm((current) => ({ ...current, trackId: String(selectedTrack.id) }));
+  }, [selectedTrack]);
+
+  useEffect(() => {
+    if (selectedUser) {
+      setUserForm({
+        id: String(selectedUser.id),
+        full_name: selectedUser.full_name,
+        phone: selectedUser.phone || '',
+        role: selectedUser.role,
+        category_access: selectedUser.category_access,
+        status: selectedUser.status,
+        city: selectedUser.city || '',
+        state: selectedUser.state || '',
+        country: selectedUser.country || '',
+        profile_image: selectedUser.profile_image || '',
+      });
+    }
+  }, [selectedUser]);
+
+  useEffect(() => {
+    if (selectedReward) {
+      setRewardForm({
+        id: String(selectedReward.id),
+        name: selectedReward.name,
+        description: selectedReward.description || '',
+        tier: selectedReward.tier,
+        cost_points: selectedReward.cost_points,
+        active: selectedReward.active,
+        image_url: selectedReward.image_url || '',
+        metadata: '[]',
+      });
+    }
+  }, [selectedReward]);
+
+  useEffect(() => {
+    if (selectedEvent) {
+      setEventForm({
+        id: String(selectedEvent.id),
+        title: selectedEvent.title,
+        slug: selectedEvent.slug,
+        description: selectedEvent.description || '',
+        category: selectedEvent.category,
+        starts_at: selectedEvent.starts_at.slice(0, 16),
+        ends_at: selectedEvent.ends_at.slice(0, 16),
+        timezone: selectedEvent.timezone,
+        location_name: selectedEvent.location_name || '',
+        location_address: selectedEvent.location_address || '',
+        online_meeting_url: selectedEvent.online_meeting_url || '',
+        capacity: selectedEvent.capacity ? String(selectedEvent.capacity) : '',
+        points_reward: selectedEvent.points_reward,
+        status: selectedEvent.status,
+      });
+    }
+  }, [selectedEvent]);
+
+  if (!user || user.role !== 'admin') {
+    return (
+      <main className="min-h-screen bg-[#070708] px-5 py-16 text-white lg:px-10">
+        <section className="mx-auto max-w-[760px] rounded-2xl border border-white/10 bg-[#111113] p-8 text-center">
+          <ShieldCheck className="mx-auto h-12 w-12 text-[#ffc400]" />
+          <h1 className="mt-5 text-3xl font-black">Admin access required</h1>
+          <p className="mt-3 text-sm leading-7 text-[#aab5c6]">
+            Please sign in with an admin account to manage K-CUBE content, users, points, events and rewards.
+          </p>
+          <Link href="/admin/login" className="mt-6 inline-flex rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">
+            Admin login
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const saveTrack = async () => {
+    const payload = {
+      id: trackForm.id ? Number(trackForm.id) : undefined,
+      slug: trackForm.slug,
+      title: trackForm.title,
+      eyebrow: trackForm.eyebrow,
+      intro: trackForm.intro,
+      accent: trackForm.accent,
+      rewardPoints: Number(trackForm.rewardPoints || 0),
+      stepSize: Number(trackForm.stepSize || 10),
+      overview: safeJson(trackForm.overview, []),
+      loginCopy: safeJson(trackForm.loginCopy, []),
+      active: trackForm.active,
+      sortOrder: Number(trackForm.sortOrder || 0),
+    };
+
+    if (trackForm.id) {
+      await api.patch(`/learning/admin/tracks/${trackForm.id}`, payload);
+    } else {
+      await api.post('/learning/admin/tracks', payload);
+    }
+    setNotice('Learning track saved.');
+    await loadAdminData();
+  };
+
+  const deleteTrack = async (id: number) => {
+    await api.delete(`/learning/admin/tracks/${id}`);
+    setNotice('Learning track deleted.');
+    setTrackForm(emptyTrackForm);
+    setSelectedTrackId(null);
+    await loadAdminData();
+  };
+
+  const saveQuestion = async () => {
+    if (!questionForm.trackId) {
+      setNotice('Pick a track first.');
+      return;
+    }
+
+    const payload = {
+      id: questionForm.id ? Number(questionForm.id) : undefined,
+      trackId: Number(questionForm.trackId),
+      questionKey: questionForm.questionKey,
+      type: questionForm.type,
+      tag: questionForm.tag,
+      prompt: questionForm.prompt,
+      korean: questionForm.korean,
+      answer: questionForm.answer,
+      options: safeJson(questionForm.options, []),
+      words: safeJson(questionForm.words, []),
+      cards: safeJson(questionForm.cards, []),
+      pairs: safeJson(questionForm.pairs, []),
+      hint: questionForm.hint,
+      points: Number(questionForm.points || 0),
+      sortOrder: Number(questionForm.sortOrder || 0),
+      active: questionForm.active,
+    };
+
+    if (questionForm.id) {
+      await api.patch(`/learning/admin/questions/${questionForm.id}`, payload);
+    } else {
+      await api.post('/learning/admin/questions', payload);
+    }
+
+    setNotice('Learning question saved.');
+    setQuestionForm({ ...emptyQuestionForm, trackId: questionForm.trackId });
+    await loadAdminData();
+  };
+
+  const deleteQuestion = async (id: number) => {
+    await api.delete(`/learning/admin/questions/${id}`);
+    setNotice('Learning question deleted.');
+    await loadAdminData();
+  };
+
+  const savePage = async () => {
+    const payload = {
+      id: pageForm.id ? Number(pageForm.id) : undefined,
+      slug: pageForm.slug,
+      pageType: pageForm.pageType,
+      titleEn: pageForm.titleEn,
+      titleKo: pageForm.titleKo || null,
+      titleHi: pageForm.titleHi || null,
+      seoTitle: pageForm.seoTitle || null,
+      seoDescription: pageForm.seoDescription || null,
+      status: pageForm.status,
+    };
+
+    if (pageForm.id) {
+      await api.patch(`/learning/cms/pages/${pageForm.id}`, payload);
+    } else {
+      await api.post('/learning/cms/pages', payload);
+    }
+
+    setNotice('CMS page saved.');
+    setPageForm(emptyPageForm);
+    await loadAdminData();
+  };
+
+  const saveUser = async () => {
+    if (!userForm.id) return;
+    await api.patch(`/users/${userForm.id}`, {
+      full_name: userForm.full_name,
+      phone: userForm.phone || null,
+      role: userForm.role,
+      category_access: userForm.category_access,
+      status: userForm.status,
+      city: userForm.city || null,
+      state: userForm.state || null,
+      country: userForm.country || null,
+      profile_image: userForm.profile_image || null,
+    });
+    setNotice('User updated.');
+    await loadAdminData();
+  };
+
+  const sendPoints = async () => {
+    await api.post('/admin/points/adjust', {
+      user_id: Number(pointsForm.user_id),
+      points_delta: Number(pointsForm.points_delta || 0),
+      reason: pointsForm.reason,
+    });
+    setNotice('Points adjustment submitted.');
+    setPointsForm(emptyPointsForm);
+    await loadAdminData();
+  };
+
+  const reviewUpload = async (status: 'approved' | 'rejected') => {
+    if (!selectedUpload) return;
+    await api.patch(`/admin/uploads/${selectedUpload.id}/review`, {
+      status,
+      points_reward: Number(uploadReview.points_reward || 0),
+      review_note: uploadReview.review_note,
+    });
+    setNotice(`Upload ${status}.`);
+    setSelectedUploadId(null);
+    setUploadReview({ status: 'approved', points_reward: 0, review_note: '' });
+    await loadAdminData();
+  };
+
+  const reviewClaim = async (status: 'approved' | 'rejected') => {
+    if (!selectedClaim) return;
+    await api.patch(`/admin/kfood/claims/${selectedClaim.id}/review`, {
+      status,
+      points_reward: Number(claimReview.points_reward || 0),
+      review_note: claimReview.review_note,
+    });
+    setNotice(`K-Food claim ${status}.`);
+    setSelectedClaimId(null);
+    setClaimReview({ status: 'approved', points_reward: 0, review_note: '' });
+    await loadAdminData();
+  };
+
+  const saveReward = async () => {
+    const payload = {
+      name: rewardForm.name,
+      description: rewardForm.description || null,
+      tier: rewardForm.tier,
+      cost_points: Number(rewardForm.cost_points || 0),
+      active: rewardForm.active,
+      image_url: rewardForm.image_url || null,
+      metadata: safeJson(rewardForm.metadata, []),
+    };
+
+    if (rewardForm.id) {
+      await api.patch(`/admin/rewards/${rewardForm.id}`, payload);
+    } else {
+      await api.post('/admin/rewards', payload);
+    }
+    setNotice('Reward saved.');
+    setRewardForm(emptyRewardForm);
+    await loadAdminData();
+  };
+
+  const deleteReward = async (id: number) => {
+    await api.delete(`/admin/rewards/${id}`);
+    setNotice('Reward disabled.');
+    setRewardForm(emptyRewardForm);
+    await loadAdminData();
+  };
+
+  const saveEvent = async () => {
+    const payload = {
+      title: eventForm.title,
+      slug: eventForm.slug || undefined,
+      description: eventForm.description || null,
+      category: eventForm.category,
+      starts_at: eventForm.starts_at,
+      ends_at: eventForm.ends_at,
+      timezone: eventForm.timezone,
+      location_name: eventForm.location_name || null,
+      location_address: eventForm.location_address || null,
+      online_meeting_url: eventForm.online_meeting_url || null,
+      capacity: eventForm.capacity ? Number(eventForm.capacity) : null,
+      points_reward: Number(eventForm.points_reward || 0),
+      status: eventForm.status,
+    };
+
+    if (eventForm.id) {
+      await api.patch(`/admin/events/${eventForm.id}`, payload);
+    } else {
+      await api.post('/admin/events', payload);
+    }
+    setNotice('Event saved.');
+    setEventForm(emptyEventForm);
+    await loadAdminData();
+  };
+
+  const archiveEvent = async (id: number) => {
+    await api.delete(`/admin/events/${id}`);
+    setNotice('Event archived.');
+    setEventForm(emptyEventForm);
+    await loadAdminData();
+  };
+
+  const publishAnnouncement = async () => {
+    await api.post('/admin/announcement', {
+      title: announcementForm.title,
+      body: announcementForm.body,
+      created_by: Number(announcementForm.created_by || user.id),
+    });
+    setNotice('Announcement published.');
+    setAnnouncementForm(emptyAnnouncementForm);
+    await loadAdminData();
+  };
+
+  const saveCalendar = async () => {
+    await api.post('/admin/google-calendar/connections', calendarForm);
+    setNotice('Google Calendar connection saved.');
+    await loadAdminData();
+  };
+
+  const syncCalendar = async () => {
+    await api.post('/admin/google-calendar/sync', {});
+    setNotice('Calendar sync queued.');
+    await loadAdminData();
+  };
+
+  const renderOverview = () => (
+    <div className="space-y-5">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {[
+          { label: 'Users', value: dashboardMetrics.totalUsers ?? users.length, icon: Users },
+          { label: 'Points', value: dashboardMetrics.totalPoints ?? 0, icon: CircleDollarSign },
+          { label: 'XP', value: dashboardMetrics.totalXp ?? 0, icon: Activity },
+          { label: 'Published pages', value: pages.filter((page) => page.status === 'published').length, icon: FilePenLine },
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <Icon className="h-6 w-6 text-[#ffc400]" />
+              <p className="mt-4 text-sm text-[#aab5c6]">{item.label}</p>
+              <p className="mt-2 text-3xl font-black">{item.value}</p>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {adminNav.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setActiveSection(item.id as AdminSection)}
+              className="rounded-2xl border border-white/10 bg-black/20 p-5 text-left transition hover:border-[#ffc400]/60 hover:bg-black/30"
+            >
+              <Icon className="h-6 w-6 text-[#ffc400]" />
+              <h3 className="mt-4 text-xl font-black text-white">{item.label}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{item.description}</p>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderWebsite = () => (
+    <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+      <SectionShell title="CMS content inventory" description="Every key page in the product is tracked here. Edit page metadata, SEO and publish state from the panel.">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] text-left text-sm">
+            <thead className="text-[#ffc400]">
+              <tr>
+                <th className="border-b border-white/10 py-3">Type</th>
+                <th className="border-b border-white/10 py-3">Slug</th>
+                <th className="border-b border-white/10 py-3">Title</th>
+                <th className="border-b border-white/10 py-3">Points</th>
+                <th className="border-b border-white/10 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#d4dbe7]">
+              {detailItems.map((item) => (
+                <tr key={`${item.category}-${item.slug}`}>
+                  <td className="border-b border-white/10 py-3 capitalize">{item.category}</td>
+                  <td className="border-b border-white/10 py-3">{item.slug}</td>
+                  <td className="border-b border-white/10 py-3">{item.title.en}</td>
+                  <td className="border-b border-white/10 py-3">{item.points ?? '-'}</td>
+                  <td className="border-b border-white/10 py-3">Published</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </SectionShell>
+
+      <SectionShell
+        title={pageForm.id ? 'Edit page' : 'Create page'}
+        description="Use this for SEO pages, landing pages and any content block that needs to be published or archived."
+        actions={pageForm.id ? (
+          <button type="button" onClick={() => setPageForm(emptyPageForm)} className="text-sm font-bold text-[#ffc400]">
+            Reset
+          </button>
+        ) : null}
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Slug">
+              <input className={inputClass} value={pageForm.slug} onChange={(event) => setPageForm((state) => ({ ...state, slug: event.target.value }))} />
+            </Field>
+            <Field label="Page Type">
+              <input className={inputClass} value={pageForm.pageType} onChange={(event) => setPageForm((state) => ({ ...state, pageType: event.target.value }))} />
+            </Field>
+          </div>
+          <Field label="Title EN">
+            <input className={inputClass} value={pageForm.titleEn} onChange={(event) => setPageForm((state) => ({ ...state, titleEn: event.target.value }))} />
+          </Field>
+          <Field label="Title KO">
+            <input className={inputClass} value={pageForm.titleKo} onChange={(event) => setPageForm((state) => ({ ...state, titleKo: event.target.value }))} />
+          </Field>
+          <Field label="Title HI">
+            <input className={inputClass} value={pageForm.titleHi} onChange={(event) => setPageForm((state) => ({ ...state, titleHi: event.target.value }))} />
+          </Field>
+          <Field label="SEO Title">
+            <input className={inputClass} value={pageForm.seoTitle} onChange={(event) => setPageForm((state) => ({ ...state, seoTitle: event.target.value }))} />
+          </Field>
+          <Field label="SEO Description">
+            <textarea className={`${inputClass} min-h-24`} value={pageForm.seoDescription} onChange={(event) => setPageForm((state) => ({ ...state, seoDescription: event.target.value }))} />
+          </Field>
+          <div className="flex items-center justify-between gap-3">
+            <select className={selectClass} value={pageForm.status} onChange={(event) => setPageForm((state) => ({ ...state, status: event.target.value }))}>
+              <option value="draft">draft</option>
+              <option value="published">published</option>
+              <option value="archived">archived</option>
+            </select>
+            <button type="button" onClick={savePage} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+              <Save className="h-4 w-4" /> Save page
+            </button>
+          </div>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderLearning = () => (
+    <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
+      <SectionShell title="Learning track editor" description="Create and maintain lesson tracks, reward points and JSON copy blocks used by the learning journeys.">
+        <div className="space-y-3">
+          {tracks.map((track) => (
+            <button
+              key={track.id}
+              type="button"
+              onClick={() => setSelectedTrackId(track.id)}
+              className={`w-full rounded-2xl border px-4 py-4 text-left transition ${selectedTrackId === track.id ? 'border-[#ffc400] bg-black/40' : 'border-white/10 bg-black/20'}`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-black">{track.title}</span>
+                <span className="text-xs font-black text-[#ffc400]">{track.bankSize} questions</span>
+              </div>
+              <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[#98a4b1]">{track.slug}</p>
+            </button>
+          ))}
+        </div>
+        <div className="mt-5 space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-black">{trackForm.id ? 'Edit track' : 'Create track'}</h3>
+            <button type="button" onClick={() => setTrackForm(emptyTrackForm)} className="text-sm font-bold text-[#ffc400]">
+              Reset
+            </button>
+          </div>
+          <Field label="Slug">
+            <input className={inputClass} value={trackForm.slug} onChange={(event) => setTrackForm((state) => ({ ...state, slug: event.target.value }))} />
+          </Field>
+          <Field label="Title">
+            <input className={inputClass} value={trackForm.title} onChange={(event) => setTrackForm((state) => ({ ...state, title: event.target.value }))} />
+          </Field>
+          <Field label="Eyebrow">
+            <input className={inputClass} value={trackForm.eyebrow} onChange={(event) => setTrackForm((state) => ({ ...state, eyebrow: event.target.value }))} />
+          </Field>
+          <Field label="Intro">
+            <textarea className={`${inputClass} min-h-24`} value={trackForm.intro} onChange={(event) => setTrackForm((state) => ({ ...state, intro: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Accent">
+              <input className={inputClass} value={trackForm.accent} onChange={(event) => setTrackForm((state) => ({ ...state, accent: event.target.value }))} />
+            </Field>
+            <Field label="Reward Points">
+              <input className={inputClass} type="number" value={trackForm.rewardPoints} onChange={(event) => setTrackForm((state) => ({ ...state, rewardPoints: Number(event.target.value) }))} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Step Size">
+              <input className={inputClass} type="number" value={trackForm.stepSize} onChange={(event) => setTrackForm((state) => ({ ...state, stepSize: Number(event.target.value) }))} />
+            </Field>
+            <Field label="Sort Order">
+              <input className={inputClass} type="number" value={trackForm.sortOrder} onChange={(event) => setTrackForm((state) => ({ ...state, sortOrder: Number(event.target.value) }))} />
+            </Field>
+          </div>
+          <Field label="Overview JSON">
+            <textarea className={`${inputClass} min-h-24`} value={trackForm.overview} onChange={(event) => setTrackForm((state) => ({ ...state, overview: event.target.value }))} />
+          </Field>
+          <Field label="Login Copy JSON">
+            <textarea className={`${inputClass} min-h-24`} value={trackForm.loginCopy} onChange={(event) => setTrackForm((state) => ({ ...state, loginCopy: event.target.value }))} />
+          </Field>
+          <div className="flex items-center justify-between gap-3">
+            <label className="flex items-center gap-2 text-sm text-white">
+              <input type="checkbox" checked={trackForm.active} onChange={(event) => setTrackForm((state) => ({ ...state, active: event.target.checked }))} />
+              Active
+            </label>
+            <div className="flex gap-3">
+              <button type="button" onClick={saveTrack} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                <Save className="h-4 w-4" /> Save track
+              </button>
+              {trackForm.id ? (
+                <button type="button" onClick={() => deleteTrack(Number(trackForm.id))} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                  <Trash2 className="h-4 w-4" /> Delete
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Question bank editor" description="Pick a track on the left, then create or modify the linked questions and structured payloads.">
+        <div className="grid gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+          <div className="space-y-3">
+            {visibleQuestions.map((question) => (
+              <button
+                key={question.id}
+                type="button"
+                onClick={() =>
+                  setQuestionForm({
+                    id: String(question.id),
+                    trackId: String(question.trackId),
+                    questionKey: question.questionKey,
+                    type: question.type,
+                    tag: question.tag,
+                    prompt: question.prompt,
+                    korean: question.korean,
+                    answer: question.answer,
+                    options: JSON.stringify(question.options, null, 2),
+                    words: JSON.stringify(question.words, null, 2),
+                    cards: JSON.stringify(question.cards, null, 2),
+                    pairs: JSON.stringify(question.pairs, null, 2),
+                    hint: question.hint,
+                    points: question.points,
+                    sortOrder: question.sortOrder,
+                    active: question.active,
+                  })
+                }
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-left"
+              >
+                <p className="text-xs uppercase tracking-[0.22em] text-[#98a4b1]">
+                  {question.type} / {question.tag}
+                </p>
+                <p className="mt-2 font-black">{question.questionKey}</p>
+                <p className="mt-1 text-sm text-[#aab5c6]">{question.prompt}</p>
+              </button>
+            ))}
+            {!visibleQuestions.length ? <p className="text-sm text-[#aab5c6]">Select a track and start creating questions.</p> : null}
+          </div>
+
+          <div className="space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-black">{questionForm.id ? 'Edit question' : 'Create question'}</h3>
+              <button type="button" onClick={() => setQuestionForm({ ...emptyQuestionForm, trackId: questionForm.trackId })} className="text-sm font-bold text-[#ffc400]">
+                Reset
+              </button>
+            </div>
+            <Field label="Track ID">
+              <input className={inputClass} value={questionForm.trackId} onChange={(event) => setQuestionForm((state) => ({ ...state, trackId: event.target.value }))} />
+            </Field>
+            <Field label="Question Key">
+              <input className={inputClass} value={questionForm.questionKey} onChange={(event) => setQuestionForm((state) => ({ ...state, questionKey: event.target.value }))} />
+            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Type">
+                <input className={inputClass} value={questionForm.type} onChange={(event) => setQuestionForm((state) => ({ ...state, type: event.target.value }))} />
+              </Field>
+              <Field label="Tag">
+                <input className={inputClass} value={questionForm.tag} onChange={(event) => setQuestionForm((state) => ({ ...state, tag: event.target.value }))} />
+              </Field>
+            </div>
+            <Field label="Prompt">
+              <textarea className={`${inputClass} min-h-20`} value={questionForm.prompt} onChange={(event) => setQuestionForm((state) => ({ ...state, prompt: event.target.value }))} />
+            </Field>
+            <Field label="Korean">
+              <input className={inputClass} value={questionForm.korean} onChange={(event) => setQuestionForm((state) => ({ ...state, korean: event.target.value }))} />
+            </Field>
+            <Field label="Answer">
+              <input className={inputClass} value={questionForm.answer} onChange={(event) => setQuestionForm((state) => ({ ...state, answer: event.target.value }))} />
+            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Points">
+                <input className={inputClass} type="number" value={questionForm.points} onChange={(event) => setQuestionForm((state) => ({ ...state, points: Number(event.target.value) }))} />
+              </Field>
+              <Field label="Sort Order">
+                <input className={inputClass} type="number" value={questionForm.sortOrder} onChange={(event) => setQuestionForm((state) => ({ ...state, sortOrder: Number(event.target.value) }))} />
+              </Field>
+            </div>
+            <Field label="Options JSON">
+              <textarea className={`${inputClass} min-h-20`} value={questionForm.options} onChange={(event) => setQuestionForm((state) => ({ ...state, options: event.target.value }))} />
+            </Field>
+            <Field label="Words JSON">
+              <textarea className={`${inputClass} min-h-20`} value={questionForm.words} onChange={(event) => setQuestionForm((state) => ({ ...state, words: event.target.value }))} />
+            </Field>
+            <Field label="Cards JSON">
+              <textarea className={`${inputClass} min-h-20`} value={questionForm.cards} onChange={(event) => setQuestionForm((state) => ({ ...state, cards: event.target.value }))} />
+            </Field>
+            <Field label="Pairs JSON">
+              <textarea className={`${inputClass} min-h-20`} value={questionForm.pairs} onChange={(event) => setQuestionForm((state) => ({ ...state, pairs: event.target.value }))} />
+            </Field>
+            <Field label="Hint">
+              <textarea className={`${inputClass} min-h-20`} value={questionForm.hint} onChange={(event) => setQuestionForm((state) => ({ ...state, hint: event.target.value }))} />
+            </Field>
+            <div className="flex items-center justify-between gap-3">
+              <label className="flex items-center gap-2 text-sm text-white">
+                <input type="checkbox" checked={questionForm.active} onChange={(event) => setQuestionForm((state) => ({ ...state, active: event.target.checked }))} />
+                Active
+              </label>
+              <div className="flex gap-3">
+                <button type="button" onClick={saveQuestion} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                  <Save className="h-4 w-4" /> Save question
+                </button>
+                {questionForm.id ? (
+                  <button type="button" onClick={() => deleteQuestion(Number(questionForm.id))} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                    <Trash2 className="h-4 w-4" /> Delete
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderUsers = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="Users" description="Review roles, account state, city/state, profile image and membership classification." actions={<span className="text-sm font-bold text-[#ffc400]">{users.length} records</span>}>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px] text-left text-sm">
+            <thead className="text-[#ffc400]">
+              <tr>
+                <th className="border-b border-white/10 py-3">Name</th>
+                <th className="border-b border-white/10 py-3">Email</th>
+                <th className="border-b border-white/10 py-3">Role</th>
+                <th className="border-b border-white/10 py-3">Status</th>
+                <th className="border-b border-white/10 py-3">Points</th>
+                <th className="border-b border-white/10 py-3">Streak</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#d4dbe7]">
+              {users.map((entry) => (
+                <tr
+                  key={entry.id}
+                  className="cursor-pointer hover:bg-white/5"
+                  onClick={() =>
+                    setUserForm({
+                      id: String(entry.id),
+                      full_name: entry.full_name,
+                      phone: entry.phone || '',
+                      role: entry.role,
+                      category_access: entry.category_access,
+                      status: entry.status,
+                      city: entry.city || '',
+                      state: entry.state || '',
+                      country: entry.country || '',
+                      profile_image: entry.profile_image || '',
+                    })
+                  }
+                >
+                  <td className="border-b border-white/10 py-3 font-bold">{entry.full_name}</td>
+                  <td className="border-b border-white/10 py-3">{entry.email}</td>
+                  <td className="border-b border-white/10 py-3 capitalize">{entry.role}</td>
+                  <td className="border-b border-white/10 py-3 capitalize">{entry.status}</td>
+                  <td className="border-b border-white/10 py-3">{entry.points}</td>
+                  <td className="border-b border-white/10 py-3">{entry.streak}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Edit user" description="Update access, category access, profile details and account status directly from the admin panel.">
+        <div className="space-y-3">
+          <Field label="Full Name">
+            <input className={inputClass} value={userForm.full_name} onChange={(event) => setUserForm((state) => ({ ...state, full_name: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Role">
+              <select className={selectClass} value={userForm.role} onChange={(event) => setUserForm((state) => ({ ...state, role: event.target.value }))}>
+                <option value="member">member</option>
+                <option value="manager">manager</option>
+                <option value="admin">admin</option>
+                <option value="guest">guest</option>
+              </select>
+            </Field>
+            <Field label="Status">
+              <select className={selectClass} value={userForm.status} onChange={(event) => setUserForm((state) => ({ ...state, status: event.target.value }))}>
+                <option value="active">active</option>
+                <option value="pending">pending</option>
+                <option value="suspended">suspended</option>
+                <option value="deleted">deleted</option>
+              </select>
+            </Field>
+          </div>
+          <Field label="Category Access">
+            <select className={selectClass} value={userForm.category_access} onChange={(event) => setUserForm((state) => ({ ...state, category_access: event.target.value }))}>
+              <option value="category_a">category_a</option>
+              <option value="category_b">category_b</option>
+              <option value="category_c">category_c</option>
+            </select>
+          </Field>
+          <Field label="Phone">
+            <input className={inputClass} value={userForm.phone} onChange={(event) => setUserForm((state) => ({ ...state, phone: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="City">
+              <input className={inputClass} value={userForm.city} onChange={(event) => setUserForm((state) => ({ ...state, city: event.target.value }))} />
+            </Field>
+            <Field label="State">
+              <input className={inputClass} value={userForm.state} onChange={(event) => setUserForm((state) => ({ ...state, state: event.target.value }))} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Country">
+              <input className={inputClass} value={userForm.country} onChange={(event) => setUserForm((state) => ({ ...state, country: event.target.value }))} />
+            </Field>
+            <Field label="Profile Image">
+              <input className={inputClass} value={userForm.profile_image} onChange={(event) => setUserForm((state) => ({ ...state, profile_image: event.target.value }))} />
+            </Field>
+          </div>
+          <button type="button" onClick={saveUser} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+            <Save className="h-4 w-4" /> Save user
+          </button>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderPoints = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="Points ledger" description="Manual adjustments and audit history for point balance changes.">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px] text-left text-sm">
+            <thead className="text-[#ffc400]">
+              <tr>
+                <th className="border-b border-white/10 py-3">User</th>
+                <th className="border-b border-white/10 py-3">Source</th>
+                <th className="border-b border-white/10 py-3">Delta</th>
+                <th className="border-b border-white/10 py-3">Balance</th>
+                <th className="border-b border-white/10 py-3">Created</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#d4dbe7]">
+              {pointTransactions.map((tx) => (
+                <tr key={tx.id}>
+                  <td className="border-b border-white/10 py-3">{tx.full_name}</td>
+                  <td className="border-b border-white/10 py-3">{tx.source_type}</td>
+                  <td className="border-b border-white/10 py-3">{tx.points_delta}</td>
+                  <td className="border-b border-white/10 py-3">{tx.balance_after}</td>
+                  <td className="border-b border-white/10 py-3">{new Date(tx.created_at).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Manual points adjustment" description="Issue or subtract points with an audit note.">
+        <div className="space-y-3">
+          <Field label="User ID">
+            <input className={inputClass} value={pointsForm.user_id} onChange={(event) => setPointsForm((state) => ({ ...state, user_id: event.target.value }))} />
+          </Field>
+          <Field label="Points Delta">
+            <input className={inputClass} type="number" value={pointsForm.points_delta} onChange={(event) => setPointsForm((state) => ({ ...state, points_delta: Number(event.target.value) }))} />
+          </Field>
+          <Field label="Reason">
+            <textarea className={`${inputClass} min-h-24`} value={pointsForm.reason} onChange={(event) => setPointsForm((state) => ({ ...state, reason: event.target.value }))} />
+          </Field>
+          <button type="button" onClick={sendPoints} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+            <Save className="h-4 w-4" /> Submit adjustment
+          </button>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderUploads = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="Content upload review" description="Approve or reject user generated uploads and attach verified points.">
+        <div className="space-y-3">
+          {uploads.map((entry) => (
+            <button
+              key={entry.id}
+              type="button"
+              onClick={() => {
+                setSelectedUploadId(entry.id);
+                setUploadReview({ status: 'approved', points_reward: entry.points_reward || 0, review_note: entry.review_note || '' });
+              }}
+              className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-left"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-black">{entry.title}</p>
+                <span className="text-xs font-black text-[#ffc400]">{entry.status}</span>
+              </div>
+              <p className="mt-2 text-sm text-[#aab5c6]">
+                {entry.category} · {entry.full_name} · {entry.email}
+              </p>
+            </button>
+          ))}
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Review upload" description="Select an item on the left to review it.">
+        {selectedUpload ? (
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p className="text-xs uppercase tracking-[0.22em] text-[#ffc400]">{selectedUpload.category}</p>
+              <h3 className="mt-2 text-xl font-black">{selectedUpload.title}</h3>
+              <p className="mt-2 text-sm text-[#aab5c6]">{selectedUpload.full_name}</p>
+            </div>
+            <Field label="Points Reward">
+              <input className={inputClass} type="number" value={uploadReview.points_reward} onChange={(event) => setUploadReview((state) => ({ ...state, points_reward: Number(event.target.value) }))} />
+            </Field>
+            <Field label="Review Note">
+              <textarea className={`${inputClass} min-h-24`} value={uploadReview.review_note} onChange={(event) => setUploadReview((state) => ({ ...state, review_note: event.target.value }))} />
+            </Field>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => reviewUpload('approved')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                <CheckCircle2 className="h-4 w-4" /> Approve
+              </button>
+              <button type="button" onClick={() => reviewUpload('rejected')} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                <Trash2 className="h-4 w-4" /> Reject
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-[#aab5c6]">Select a submission to review it here.</p>
+        )}
+      </SectionShell>
+    </div>
+  );
+
+  const renderKFood = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="K-Food claims" description="Audit purchase claims, coupon references and reward eligibility.">
+        <div className="space-y-3">
+          {claims.map((entry) => (
+            <button
+              key={entry.id}
+              type="button"
+              onClick={() => {
+                setSelectedClaimId(entry.id);
+                setClaimReview({ status: 'approved', points_reward: entry.points_reward || 0, review_note: entry.review_note || '' });
+              }}
+              className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-left"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-black">{entry.order_id}</p>
+                <span className="text-xs font-black text-[#ffc400]">{entry.status}</span>
+              </div>
+              <p className="mt-2 text-sm text-[#aab5c6]">
+                {entry.full_name} · {entry.email} · {entry.order_total}
+              </p>
+            </button>
+          ))}
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Review claim" description="Approve or reject K-Food purchase claims from the admin panel.">
+        {selectedClaim ? (
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p className="text-xs uppercase tracking-[0.22em] text-[#ffc400]">{selectedClaim.order_id}</p>
+              <h3 className="mt-2 text-xl font-black">{selectedClaim.full_name}</h3>
+              <p className="mt-2 text-sm text-[#aab5c6]">{selectedClaim.order_total}</p>
+            </div>
+            <Field label="Points Reward">
+              <input className={inputClass} type="number" value={claimReview.points_reward} onChange={(event) => setClaimReview((state) => ({ ...state, points_reward: Number(event.target.value) }))} />
+            </Field>
+            <Field label="Review Note">
+              <textarea className={`${inputClass} min-h-24`} value={claimReview.review_note} onChange={(event) => setClaimReview((state) => ({ ...state, review_note: event.target.value }))} />
+            </Field>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => reviewClaim('approved')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                <CheckCircle2 className="h-4 w-4" /> Approve
+              </button>
+              <button type="button" onClick={() => reviewClaim('rejected')} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                <Trash2 className="h-4 w-4" /> Reject
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-[#aab5c6]">Select a claim to review it here.</p>
+        )}
+      </SectionShell>
+    </div>
+  );
+
+  const renderEvents = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="Event inventory" description="Create, edit and archive platform events from one place.">
+        <div className="space-y-3">
+          {events.map((entry) => (
+            <button
+              key={entry.id}
+              type="button"
+              onClick={() =>
+                setEventForm({
+                  id: String(entry.id),
+                  title: entry.title,
+                  slug: entry.slug,
+                  description: entry.description || '',
+                  category: entry.category,
+                  starts_at: entry.starts_at.slice(0, 16),
+                  ends_at: entry.ends_at.slice(0, 16),
+                  timezone: entry.timezone,
+                  location_name: entry.location_name || '',
+                  location_address: entry.location_address || '',
+                  online_meeting_url: entry.online_meeting_url || '',
+                  capacity: entry.capacity ? String(entry.capacity) : '',
+                  points_reward: entry.points_reward,
+                  status: entry.status,
+                })
+              }
+              className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-left"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-black">{entry.title}</p>
+                <span className="text-xs font-black text-[#ffc400]">{entry.status}</span>
+              </div>
+              <p className="mt-2 text-sm text-[#aab5c6]">{entry.slug} · {entry.starts_at}</p>
+            </button>
+          ))}
+        </div>
+      </SectionShell>
+
+      <SectionShell
+        title={eventForm.id ? 'Edit event' : 'Create event'}
+        description="Event creation includes schedule, points, location, and sync settings."
+        actions={eventForm.id ? (
+          <button type="button" onClick={() => setEventForm(emptyEventForm)} className="text-sm font-bold text-[#ffc400]">
+            Reset
+          </button>
+        ) : null}
+      >
+        <div className="space-y-3">
+          <Field label="Title">
+            <input className={inputClass} value={eventForm.title} onChange={(event) => setEventForm((state) => ({ ...state, title: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Slug">
+              <input className={inputClass} value={eventForm.slug} onChange={(event) => setEventForm((state) => ({ ...state, slug: event.target.value }))} />
+            </Field>
+            <Field label="Category">
+              <input className={inputClass} value={eventForm.category} onChange={(event) => setEventForm((state) => ({ ...state, category: event.target.value }))} />
+            </Field>
+          </div>
+          <Field label="Description">
+            <textarea className={`${inputClass} min-h-24`} value={eventForm.description} onChange={(event) => setEventForm((state) => ({ ...state, description: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Starts At">
+              <input className={inputClass} type="datetime-local" value={eventForm.starts_at} onChange={(event) => setEventForm((state) => ({ ...state, starts_at: event.target.value }))} />
+            </Field>
+            <Field label="Ends At">
+              <input className={inputClass} type="datetime-local" value={eventForm.ends_at} onChange={(event) => setEventForm((state) => ({ ...state, ends_at: event.target.value }))} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Timezone">
+              <input className={inputClass} value={eventForm.timezone} onChange={(event) => setEventForm((state) => ({ ...state, timezone: event.target.value }))} />
+            </Field>
+            <Field label="Capacity">
+              <input className={inputClass} type="number" value={eventForm.capacity} onChange={(event) => setEventForm((state) => ({ ...state, capacity: event.target.value }))} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Location Name">
+              <input className={inputClass} value={eventForm.location_name} onChange={(event) => setEventForm((state) => ({ ...state, location_name: event.target.value }))} />
+            </Field>
+            <Field label="Points Reward">
+              <input className={inputClass} type="number" value={eventForm.points_reward} onChange={(event) => setEventForm((state) => ({ ...state, points_reward: Number(event.target.value) }))} />
+            </Field>
+          </div>
+          <Field label="Location Address">
+            <textarea className={`${inputClass} min-h-20`} value={eventForm.location_address} onChange={(event) => setEventForm((state) => ({ ...state, location_address: event.target.value }))} />
+          </Field>
+          <Field label="Meeting URL">
+            <input className={inputClass} value={eventForm.online_meeting_url} onChange={(event) => setEventForm((state) => ({ ...state, online_meeting_url: event.target.value }))} />
+          </Field>
+          <Field label="Status">
+            <select className={selectClass} value={eventForm.status} onChange={(event) => setEventForm((state) => ({ ...state, status: event.target.value }))}>
+              <option value="draft">draft</option>
+              <option value="published">published</option>
+              <option value="cancelled">cancelled</option>
+              <option value="archived">archived</option>
+            </select>
+          </Field>
+          <div className="flex gap-3">
+            <button type="button" onClick={saveEvent} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+              <Save className="h-4 w-4" /> Save event
+            </button>
+            {eventForm.id ? (
+              <button type="button" onClick={() => archiveEvent(Number(eventForm.id))} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                <Trash2 className="h-4 w-4" /> Archive
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderRewards = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="Reward catalog" description="Add, update or disable rewards from the same control center.">
+        <div className="space-y-3">
+          {rewards.map((entry) => (
+            <button
+              key={entry.id}
+              type="button"
+              onClick={() =>
+                setRewardForm({
+                  id: String(entry.id),
+                  name: entry.name,
+                  description: entry.description || '',
+                  tier: entry.tier,
+                  cost_points: entry.cost_points,
+                  active: entry.active,
+                  image_url: entry.image_url || '',
+                  metadata: '[]',
+                })
+              }
+              className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-left"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-black">{entry.name}</p>
+                <span className="text-xs font-black text-[#ffc400]">{entry.active ? 'active' : 'disabled'}</span>
+              </div>
+              <p className="mt-2 text-sm text-[#aab5c6]">{entry.tier} · {entry.cost_points} points</p>
+            </button>
+          ))}
+        </div>
+      </SectionShell>
+
+      <SectionShell
+        title={rewardForm.id ? 'Edit reward' : 'Create reward'}
+        description="Configure tiers, costs and metadata for the internal reward system."
+        actions={rewardForm.id ? (
+          <button type="button" onClick={() => setRewardForm(emptyRewardForm)} className="text-sm font-bold text-[#ffc400]">
+            Reset
+          </button>
+        ) : null}
+      >
+        <div className="space-y-3">
+          <Field label="Name">
+            <input className={inputClass} value={rewardForm.name} onChange={(event) => setRewardForm((state) => ({ ...state, name: event.target.value }))} />
+          </Field>
+          <Field label="Description">
+            <textarea className={`${inputClass} min-h-24`} value={rewardForm.description} onChange={(event) => setRewardForm((state) => ({ ...state, description: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Tier">
+              <select className={selectClass} value={rewardForm.tier} onChange={(event) => setRewardForm((state) => ({ ...state, tier: event.target.value }))}>
+                <option value="bronze">bronze</option>
+                <option value="silver">silver</option>
+                <option value="gold">gold</option>
+                <option value="diamond">diamond</option>
+              </select>
+            </Field>
+            <Field label="Cost Points">
+              <input className={inputClass} type="number" value={rewardForm.cost_points} onChange={(event) => setRewardForm((state) => ({ ...state, cost_points: Number(event.target.value) }))} />
+            </Field>
+          </div>
+          <Field label="Image URL">
+            <input className={inputClass} value={rewardForm.image_url} onChange={(event) => setRewardForm((state) => ({ ...state, image_url: event.target.value }))} />
+          </Field>
+          <Field label="Metadata JSON">
+            <textarea className={`${inputClass} min-h-24`} value={rewardForm.metadata} onChange={(event) => setRewardForm((state) => ({ ...state, metadata: event.target.value }))} />
+          </Field>
+          <label className="flex items-center gap-2 text-sm text-white">
+            <input type="checkbox" checked={rewardForm.active} onChange={(event) => setRewardForm((state) => ({ ...state, active: event.target.checked }))} />
+            Active
+          </label>
+          <div className="flex gap-3">
+            <button type="button" onClick={saveReward} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+              <Save className="h-4 w-4" /> Save reward
+            </button>
+            {rewardForm.id ? (
+              <button type="button" onClick={() => deleteReward(Number(rewardForm.id))} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                <Trash2 className="h-4 w-4" /> Disable
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderAnnouncements = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="Recent announcements" description="Broadcast urgent CMS notes, release updates or internal notices.">
+        <div className="space-y-3">
+          {announcements.map((entry) => (
+            <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="font-black">{entry.title}</h3>
+                <span className="text-xs font-black text-[#ffc400]">{entry.status}</span>
+              </div>
+              <p className="mt-2 text-sm text-[#aab5c6]">{entry.body}</p>
+              <p className="mt-3 text-xs text-[#98a4b1]">{entry.creator_name || entry.creator_email || 'System'} · {new Date(entry.created_at).toLocaleString()}</p>
+            </article>
+          ))}
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Publish announcement" description="Create a sitewide message visible to your admin team.">
+        <div className="space-y-3">
+          <Field label="Title">
+            <input className={inputClass} value={announcementForm.title} onChange={(event) => setAnnouncementForm((state) => ({ ...state, title: event.target.value }))} />
+          </Field>
+          <Field label="Body">
+            <textarea className={`${inputClass} min-h-32`} value={announcementForm.body} onChange={(event) => setAnnouncementForm((state) => ({ ...state, body: event.target.value }))} />
+          </Field>
+          <Field label="Created By">
+            <input className={inputClass} value={announcementForm.created_by} onChange={(event) => setAnnouncementForm((state) => ({ ...state, created_by: event.target.value }))} placeholder={String(user.id)} />
+          </Field>
+          <button type="button" onClick={publishAnnouncement} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+            <Save className="h-4 w-4" /> Publish
+          </button>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderCalendar = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="Calendar connections" description="See the configured Google Calendar integration and keep sync active.">
+        <div className="space-y-3">
+          {calendarConnections.map((entry) => (
+            <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="font-black">{entry.calendar_name || entry.calendar_id}</h3>
+                <span className="text-xs font-black text-[#ffc400]">{entry.status}</span>
+              </div>
+              <p className="mt-2 text-sm text-[#aab5c6]">{entry.provider} · {entry.sync_mode} · {entry.calendar_id}</p>
+            </article>
+          ))}
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Google Calendar sync" description="Attach a calendar and trigger sync directly from the admin panel.">
+        <div className="space-y-3">
+          <Field label="Calendar ID">
+            <input className={inputClass} value={calendarForm.calendar_id} onChange={(event) => setCalendarForm((state) => ({ ...state, calendar_id: event.target.value }))} />
+          </Field>
+          <Field label="Calendar Name">
+            <input className={inputClass} value={calendarForm.calendar_name} onChange={(event) => setCalendarForm((state) => ({ ...state, calendar_name: event.target.value }))} />
+          </Field>
+          <Field label="Sync Mode">
+            <select className={selectClass} value={calendarForm.sync_mode} onChange={(event) => setCalendarForm((state) => ({ ...state, sync_mode: event.target.value }))}>
+              <option value="admin_oauth">admin_oauth</option>
+              <option value="service_account">service_account</option>
+            </select>
+          </Field>
+          <div className="flex gap-3">
+            <button type="button" onClick={saveCalendar} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+              <Save className="h-4 w-4" /> Save connection
+            </button>
+            <button type="button" onClick={syncCalendar} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm font-black text-white">
+              <Activity className="h-4 w-4" /> Sync now
+            </button>
+          </div>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderAnalytics = () => (
+    <div className="space-y-5">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {[
+          { label: 'Active users', value: analytics.activeUsers ?? 0 },
+          { label: 'Sessions 24h', value: analytics.sessionsLast24h ?? 0 },
+          { label: 'Active lessons', value: analytics.activeLessons ?? 0 },
+          { label: 'Active rewards', value: analytics.activeRewards ?? 0 },
+        ].map((item) => (
+          <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
+            <p className="text-sm text-[#aab5c6]">{item.label}</p>
+            <p className="mt-2 text-3xl font-black">{item.value}</p>
+          </article>
+        ))}
+      </div>
+
+      <SectionShell title="Raw dashboard snapshot" description="This panel can be extended with charts later, but the data source is already live.">
+        <pre className="overflow-x-auto rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-[#d4dbe7]">
+          {JSON.stringify({ dashboardMetrics, analytics }, null, 2)}
+        </pre>
+      </SectionShell>
+    </div>
+  );
+
+  const sectionBody = () => {
+    switch (activeSection) {
+      case 'website':
+        return renderWebsite();
+      case 'learning':
+        return renderLearning();
+      case 'users':
+        return renderUsers();
+      case 'points':
+        return renderPoints();
+      case 'uploads':
+        return renderUploads();
+      case 'kfood':
+        return renderKFood();
+      case 'events':
+        return renderEvents();
+      case 'rewards':
+        return renderRewards();
+      case 'announcements':
+        return renderAnnouncements();
+      case 'calendar':
+        return renderCalendar();
+      case 'analytics':
+        return renderAnalytics();
+      case 'overview':
+      default:
+        return renderOverview();
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#070708] text-white">
+      <div className="grid min-h-screen lg:grid-cols-[300px_minmax(0,1fr)]">
+        <aside className="border-b border-white/10 bg-[#0b0b0d] lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
+          <div className="flex h-full flex-col">
+            <div className="border-b border-white/10 px-5 py-6">
+              <p className="text-xs font-black uppercase tracking-[0.35em] text-[#ffc400]">Admin CMS</p>
+              <h1 className="mt-3 text-3xl font-black leading-tight">K-CUBE control center</h1>
+              <p className="mt-3 text-sm leading-6 text-[#9aa6b4]">
+                WordPress-style operational control for content, users, learning, rewards, events and commerce.
+              </p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-3 py-4">
+              <div className="space-y-2">
+                {adminNav.map((item) => {
+                  const Icon = item.icon;
+                  const active = activeSection === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setActiveSection(item.id as AdminSection)}
+                      className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+                        active ? 'border-[#ffc400] bg-[#17171a]' : 'border-white/10 bg-black/20 hover:border-white/20'
+                      }`}
+                    >
+                      <Icon className={`mt-0.5 h-5 w-5 ${active ? 'text-[#ffc400]' : 'text-[#9aa6b4]'}`} />
+                      <div className="min-w-0">
+                        <p className="font-black">{item.label}</p>
+                        <p className="mt-1 text-xs leading-5 text-[#9aa6b4]">{item.description}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 p-5">
+              <Link href="/admin/login" className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-4 py-3 text-sm font-black text-white transition hover:border-[#ffc400] hover:text-[#ffc400]">
+                Switch admin
+              </Link>
+            </div>
+          </div>
+        </aside>
+
+        <div className="px-5 py-6 lg:px-8 lg:py-8">
+          <div className="mx-auto max-w-[1600px] space-y-6">
+            <section className="rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)]">
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <p className="text-sm font-black uppercase tracking-[0.26em] text-[#ffc400]">Admin Dashboard</p>
+                  <h2 className="mt-3 text-4xl font-black">Full website control, all in one place.</h2>
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-[#aab5c6]">
+                    Edit pages, learning content, users, points, rewards, events, announcements and integrations from a single admin workspace.
+                  </p>
+                  {notice ? <p className="mt-4 text-sm font-bold text-[#ffcf86]">{notice}</p> : null}
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <button type="button" onClick={() => setActiveSection('overview')} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">
+                    Overview
+                  </button>
+                  <Link href="/" className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">
+                    Open site
+                  </Link>
+                </div>
+              </div>
+            </section>
+
+            {sectionBody()}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+export default AdminControlCenter;
