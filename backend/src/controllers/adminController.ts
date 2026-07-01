@@ -32,6 +32,65 @@ export const approveChapter = async (req: Request, res: Response) => {
   return ok(res, { chapterId: id });
 };
 
+export const listChapters = async (_req: Request, res: Response) => {
+  const [rows] = await pool.query(`
+    SELECT
+      c.*,
+      u.full_name AS leader_name,
+      u.email AS leader_email
+    FROM chapters c
+    LEFT JOIN users u ON u.id = c.leader_id
+    ORDER BY c.updated_at DESC, c.created_at DESC
+    LIMIT 300
+  `);
+  return ok(res, rows);
+};
+
+export const upsertChapter = async (req: Request, res: Response) => {
+  const body = req.body || {};
+  if (!body.name || !body.slug || !body.city || !body.state || !body.country) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'name, slug, city, state and country are required');
+  }
+
+  const values = [
+    body.name,
+    body.slug,
+    body.description || null,
+    body.city,
+    body.state,
+    body.country,
+    body.leader_id || null,
+    Number(body.member_count || 0),
+    body.latitude ?? null,
+    body.longitude ?? null,
+    body.status || 'pending',
+  ];
+
+  if (body.id) {
+    await pool.query(
+      `UPDATE chapters
+       SET name = ?, slug = ?, description = ?, city = ?, state = ?, country = ?, leader_id = ?, member_count = ?,
+           latitude = ?, longitude = ?, status = ?, updated_at = NOW()
+       WHERE id = ?`,
+      [...values, body.id],
+    );
+    return ok(res, { id: Number(body.id) });
+  }
+
+  const [result] = await pool.query(
+    `INSERT INTO chapters
+       (name, slug, description, city, state, country, leader_id, member_count, latitude, longitude, status, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+    values,
+  );
+  return ok(res, { id: (result as any).insertId });
+};
+
+export const deleteChapter = async (req: Request, res: Response) => {
+  await pool.query('DELETE FROM chapters WHERE id = ?', [req.params.id]);
+  return ok(res, { id: Number(req.params.id) });
+};
+
 export const publishAnnouncement = async (req: Request, res: Response) => {
   const { title, body, created_by } = req.body;
   if (!title || !body || !created_by) return fail(res, 400, 'VALIDATION_ERROR', 'Missing required fields');
@@ -40,6 +99,61 @@ export const publishAnnouncement = async (req: Request, res: Response) => {
     [title, body, created_by, 'published'],
   );
   return ok(res, {});
+};
+
+export const listCmsBlocks = async (_req: Request, res: Response) => {
+  const [rows] = await pool.query(`
+    SELECT
+      b.*,
+      p.slug AS page_slug,
+      p.title_en AS page_title
+    FROM cms_blocks b
+    JOIN cms_pages p ON p.id = b.page_id
+    ORDER BY b.sort_order ASC, b.id DESC
+    LIMIT 500
+  `);
+  return ok(res, rows);
+};
+
+export const upsertCmsBlock = async (req: Request, res: Response) => {
+  const body = req.body || {};
+  if (!body.page_id || !body.block_key || !body.block_type) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'page_id, block_key and block_type are required');
+  }
+
+  const values = [
+    Number(body.page_id),
+    body.block_key,
+    body.block_type,
+    Number(body.sort_order || 0),
+    JSON.stringify(body.content_en ?? {}),
+    JSON.stringify(body.content_ko ?? {}),
+    JSON.stringify(body.content_hi ?? {}),
+    body.status || 'published',
+  ];
+
+  if (body.id) {
+    await pool.query(
+      `UPDATE cms_blocks
+       SET page_id = ?, block_key = ?, block_type = ?, sort_order = ?, content_en = ?, content_ko = ?, content_hi = ?, status = ?, updated_at = NOW()
+       WHERE id = ?`,
+      [...values, body.id],
+    );
+    return ok(res, { id: Number(body.id) });
+  }
+
+  const [result] = await pool.query(
+    `INSERT INTO cms_blocks
+       (page_id, block_key, block_type, sort_order, content_en, content_ko, content_hi, status, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+    values,
+  );
+  return ok(res, { id: (result as any).insertId });
+};
+
+export const deleteCmsBlock = async (req: Request, res: Response) => {
+  await pool.query('DELETE FROM cms_blocks WHERE id = ?', [req.params.id]);
+  return ok(res, { id: Number(req.params.id) });
 };
 
 export const getSystemAnalytics = async (_req: Request, res: Response) => {

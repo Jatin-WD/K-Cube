@@ -4,9 +4,15 @@ import {
   getAdminDashboard,
   manageUser,
   approveChapter,
+  listChapters,
+  upsertChapter,
+  deleteChapter,
   publishAnnouncement,
   getSystemAnalytics,
   listAnnouncements,
+  listCmsBlocks,
+  upsertCmsBlock,
+  deleteCmsBlock,
   listContentUploads,
   reviewContentUpload,
   listPointTransactions,
@@ -35,8 +41,16 @@ router.use(requireAuth(['admin']));
 router.get('/dashboard', getAdminDashboard);
 router.patch('/user/:id', manageUser);
 router.post('/chapter/:id/approve', approveChapter);
+router.get('/chapters', listChapters);
+router.post('/chapters', upsertChapter);
+router.patch('/chapters/:id', upsertChapter);
+router.delete('/chapters/:id', deleteChapter);
 router.post('/announcement', publishAnnouncement);
 router.get('/announcements', listAnnouncements);
+router.get('/cms/blocks', listCmsBlocks);
+router.post('/cms/blocks', upsertCmsBlock);
+router.patch('/cms/blocks/:id', upsertCmsBlock);
+router.delete('/cms/blocks/:id', deleteCmsBlock);
 router.get('/analytics', getSystemAnalytics);
 router.get('/uploads', listContentUploads);
 router.patch('/uploads/:id/review', reviewContentUpload);

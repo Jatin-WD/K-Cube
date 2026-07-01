@@ -32,6 +32,7 @@ type AdminSection =
   | 'learning'
   | 'users'
   | 'points'
+  | 'chapters'
   | 'uploads'
   | 'kfood'
   | 'events'
@@ -88,6 +89,41 @@ type CmsPageRow = {
   seoDescription: string | null;
   status: string;
   publishedAt: string | null;
+};
+
+type ChapterRow = {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  city: string;
+  state: string;
+  country: string;
+  leader_id: number | null;
+  leader_name: string | null;
+  leader_email: string | null;
+  member_count: number;
+  latitude: number | null;
+  longitude: number | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
+type CmsBlockRow = {
+  id: number;
+  page_id: number;
+  page_slug: string;
+  page_title: string;
+  block_key: string;
+  block_type: string;
+  sort_order: number;
+  content_en: unknown;
+  content_ko: unknown;
+  content_hi: unknown;
+  status: string;
+  created_at: string;
+  updated_at: string;
 };
 
 type UserRow = {
@@ -204,6 +240,7 @@ const adminNav = [
   { id: 'learning', label: 'Learning', icon: BookOpen, description: 'Tracks and question bank.' },
   { id: 'users', label: 'Users', icon: Users, description: 'Profiles, roles and access.' },
   { id: 'points', label: 'Points', icon: Coins, description: 'Ledger and manual adjustments.' },
+  { id: 'chapters', label: 'Chapters', icon: Users, description: 'Community chapters and leaders.' },
   { id: 'uploads', label: 'Uploads', icon: Clapperboard, description: 'Content moderation.' },
   { id: 'kfood', label: 'K-Food', icon: ShoppingBag, description: 'Purchase claims and review.' },
   { id: 'events', label: 'Events', icon: CalendarDays, description: 'Event builder and archive.' },
@@ -257,6 +294,33 @@ const emptyPageForm = {
   seoTitle: '',
   seoDescription: '',
   status: 'draft',
+};
+
+const emptyBlockForm = {
+  id: '',
+  page_id: '',
+  block_key: '',
+  block_type: 'hero',
+  sort_order: 0,
+  content_en: '{}',
+  content_ko: '{}',
+  content_hi: '{}',
+  status: 'published',
+};
+
+const emptyChapterForm = {
+  id: '',
+  name: '',
+  slug: '',
+  description: '',
+  city: '',
+  state: '',
+  country: 'India',
+  leader_id: '',
+  member_count: 0,
+  latitude: '',
+  longitude: '',
+  status: 'pending',
 };
 
 const emptyUserForm = {
@@ -327,6 +391,15 @@ const safeJson = (value: string, fallback: unknown[]) => {
   }
 };
 
+const safeJsonObject = (value: string, fallback: Record<string, unknown> = {}) => {
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 const readPayload = <T,>(result: PromiseSettledResult<any>, fallback: T): T => {
   if (result.status !== 'fulfilled') return fallback;
   return (result.value?.data?.data ?? result.value?.data ?? fallback) as T;
@@ -387,6 +460,8 @@ const AdminControlCenter = () => {
   const [tracks, setTracks] = useState<LearningTrackRow[]>([]);
   const [questions, setQuestions] = useState<LearningQuestionRow[]>([]);
   const [pages, setPages] = useState<CmsPageRow[]>([]);
+  const [blocks, setBlocks] = useState<CmsBlockRow[]>([]);
+  const [chapters, setChapters] = useState<ChapterRow[]>([]);
   const [events, setEvents] = useState<EventRow[]>([]);
   const [rewards, setRewards] = useState<RewardRow[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementRow[]>([]);
@@ -396,6 +471,8 @@ const AdminControlCenter = () => {
   const [trackForm, setTrackForm] = useState(emptyTrackForm);
   const [questionForm, setQuestionForm] = useState(emptyQuestionForm);
   const [pageForm, setPageForm] = useState(emptyPageForm);
+  const [blockForm, setBlockForm] = useState(emptyBlockForm);
+  const [chapterForm, setChapterForm] = useState(emptyChapterForm);
   const [userForm, setUserForm] = useState(emptyUserForm);
   const [pointsForm, setPointsForm] = useState(emptyPointsForm);
   const [announcementForm, setAnnouncementForm] = useState(emptyAnnouncementForm);
@@ -407,6 +484,7 @@ const AdminControlCenter = () => {
   const [uploadReview, setUploadReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
   const [selectedClaimId, setSelectedClaimId] = useState<number | null>(null);
   const [claimReview, setClaimReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
+  const [selectedPageId, setSelectedPageId] = useState<number | null>(null);
 
   const selectedTrack = useMemo(
     () => tracks.find((track) => track.id === selectedTrackId) || null,
@@ -424,6 +502,10 @@ const AdminControlCenter = () => {
     () => rewards.find((entry) => entry.id === Number(rewardForm.id)) || null,
     [rewardForm.id, rewards],
   );
+  const selectedChapter = useMemo(
+    () => chapters.find((entry) => entry.id === Number(chapterForm.id)) || null,
+    [chapterForm.id, chapters],
+  );
   const selectedEvent = useMemo(
     () => events.find((entry) => entry.id === Number(eventForm.id)) || null,
     [eventForm.id, events],
@@ -435,6 +517,14 @@ const AdminControlCenter = () => {
   const selectedClaim = useMemo(
     () => claims.find((entry) => entry.id === selectedClaimId) || null,
     [claims, selectedClaimId],
+  );
+  const selectedCmsPage = useMemo(
+    () => pages.find((entry) => entry.id === selectedPageId) || null,
+    [pages, selectedPageId],
+  );
+  const visibleBlocks = useMemo(
+    () => blocks.filter((block) => !selectedPageId || block.page_id === selectedPageId),
+    [blocks, selectedPageId],
   );
 
   const loadAdminData = async () => {
@@ -448,6 +538,8 @@ const AdminControlCenter = () => {
       api.get('/learning/admin/tracks'),
       api.get('/learning/admin/questions'),
       api.get('/learning/cms/pages'),
+      api.get('/admin/cms/blocks'),
+      api.get('/admin/chapters'),
       api.get('/admin/events'),
       api.get('/admin/rewards'),
       api.get('/admin/announcements'),
@@ -463,10 +555,12 @@ const AdminControlCenter = () => {
     const trackRows = readPayload<LearningTrackRow[]>(requests[6], []);
     const questionRows = readPayload<LearningQuestionRow[]>(requests[7], []);
     const pageRows = readPayload<CmsPageRow[]>(requests[8], []);
-    const eventRows = readPayload<EventRow[]>(requests[9], []);
-    const rewardRows = readPayload<RewardRow[]>(requests[10], []);
-    const announcementRows = readPayload<AnnouncementRow[]>(requests[11], []);
-    const connectionRows = readPayload<CalendarConnectionRow[]>(requests[12], []);
+    const blockRows = readPayload<CmsBlockRow[]>(requests[9], []);
+    const chapterRows = readPayload<ChapterRow[]>(requests[10], []);
+    const eventRows = readPayload<EventRow[]>(requests[11], []);
+    const rewardRows = readPayload<RewardRow[]>(requests[12], []);
+    const announcementRows = readPayload<AnnouncementRow[]>(requests[13], []);
+    const connectionRows = readPayload<CalendarConnectionRow[]>(requests[14], []);
 
     setDashboardMetrics(dashboardPayload.metrics || {});
     setAnalytics(analyticsPayload);
@@ -477,6 +571,8 @@ const AdminControlCenter = () => {
     setTracks(trackRows);
     setQuestions(questionRows);
     setPages(pageRows);
+    setBlocks(blockRows);
+    setChapters(chapterRows);
     setEvents(eventRows);
     setRewards(rewardRows);
     setAnnouncements(announcementRows);
@@ -539,6 +635,9 @@ const AdminControlCenter = () => {
         calendar_name: first.calendar_name || 'K-CUBE Calendar',
         sync_mode: first.sync_mode,
       });
+    }
+    if (!selectedPageId && pageRows.length) {
+      setSelectedPageId(pageRows[0].id);
     }
   };
 
@@ -618,6 +717,42 @@ const AdminControlCenter = () => {
       });
     }
   }, [selectedEvent]);
+
+  useEffect(() => {
+    if (selectedCmsPage) {
+      setPageForm({
+        id: String(selectedCmsPage.id),
+        slug: selectedCmsPage.slug,
+        pageType: selectedCmsPage.pageType,
+        titleEn: selectedCmsPage.titleEn,
+        titleKo: selectedCmsPage.titleKo || '',
+        titleHi: selectedCmsPage.titleHi || '',
+        seoTitle: selectedCmsPage.seoTitle || '',
+        seoDescription: selectedCmsPage.seoDescription || '',
+        status: selectedCmsPage.status,
+      });
+      setBlockForm((state) => ({ ...state, page_id: String(selectedCmsPage.id) }));
+    }
+  }, [selectedCmsPage]);
+
+  useEffect(() => {
+    if (selectedChapter) {
+      setChapterForm({
+        id: String(selectedChapter.id),
+        name: selectedChapter.name,
+        slug: selectedChapter.slug,
+        description: selectedChapter.description || '',
+        city: selectedChapter.city,
+        state: selectedChapter.state,
+        country: selectedChapter.country,
+        leader_id: selectedChapter.leader_id ? String(selectedChapter.leader_id) : '',
+        member_count: selectedChapter.member_count,
+        latitude: selectedChapter.latitude !== null && selectedChapter.latitude !== undefined ? String(selectedChapter.latitude) : '',
+        longitude: selectedChapter.longitude !== null && selectedChapter.longitude !== undefined ? String(selectedChapter.longitude) : '',
+        status: selectedChapter.status,
+      });
+    }
+  }, [selectedChapter]);
 
   if (!user || user.role !== 'admin') {
     return (
@@ -735,6 +870,43 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
+  const saveBlock = async () => {
+    if (!blockForm.page_id) {
+      setNotice('Pick a page first.');
+      return;
+    }
+
+    const payload = {
+      id: blockForm.id ? Number(blockForm.id) : undefined,
+      page_id: Number(blockForm.page_id),
+      block_key: blockForm.block_key,
+      block_type: blockForm.block_type,
+      sort_order: Number(blockForm.sort_order || 0),
+      content_en: safeJsonObject(blockForm.content_en),
+      content_ko: safeJsonObject(blockForm.content_ko),
+      content_hi: safeJsonObject(blockForm.content_hi),
+      status: blockForm.status,
+    };
+
+    if (blockForm.id) {
+      await api.patch(`/admin/cms/blocks/${blockForm.id}`, payload);
+    } else {
+      await api.post('/admin/cms/blocks', payload);
+    }
+
+    setNotice('CMS block saved.');
+    setBlockForm(emptyBlockForm);
+    setBlockForm((state) => ({ ...state, page_id: payload.page_id ? String(payload.page_id) : '' }));
+    await loadAdminData();
+  };
+
+  const deleteBlock = async (id: number) => {
+    await api.delete(`/admin/cms/blocks/${id}`);
+    setNotice('CMS block deleted.');
+    setBlockForm((state) => ({ ...emptyBlockForm, page_id: state.page_id }));
+    await loadAdminData();
+  };
+
   const saveUser = async () => {
     if (!userForm.id) return;
     await api.patch(`/users/${userForm.id}`, {
@@ -749,6 +921,40 @@ const AdminControlCenter = () => {
       profile_image: userForm.profile_image || null,
     });
     setNotice('User updated.');
+    await loadAdminData();
+  };
+
+  const saveChapter = async () => {
+    const payload = {
+      id: chapterForm.id ? Number(chapterForm.id) : undefined,
+      name: chapterForm.name,
+      slug: chapterForm.slug,
+      description: chapterForm.description || null,
+      city: chapterForm.city,
+      state: chapterForm.state,
+      country: chapterForm.country,
+      leader_id: chapterForm.leader_id ? Number(chapterForm.leader_id) : null,
+      member_count: Number(chapterForm.member_count || 0),
+      latitude: chapterForm.latitude === '' ? null : Number(chapterForm.latitude),
+      longitude: chapterForm.longitude === '' ? null : Number(chapterForm.longitude),
+      status: chapterForm.status,
+    };
+
+    if (chapterForm.id) {
+      await api.patch(`/admin/chapters/${chapterForm.id}`, payload);
+    } else {
+      await api.post('/admin/chapters', payload);
+    }
+
+    setNotice('Chapter saved.');
+    setChapterForm(emptyChapterForm);
+    await loadAdminData();
+  };
+
+  const deleteChapter = async (id: number) => {
+    await api.delete(`/admin/chapters/${id}`);
+    setNotice('Chapter deleted.');
+    setChapterForm(emptyChapterForm);
     await loadAdminData();
   };
 
@@ -943,6 +1149,39 @@ const AdminControlCenter = () => {
         </div>
       </SectionShell>
 
+      <SectionShell title="CMS pages" description="Pick a page first, then edit its metadata and attached CMS blocks.">
+        <div className="grid gap-3 md:grid-cols-2">
+          {pages.map((page) => (
+            <button
+              key={page.id}
+              type="button"
+              onClick={() => {
+                setSelectedPageId(page.id);
+                setPageForm({
+                  id: String(page.id),
+                  slug: page.slug,
+                  pageType: page.pageType,
+                  titleEn: page.titleEn,
+                  titleKo: page.titleKo || '',
+                  titleHi: page.titleHi || '',
+                  seoTitle: page.seoTitle || '',
+                  seoDescription: page.seoDescription || '',
+                  status: page.status,
+                });
+                setBlockForm((state) => ({ ...state, page_id: String(page.id) }));
+              }}
+              className={`rounded-2xl border px-4 py-4 text-left transition ${
+                selectedPageId === page.id ? 'border-[#ffc400] bg-black/40' : 'border-white/10 bg-black/20'
+              }`}
+            >
+              <p className="text-xs uppercase tracking-[0.22em] text-[#98a4b1]">{page.pageType}</p>
+              <p className="mt-2 font-black">{page.titleEn}</p>
+              <p className="mt-1 text-sm text-[#aab5c6]">{page.slug}</p>
+            </button>
+          ))}
+        </div>
+      </SectionShell>
+
       <SectionShell
         title={pageForm.id ? 'Edit page' : 'Create page'}
         description="Use this for SEO pages, landing pages and any content block that needs to be published or archived."
@@ -986,6 +1225,106 @@ const AdminControlCenter = () => {
               <Save className="h-4 w-4" /> Save page
             </button>
           </div>
+        </div>
+      </SectionShell>
+
+      <SectionShell
+        title={blockForm.id ? 'Edit CMS block' : 'Create CMS block'}
+        description="Blocks let you manage hero sections, rich text, FAQs, cards and CTAs independently under each page."
+        actions={blockForm.id ? (
+          <button type="button" onClick={() => setBlockForm((state) => ({ ...emptyBlockForm, page_id: state.page_id }))} className="text-sm font-bold text-[#ffc400]">
+            Reset
+          </button>
+        ) : null}
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Page ID">
+              <input className={inputClass} value={blockForm.page_id} onChange={(event) => setBlockForm((state) => ({ ...state, page_id: event.target.value }))} />
+            </Field>
+            <Field label="Block Key">
+              <input className={inputClass} value={blockForm.block_key} onChange={(event) => setBlockForm((state) => ({ ...state, block_key: event.target.value }))} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Block Type">
+              <select className={selectClass} value={blockForm.block_type} onChange={(event) => setBlockForm((state) => ({ ...state, block_type: event.target.value }))}>
+                <option value="hero">hero</option>
+                <option value="rich_text">rich_text</option>
+                <option value="card_grid">card_grid</option>
+                <option value="faq">faq</option>
+                <option value="cta">cta</option>
+                <option value="form">form</option>
+                <option value="reward_rule">reward_rule</option>
+                <option value="seo_schema">seo_schema</option>
+              </select>
+            </Field>
+            <Field label="Sort Order">
+              <input className={inputClass} type="number" value={blockForm.sort_order} onChange={(event) => setBlockForm((state) => ({ ...state, sort_order: Number(event.target.value) }))} />
+            </Field>
+          </div>
+          <div className="grid gap-3 xl:grid-cols-3">
+            <Field label="Content EN JSON">
+              <textarea className={`${inputClass} min-h-24`} value={blockForm.content_en} onChange={(event) => setBlockForm((state) => ({ ...state, content_en: event.target.value }))} />
+            </Field>
+            <Field label="Content KO JSON">
+              <textarea className={`${inputClass} min-h-24`} value={blockForm.content_ko} onChange={(event) => setBlockForm((state) => ({ ...state, content_ko: event.target.value }))} />
+            </Field>
+            <Field label="Content HI JSON">
+              <textarea className={`${inputClass} min-h-24`} value={blockForm.content_hi} onChange={(event) => setBlockForm((state) => ({ ...state, content_hi: event.target.value }))} />
+            </Field>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <select className={selectClass} value={blockForm.status} onChange={(event) => setBlockForm((state) => ({ ...state, status: event.target.value }))}>
+              <option value="draft">draft</option>
+              <option value="published">published</option>
+              <option value="archived">archived</option>
+            </select>
+            <div className="flex gap-3">
+              <button type="button" onClick={saveBlock} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                <Save className="h-4 w-4" /> Save block
+              </button>
+              {blockForm.id ? (
+                <button type="button" onClick={() => deleteBlock(Number(blockForm.id))} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                  <Trash2 className="h-4 w-4" /> Delete
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Block library" description="All blocks attached to the selected page are listed below.">
+        <div className="space-y-3">
+          {visibleBlocks.map((block) => (
+            <button
+              key={block.id}
+              type="button"
+              onClick={() =>
+                setBlockForm({
+                  id: String(block.id),
+                  page_id: String(block.page_id),
+                  block_key: block.block_key,
+                  block_type: block.block_type,
+                  sort_order: block.sort_order,
+                  content_en: JSON.stringify(block.content_en, null, 2),
+                  content_ko: JSON.stringify(block.content_ko, null, 2),
+                  content_hi: JSON.stringify(block.content_hi, null, 2),
+                  status: block.status,
+                })
+              }
+              className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-left"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-black">{block.block_key}</p>
+                <span className="text-xs font-black text-[#ffc400]">{block.status}</span>
+              </div>
+              <p className="mt-2 text-sm text-[#aab5c6]">
+                {block.page_title} · {block.block_type} · order {block.sort_order}
+              </p>
+            </button>
+          ))}
+          {!visibleBlocks.length ? <p className="text-sm text-[#aab5c6]">No blocks yet for this page.</p> : null}
         </div>
       </SectionShell>
     </div>
@@ -1284,6 +1623,124 @@ const AdminControlCenter = () => {
           <button type="button" onClick={saveUser} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
             <Save className="h-4 w-4" /> Save user
           </button>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
+  const renderChapters = () => (
+    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <SectionShell title="Chapter directory" description="Manage branch chapters, leaders and member counts from the admin panel." actions={<span className="text-sm font-bold text-[#ffc400]">{chapters.length} records</span>}>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[940px] text-left text-sm">
+            <thead className="text-[#ffc400]">
+              <tr>
+                <th className="border-b border-white/10 py-3">Name</th>
+                <th className="border-b border-white/10 py-3">Slug</th>
+                <th className="border-b border-white/10 py-3">City</th>
+                <th className="border-b border-white/10 py-3">Leader</th>
+                <th className="border-b border-white/10 py-3">Members</th>
+                <th className="border-b border-white/10 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#d4dbe7]">
+              {chapters.map((chapter) => (
+                <tr
+                  key={chapter.id}
+                  className="cursor-pointer hover:bg-white/5"
+                  onClick={() =>
+                    setChapterForm({
+                      id: String(chapter.id),
+                      name: chapter.name,
+                      slug: chapter.slug,
+                      description: chapter.description || '',
+                      city: chapter.city,
+                      state: chapter.state,
+                      country: chapter.country,
+                      leader_id: chapter.leader_id ? String(chapter.leader_id) : '',
+                      member_count: chapter.member_count,
+                      latitude: chapter.latitude !== null && chapter.latitude !== undefined ? String(chapter.latitude) : '',
+                      longitude: chapter.longitude !== null && chapter.longitude !== undefined ? String(chapter.longitude) : '',
+                      status: chapter.status,
+                    })
+                  }
+                >
+                  <td className="border-b border-white/10 py-3 font-bold">{chapter.name}</td>
+                  <td className="border-b border-white/10 py-3">{chapter.slug}</td>
+                  <td className="border-b border-white/10 py-3">{chapter.city}, {chapter.state}</td>
+                  <td className="border-b border-white/10 py-3">{chapter.leader_name || chapter.leader_email || '-'}</td>
+                  <td className="border-b border-white/10 py-3">{chapter.member_count}</td>
+                  <td className="border-b border-white/10 py-3 capitalize">{chapter.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </SectionShell>
+
+      <SectionShell
+        title={chapterForm.id ? 'Edit chapter' : 'Create chapter'}
+        description="Create or refine chapter records for the map, leaders and community directory."
+        actions={chapterForm.id ? (
+          <button type="button" onClick={() => setChapterForm(emptyChapterForm)} className="text-sm font-bold text-[#ffc400]">
+            Reset
+          </button>
+        ) : null}
+      >
+        <div className="space-y-3">
+          <Field label="Name">
+            <input className={inputClass} value={chapterForm.name} onChange={(event) => setChapterForm((state) => ({ ...state, name: event.target.value }))} />
+          </Field>
+          <Field label="Slug">
+            <input className={inputClass} value={chapterForm.slug} onChange={(event) => setChapterForm((state) => ({ ...state, slug: event.target.value }))} />
+          </Field>
+          <Field label="Description">
+            <textarea className={`${inputClass} min-h-24`} value={chapterForm.description} onChange={(event) => setChapterForm((state) => ({ ...state, description: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="City">
+              <input className={inputClass} value={chapterForm.city} onChange={(event) => setChapterForm((state) => ({ ...state, city: event.target.value }))} />
+            </Field>
+            <Field label="State">
+              <input className={inputClass} value={chapterForm.state} onChange={(event) => setChapterForm((state) => ({ ...state, state: event.target.value }))} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Country">
+              <input className={inputClass} value={chapterForm.country} onChange={(event) => setChapterForm((state) => ({ ...state, country: event.target.value }))} />
+            </Field>
+            <Field label="Leader ID">
+              <input className={inputClass} value={chapterForm.leader_id} onChange={(event) => setChapterForm((state) => ({ ...state, leader_id: event.target.value }))} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Members">
+              <input className={inputClass} type="number" value={chapterForm.member_count} onChange={(event) => setChapterForm((state) => ({ ...state, member_count: Number(event.target.value) }))} />
+            </Field>
+            <Field label="Latitude">
+              <input className={inputClass} value={chapterForm.latitude} onChange={(event) => setChapterForm((state) => ({ ...state, latitude: event.target.value }))} />
+            </Field>
+            <Field label="Longitude">
+              <input className={inputClass} value={chapterForm.longitude} onChange={(event) => setChapterForm((state) => ({ ...state, longitude: event.target.value }))} />
+            </Field>
+          </div>
+          <Field label="Status">
+            <select className={selectClass} value={chapterForm.status} onChange={(event) => setChapterForm((state) => ({ ...state, status: event.target.value }))}>
+              <option value="pending">pending</option>
+              <option value="approved">approved</option>
+              <option value="archived">archived</option>
+            </select>
+          </Field>
+          <div className="flex gap-3">
+            <button type="button" onClick={saveChapter} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+              <Save className="h-4 w-4" /> Save chapter
+            </button>
+            {chapterForm.id ? (
+              <button type="button" onClick={() => deleteChapter(Number(chapterForm.id))} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                <Trash2 className="h-4 w-4" /> Delete
+              </button>
+            ) : null}
+          </div>
         </div>
       </SectionShell>
     </div>
@@ -1761,6 +2218,8 @@ const AdminControlCenter = () => {
         return renderLearning();
       case 'users':
         return renderUsers();
+      case 'chapters':
+        return renderChapters();
       case 'points':
         return renderPoints();
       case 'uploads':
