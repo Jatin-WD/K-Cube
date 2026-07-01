@@ -423,7 +423,7 @@ const SectionShell = ({
   children: ReactNode;
   actions?: ReactNode;
 }) => (
-  <section className="rounded-2xl border border-white/10 bg-[#101014] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+  <section className="min-w-0 rounded-2xl border border-white/10 bg-[#101014] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
     <div className="flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <h2 className="text-2xl font-black text-white">{title}</h2>
@@ -431,7 +431,7 @@ const SectionShell = ({
       </div>
       {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
     </div>
-    <div className="pt-5">{children}</div>
+    <div className="min-w-0 pt-5">{children}</div>
   </section>
 );
 
@@ -1199,7 +1199,7 @@ const AdminControlCenter = () => {
   );
 
   const renderWebsite = () => (
-    <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
       <SectionShell title="CMS content inventory" description="Every key page in the product is tracked here. Edit page metadata, SEO and publish state from the panel.">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-left text-sm">
@@ -1409,7 +1409,7 @@ const AdminControlCenter = () => {
   );
 
   const renderLearning = () => (
-    <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(320px,360px)_minmax(0,1fr)]">
       <SectionShell title="Learning track editor" description="Create and maintain lesson tracks, reward points and JSON copy blocks used by the learning journeys." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredTracks.length} tracks</span>}>
         <div className="space-y-3">
           {filteredTracks.map((track) => (
@@ -1488,7 +1488,7 @@ const AdminControlCenter = () => {
       </SectionShell>
 
       <SectionShell title="Question bank editor" description="Pick a track on the left, then create or modify the linked questions and structured payloads.">
-        <div className="grid gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="grid gap-4 lg:grid-cols-[minmax(320px,360px)_minmax(0,1fr)]">
           <div className="space-y-3">
             {visibleQuestions.map((question) => (
               <button
@@ -1602,7 +1602,7 @@ const AdminControlCenter = () => {
   );
 
   const renderUsers = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Users" description="Review roles, account state, city/state, profile image and membership classification." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span>}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">
@@ -1714,7 +1714,7 @@ const AdminControlCenter = () => {
   );
 
   const renderChapters = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Chapter directory" description="Manage branch chapters, leaders and member counts from the admin panel." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredChapters.length} records</span>}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[940px] text-left text-sm">
@@ -1832,7 +1832,7 @@ const AdminControlCenter = () => {
   );
 
   const renderPoints = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Points ledger" description="Manual adjustments and audit history for point balance changes." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPoints.length} records</span>}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">
@@ -1880,7 +1880,7 @@ const AdminControlCenter = () => {
   );
 
   const renderUploads = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Content upload review" description="Approve or reject user generated uploads and attach verified points." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUploads.length} records</span>}>
         <div className="space-y-3">
           {filteredUploads.map((entry) => (
@@ -1936,7 +1936,7 @@ const AdminControlCenter = () => {
   );
 
   const renderKFood = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="K-Food claims" description="Audit purchase claims, coupon references and reward eligibility." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredClaims.length} records</span>}>
         <div className="space-y-3">
           {filteredClaims.map((entry) => (
@@ -1992,7 +1992,7 @@ const AdminControlCenter = () => {
   );
 
   const renderEvents = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Event inventory" description="Create, edit and archive platform events from one place." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredEvents.length} records</span>}>
         <div className="space-y-3">
           {filteredEvents.map((entry) => (
@@ -2107,7 +2107,7 @@ const AdminControlCenter = () => {
   );
 
   const renderRewards = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Reward catalog" description="Add, update or disable rewards from the same control center." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredRewards.length} records</span>}>
         <div className="space-y-3">
           {filteredRewards.map((entry) => (
@@ -2193,7 +2193,7 @@ const AdminControlCenter = () => {
   );
 
   const renderAnnouncements = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Recent announcements" description="Broadcast urgent CMS notes, release updates or internal notices." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredAnnouncements.length} records</span>}>
         <div className="space-y-3">
           {filteredAnnouncements.map((entry) => (
@@ -2241,7 +2241,7 @@ const AdminControlCenter = () => {
   );
 
   const renderCalendar = () => (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Calendar connections" description="See the configured Google Calendar integration and keep sync active.">
         <div className="space-y-3">
           {calendarConnections.map((entry) => (
@@ -2340,8 +2340,8 @@ const AdminControlCenter = () => {
   };
 
   return (
-    <main className="min-h-screen bg-[#070708] text-white">
-      <div className="grid min-h-screen lg:grid-cols-[300px_minmax(0,1fr)]">
+    <main className="min-h-screen overflow-x-hidden bg-[#070708] text-white">
+      <div className="grid min-h-screen overflow-x-hidden lg:grid-cols-[300px_minmax(0,1fr)]">
         <aside className="border-b border-white/10 bg-[#0b0b0d] lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
           <div className="flex h-full flex-col">
             <div className="border-b border-white/10 px-5 py-6">
@@ -2385,9 +2385,9 @@ const AdminControlCenter = () => {
           </div>
         </aside>
 
-        <div className="px-5 py-6 lg:px-8 lg:py-8">
-          <div className="mx-auto max-w-[1600px] space-y-6">
-            <section className="rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)]">
+        <div className="min-w-0 px-5 py-6 lg:px-8 lg:py-8">
+          <div className="mx-auto min-w-0 max-w-[1600px] space-y-6">
+            <section className="min-w-0 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)]">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.26em] text-[#ffc400]">Admin Dashboard</p>
