@@ -9,9 +9,11 @@ import mapRoutes from './routes/map';
 import analyticsRoutes from './routes/analytics';
 import searchRoutes from './routes/search';
 import adminRoutes from './routes/admin';
+import learningRoutes from './routes/learning';
 import engagementRoutes from './routes/engagement';
 import eventRoutes from './routes/events';
 import integrationRoutes from './routes/integrations';
+import paymentRoutes from './routes/payments';
 import { API_PREFIX, KCUBE_SERVE_FRONTEND } from './config';
 
 export const app = express();
@@ -38,10 +40,12 @@ app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/map`, mapRoutes);
 app.use(`${API_PREFIX}/analytics`, analyticsRoutes);
 app.use(`${API_PREFIX}/search`, searchRoutes);
+app.use(`${API_PREFIX}/learning`, learningRoutes);
 app.use(`${API_PREFIX}/admin`, adminRoutes);
 app.use(`${API_PREFIX}/engagement`, engagementRoutes);
 app.use(`${API_PREFIX}/events`, eventRoutes);
 app.use(`${API_PREFIX}/integrations`, integrationRoutes);
+app.use(`${API_PREFIX}/payments`, paymentRoutes);
 
 if (KCUBE_SERVE_FRONTEND !== 'true') {
   app.get('/', (req, res) => {

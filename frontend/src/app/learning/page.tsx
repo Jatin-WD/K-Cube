@@ -1,7 +1,7 @@
-import LearningGame from '@/components/LearningGame';
+import KoreanLearningHub from '@/components/KoreanLearningHub';
 
 const LearningPage = () => {
-  return <LearningGame />;
+  return <KoreanLearningHub />;
 };
 
 export default LearningPage;

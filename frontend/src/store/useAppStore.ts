@@ -33,6 +33,10 @@ export interface ShopOrder {
   rewardPoints: number;
   createdAt: string;
   items: ShopOrderItem[];
+  paymentOrderId?: number;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  paymentStatus?: 'created' | 'attempted' | 'paid' | 'failed' | 'refunded' | 'cancelled';
 }
 
 interface AppState {
@@ -42,6 +46,7 @@ interface AppState {
   completedActions: string[];
   token: string | null;
   refreshToken: string | null;
+  sessionSeed: string | null;
   shopCart: ShopCartItem[];
   shopOrders: ShopOrder[];
   setLanguage: (language: Language) => void;
@@ -65,6 +70,7 @@ export const useAppStore = create<AppState>()(
       completedActions: [],
       token: null,
       refreshToken: null,
+      sessionSeed: null,
       shopCart: [],
       shopOrders: [],
       setLanguage: (language) => set({ language }),
@@ -74,6 +80,9 @@ export const useAppStore = create<AppState>()(
         }),
       signIn: (user, token = null, refreshToken = null, serverPoints) =>
         set((state) => {
+          const sessionSeed = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
           const hasWelcomeBonus = state.completedActions.includes('welcome-bonus');
           const resolvedPoints =
             typeof serverPoints === 'number'
@@ -88,13 +97,14 @@ export const useAppStore = create<AppState>()(
             user: { ...user, points: resolvedPoints },
             token,
             refreshToken,
+            sessionSeed,
             points: resolvedPoints,
             completedActions: hasWelcomeBonus
               ? state.completedActions
               : [...state.completedActions, 'welcome-bonus'],
           };
         }),
-      signOut: () => set({ user: null, token: null, refreshToken: null, points: 0, completedActions: [], shopCart: [], shopOrders: [] }),
+      signOut: () => set({ user: null, token: null, refreshToken: null, sessionSeed: null, points: 0, completedActions: [], shopCart: [], shopOrders: [] }),
       awardPoints: (actionId, points) =>
         set((state) => {
           if (!state.user) {
@@ -143,7 +153,6 @@ export const useAppStore = create<AppState>()(
           }
 
           return {
-            points: state.points + order.rewardPoints,
             shopCart: [],
             shopOrders: [order, ...state.shopOrders],
           };
@@ -159,6 +168,7 @@ export const useAppStore = create<AppState>()(
         completedActions: state.completedActions,
         token: state.token,
         refreshToken: state.refreshToken,
+        sessionSeed: state.sessionSeed,
         shopCart: state.shopCart,
         shopOrders: state.shopOrders,
       }),

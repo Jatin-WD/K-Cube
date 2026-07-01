@@ -23,6 +23,7 @@ import {
   Zap,
 } from 'lucide-react';
 import api from '@/lib/api';
+import { startRazorpayCheckout } from '@/lib/razorpay';
 import { useAppStore } from '@/store/useAppStore';
 
 type GameType = 'choice' | 'cards' | 'arrange' | 'listen' | 'speak' | 'match';
@@ -583,6 +584,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   const [cart, setCart] = useState<string[]>([]);
   const [notice, setNotice] = useState('');
   const [trackCompleted, setTrackCompleted] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
   const round = track.rounds[roundIndex];
   const progress = ((roundIndex + (feedback === 'correct' || trackCompleted ? 1 : 0)) / track.rounds.length) * 100;
@@ -667,7 +669,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
 
   const logCourseAction = async (product: CourseProduct, action: 'cart' | 'trial' | 'purchase', points: number) => {
     try {
-      await api.post('/engagement/learning/course-action', {
+      const response = await api.post('/engagement/learning/course-action', {
         course_id: product.id,
         course_title: product.title,
         track_slug: track.slug,
@@ -676,24 +678,80 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
         points_reward: points,
         metadata: { schedule: product.schedule, lessons: product.lessons, teacher: product.teacher },
       });
+      return response.data?.data ?? response.data;
     } catch {
       return false;
     }
-    return true;
   };
 
   const addToCart = async (product: CourseProduct) => {
     setCart((items) => (items.includes(product.id) ? items : [...items, product.id]));
     const synced = await logCourseAction(product, 'cart', 10);
-    if (!synced) awardLearningPoints(`course-cart-${product.id}`, 10);
+    if (synced) {
+      awardLearningPoints(`course-cart-${product.id}`, Number(synced.pointsReward || 10));
+    } else {
+      awardLearningPoints(`course-cart-${product.id}`, 10);
+    }
     setNotice(`${product.title} added to cart. +10 cart action points${synced ? ' synced' : ' locally saved'}.`);
   };
 
   const buyNow = async (product: CourseProduct) => {
-    const action = product.trial ? 'trial' : 'purchase';
-    const synced = await logCourseAction(product, action, product.points);
-    if (!synced) awardLearningPoints(`course-buy-${product.id}`, product.points);
-    setNotice(`${product.title} enrolled. +${product.points} ${product.trial ? 'trial' : 'purchase'} points ${synced ? 'synced' : 'locally saved'}.`);
+    if (!user) {
+      setNotice('Please sign in to complete course checkout.');
+      return;
+    }
+
+    if (isPurchasing) {
+      return;
+    }
+
+    if (product.trial || product.price <= 0) {
+      const synced = await logCourseAction(product, 'trial', product.points);
+      if (synced) {
+        awardLearningPoints(`course-buy-${product.id}`, Number(synced.pointsReward || product.points));
+      } else {
+        awardLearningPoints(`course-buy-${product.id}`, product.points);
+      }
+      setNotice(`${product.title} enrolled. +${product.points} trial points ${synced ? 'synced' : 'locally saved'}.`);
+      return;
+    }
+
+    setIsPurchasing(true);
+    setNotice('');
+
+    try {
+      const payment = await startRazorpayCheckout({
+        amount: product.price,
+        contextType: 'course',
+        contextRef: product.id,
+        description: product.title,
+        customerEmail: user.email ?? null,
+        customerPhone: user.phone ?? null,
+        notes: {
+          courseTitle: product.title,
+          trackSlug: track.slug,
+          pointsReward: product.points,
+          price: product.price,
+        },
+        course: {
+          courseId: product.id,
+          courseTitle: product.title,
+          trackSlug: track.slug,
+          price: product.price,
+          pointsReward: product.points,
+          teacher: product.teacher,
+          schedule: product.schedule,
+          lessons: product.lessons,
+        },
+      });
+
+      awardLearningPoints(`razorpay-payment-${payment.paymentOrderId}`, payment.pointsAwarded || product.points);
+      setNotice(`${product.title} payment successful. +${payment.pointsAwarded || product.points} points synced.`);
+    } catch (error: any) {
+      setNotice(error?.message || 'Payment could not be completed.');
+    } finally {
+      setIsPurchasing(false);
+    }
   };
 
   const previewGuideBook = (guideBook: GuideBook) => {
@@ -1022,8 +1080,8 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                     <button onClick={() => addToCart(product)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#d5d9d9] px-4 py-3 text-sm font-black text-[#111827]">
                       <ShoppingCart className="h-4 w-4" /> Add to Cart
                     </button>
-                    <button onClick={() => buyNow(product)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827]">
-                      <Play className="h-4 w-4" /> {product.trial ? 'Book Trial' : 'Buy Now'}
+                    <button disabled={isPurchasing} onClick={() => buyNow(product)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] disabled:cursor-not-allowed disabled:bg-[#c9b64d]">
+                      <Play className="h-4 w-4" /> {isPurchasing ? 'Processing...' : product.trial ? 'Book Trial' : 'Buy Now'}
                     </button>
                   </div>
                 </div>

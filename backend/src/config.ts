@@ -53,3 +53,6 @@ export const SMTP_FROM = process.env.SMTP_FROM || 'K-CUBE <no-reply@k-cube.local
 export const PETPOOJA_API_BASE_URL = process.env.PETPOOJA_API_BASE_URL || '';
 export const PETPOOJA_API_KEY = process.env.PETPOOJA_API_KEY || '';
 export const PETPOOJA_WEBHOOK_SECRET = process.env.PETPOOJA_WEBHOOK_SECRET || '';
+export const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || '';
+export const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || '';
+export const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || '';

@@ -1,10 +1,36 @@
 "use client";
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { BookOpen, CheckCircle2, Clapperboard, ExternalLink, Gift, Plane, Trophy, UploadCloud, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
+
+interface LearningProgressRow {
+  trackSlug: string;
+  trackTitle: string;
+  eyebrow: string;
+  accent: string;
+  currentStreak: number;
+  bestStreak: number;
+  lastCompletedAt?: string | null;
+  totalSessions: number;
+  totalCorrect: number;
+  totalPoints: number;
+}
+
+interface LearningSessionRow {
+  id: number;
+  trackSlug: string;
+  trackTitle: string;
+  totalQuestions: number;
+  correctAnswers: number;
+  sessionPoints: number;
+  accuracy: number;
+  streakBefore: number;
+  streakAfter: number;
+  completedAt: string;
+}
 
 const heroImages = [
   {
@@ -46,6 +72,9 @@ const MemberDashboard = () => {
     thumbnail_url: '',
   });
   const [purchase, setPurchase] = useState({ order_id: '', order_total: '', coupon_code: '' });
+  const [learningProgress, setLearningProgress] = useState<LearningProgressRow[]>([]);
+  const [learningSessions, setLearningSessions] = useState<LearningSessionRow[]>([]);
+  const [learningLoading, setLearningLoading] = useState(false);
 
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -96,6 +125,37 @@ const MemberDashboard = () => {
       setMessage('Purchase claim submit nahi ho paya. Order ID already claimed ho sakta hai.');
     }
   };
+
+  useEffect(() => {
+    if (!user) return;
+
+    let cancelled = false;
+    const loadLearningProgress = async () => {
+      setLearningLoading(true);
+      try {
+        const response = await api.get('/learning/me/progress');
+        const payload = response.data?.data ?? response.data;
+        if (cancelled) return;
+        setLearningProgress(Array.isArray(payload?.progress) ? payload.progress : []);
+        setLearningSessions(Array.isArray(payload?.sessions) ? payload.sessions : []);
+      } catch {
+        if (!cancelled) {
+          setLearningProgress([]);
+          setLearningSessions([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLearningLoading(false);
+        }
+      }
+    };
+
+    loadLearningProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   if (!user) {
     return (
@@ -219,6 +279,84 @@ const MemberDashboard = () => {
               <Gift className="h-4 w-4" /> Submit claim
             </button>
           </form>
+        </div>
+
+        <div className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Saved learning progress</p>
+              <h2 className="mt-2 text-2xl font-black">Streaks and recent history</h2>
+              <p className="mt-2 text-sm leading-6 text-[#aab5c6]">Ye data `user_learning_progress` aur `learning_sessions` se load hota hai, so refresh ke baad bhi persist rahega.</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-[#d4dbe7]">
+              {learningLoading ? 'Loading saved progress...' : `${learningProgress.length} tracked paths`}
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {learningProgress.length ? (
+              learningProgress.map((track) => (
+                <article key={track.trackSlug} className="rounded-xl border border-white/10 bg-white/[0.04] p-5">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">{track.eyebrow}</p>
+                  <h3 className="mt-2 text-xl font-black">{track.trackTitle}</h3>
+                  <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+                    <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
+                      <p className="text-xs font-bold text-[#aab5c6]">Current</p>
+                      <p className="mt-1 text-2xl font-black" style={{ color: track.accent }}>{track.currentStreak}</p>
+                    </div>
+                    <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
+                      <p className="text-xs font-bold text-[#aab5c6]">Best</p>
+                      <p className="mt-1 text-2xl font-black">{track.bestStreak}</p>
+                    </div>
+                    <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
+                      <p className="text-xs font-bold text-[#aab5c6]">Sessions</p>
+                      <p className="mt-1 text-2xl font-black">{track.totalSessions}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 space-y-2 text-sm text-[#d4dbe7]">
+                    <p className="flex justify-between gap-4"><span>Total correct</span><span className="font-black">{track.totalCorrect}</span></p>
+                    <p className="flex justify-between gap-4"><span>Total points</span><span className="font-black">{track.totalPoints}</span></p>
+                    <p className="flex justify-between gap-4"><span>Last completed</span><span className="font-black">{track.lastCompletedAt ? new Date(track.lastCompletedAt).toLocaleString() : 'Not yet'}</span></p>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-[#aab5c6] lg:col-span-3">
+                No saved learning progress yet. Complete a few Korean lessons and your streak history will appear here.
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.2em] text-[#ffc400]">Recent sessions</p>
+                <h3 className="mt-2 text-xl font-black">Latest completions</h3>
+              </div>
+              <span className="text-sm text-[#aab5c6]">{learningSessions.length} records</span>
+            </div>
+            <div className="mt-4 grid gap-3">
+              {learningSessions.length ? (
+                learningSessions.slice(0, 5).map((session) => (
+                  <article key={session.id} className="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-black text-white">{session.trackTitle}</p>
+                      <p className="mt-1 text-sm text-[#aab5c6]">{session.totalQuestions} questions · {session.correctAnswers} correct · {session.accuracy}% accuracy</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.16em]">
+                      <span className="rounded-full bg-[#ffc400]/10 px-3 py-1 text-[#ffc400]">+{session.sessionPoints} pts</span>
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-white">Streak {session.streakBefore} → {session.streakAfter}</span>
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-white">{new Date(session.completedAt).toLocaleDateString()}</span>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-[#aab5c6]">
+                  Recent session history will appear here after you finish a learning track.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {message ? <p className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{message}</p> : null}

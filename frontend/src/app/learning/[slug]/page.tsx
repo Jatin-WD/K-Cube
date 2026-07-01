@@ -1,20 +1,17 @@
-import { notFound } from 'next/navigation';
-import LearningTrackPage from '@/components/LearningTrackPage';
-import { findDetail } from '@/lib/kcubeContent';
+import KoreanLearningTrack from '@/components/KoreanLearningTrack';
+import { getTrackBySlug } from '@/lib/koreanLearningBank';
 
 export const dynamic = 'force-dynamic';
 
 export const generateMetadata = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const resolvedParams = await params;
-  const item = findDetail('learning', resolvedParams.slug);
-  return { title: item ? `${item.title.en} | K-CUBE Korean Learning` : 'K-CUBE Korean Learning' };
+  const track = getTrackBySlug(resolvedParams.slug);
+  return { title: track ? `${track.title} | K-CUBE Korean Learning` : 'K-CUBE Korean Learning' };
 };
 
 const LearningDetailPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const resolvedParams = await params;
-  const item = findDetail('learning', resolvedParams.slug);
-  if (!item) notFound();
-  return <LearningTrackPage slug={resolvedParams.slug} />;
+  return <KoreanLearningTrack slug={resolvedParams.slug} />;
 };
 
 export default LearningDetailPage;

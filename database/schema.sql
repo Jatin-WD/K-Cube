@@ -440,12 +440,47 @@ CREATE TABLE IF NOT EXISTS learning_course_orders (
   price DECIMAL(12,2) NOT NULL DEFAULT 0,
   points_reward INT UNSIGNED NOT NULL DEFAULT 0,
   status ENUM('pending','confirmed','cancelled') NOT NULL DEFAULT 'pending',
+  payment_order_id BIGINT UNSIGNED DEFAULT NULL,
+  razorpay_order_id VARCHAR(255) DEFAULT NULL,
+  razorpay_payment_id VARCHAR(255) DEFAULT NULL,
+  payment_status ENUM('created','paid','failed','refunded','cancelled') NOT NULL DEFAULT 'created',
+  payment_currency CHAR(3) NOT NULL DEFAULT 'INR',
   metadata JSON DEFAULT (JSON_OBJECT()),
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   INDEX idx_learning_order_user (user_id),
   INDEX idx_learning_order_course (course_id),
+  INDEX idx_learning_order_payment (payment_order_id),
   CONSTRAINT fk_learning_course_order_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS payment_orders (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED DEFAULT NULL,
+  provider ENUM('razorpay') NOT NULL DEFAULT 'razorpay',
+  context_type ENUM('shop','course','trial','event','reward','other') NOT NULL DEFAULT 'other',
+  context_ref VARCHAR(255) DEFAULT NULL,
+  amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  currency CHAR(3) NOT NULL DEFAULT 'INR',
+  receipt VARCHAR(80) NOT NULL,
+  status ENUM('created','attempted','paid','failed','refunded','cancelled') NOT NULL DEFAULT 'created',
+  razorpay_order_id VARCHAR(255) DEFAULT NULL,
+  razorpay_payment_id VARCHAR(255) DEFAULT NULL,
+  razorpay_signature VARCHAR(255) DEFAULT NULL,
+  notes JSON DEFAULT (JSON_OBJECT()),
+  items JSON DEFAULT (JSON_ARRAY()),
+  customer_email VARCHAR(255) DEFAULT NULL,
+  customer_phone VARCHAR(30) DEFAULT NULL,
+  verified_at DATETIME DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_payment_order_receipt (receipt),
+  UNIQUE KEY uniq_payment_order_razorpay_order (razorpay_order_id),
+  INDEX idx_payment_order_user (user_id),
+  INDEX idx_payment_order_context (context_type, context_ref),
+  CONSTRAINT fk_payment_order_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS cms_pages (
@@ -485,6 +520,117 @@ CREATE TABLE IF NOT EXISTS cms_blocks (
   PRIMARY KEY (id),
   INDEX idx_cms_block_page (page_id),
   CONSTRAINT fk_cms_block_page FOREIGN KEY (page_id) REFERENCES cms_pages(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS learning_tracks (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  slug VARCHAR(160) NOT NULL UNIQUE,
+  title VARCHAR(255) NOT NULL,
+  eyebrow VARCHAR(255) NOT NULL,
+  intro TEXT NOT NULL,
+  accent VARCHAR(32) NOT NULL DEFAULT '#19c37d',
+  reward_points INT UNSIGNED NOT NULL DEFAULT 0,
+  bank_size INT UNSIGNED NOT NULL DEFAULT 0,
+  step_size INT UNSIGNED NOT NULL DEFAULT 10,
+  overview JSON DEFAULT (JSON_ARRAY()),
+  login_copy JSON DEFAULT (JSON_ARRAY()),
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+  created_by BIGINT UNSIGNED DEFAULT NULL,
+  updated_by BIGINT UNSIGNED DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_learning_tracks_active (active, sort_order),
+  CONSTRAINT fk_learning_tracks_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+  CONSTRAINT fk_learning_tracks_updated_by FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS learning_questions (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  track_id BIGINT UNSIGNED NOT NULL,
+  question_key VARCHAR(255) NOT NULL,
+  type ENUM('choice','cards','arrange','listen','speak','match') NOT NULL,
+  tag VARCHAR(120) NOT NULL,
+  prompt TEXT NOT NULL,
+  korean VARCHAR(255) NOT NULL,
+  answer VARCHAR(255) NOT NULL,
+  options JSON DEFAULT NULL,
+  words JSON DEFAULT NULL,
+  cards JSON DEFAULT NULL,
+  pairs JSON DEFAULT NULL,
+  hint TEXT NOT NULL,
+  points INT UNSIGNED NOT NULL DEFAULT 0,
+  sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_by BIGINT UNSIGNED DEFAULT NULL,
+  updated_by BIGINT UNSIGNED DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_learning_question_key (track_id, question_key),
+  INDEX idx_learning_question_track (track_id, active, sort_order),
+  CONSTRAINT fk_learning_question_track FOREIGN KEY (track_id) REFERENCES learning_tracks(id) ON DELETE CASCADE,
+  CONSTRAINT fk_learning_question_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+  CONSTRAINT fk_learning_question_updated_by FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS learning_sessions (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  track_id BIGINT UNSIGNED NOT NULL,
+  session_seed VARCHAR(255) NOT NULL,
+  total_questions INT UNSIGNED NOT NULL DEFAULT 0,
+  correct_answers INT UNSIGNED NOT NULL DEFAULT 0,
+  session_points INT NOT NULL DEFAULT 0,
+  accuracy DECIMAL(5,2) NOT NULL DEFAULT 0,
+  streak_before INT UNSIGNED NOT NULL DEFAULT 0,
+  streak_after INT UNSIGNED NOT NULL DEFAULT 0,
+  completed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_learning_session_seed (user_id, track_id, session_seed),
+  INDEX idx_learning_sessions_user (user_id, completed_at),
+  INDEX idx_learning_sessions_track (track_id, completed_at),
+  CONSTRAINT fk_learning_session_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_learning_session_track FOREIGN KEY (track_id) REFERENCES learning_tracks(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS learning_session_answers (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  session_id BIGINT UNSIGNED NOT NULL,
+  question_id BIGINT UNSIGNED DEFAULT NULL,
+  question_key VARCHAR(255) NOT NULL,
+  user_answer TEXT NOT NULL,
+  expected_answer TEXT NOT NULL,
+  is_correct BOOLEAN NOT NULL DEFAULT FALSE,
+  points_awarded INT NOT NULL DEFAULT 0,
+  answered_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_learning_answer (session_id, question_key),
+  INDEX idx_learning_answer_session (session_id),
+  CONSTRAINT fk_learning_answer_session FOREIGN KEY (session_id) REFERENCES learning_sessions(id) ON DELETE CASCADE,
+  CONSTRAINT fk_learning_answer_question FOREIGN KEY (question_id) REFERENCES learning_questions(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS user_learning_progress (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  track_id BIGINT UNSIGNED NOT NULL,
+  current_streak INT UNSIGNED NOT NULL DEFAULT 0,
+  best_streak INT UNSIGNED NOT NULL DEFAULT 0,
+  last_completed_at DATETIME DEFAULT NULL,
+  last_session_id BIGINT UNSIGNED DEFAULT NULL,
+  total_sessions INT UNSIGNED NOT NULL DEFAULT 0,
+  total_correct INT UNSIGNED NOT NULL DEFAULT 0,
+  total_points INT UNSIGNED NOT NULL DEFAULT 0,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_learning_progress (user_id, track_id),
+  INDEX idx_learning_progress_user (user_id),
+  CONSTRAINT fk_learning_progress_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_learning_progress_track FOREIGN KEY (track_id) REFERENCES learning_tracks(id) ON DELETE CASCADE,
+  CONSTRAINT fk_learning_progress_session FOREIGN KEY (last_session_id) REFERENCES learning_sessions(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS admin_audit_logs (

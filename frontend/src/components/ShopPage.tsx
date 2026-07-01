@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowRight, Coins, Lock, Minus, Plus, ShoppingBag, Sparkles, Trash2 } from 'lucide-react';
+import { startRazorpayCheckout } from '@/lib/razorpay';
 import { shopCopy, shopProducts } from '@/lib/shopContent';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -16,8 +17,10 @@ const ShopPage = () => {
   const removeFromCart = useAppStore((state) => state.removeFromCart);
   const updateCartQuantity = useAppStore((state) => state.updateCartQuantity);
   const checkoutShopOrder = useAppStore((state) => state.checkoutShopOrder);
+  const awardPoints = useAppStore((state) => state.awardPoints);
   const t = shopCopy[language];
   const [message, setMessage] = useState('');
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const cartItems = cart
     .map((item) => {
@@ -34,23 +37,65 @@ const ShopPage = () => {
     setMessage(user ? 'Added to cart. Complete your order from the cart summary.' : '');
   };
 
-  const handleCheckout = () => {
-    if (!user || !cartItems.length) return;
+  const handleCheckout = async () => {
+    if (!user || !cartItems.length || isCheckingOut) return;
 
-    checkoutShopOrder({
-      id: `shop-order-${Date.now()}`,
-      total: subtotal,
-      rewardPoints: rewardTotal,
-      createdAt: new Date().toISOString(),
-      items: cartItems.map(({ product, quantity }) => ({
-        productId: product.id,
-        title: product.title.en,
-        quantity,
-        unitPrice: product.price,
-      })),
-    });
+    setIsCheckingOut(true);
+    setMessage('');
 
-    setMessage(t.orderPlaced);
+    try {
+      const payment = await startRazorpayCheckout({
+        amount: subtotal,
+        contextType: 'shop',
+        contextRef: `shop-${Date.now()}`,
+        description: 'K-CUBE shop order',
+        customerEmail: user.email ?? null,
+        customerPhone: user.phone ?? null,
+        notes: {
+          rewardPoints: rewardTotal,
+          total: subtotal,
+          items: cartItems.map(({ product, quantity }) => ({
+            productId: product.id,
+            title: product.title.en,
+            quantity,
+            unitPrice: product.price,
+          })),
+        },
+        items: cartItems.map(({ product, quantity }) => ({
+          productId: product.id,
+          title: product.title.en,
+          quantity,
+          unitPrice: product.price,
+        })),
+      });
+
+      checkoutShopOrder({
+        id: `razorpay-${payment.razorpayOrderId}`,
+        total: subtotal,
+        rewardPoints: rewardTotal,
+        createdAt: new Date().toISOString(),
+        items: cartItems.map(({ product, quantity }) => ({
+          productId: product.id,
+          title: product.title.en,
+          quantity,
+          unitPrice: product.price,
+        })),
+        paymentOrderId: payment.paymentOrderId,
+        razorpayOrderId: payment.razorpayOrderId,
+        razorpayPaymentId: payment.razorpayPaymentId,
+        paymentStatus: payment.status,
+      });
+
+      if (payment.pointsAwarded) {
+        awardPoints(`razorpay-payment-${payment.paymentOrderId}`, payment.pointsAwarded);
+      }
+
+      setMessage(`Payment successful. Your order has been placed and +${payment.pointsAwarded || rewardTotal} points are synced.`);
+    } catch (error: any) {
+      setMessage(error?.message || 'Payment could not be completed.');
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   return (
@@ -207,11 +252,11 @@ const ShopPage = () => {
             ) : (
               <button
                 type="button"
-                disabled={!cartItems.length}
+                disabled={!cartItems.length || isCheckingOut}
                 onClick={handleCheckout}
                 className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#ffd814] px-5 py-4 text-sm font-black text-[#111827] disabled:cursor-not-allowed disabled:bg-[#55606f] disabled:text-[#d5d9d9]"
               >
-                {t.checkout}
+                {isCheckingOut ? 'Redirecting to Razorpay...' : t.checkout}
                 <ArrowRight className="h-4 w-4" />
               </button>
             )}
