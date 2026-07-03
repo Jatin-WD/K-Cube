@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, CheckCircle2, Clapperboard, ExternalLink, Gift, Plane, Trophy, UploadCloud, Utensils } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { BookOpen, CheckCircle2, Clapperboard, Gift, Plane, Trophy, UploadCloud, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -61,6 +62,7 @@ const uploadCategories = [
 ];
 
 const MemberDashboard = () => {
+  const router = useRouter();
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
   const [message, setMessage] = useState('');
@@ -103,9 +105,9 @@ const MemberDashboard = () => {
     try {
       const response = await api.post('/engagement/kfood/click', { item_slug: 'korean-food-store', source: 'dashboard' });
       const data = response.data?.data ?? response.data;
-      window.open(data.redirectUrl || 'https://k-food.in', '_blank', 'noopener,noreferrer');
+      router.push(typeof data.redirectUrl === 'string' ? data.redirectUrl : '/shop');
     } catch {
-      window.open('https://k-food.in', '_blank', 'noopener,noreferrer');
+      router.push('/shop');
     }
   };
 
@@ -218,7 +220,7 @@ const MemberDashboard = () => {
               <div className="h-full rounded-full bg-[#ffc400]" style={{ width: `${Math.min(points / 20, 100)}%` }} />
             </div>
             <button type="button" onClick={visitKFood} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909]">
-              Visit K-Food.in <ExternalLink className="h-4 w-4" />
+              Visit K-CUBE Shop
             </button>
           </aside>
         </div>

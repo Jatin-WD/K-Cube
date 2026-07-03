@@ -255,7 +255,7 @@ export const trackKFoodClick = async (req: AuthRequest, res: Response) => {
     'INSERT INTO kfood_clicks (user_id, item_slug, action, source, created_at) VALUES (?, ?, ?, ?, NOW())',
     [userId, item_slug || null, action, source],
   );
-  return ok(res, { redirectUrl: `https://k-food.in/?kcube_source=${encodeURIComponent(String(source))}&item=${encodeURIComponent(String(item_slug || 'home'))}` });
+  return ok(res, { redirectUrl: '/shop' });
 };
 
 export const claimKFoodPurchase = async (req: AuthRequest, res: Response) => {

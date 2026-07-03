@@ -32,6 +32,22 @@ CREATE TABLE IF NOT EXISTS users (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS auth_identities (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  provider ENUM('password','google','phone_otp') NOT NULL,
+  provider_user_id VARCHAR(255) DEFAULT NULL,
+  email VARCHAR(255) DEFAULT NULL,
+  phone VARCHAR(30) DEFAULT NULL,
+  verified BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_identity_provider_user (provider, provider_user_id),
+  INDEX idx_identity_user (user_id),
+  CONSTRAINT fk_identity_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Bootstrap admin account for a fresh install.
 -- Login:
 --   email: admin@kcube.local
@@ -60,26 +76,6 @@ INSERT IGNORE INTO users (
   NOW(),
   'active'
 );
-
-INSERT IGNORE INTO auth_identities (
-  user_id,
-  provider,
-  provider_user_id,
-  email,
-  verified,
-  created_at,
-  updated_at
-) SELECT
-  id,
-  'password',
-  'admin@kcube.local',
-  'admin@kcube.local',
-  TRUE,
-  NOW(),
-  NOW()
-FROM users
-WHERE email = 'admin@kcube.local'
-LIMIT 1;
 
 CREATE TABLE IF NOT EXISTS referrals (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -352,22 +348,6 @@ CREATE TABLE IF NOT EXISTS chapters_members (
   INDEX idx_chapter_member (chapter_id, user_id),
   CONSTRAINT fk_chapter_member_chapter FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE,
   CONSTRAINT fk_chapter_member_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS auth_identities (
-  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  user_id BIGINT UNSIGNED NOT NULL,
-  provider ENUM('password','google','phone_otp') NOT NULL,
-  provider_user_id VARCHAR(255) DEFAULT NULL,
-  email VARCHAR(255) DEFAULT NULL,
-  phone VARCHAR(30) DEFAULT NULL,
-  verified BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY uniq_identity_provider_user (provider, provider_user_id),
-  INDEX idx_identity_user (user_id),
-  CONSTRAINT fk_identity_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS point_transactions (

@@ -9,7 +9,7 @@ const footerCopy: Record<Language, Record<string, string>> = {
     platform: 'Platform',
     support: 'Support',
     commerce: 'Commerce',
-    rights: 'Designed for K-CUBE.store and the K-Food.in commerce bridge.',
+    rights: 'Designed for K-CUBE.store and the internal K-CUBE shop.',
     activities: 'Activities',
     learning: 'Korean Learning',
     kfood: 'K-Food',
@@ -27,7 +27,7 @@ const footerCopy: Record<Language, Record<string, string>> = {
     platform: '플랫폼',
     support: '지원',
     commerce: '커머스',
-    rights: 'K-CUBE.store와 K-Food.in 커머스 연결을 위해 설계되었습니다.',
+    rights: 'K-CUBE.store와 내부 K-CUBE shop을 위해 설계되었습니다.',
     activities: '활동',
     learning: '한국어 학습',
     kfood: 'K-푸드',
@@ -45,7 +45,7 @@ const footerCopy: Record<Language, Record<string, string>> = {
     platform: 'प्लेटफ़ॉर्म',
     support: 'सहायता',
     commerce: 'कॉमर्स',
-    rights: 'K-CUBE.store और K-Food.in कॉमर्स कनेक्शन के लिए डिज़ाइन किया गया।',
+    rights: 'K-CUBE.store और internal K-CUBE shop के लिए डिज़ाइन किया गया।',
     activities: 'गतिविधियाँ',
     learning: 'कोरियाई भाषा सीखना',
     kfood: 'के-फूड',
@@ -87,7 +87,7 @@ const Footer = () => {
         </div>
         <div className="space-y-3">
           <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.commerce}</p>
-          <a href="https://www.k-food.in" target="_blank" rel="noreferrer" className="block text-sm hover:text-white">K-Food.in</a>
+          <Link href="/shop" className="block text-sm hover:text-white">K-CUBE Shop</Link>
           <Link href="/signin" className="block text-sm hover:text-white">{t.signIn}</Link>
           <Link href="/signup" className="block text-sm hover:text-white">{t.signUp}</Link>
           <Link href="/trip-to-korea" className="block text-sm hover:text-white">{t.trip}</Link>

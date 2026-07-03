@@ -238,13 +238,14 @@ export const sendOtp = async (req: Request, res: Response) => {
   if (!phone) return fail(res, 400, 'VALIDATION_ERROR', 'Phone number is required');
 
   const otpCode = generateOtpCode();
+  await pool.query('UPDATE otp_requests SET used = TRUE WHERE phone = ? AND used = FALSE', [phone]);
   await pool.query(
     'INSERT INTO otp_requests (phone, otp_code, expires_at, created_at, used) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 5 MINUTE), NOW(), FALSE)',
     [phone, otpCode]
   );
 
-  // TODO: integrate SMS gateway provider here
-  return ok(res, process.env.NODE_ENV === 'production' ? { message: 'OTP sent to phone' } : { message: 'OTP sent to phone', otpCode });
+  // Temporary flow: return the code directly until SMS provider wiring is added.
+  return ok(res, { message: 'OTP generated', otpCode });
 };
 
 export const verifyOtp = async (req: Request, res: Response) => {

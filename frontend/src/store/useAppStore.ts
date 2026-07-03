@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type Language = 'en' | 'ko' | 'hi';
-export type AuthMethod = 'email' | 'google' | 'phone' | 'admin';
+export type AuthMethod = 'email' | 'phone' | 'admin';
 
 export interface KCubeUser {
   id: string;

@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, Eye, EyeOff, Lock, Mail, Phone, ShieldCheck } from 'lucide-react';
+import { Check, Eye, EyeOff, Lock, Mail, Phone } from 'lucide-react';
 import api from '@/lib/api';
 import { copy } from '@/lib/kcubeContent';
 import { useAppStore, type AuthMethod } from '@/store/useAppStore';
@@ -17,7 +17,7 @@ const authCopy = {
     signinTitle: 'Sign in to your K-CUBE account',
     signupTitle: 'Create your K-CUBE account',
     adminTitle: 'Admin CMS login',
-    subtitle: 'Use email/password, mobile OTP, or Google Identity. Your points balance is restored from the server after login.',
+    subtitle: 'Use email/password or temporary mobile OTP. Your points balance is restored from the server after login.',
     name: 'Full name',
     username: 'Username',
     email: 'Email address',
@@ -28,21 +28,20 @@ const authCopy = {
     verifyOtp: 'Verify OTP',
     emailLogin: 'Email login',
     phoneLogin: 'Mobile OTP',
-    google: 'Google Identity',
     submitSignin: 'Sign in',
     submitSignup: 'Create account',
     submitAdmin: 'Enter CMS',
     signedIn: 'Signed in successfully',
     switchSignup: 'Need a new account?',
     switchSignin: 'Already have an account?',
-    realNote: 'Real Gmail requires Google Client ID and frontend identity token. Real OTP requires SMS provider configuration in backend.',
-    otpSent: 'OTP sent. Check SMS provider/backend response in development.',
+    realNote: 'Temporary OTP is generated instantly so signup and sign-in work without an SMS provider for now.',
+    otpSent: 'Temporary OTP generated.',
   },
   ko: {
     signinTitle: 'K-CUBE 계정 로그인',
     signupTitle: 'K-CUBE 계정 만들기',
     adminTitle: '관리자 CMS 로그인',
-    subtitle: '이메일/비밀번호 또는 휴대폰 OTP를 사용하세요. Google 로그인은 Google Identity 토큰 연동 준비가 되어 있습니다.',
+    subtitle: '이메일/비밀번호 또는 임시 휴대폰 OTP를 사용하세요.',
     name: '이름',
     username: '사용자 이름',
     email: '이메일 주소',
@@ -53,7 +52,6 @@ const authCopy = {
     verifyOtp: 'OTP 확인',
     emailLogin: '이메일 로그인',
     phoneLogin: '휴대폰 OTP',
-    google: 'Google Identity',
     submitSignin: '로그인',
     submitSignup: '계정 만들기',
     submitAdmin: 'CMS 입장',
@@ -67,7 +65,7 @@ const authCopy = {
     signinTitle: 'अपने K-CUBE खाते में साइन इन करें',
     signupTitle: 'अपना K-CUBE खाता बनाएँ',
     adminTitle: 'एडमिन CMS लॉगिन',
-    subtitle: 'ईमेल/पासवर्ड या मोबाइल OTP का उपयोग करें। Google लॉगिन के लिए Google Identity टोकन इंटीग्रेशन तैयार है।',
+    subtitle: 'ईमेल/पासवर्ड या अस्थायी मोबाइल OTP का उपयोग करें।',
     name: 'पूरा नाम',
     username: 'यूज़रनेम',
     email: 'ईमेल पता',
@@ -78,7 +76,6 @@ const authCopy = {
     verifyOtp: 'OTP सत्यापित करें',
     emailLogin: 'ईमेल लॉगिन',
     phoneLogin: 'मोबाइल OTP',
-    google: 'Google Identity',
     submitSignin: 'साइन इन करें',
     submitSignup: 'खाता बनाएँ',
     submitAdmin: 'CMS में प्रवेश करें',
@@ -155,7 +152,6 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
     password: '',
     phone: '',
     otp: '',
-    googleId: '',
   });
   const returnTo = sanitizeReturnTo(searchParams.get('returnTo'));
 
@@ -195,12 +191,6 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
           full_name: form.fullName || undefined,
           username: form.username || undefined,
           email: form.email || undefined,
-        });
-      } else if (method === 'google') {
-        response = await api.post('/auth/google', {
-          credential: form.googleId,
-          email: form.email || undefined,
-          full_name: form.fullName || undefined,
         });
       } else if (mode === 'signup') {
         response = await api.post('/auth/register', {
@@ -255,8 +245,15 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
       return;
     }
     try {
-      await api.post('/auth/otp/send', { phone: form.phone });
-      setMessage(t.otpSent);
+      const response = await api.post('/auth/otp/send', { phone: form.phone });
+      const data = response.data?.data ?? response.data;
+      const otpCode = typeof data?.otpCode === 'string' ? data.otpCode : '';
+      if (otpCode) {
+        setForm((current) => ({ ...current, otp: otpCode }));
+        setMessage(`Temporary OTP generated: ${otpCode}`);
+      } else {
+        setMessage(t.otpSent);
+      }
     } catch (error: unknown) {
       setMessage(getErrorMessage(error));
     }
@@ -302,11 +299,10 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
           ) : (
             <form onSubmit={submit}>
               {mode !== 'admin' ? (
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   {[
                     { key: 'email' as AuthMethod, label: t.emailLogin, icon: Mail },
                     { key: 'phone' as AuthMethod, label: t.phoneLogin, icon: Phone },
-                    { key: 'google' as AuthMethod, label: t.google, icon: ShieldCheck },
                   ].map((item) => {
                     const Icon = item.icon;
                     return (
@@ -327,7 +323,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
               ) : null}
 
               <div className="mt-6 grid gap-4">
-                {mode === 'signup' || method === 'google' ? (
+                {mode === 'signup' ? (
                   <label className="grid gap-2 text-sm font-bold text-white">
                     {t.name}
                     <input value={form.fullName} onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
@@ -373,32 +369,25 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
                       {t.email}
                       <input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
                     </label>
-                    {method === 'google' ? (
-                      <label className="grid gap-2 text-sm font-bold text-white">
-                        Google ID token / subject
-                        <input value={form.googleId} onChange={(event) => setForm((current) => ({ ...current, googleId: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-                      </label>
-                    ) : (
-                      <label className="grid gap-2 text-sm font-bold text-white">
-                        {t.password}
-                        <div className="relative">
-                          <input
-                            type={showPassword ? 'text' : 'password'}
-                            value={form.password}
-                            onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-                            className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 pr-12 text-white outline-none focus:border-[#ffc400]"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword((current) => !current)}
-                            className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-[#aab5c6] transition hover:text-white"
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
-                          >
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </button>
-                        </div>
-                      </label>
-                    )}
+                    <label className="grid gap-2 text-sm font-bold text-white">
+                      {t.password}
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={form.password}
+                          onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+                          className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 pr-12 text-white outline-none focus:border-[#ffc400]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((current) => !current)}
+                          className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-[#aab5c6] transition hover:text-white"
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </label>
                   </>
                 )}
               </div>

@@ -77,7 +77,7 @@ const cmsModules = [
   { title: 'Points Ledger', description: 'Approve, audit, adjust and export point transactions.', icon: BarChart3 },
   { title: 'Culture Upload Review', description: 'Approve dance, song, drama and culture uploads, then award verified points.', icon: Clapperboard },
   { title: 'Korean Lessons', description: 'Manage daily Hangul chapters, tasks, streaks and learning rewards.', icon: BookOpen },
-  { title: 'K-Food Claims', description: 'Review k-food.in order claims, coupons, click attribution and purchase points.', icon: ShoppingBag },
+  { title: 'K-Food Claims', description: 'Review internal shop order claims, coupons, click attribution and purchase points.', icon: ShoppingBag },
   { title: 'Korea Trip Winner', description: 'Audit leaderboard totals and announce the verified Korea trip winner.', icon: Trophy },
   { title: 'Events & Rewards', description: 'Publish events, rewards, Korea trip rules and redemption offers.', icon: Gift },
 ];
