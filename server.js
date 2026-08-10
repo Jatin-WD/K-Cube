@@ -24,6 +24,18 @@ process.on('uncaughtException', (error) => {
 });
 
 nextApp.prepare().then(() => {
+  app.use((req, res, nextRequest) => {
+    const wantsHtml = req.method === 'GET' && req.headers.accept?.includes('text/html');
+
+    if (wantsHtml && !req.path.startsWith('/api/') && !req.path.startsWith('/_next/')) {
+      res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+
+    nextRequest();
+  });
+
   app.all(/.*/, (req, res) => handle(req, res));
 
   app.listen(port, () => {

@@ -18,6 +18,7 @@ const DetailPage = ({ item }: DetailPageProps) => {
   const actionId = `${item.category}-${item.slug}`;
   const completed = completedActions.includes(actionId);
   const image = detailImages[item.slug] || detailImages[item.category] || detailImages.default;
+  const toAnchor = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
   return (
     <main className="min-h-screen bg-[#e7e7e7] text-[#111827]">
@@ -103,7 +104,7 @@ const DetailPage = ({ item }: DetailPageProps) => {
             {item.sections ? (
               <div className="mt-10 space-y-10">
                 {item.sections.map((section) => (
-                  <div key={section.title.en}>
+                  <div key={section.title.en} id={toAnchor(section.title.en)}>
                     <h3 className="text-2xl font-black text-[#111827]">{section.title[language]}</h3>
                     <div className="mt-4 space-y-4 text-sm leading-7 text-[#565959]">
                       {section.content.map((paragraph) => (

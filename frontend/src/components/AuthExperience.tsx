@@ -156,11 +156,6 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
   const returnTo = sanitizeReturnTo(searchParams.get('returnTo'));
 
   useEffect(() => {
-    if (!user || mode === 'admin') return;
-    router.replace(returnTo || '/dashboard');
-  }, [mode, returnTo, router, user]);
-
-  useEffect(() => {
     if (mode !== 'signin' || verifiedParam !== '1') return;
     setMessage('Email verified successfully. You can sign in now.');
     if (verifiedEmailParam) {
@@ -274,14 +269,14 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
         </section>
 
         <section className="rounded-xl border border-white/10 bg-[#111113] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
-          {user ? (
+          {false ? (
             <div>
               <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#ffc400] text-[#090909]">
                 <Check className="h-7 w-7" />
               </div>
               <h2 className="mt-5 text-3xl font-black text-white">{t.signedIn}</h2>
               <p className="mt-2 text-[#aab5c6]">
-                {user.fullName} · {user.email ?? user.phone} · {user.role ?? 'member'}
+                {user!.fullName} · {user!.email ?? user!.phone} · {user!.role ?? 'member'}
               </p>
               <div className="mt-6 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-5">
                 <p className="text-sm text-[#d4dbe7]">{global.pointsWallet}</p>

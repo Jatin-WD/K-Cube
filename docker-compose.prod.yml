@@ -4,10 +4,10 @@ services:
     container_name: kcube-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-kcube}
-      MYSQL_USER: ${MYSQL_USER:-kcube_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: u786588890_kcube
+      MYSQL_USER: u786588890_jatin_kcube
+      MYSQL_PASSWORD: KcubeStrongPass123!
     volumes:
       - mysql-data:/var/lib/mysql
       - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
@@ -20,13 +20,14 @@ services:
       PORT: 4000
       NODE_ENV: production
       API_PREFIX: /api/v1
+      APP_URL: https://k-cube.store
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      MYSQL_HOST: mysql
+      MYSQL_HOST: in-mum-web2207.main-hosting.eu
       MYSQL_PORT: 3306
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-kcube}
-      MYSQL_USER: ${MYSQL_USER:-kcube_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: u786588890_kcube
+      MYSQL_USER: u786588890_jatin_kcube
+      MYSQL_PASSWORD: KcubeStrongPass123!
       RATE_LIMIT_WINDOW_MS: 60000
       RATE_LIMIT_MAX: 100
     depends_on:
@@ -48,8 +49,10 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - frontend
       - backend

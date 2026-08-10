@@ -9,6 +9,7 @@ import type { MegaSection, MenuLink } from '@/lib/kcubeContent';
 interface MegaMenuProps {
   sections: MegaSection[];
   language: Language;
+  onNavigate?: () => void;
 }
 
 const getLinkKey = (link: MenuLink) => `${link.label.en}-${link.href}`;
@@ -16,8 +17,9 @@ const getLinkKey = (link: MenuLink) => `${link.label.en}-${link.href}`;
 const panelCard =
   'flex w-full items-start justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3a847]';
 
-const MegaMenu = ({ sections, language }: MegaMenuProps) => {
-  const [activeLinkIndex, setActiveLinkIndex] = useState(0);
+const MegaMenu = ({ sections, language, onNavigate }: MegaMenuProps) => {
+  const initialFeaturedIndex = sections[0]?.links.findIndex((link) => link.featured) ?? -1;
+  const [activeLinkIndex, setActiveLinkIndex] = useState(initialFeaturedIndex >= 0 ? initialFeaturedIndex : 0);
   const [activeChildIndex, setActiveChildIndex] = useState(0);
 
   const activeSection = sections[0];
@@ -25,9 +27,11 @@ const MegaMenu = ({ sections, language }: MegaMenuProps) => {
   const activeLink = serviceLinks[activeLinkIndex] ?? serviceLinks[0];
   const activeChildren = activeLink?.children ?? [];
   const activeChild = activeChildren[activeChildIndex] ?? activeChildren[0];
+  const openHref = activeChild?.href ?? activeLink?.href;
 
   useEffect(() => {
-    setActiveLinkIndex(0);
+    const featuredIndex = sections[0]?.links.findIndex((link) => link.featured) ?? -1;
+    setActiveLinkIndex(featuredIndex >= 0 ? featuredIndex : 0);
     setActiveChildIndex(0);
   }, [sections]);
 
@@ -59,6 +63,7 @@ const MegaMenu = ({ sections, language }: MegaMenuProps) => {
                   onClick={() => {
                     setActiveLinkIndex(index);
                     setActiveChildIndex(0);
+                    onNavigate?.();
                   }}
                   onMouseEnter={() => {
                     setActiveLinkIndex(index);
@@ -69,9 +74,13 @@ const MegaMenu = ({ sections, language }: MegaMenuProps) => {
                     setActiveChildIndex(0);
                   }}
                   className={`${panelCard} cursor-pointer ${
-                    active
-                      ? 'border-[#f3a847] bg-[#fff4cc] text-[#111827]'
-                      : 'border-transparent bg-[#f7fafa] text-[#111827] hover:border-[#d5d9d9] hover:bg-white'
+                    link.featured
+                      ? active
+                        ? 'border-[#f3a847] bg-[#fff4cc] text-[#111827] shadow-[0_10px_24px_rgba(243,168,71,0.12)]'
+                        : 'border-[#f3a847]/40 bg-[#fff8df] text-[#111827] hover:border-[#f3a847] hover:bg-[#fff4cc]'
+                      : active
+                        ? 'border-[#f3a847] bg-[#fff4cc] text-[#111827]'
+                        : 'border-transparent bg-[#f7fafa] text-[#111827] hover:border-[#d5d9d9] hover:bg-white'
                   }`}
                 >
                   <span className="min-w-0">
@@ -79,6 +88,11 @@ const MegaMenu = ({ sections, language }: MegaMenuProps) => {
                     <span className="mt-1 block text-[11px] font-semibold text-[#5d646d]">
                       {link.children?.length ? `${link.children.length} step${link.children.length === 1 ? '' : 's'}` : 'Open service'}
                     </span>
+                    {link.featured ? (
+                      <span className="mt-2 inline-flex rounded-full bg-[#f3a847] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#111827]">
+                        Featured
+                      </span>
+                    ) : null}
                   </span>
                   <ChevronRight className={`mt-0.5 h-4 w-4 shrink-0 ${active ? 'text-[#b12704]' : 'text-[#8b95a1]'}`} />
                 </button>
@@ -99,7 +113,10 @@ const MegaMenu = ({ sections, language }: MegaMenuProps) => {
                   <button
                     key={getLinkKey(child)}
                     type="button"
-                    onClick={() => setActiveChildIndex(index)}
+                    onClick={() => {
+                      setActiveChildIndex(index);
+                      onNavigate?.();
+                    }}
                     onMouseEnter={() => setActiveChildIndex(index)}
                     onFocus={() => setActiveChildIndex(index)}
                     className={`${panelCard} cursor-pointer ${
@@ -138,12 +155,17 @@ const MegaMenu = ({ sections, language }: MegaMenuProps) => {
           <div className="min-h-0 flex-1 overflow-y-auto pr-1">
             <p className="mt-4 text-sm font-bold uppercase tracking-[0.16em] text-[#f3a847]">{activeSection.title[language]}</p>
             <h3 className="mt-2 text-[clamp(1.7rem,2vw,2.35rem)] font-black leading-tight text-white">{activeLink?.label[language]}</h3>
+            {activeLink?.featured ? (
+              <p className="mt-2 inline-flex rounded-full border border-[#f3a847]/40 bg-[#f3a847]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#f3a847]">
+                K-Pop spotlight
+              </p>
+            ) : null}
             <p className="mt-3 text-sm leading-6 text-[#d5d9d9]">{activeLink?.description[language]}</p>
 
             {activeChild ? (
               <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#9fb2bd]">Inside this service</p>
-                <Link href={activeChild.href} className="mt-2 block">
+                <Link href={activeChild.href} onClick={onNavigate} className="mt-2 block">
                   <span className="block text-sm font-black text-white">{activeChild.label[language]}</span>
                   <span className="mt-1 block text-xs leading-5 text-[#d5d9d9]">{activeChild.description[language]}</span>
                 </Link>
@@ -157,12 +179,13 @@ const MegaMenu = ({ sections, language }: MegaMenuProps) => {
               </span>
             </div>
 
-            {activeLink ? (
+            {openHref ? (
               activeLink.external ? (
                 <a
-                  href={activeLink.href}
+                  href={openHref}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={onNavigate}
                   className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
                 >
                   Open external service
@@ -170,7 +193,8 @@ const MegaMenu = ({ sections, language }: MegaMenuProps) => {
                 </a>
               ) : (
                 <Link
-                  href={activeLink.href}
+                  href={openHref}
+                  onClick={onNavigate}
                   className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
                 >
                   Open service

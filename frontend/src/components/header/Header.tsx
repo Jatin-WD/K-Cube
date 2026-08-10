@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Bell, BriefcaseBusiness, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import { copy, navItems } from '@/lib/kcubeContent';
@@ -18,10 +19,12 @@ const Header = () => {
   const [activeMenuKey, setActiveMenuKey] = useState<string | null>(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
+  const closeMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
   const user = useAppStore((state) => state.user);
   const signOut = useAppStore((state) => state.signOut);
+  const pathname = usePathname();
   const t = copy[language];
   const activeMenu = navItems.find((item) => item.label.en === activeMenuKey && item.dropdown?.length) ?? null;
 
@@ -53,11 +56,34 @@ const Header = () => {
     [],
   );
 
+  useEffect(() => {
+    closeAllMenus();
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   const openMenu = (key: string) => {
+    if (closeMenuTimerRef.current) {
+      clearTimeout(closeMenuTimerRef.current);
+      closeMenuTimerRef.current = null;
+    }
     setActiveMenuKey(key);
   };
 
+  const scheduleCloseMenu = () => {
+    if (closeMenuTimerRef.current) {
+      clearTimeout(closeMenuTimerRef.current);
+    }
+    closeMenuTimerRef.current = setTimeout(() => {
+      setActiveMenuKey(null);
+      closeMenuTimerRef.current = null;
+    }, 300);
+  };
+
   const closeAllMenus = () => {
+    if (closeMenuTimerRef.current) {
+      clearTimeout(closeMenuTimerRef.current);
+      closeMenuTimerRef.current = null;
+    }
     setActiveMenuKey(null);
     setLanguageMenuOpen(false);
   };
@@ -312,10 +338,9 @@ const Header = () => {
       <nav
         aria-label="Primary navigation"
         className="group/nav relative hidden border-b border-[#232f3e] bg-[#232f3e] md:block"
-        onMouseLeave={() => setActiveMenuKey(null)}
       >
-        <div className="mx-auto relative max-w-[1760px] px-3 sm:px-4 lg:px-10">
-          <div className="flex min-h-[42px] items-center gap-1 overflow-x-hidden px-0 lg:min-h-[54px]">
+        <div className="mx-auto flex max-w-[1760px] items-center gap-3 px-3 sm:px-4 lg:px-10">
+          <div className="flex min-h-[42px] flex-1 items-center gap-1 overflow-visible px-0 lg:min-h-[54px]">
             {navItems.map((item) => {
               const isActive = activeMenuKey === item.label.en;
               if (item.dropdown) {
@@ -352,12 +377,20 @@ const Header = () => {
               );
             })}
           </div>
+          <Link
+            href="/india-pre-selection"
+            onClick={closeAllMenus}
+            className="hidden shrink-0 items-center gap-2 rounded-sm border border-[#f3a847]/60 bg-[#f3a847]/12 px-3 py-2 text-xs font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:inline-flex xl:px-4 xl:text-sm"
+          >
+            India Pre-Selection
+          </Link>
           {activeMenu?.dropdown ? (
             <div
               className="absolute inset-x-0 top-full z-[130] pt-0"
-              onMouseEnter={() => setActiveMenuKey(activeMenu.label.en)}
+              onMouseEnter={() => openMenu(activeMenu.label.en)}
+              onMouseLeave={scheduleCloseMenu}
             >
-              <MegaMenu sections={activeMenu.dropdown} language={language} />
+              <MegaMenu sections={activeMenu.dropdown} language={language} onNavigate={closeAllMenus} />
             </div>
           ) : null}
         </div>

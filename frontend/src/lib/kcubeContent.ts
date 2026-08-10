@@ -1,4 +1,4 @@
-import type { Language } from '@/store/useAppStore';
+﻿import type { Language } from '@/store/useAppStore';
 import { shopMenuLinks } from '@/lib/shopCatalog';
 
 export type PageKey = 'home' | 'activities' | 'learning' | 'kfood' | 'rewards' | 'events' | 'about' | 'apply' | 'trip';
@@ -12,6 +12,7 @@ export interface MenuLink {
   description: LocalText;
   points?: number;
   external?: boolean;
+  featured?: boolean;
   children?: MenuLink[];
 }
 
@@ -306,28 +307,28 @@ export const detailItems: DetailItem[] = [
     slug: 'k-pop-missions',
     title: txt('K-Pop Missions', 'K-Pop 미션', 'K-Pop Missions'),
     eyebrow: txt('Activities', '활동', 'Activities'),
-    summary: txt('Fan quizzes, artist discovery, voting campaigns, and music challenges that reward participation.', '팬 퀴즈, 아티스트 발견, 투표 캠페인, 음악 챌린지로 참여를 보상합니다.', 'Fan quizzes, voting aur music challenges jahan participation par points milte hain.'),
+    summary: txt('Simple K-Pop tasks, pre-selection, and singing video submissions that earn points.', '간단한 K-Pop 미션, 예선, 노래 영상 제출로 포인트를 적립합니다.', 'Simple K-Pop tasks, pre-selection aur singing video submissions se points milte hain.'),
     seo: 'K-Pop missions, Korean music activities, fan quiz, K-CUBE points rewards',
     points: 80,
     protectedAction: true,
     bullets: [
-      txt('Complete weekly K-Pop quizzes and collect points.', '주간 K-Pop 퀴즈를 완료하고 포인트를 모으세요.', 'Weekly K-Pop quiz complete karke points earn karein.'),
-      txt('Join fan voting and artist discovery campaigns.', '팬 투표와 아티스트 발견 캠페인에 참여하세요.', 'Fan voting aur artist discovery campaigns join karein.'),
-      txt('SEO content can target Korean music fans in India.', '인도 내 K-Pop 팬을 위한 SEO 콘텐츠로 확장됩니다.', 'India ke K-Pop fans ke liye SEO content target hoga.'),
+      txt('Join the K-CUBE India Pre-Selection from this mission.', '이 미션에서 K-CUBE India 예선에 참여하세요.', 'Is mission se K-CUBE India Pre-Selection join karein.'),
+      txt('Submit your singing video daily or weekly for more points.', '매일 또는 주간으로 노래 영상을 제출하면 더 많은 포인트를 받을 수 있습니다.', 'Daily ya weekly singing video submit karke more points earn karein.'),
+      txt('Simple tasks keep the page easy for first-time users.', '처음 보는 사람도 이해하기 쉬운 구성입니다.', 'Simple tasks page ko first-time users ke liye easy rakhte hain.'),
     ],
     sections: [
       {
-        title: txt('K-Pop Mission Experience', 'K-Pop 미션 경험', 'K-Pop Mission Experience'),
+        title: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
         content: [
-          txt('Dive into quizzes, music discovery, and fan-led challenges designed for K-Pop listeners in India.', '인도 K-Pop 팬을 위해 설계된 퀴즈, 음악 발견 및 팬 주도 챌린지에 참여하세요.', 'K-Pop listeners ke liye quizzes, music discovery aur fan challenges mein shaamil ho.'),
-          txt('Each mission blends content, fandom, and culture in a way that rewards action with points.', '각 미션은 콘텐츠, 팬덤 및 문화를 포인트 보상과 결합합니다.', 'Har mission content, fandom aur culture ko points reward ke saath mix karta hai.'),
+          txt('India-level pre-selection for singers and musical artists heading toward Seoul.', '서울로 향하는 가수와 음악가를 위한 인도 예선입니다.', 'India-level pre-selection for singers and musical artists heading toward Seoul.'),
+          txt('Use this step to apply for the India stage and stay in the K-CUBE music journey.', '이 단계에서 인도 무대 지원을 진행하고 K-CUBE 음악 여정을 이어가세요.', 'Use this step to apply for the India stage and stay in the K-CUBE music journey.'),
         ],
       },
       {
-        title: txt('How points are earned', '포인트 획득 방법', 'How points are earned'),
+        title: txt('Submit Your Singing Video', 'Submit Your Singing Video', 'Submit Your Singing Video'),
         content: [
-          txt('Answer themed quizzes, vote for artists, and explore new music to build your verified K-CUBE score.', '테마 퀴즈에 답하고 아티스트에게 투표하며 새로운 음악을 탐색하여 검증된 K-CUBE 점수를 쌓으세요.', 'Themed quizzes solve karo, artists vote karo aur new music explore karke verified score banao.'),
-          txt('Points contribute to your rewards wallet and bring you closer to the Korea trip leaderboard.', '포인트는 리워드 지갑에 쌓이고 한국 여행 리더보드에 가까워지게 합니다.', 'Points wallet mein add honge aur Korea trip leaderboard ke kareeb le jayenge.'),
+          txt('Submit a short singing video daily or weekly for more points.', '짧은 노래 영상을 매일 또는 주간으로 제출하면 더 많은 포인트를 받을 수 있습니다.', 'Daily ya weekly short singing video submit karke more points earn karein.'),
+          txt('This keeps the mission active and gives creators a simple way to participate.', '이 미션은 크리에이터가 쉽게 참여할 수 있는 형태로 유지됩니다.', 'Ye mission creators ke liye simple participation way deta hai.'),
         ],
       },
     ],
@@ -678,7 +679,7 @@ const detailHref = (category: DetailCategory, slug: string) => `/${category}/${s
 const buildSectionPreviewLinks = (item: DetailItem): MenuLink[] =>
   item.sections?.slice(0, 3).map((section) => ({
     label: section.title,
-    href: detailHref(item.category, item.slug),
+    href: item.slug === 'k-pop-missions' ? '/india-pre-selection' : detailHref(item.category, item.slug),
     description: section.content[0] ?? item.summary,
     points: item.points,
   })) ?? [];
@@ -714,6 +715,10 @@ export const navItems: NavItem[] = [
   },
   { label: txt('Home', '홈', 'Home'), href: '/' },
   {
+    label: txt('Shop', '샵', 'Shop'),
+    href: '/shop',
+  },
+  {
     label: txt('Activities', '활동', 'Activities'),
     href: '/activities',
     dropdown: [
@@ -724,6 +729,7 @@ export const navItems: NavItem[] = [
           href: detailHref(item.category, item.slug),
           description: item.summary,
           points: item.points,
+          featured: item.slug === 'k-pop-missions',
           children: buildSectionPreviewLinks(item),
         })),
       },
@@ -765,10 +771,6 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: txt('Shop', '샵', 'Shop'),
-    href: '/shop',
-  },
-  {
     label: txt('Rewards', '리워드', 'Rewards'),
     href: '/rewards',
     dropdown: [
@@ -792,13 +794,36 @@ export const navItems: NavItem[] = [
     dropdown: [
       {
         title: txt('Event Pages', '이벤트 페이지', 'Event Pages'),
-        links: detailItems.filter((item) => item.category === 'events').map((item) => ({
-          label: item.title,
-          href: detailHref(item.category, item.slug),
-          description: item.summary,
-          points: item.points,
-          children: buildSectionPreviewLinks(item),
-        })),
+        links: [
+          ...detailItems.filter((item) => item.category === 'events').map((item) => ({
+            label: item.title,
+            href: detailHref(item.category, item.slug),
+            description: item.summary,
+            points: item.points,
+            children: buildSectionPreviewLinks(item),
+          })),
+          {
+            label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
+            href: '/india-pre-selection',
+            description: txt(
+              'Official India pre-selection and festival submission hub for the ITAEWON World Music Spirit Festival 2026.',
+              'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
+              'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.'
+            ),
+            points: 130,
+          },
+        ],
+      },
+      {
+        title: txt('Featured event', '추천 이벤트', 'Featured event'),
+        links: [
+          {
+            label: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
+            href: '/india-pre-selection',
+            description: txt('Dedicated submission page for the K-CUBE India Pre-Selection and singing video applications.', 'K-CUBE India 예선 및 노래 영상 지원 전용 페이지입니다.', 'Dedicated submission page for the K-CUBE India Pre-Selection and singing video applications.'),
+            featured: true,
+          },
+        ],
       },
     ],
   },
@@ -881,12 +906,20 @@ export const pages: Record<PageKey, PageContent> = {
     description: txt('Events create repeat engagement moments across learning, food, dance, music, and culture.', '이벤트는 학습, 음식, 댄스, 음악, 문화 전반에서 반복 참여를 만듭니다.', 'Events learning, food, dance, music aur culture mein repeat engagement create karte hain.'),
     primaryCta: txt('Open workshops', '워크숍 열기', 'Workshops kholo'),
     primaryHref: '/events/culture-workshops',
-    cards: detailItems.filter((item) => item.category === 'events').map((item) => ({
-      title: item.title,
-      description: item.summary,
-      href: detailHref(item.category, item.slug),
-      cta: txt('Open event page', '이벤트 페이지 열기', 'Event page kholo'),
-    })),
+    cards: [
+      {
+        title: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
+        description: txt('Dedicated submission page for the ITAEWON World Music Spirit Festival 2026 with exact timeline and application details.', 'ITAEWON World Music Spirit Festival 2026을 위한 전용 신청 페이지입니다.', 'ITAEWON World Music Spirit Festival 2026 ke liye dedicated submission page.'),
+        href: '/india-pre-selection',
+        cta: txt('Open dedicated page', '전용 페이지 열기', 'Dedicated page kholo'),
+      },
+      ...detailItems.filter((item) => item.category === 'events').map((item) => ({
+        title: item.title,
+        description: item.summary,
+        href: detailHref(item.category, item.slug),
+        cta: txt('Open event page', '이벤트 페이지 열기', 'Event page kholo'),
+      })),
+    ],
   },
   about: {
     badge: txt('About K-CUBE', 'K-CUBE 소개', 'About K-CUBE'),

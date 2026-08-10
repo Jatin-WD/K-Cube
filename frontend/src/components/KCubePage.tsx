@@ -5,6 +5,7 @@ import { ArrowRight, Check, Coins, Gift, Plane, ShoppingBag, Sparkles, Star } fr
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
 import { shopProducts } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
+import IndiaPreSelectionSection from './home/IndiaPreSelectionSection';
 
 interface KCubePageProps {
   pageKey: PageKey;
@@ -177,7 +178,9 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
         </div>
       </section>
 
-      <section className="px-3 pb-7 sm:-mt-10 sm:px-4 sm:pb-8 lg:px-10">
+      {pageKey === 'home' ? <IndiaPreSelectionSection /> : null}
+
+      <section className={`px-3 pb-7 sm:px-4 sm:pb-8 lg:px-10 ${pageKey === 'home' ? 'sm:mt-0' : 'sm:-mt-10'}`}>
         <div className="mx-auto grid max-w-[1760px] auto-cols-[78%] grid-flow-col gap-3 overflow-x-auto pb-1 sm:auto-cols-auto sm:grid-flow-row sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
           {marketplaceTiles.map((tile) => (
             <article key={tile.title} className="rounded-sm border border-[#d5d9d9] bg-white p-4 shadow-sm">
