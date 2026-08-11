@@ -72,7 +72,7 @@ const cardImages = [
 ];
 
 const marketplaceTiles = [
-  { title: 'Welcome bonus', value: '+250 points', image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=700&q=80' },
+  { title: 'Welcome bonus', value: '+100 points', image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=700&q=80' },
   { title: 'Refer friends', value: '+150 / +100', image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=700&q=80' },
   { title: 'Upload videos', value: 'Admin reviewed', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=80' },
   { title: 'Shop Korean Products', value: 'Earn purchase rewards', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=700&q=80' },
@@ -157,7 +157,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
               <div className="rounded-sm border border-[#d5d9d9] bg-[#f7fafa] p-4">
                 <div className="flex items-center gap-3">
                   <Gift className="h-5 w-5 text-[#b12704]" />
-                  <p className="text-sm font-bold text-[#111827]">250 welcome points</p>
+                  <p className="text-sm font-bold text-[#111827]">100 welcome points</p>
                 </div>
                 <p className="mt-2 text-sm leading-6 text-[#565959]">
                   {user ? `${copy[language].hello}, ${user.fullName}` : t.welcomeBonus}

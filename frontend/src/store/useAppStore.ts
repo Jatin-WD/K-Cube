@@ -91,7 +91,7 @@ export const useAppStore = create<AppState>()(
                 ? user.points
                 : hasWelcomeBonus
                   ? state.points
-                  : state.points + 250;
+                  : state.points + 100;
 
           return {
             user: { ...user, points: resolvedPoints },

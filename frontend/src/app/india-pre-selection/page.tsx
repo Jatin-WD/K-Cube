@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, CalendarDays, Globe2, Mail, MapPinned, Mic2, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import { ArrowRight, CalendarDays, Globe2, MapPinned, Mic2, ShieldCheck, Sparkles, Users } from 'lucide-react';
 
 export const metadata = {
   title: 'K-CUBE India Pre-Selection | ITAEWON World Music Spirit Festival 2026',
@@ -81,25 +81,21 @@ export default function IndiaPreSelectionPage() {
             <div className="mt-6 rounded-[24px] border border-[#f3a847]/50 bg-[#f3a847]/10 p-4 sm:p-5">
               <p className="text-[10px] font-black uppercase tracking-[0.26em] text-[#f3a847]">Main announcement</p>
               <p className="mt-3 text-sm leading-7 text-[#f8fafc] sm:text-base">
-                On <span className="font-black text-[#ffd814]">20 August 2026</span>, K-CUBE will conduct the <span className="font-black text-[#ffd814]">1st audition</span> through this website on behalf of the Indian organiser of the ITAEWON World Music Spirit Festival 2026. We have been specifically asked to select participants from India for this Music Spirit journey.
+                On <span className="font-black text-[#ffd814]">25 August 2026</span>, K-CUBE will conduct the <span className="font-black text-[#ffd814]">1st audition</span> through this website on behalf of the Indian organiser of the ITAEWON World Music Spirit Festival 2026. We have been specifically asked to select participants from India for this Music Spirit journey.
               </p>
               <p className="mt-3 text-sm leading-7 text-[#d5d9d9]">
-                All applications and coordination for this page should be sent only to{' '}
-                <a href="mailto:kcubeadm@gmail.com" className="font-bold text-[#ffd814]">
-                  kcubeadm@gmail.com
-                </a>
-                .
+                All applications for this page are submitted through the internal Apply page inside K-CUBE. No email submission is needed.
               </p>
             </div>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <a
-                href="mailto:kcubeadm@gmail.com?subject=K-CUBE%20India%20Pre-Selection%20Application&body=Hello%20K-CUBE%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20K-CUBE%20India%20Pre-Selection.%0A%0AFull%20name%3A%0ANationality%3A%0ACountry%20and%20current%20city%3A%0ADate%20of%20birth%3A%0AEmail%20address%3A%0APhone%20or%20WhatsApp%3A%0APerformance%20category%3A%0A%0AThanks."
+              <Link
+                href="/india-pre-selection/apply"
                 className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
               >
-                Apply via email
-                <Mail className="h-4 w-4" />
-              </a>
+                Open apply form
+                <ArrowRight className="h-4 w-4" />
+              </Link>
               <Link
                 href="/activities/k-pop-missions"
                 className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/30 px-5 py-3 text-sm font-bold text-white transition hover:border-[#f3a847] hover:text-[#f3a847]"
@@ -130,11 +126,7 @@ export default function IndiaPreSelectionPage() {
               <div className="rounded-[24px] border border-[#f3a847]/30 bg-[#f3a847]/10 p-4 sm:p-5">
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-[#f3a847]">Submission note</p>
                 <p className="mt-3 text-sm leading-7 text-[#f8fafc]">
-                  Applications are submitted to{' '}
-                  <a href="mailto:kcubeadm@gmail.com" className="font-bold text-[#ffd814]">
-                    kcubeadm@gmail.com
-                  </a>
-                  .
+                  Applications are submitted through the Apply page inside K-CUBE, and points are added after the first successful submission.
                 </p>
               </div>
             </div>
@@ -172,6 +164,54 @@ export default function IndiaPreSelectionPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-3 pb-10 sm:px-4 sm:pb-14 lg:px-10">
+        <div className="mx-auto max-w-[1760px] rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">Sub services</p>
+              <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Choose the page you need</h2>
+            </div>
+            <p className="max-w-3xl text-sm leading-7 text-[#565959]">
+              The main festival hub now connects to three direct sub pages so visitors can read information, check announcements, or jump into the application flow.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {[
+              {
+                label: 'Information',
+                href: '/india-pre-selection/information',
+                description: 'Festival background, participation overview, and the main purpose of the event.',
+              },
+              {
+                label: 'Announcement',
+                href: '/india-pre-selection/announcement',
+                description: 'Official notices, timeline reminders, and updates for applicants and visitors.',
+              },
+              {
+                label: 'Apply',
+                href: '/india-pre-selection/apply',
+                description: 'Direct application route for the India pre-selection inside K-CUBE.',
+              },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="group rounded-[24px] border border-[#d5d9d9] bg-[#f7fafa] p-5 transition hover:border-[#f3a847] hover:bg-[#fff8df]"
+              >
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#b12704]">{item.label}</p>
+                <p className="mt-3 text-base font-bold text-[#111827]">{item.label}</p>
+                <p className="mt-2 text-sm leading-7 text-[#565959]">{item.description}</p>
+                <span className="mt-4 inline-flex items-center gap-2 text-sm font-black text-[#b12704]">
+                  Open page
+                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -231,7 +271,7 @@ export default function IndiaPreSelectionPage() {
               {[
                 {
                   title: 'India pre-selection deadline',
-                  date: 'August 20, 2026',
+                  date: 'August 25, 2026',
                   note: 'Submit your application and performance video by this date.',
                   accent: true,
                 },
@@ -268,7 +308,7 @@ export default function IndiaPreSelectionPage() {
               <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">What to send</h2>
             </div>
             <p className="max-w-3xl text-sm leading-7 text-[#565959]">
-              Email your application to <span className="font-bold text-[#b12704]">kcubeadm@gmail.com</span>. The festival team requests one singing video plus the information below.
+              Submit your application through the Apply page. The festival team requests one singing video plus the information below.
             </p>
           </div>
 
@@ -347,20 +387,10 @@ export default function IndiaPreSelectionPage() {
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">Need help</p>
             <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Contact and next steps</h2>
             <p className="mt-4 text-sm leading-7 text-[#565959]">
-              If you are ready to participate, send your application by email and keep your performance video ready. For additional K-CUBE India coordination, the team contact is available below.
+              If you are ready to participate, submit your application through the Apply page and keep your performance video ready. For additional K-CUBE India coordination, the team can follow up from the saved record below.
             </p>
 
             <div className="mt-5 grid gap-3">
-              <a
-                href="mailto:kcubeadm@gmail.com"
-                className="flex items-center justify-between gap-3 rounded-[18px] border border-[#d5d9d9] bg-[#f7fafa] px-4 py-4 text-sm font-bold text-[#111827] transition hover:border-[#f3a847] hover:text-[#b12704]"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-[#b12704]" />
-                  kcubeadm@gmail.com
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </a>
               <div className="rounded-[18px] border border-[#f3a847]/40 bg-[#fff8df] px-4 py-4">
                 <p className="text-sm font-black text-[#111827]">Festival location</p>
                 <p className="mt-2 text-sm leading-7 text-[#565959]">

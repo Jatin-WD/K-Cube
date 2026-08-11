@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 const timeline = [
   {
     title: '🇮🇳 K-CUBE INDIA PRE-SELECTION',
-    date: 'August 20, 2026',
-    dateTime: '2026-08-20',
+    date: 'August 25, 2026',
+    dateTime: '2026-08-25',
     label: 'PRIMARY / K-CUBE DEADLINE',
     description: 'India-level pre-selection for singers and musical artists.',
     tone: 'border-[#f3a847]/60 bg-[#151d2d] text-[#ffd814]',
@@ -90,11 +90,7 @@ const IndiaPreSelectionSection = () => {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <p className="max-w-sm text-xs leading-6 text-[#aab5c6]">
-                  Submit details and apply from the dedicated page. For direct email help, contact{' '}
-                  <a href="mailto:kcubeadm@gmail.com" className="font-bold text-[#f3a847] transition hover:text-[#ffd814]">
-                    kcubeadm@gmail.com
-                  </a>
-                  .
+                  Submit details and apply from the dedicated page. The internal application form keeps everything inside K-CUBE.
                 </p>
               </div>
 

@@ -1,15 +1,19 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, Eye, EyeOff, Lock, Mail, Phone } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Check, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import api from '@/lib/api';
 import { copy } from '@/lib/kcubeContent';
 import { useAppStore, type AuthMethod } from '@/store/useAppStore';
 
 interface AuthExperienceProps {
   mode: 'signin' | 'signup' | 'admin';
+  returnTo?: string | null;
+  verified?: string | null;
+  verifiedEmail?: string | null;
+  referralParam?: string | null;
 }
 
 const authCopy = {
@@ -17,25 +21,19 @@ const authCopy = {
     signinTitle: 'Sign in to your K-CUBE account',
     signupTitle: 'Create your K-CUBE account',
     adminTitle: 'Admin CMS login',
-    subtitle: 'Use email/password or temporary mobile OTP. Your points balance is restored from the server after login.',
+    subtitle: 'Use email and password to access your K-CUBE account. Your points balance is restored from the server after login.',
     name: 'Full name',
     username: 'Username',
     email: 'Email address',
     password: 'Password',
-    phone: 'Mobile number',
-    otp: 'OTP code',
-    sendOtp: 'Send OTP',
-    verifyOtp: 'Verify OTP',
     emailLogin: 'Email login',
-    phoneLogin: 'Mobile OTP',
     submitSignin: 'Sign in',
     submitSignup: 'Create account',
     submitAdmin: 'Enter CMS',
     signedIn: 'Signed in successfully',
     switchSignup: 'Need a new account?',
     switchSignin: 'Already have an account?',
-    realNote: 'Temporary OTP is generated instantly so signup and sign-in work without an SMS provider for now.',
-    otpSent: 'Temporary OTP generated.',
+    realNote: 'Email login is the only sign-in method for now.',
   },
   ko: {
     signinTitle: 'K-CUBE 계정 로그인',
@@ -112,6 +110,9 @@ const normalizeUser = (payload: unknown, method: AuthMethod) => {
     email: typeof (record.email ?? nestedUser.email) === 'string' ? String(record.email ?? nestedUser.email) : undefined,
     phone: typeof (record.phone ?? nestedUser.phone) === 'string' ? String(record.phone ?? nestedUser.phone) : undefined,
     points: readPoints(record.points ?? nestedUser.points),
+    referralCode: typeof (record.referral_code ?? record.referralCode ?? nestedUser.referral_code ?? nestedUser.referralCode) === 'string'
+      ? String(record.referral_code ?? record.referralCode ?? nestedUser.referral_code ?? nestedUser.referralCode)
+      : undefined,
     role: (record.role ?? nestedUser.role ?? 'member') as 'admin' | 'member' | 'manager' | 'guest',
     method,
   };
@@ -128,21 +129,24 @@ const getErrorMessage = (error: unknown) => {
       : 'Unable to complete request.';
 };
 
-const AuthExperience = ({ mode }: AuthExperienceProps) => {
+const AuthExperience = ({
+  mode,
+  returnTo = null,
+  verified = null,
+  verifiedEmail = null,
+  referralParam = null,
+}: AuthExperienceProps) => {
   const router = useRouter();
   const language = useAppStore((state) => state.language);
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
   const signIn = useAppStore((state) => state.signIn);
   const signOut = useAppStore((state) => state.signOut);
-  const searchParams = useSearchParams();
-  const verifiedParam = searchParams.get('verified');
-  const verifiedEmailParam = searchParams.get('email');
   const t = authCopy[language];
   const global = copy[language];
-  const [method, setMethod] = useState<AuthMethod>(mode === 'admin' ? 'admin' : 'email');
   const [message, setMessage] = useState('');
   const [verificationLink, setVerificationLink] = useState('');
+  const [signupReferralCode, setSignupReferralCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
@@ -152,48 +156,40 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
     password: '',
     phone: '',
     otp: '',
+    referralCode: referralParam || '',
   });
-  const returnTo = sanitizeReturnTo(searchParams.get('returnTo'));
+  const safeReturnTo = sanitizeReturnTo(returnTo);
 
   useEffect(() => {
-    if (mode !== 'signin' || verifiedParam !== '1') return;
+    if (mode !== 'signin' || verified !== '1') return;
     setMessage('Email verified successfully. You can sign in now.');
-    if (verifiedEmailParam) {
-      setForm((current) => ({ ...current, email: verifiedEmailParam }));
+    if (verifiedEmail) {
+      setForm((current) => ({ ...current, email: verifiedEmail }));
     }
-  }, [mode, verifiedEmailParam, verifiedParam]);
-
-  const returnHref = useMemo(() => returnTo || '/dashboard', [returnTo]);
+  }, [mode, verified, verifiedEmail]);
 
   const authSwitchHref = (target: 'signin' | 'signup') => {
     const base = target === 'signin' ? '/signin' : '/signup';
-    return returnTo ? `${base}?returnTo=${encodeURIComponent(returnTo)}` : base;
+    return safeReturnTo ? `${base}?returnTo=${encodeURIComponent(safeReturnTo)}` : base;
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage('');
     setVerificationLink('');
+    setSignupReferralCode('');
     setIsSubmitting(true);
 
     try {
       let response;
 
-      if (method === 'phone') {
-        response = await api.post('/auth/otp/verify', {
-          phone: form.phone,
-          otp_code: form.otp,
-          full_name: form.fullName || undefined,
-          username: form.username || undefined,
-          email: form.email || undefined,
-        });
-      } else if (mode === 'signup') {
+      if (mode === 'signup') {
         response = await api.post('/auth/register', {
           full_name: form.fullName,
           username: form.username,
           email: form.email,
-          phone: form.phone || undefined,
           password: form.password,
+          referral_code: form.referralCode.trim() || undefined,
         });
       } else {
         response = await api.post('/auth/login', {
@@ -203,11 +199,17 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
       }
 
       const data = response.data?.data ?? response.data;
-      const nextUser = normalizeUser(data.user ?? data, method);
+      const nextUser = normalizeUser(data.user ?? data, mode === 'admin' ? 'admin' : 'email');
       const nextPoints = readPoints(data.user?.points ?? data.points ?? nextUser.points);
 
       if (mode === 'signup' && data.verificationRequired) {
         setMessage(data.message || 'Verification email sent. Please check your inbox before signing in.');
+        const referralCode = typeof data.user?.referral_code === 'string'
+          ? data.user.referral_code
+          : typeof data.user?.referralCode === 'string'
+            ? data.user.referralCode
+            : '';
+        setSignupReferralCode(referralCode);
         if (typeof data.verificationUrl === 'string') {
           setVerificationLink(data.verificationUrl);
         }
@@ -224,33 +226,12 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
       if (mode === 'admin') {
         router.replace('/admin');
       } else {
-        router.replace(returnTo || '/dashboard');
+        router.replace(safeReturnTo || '/dashboard');
       }
     } catch (error: unknown) {
       setMessage(getErrorMessage(error));
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const sendOtp = async () => {
-    setMessage('');
-    if (!form.phone.trim()) {
-      setMessage('Phone number is required.');
-      return;
-    }
-    try {
-      const response = await api.post('/auth/otp/send', { phone: form.phone });
-      const data = response.data?.data ?? response.data;
-      const otpCode = typeof data?.otpCode === 'string' ? data.otpCode : '';
-      if (otpCode) {
-        setForm((current) => ({ ...current, otp: otpCode }));
-        setMessage(`Temporary OTP generated: ${otpCode}`);
-      } else {
-        setMessage(t.otpSent);
-      }
-    } catch (error: unknown) {
-      setMessage(getErrorMessage(error));
     }
   };
 
@@ -265,7 +246,6 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
           </p>
           <h1 className="mt-6 text-3xl font-black leading-tight text-white sm:text-4xl lg:text-6xl">{title}</h1>
           <p className="mt-5 text-base leading-7 text-[#d4dbe7] sm:text-lg sm:leading-8">{t.subtitle}</p>
-          <p className="mt-5 rounded-xl border border-white/10 bg-[#111113] p-4 text-sm leading-6 text-[#aab5c6]">{t.realNote}</p>
         </section>
 
         <section className="rounded-xl border border-white/10 bg-[#111113] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
@@ -283,7 +263,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
                 <p className="mt-1 text-4xl font-black text-[#ffc400]">{points}</p>
               </div>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href={mode === 'admin' ? '/admin' : returnHref} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">
+                <Link href={mode === 'admin' ? '/admin' : safeReturnTo || '/dashboard'} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">
                   {mode === 'admin' ? 'Open CMS' : 'Continue'}
                 </Link>
                 <button type="button" onClick={signOut} className="rounded-lg border border-white/15 px-5 py-3 text-sm font-bold text-white">
@@ -293,30 +273,6 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
             </div>
           ) : (
             <form onSubmit={submit}>
-              {mode !== 'admin' ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {[
-                    { key: 'email' as AuthMethod, label: t.emailLogin, icon: Mail },
-                    { key: 'phone' as AuthMethod, label: t.phoneLogin, icon: Phone },
-                  ].map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <button
-                        key={item.key}
-                        type="button"
-                        onClick={() => setMethod(item.key)}
-                        className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-3 text-sm font-black transition ${
-                          method === item.key ? 'border-[#ffc400] bg-[#ffc400] text-[#090909]' : 'border-white/10 bg-white/[0.04] text-white'
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {item.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : null}
-
               <div className="mt-6 grid gap-4">
                 {mode === 'signup' ? (
                   <label className="grid gap-2 text-sm font-bold text-white">
@@ -332,64 +288,52 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
                   </label>
                 ) : null}
 
-                {method === 'phone' ? (
-                  <>
-                    <label className="grid gap-2 text-sm font-bold text-white">
-                      {t.phone}
-                      <input value={form.phone} onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" placeholder="+91 99999 99999" />
-                    </label>
-                    {mode === 'signup' ? (
-                      <label className="grid gap-2 text-sm font-bold text-white">
-                        {t.email}
-                        <input
-                          type="email"
-                          value={form.email}
-                          onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-                          className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]"
-                          placeholder="optional@email.com"
-                        />
-                      </label>
-                    ) : null}
-                    <button type="button" onClick={sendOtp} className="rounded-lg border border-[#ffc400]/40 bg-[#ffc400]/10 px-4 py-3 text-sm font-black text-[#ffc400]">
-                      {t.sendOtp}
+                {mode === 'signup' ? (
+                  <label className="grid gap-2 text-sm font-bold text-white">
+                    Referral code
+                    <input
+                      value={form.referralCode}
+                      onChange={(event) => setForm((current) => ({ ...current, referralCode: event.target.value.toUpperCase() }))}
+                      className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]"
+                      placeholder="Optional referral code"
+                    />
+                    <span className="text-xs font-medium text-[#aab5c6]">Optional. If a friend invited you, enter their code here.</span>
+                  </label>
+                ) : null}
+
+                <label className="grid gap-2 text-sm font-bold text-white">
+                  {t.email}
+                  <input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-white">
+                  {t.password}
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={form.password}
+                      onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+                      className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 pr-12 text-white outline-none focus:border-[#ffc400]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((current) => !current)}
+                      className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-[#aab5c6] transition hover:text-white"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
-                    <label className="grid gap-2 text-sm font-bold text-white">
-                      {t.otp}
-                      <input value={form.otp} onChange={(event) => setForm((current) => ({ ...current, otp: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-                    </label>
-                  </>
-                ) : (
-                  <>
-                    <label className="grid gap-2 text-sm font-bold text-white">
-                      {t.email}
-                      <input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-                    </label>
-                    <label className="grid gap-2 text-sm font-bold text-white">
-                      {t.password}
-                      <div className="relative">
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          value={form.password}
-                          onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-                          className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 pr-12 text-white outline-none focus:border-[#ffc400]"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword((current) => !current)}
-                          className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-[#aab5c6] transition hover:text-white"
-                          aria-label={showPassword ? 'Hide password' : 'Show password'}
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                    </label>
-                  </>
-                )}
+                  </div>
+                </label>
               </div>
 
               {message ? (
                 <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-[#d4dbe7]">
                   <p>{message}</p>
+                  {signupReferralCode ? (
+                    <p className="mt-3 rounded-md border border-[#ffc400]/20 bg-[#ffc400]/10 px-3 py-2 text-sm font-bold text-[#ffc400]">
+                      Your referral code: {signupReferralCode}
+                    </p>
+                  ) : null}
                   {verificationLink ? (
                     <a href={verificationLink} className="mt-3 inline-flex font-bold text-[#ffc400]" target="_blank" rel="noreferrer">
                       Open verification link
@@ -400,7 +344,7 @@ const AuthExperience = ({ mode }: AuthExperienceProps) => {
 
               <button type="submit" disabled={isSubmitting} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-5 py-4 text-sm font-black text-[#090909] transition hover:bg-[#ffd84a] disabled:cursor-not-allowed disabled:opacity-70">
                 <Lock className="h-4 w-4" />
-                {isSubmitting ? 'Please wait...' : mode === 'admin' ? t.submitAdmin : mode === 'signup' ? t.submitSignup : method === 'phone' ? t.verifyOtp : t.submitSignin}
+                {isSubmitting ? 'Please wait...' : mode === 'admin' ? t.submitAdmin : mode === 'signup' ? t.submitSignup : t.submitSignin}
               </button>
 
               <div className="mt-5 text-center text-sm text-[#aab5c6]">

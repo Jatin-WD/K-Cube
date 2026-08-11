@@ -233,7 +233,57 @@ const hindiText: Record<string, string> = {
   'Manage users, rewards, partners and fulfillment.': 'उपयोगकर्ताओं, पुरस्कारों, पार्टनर्स और फुलफिलमेंट को प्रबंधित करें।',
 };
 
-const txt = (en: string, ko: string, hi: string): LocalText => ({ en, ko, hi: hindiText[en] ?? hi });
+function txt(en: string, ko: string, hi: string): LocalText {
+  return { en, ko, hi: hindiText[en] ?? hi };
+}
+
+export const allMenuQuickLinks: MenuLink[] = [
+  {
+    label: txt('K-CUBE Shop', 'K-CUBE दुकान', 'K-CUBE Shop'),
+    href: '/shop',
+    description: txt(
+      'Browse the internal store and keep purchases on K-CUBE.',
+      '내부 스토어에서 둘러보고 구매를 K-CUBE 안에서 완료하세요.',
+      'Internal store browse karke purchase K-CUBE ke andar complete karein.',
+    ),
+  },
+  {
+    label: txt('Trip to Korea', '한국 여행', 'Trip to Korea'),
+    href: '/trip-to-korea',
+    description: txt(
+      'Review the flagship reward and trip qualification flow.',
+      '대표 리워드와 여행 자격 흐름을 확인하세요.',
+      'Flagship reward aur trip qualification flow dekhein.',
+    ),
+  },
+  {
+    label: txt('India Pre-Selection', '인도 예선', 'India Pre-Selection'),
+    href: '/india-pre-selection',
+    description: txt(
+      'Go straight to the festival submission hub.',
+      '축제 제출 허브로 바로 이동하세요.',
+      'Festival submission hub tak seedha jaayein.',
+    ),
+  },
+  {
+    label: txt('Apply for Manpower', '인력 지원', 'Apply for Manpower'),
+    href: '/apply-for-manpower',
+    description: txt(
+      'Open the support application for events and operations.',
+      '이벤트와 운영 지원 신청서를 여세요.',
+      'Events aur operations support application kholen.',
+    ),
+  },
+  {
+    label: txt('About K-CUBE', 'K-CUBE 소개', 'About K-CUBE'),
+    href: '/about',
+    description: txt(
+      'Read the platform overview for members and partners.',
+      '회원과 파트너를 위한 플랫폼 개요를 확인하세요.',
+      'Members aur partners ke liye platform overview padhein.',
+    ),
+  },
+];
 
 export const copy = {
   en: {
@@ -252,7 +302,7 @@ export const copy = {
     loginRequired: 'Login required to apply and earn points',
     completed: 'Completed',
     pointsWallet: 'Points wallet',
-    welcomeBonus: 'Sign up to unlock your 250 point welcome bonus.',
+    welcomeBonus: 'Sign up to unlock your 100 point welcome bonus.',
     koreaTrip: 'Trip to Korea',
     tripLine: 'Top point holders qualify for the flagship Korea trip reward.',
     applyNow: 'Apply now',
@@ -273,7 +323,7 @@ export const copy = {
     loginRequired: '신청하고 포인트를 받으려면 로그인이 필요합니다',
     completed: '완료',
     pointsWallet: '포인트 지갑',
-    welcomeBonus: '회원가입 후 250 포인트 웰컴 보너스를 받으세요.',
+    welcomeBonus: '회원가입 후 100 포인트 웰컴 보너스를 받으세요.',
     koreaTrip: '한국 여행',
     tripLine: '상위 포인트 회원은 대표 한국 여행 리워드 대상이 됩니다.',
     applyNow: '신청하기',
@@ -294,7 +344,7 @@ export const copy = {
     loginRequired: 'आवेदन करने और पॉइंट्स कमाने के लिए लॉगिन आवश्यक है',
     completed: 'पूरा हुआ',
     pointsWallet: 'पॉइंट्स वॉलेट',
-    welcomeBonus: 'साइन अप करने पर 250 वेलकम पॉइंट्स पाएँ।',
+    welcomeBonus: 'साइन अप करने पर 100 वेलकम पॉइंट्स पाएँ।',
     koreaTrip: 'कोरिया यात्रा',
     tripLine: 'सबसे अधिक पॉइंट्स वाले उपयोगकर्ता कोरिया यात्रा पुरस्कार के लिए पात्र होंगे।',
     applyNow: 'अभी आवेदन करें',
@@ -695,6 +745,145 @@ const buildCategoryPreviewLinks = (category: DetailCategory): MenuLink[] =>
       points: item.points,
     }));
 
+export interface AllMenuCategory {
+  label: LocalText;
+  href: string;
+  description: LocalText;
+  services: MenuLink[];
+}
+
+const buildShopServiceLinks = (): MenuLink[] => shopMenuLinks.slice(0, 5);
+
+const buildEventsServiceLinks = (): MenuLink[] => [
+  ...detailItems
+    .filter((item) => item.category === 'events')
+    .map((item) => ({
+      label: item.title,
+      href: detailHref(item.category, item.slug),
+      description: item.summary,
+      points: item.points,
+      children: buildSectionPreviewLinks(item),
+      featured: item.slug === 'culture-workshops',
+    })),
+  {
+    label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
+    href: '/india-pre-selection',
+    description: txt(
+      'Official India pre-selection and festival submission hub for the ITAEWON World Music Spirit Festival 2026.',
+      'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
+      'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.',
+    ),
+    points: 130,
+    children: [
+      {
+        label: txt('Information', 'Information', 'Information'),
+        href: '/india-pre-selection/information',
+        description: txt(
+          'Festival background, dates, and participation overview.',
+          '축제 배경, 일정, 참여 개요입니다.',
+          'Festival background, dates, aur participation overview.',
+        ),
+      },
+      {
+        label: txt('Announcement', 'Announcement', 'Announcement'),
+        href: '/india-pre-selection/announcement',
+        description: txt(
+          'Official notices, updates, and important reminders.',
+          '공식 공지, 업데이트, 중요한 안내입니다.',
+          'Official notices, updates, aur important reminders.',
+        ),
+      },
+      {
+        label: txt('Apply', 'Apply', 'Apply'),
+        href: '/india-pre-selection/apply',
+        description: txt(
+          'Open the application page and send your submission.',
+          '신청 페이지를 열고 지원서를 제출하세요.',
+          'Application page kholkar apna submission bhejein.',
+        ),
+      },
+    ],
+  },
+];
+
+export const allMenuCategories: AllMenuCategory[] = [
+  {
+    label: txt('Activities', '활동', 'Activities'),
+    href: '/activities',
+    description: txt('K-Pop, K-Dance, culture and food missions.', 'K-Pop, K-Dance, 문화와 음식 미션.', 'K-Pop, K-Dance, culture aur food missions.'),
+    services: detailItems
+      .filter((item) => item.category === 'activities')
+      .map((item) => ({
+        label: item.title,
+        href: detailHref(item.category, item.slug),
+        description: item.summary,
+        points: item.points,
+        featured: item.slug === 'k-pop-missions',
+        children: buildSectionPreviewLinks(item),
+      })),
+  },
+  {
+    label: txt('Korean Learning', '한국어 학습', 'Korean Learning'),
+    href: '/learning',
+    description: txt('Beginner lessons, vocabulary and speaking practice.', '초급 수업, 단어, 말하기 연습.', 'Beginner lessons, vocabulary aur speaking practice.'),
+    services: detailItems
+      .filter((item) => item.category === 'learning')
+      .map((item) => ({
+        label: item.title,
+        href: detailHref(item.category, item.slug),
+        description: item.summary,
+        points: item.points,
+        children: buildSectionPreviewLinks(item),
+      })),
+  },
+  {
+    label: txt('K-Food', 'K-푸드', 'K-Food'),
+    href: '/kfood',
+    description: txt('Recipes, food missions and K-CUBE shop commerce bridge.', '레시피, 음식 미션, K-CUBE shop 연결.', 'Recipes, food missions aur K-CUBE shop bridge.'),
+    services: detailItems
+      .filter((item) => item.category === 'kfood')
+      .map((item) => ({
+        label: item.title,
+        href: detailHref(item.category, item.slug),
+        description: item.summary,
+        points: item.points,
+        children: buildSectionPreviewLinks(item),
+      })),
+  },
+  {
+    label: txt('Shop', '샵', 'Shop'),
+    href: '/shop',
+    description: txt('Buy Korean products directly on K-CUBE with account rewards.', 'K-CUBE에서 한국 상품을 직접 구매하고 계정 리워드를 받으세요.', 'K-CUBE par Korean products directly buy karo aur account rewards pao.'),
+    services: buildShopServiceLinks(),
+  },
+  {
+    label: txt('Rewards', '리워드', 'Rewards'),
+    href: '/rewards',
+    description: txt('Points wallet, redemption and Korea trip progress.', '포인트 지갑, 교환, 한국 여행 진행.', 'Points wallet, redemption aur Korea trip progress.'),
+    services: [
+      ...detailItems
+        .filter((item) => item.category === 'rewards')
+        .map((item) => ({
+          label: item.title,
+          href: detailHref(item.category, item.slug),
+          description: item.summary,
+          children: buildSectionPreviewLinks(item),
+        })),
+      {
+        label: txt('Trip to Korea', '한국 여행', 'Trip to Korea'),
+        href: '/trip-to-korea',
+        description: txt('Grand reward page for highest point holders.', '상위 포인트 회원을 위한 대표 리워드 페이지.', 'Highest point holders ke liye grand reward page.'),
+      },
+    ],
+  },
+  {
+    label: txt('Events', '이벤트', 'Events'),
+    href: '/events',
+    description: txt('Culture workshops and RSVP-based points.', '문화 워크숍과 RSVP 포인트.', 'Culture workshops aur RSVP based points.'),
+    services: buildEventsServiceLinks(),
+  },
+];
+
 export const navItems: NavItem[] = [
   {
     label: txt('All', '전체', 'All'),
@@ -702,14 +891,12 @@ export const navItems: NavItem[] = [
     dropdown: [
       {
         title: txt('Explore K-CUBE', 'K-CUBE 둘러보기', 'K-CUBE Explore'),
-        links: [
-          { label: txt('Activities', '활동', 'Activities'), href: '/activities', description: txt('K-Pop, K-Dance, culture and food missions.', 'K-Pop, K-Dance, 문화와 음식 미션.', 'K-Pop, K-Dance, culture aur food missions.'), children: buildCategoryPreviewLinks('activities') },
-          { label: txt('Korean Learning', '한국어 학습', 'Korean Learning'), href: '/learning', description: txt('Beginner lessons, vocabulary and speaking practice.', '초급 수업, 단어, 말하기 연습.', 'Beginner lessons, vocabulary aur speaking practice.'), children: buildCategoryPreviewLinks('learning') },
-          { label: txt('K-Food', 'K-푸드', 'K-Food'), href: '/kfood', description: txt('Recipes, food missions and K-CUBE shop commerce bridge.', '레시피, 음식 미션, K-CUBE shop 연결.', 'Recipes, food missions aur K-CUBE shop bridge.'), children: buildCategoryPreviewLinks('kfood') },
-          { label: txt('Shop', '샵', 'Shop'), href: '/shop', description: txt('Buy Korean products directly on K-CUBE with account rewards.', 'K-CUBE에서 한국 상품을 직접 구매하고 계정 리워드를 받으세요.', 'K-CUBE par Korean products directly buy karo aur account rewards pao.'), children: shopMenuLinks.slice(0, 4) },
-          { label: txt('Rewards', '리워드', 'Rewards'), href: '/rewards', description: txt('Points wallet, redemption and Korea trip progress.', '포인트 지갑, 교환, 한국 여행 진행.', 'Points wallet, redemption aur Korea trip progress.'), children: buildCategoryPreviewLinks('rewards') },
-          { label: txt('Events', '이벤트', 'Events'), href: '/events', description: txt('Culture workshops and RSVP-based points.', '문화 워크숍과 RSVP 포인트.', 'Culture workshops aur RSVP based points.'), children: buildCategoryPreviewLinks('events') },
-        ],
+        links: allMenuCategories.map((category) => ({
+          label: category.label,
+          href: category.href,
+          description: category.description,
+          children: category.services.slice(0, 4),
+        })),
       },
     ],
   },
@@ -811,6 +998,35 @@ export const navItems: NavItem[] = [
               'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.'
             ),
             points: 130,
+            children: [
+              {
+                label: txt('Information', 'Information', 'Information'),
+                href: '/india-pre-selection/information',
+                description: txt(
+                  'Festival background, dates, and participation overview.',
+                  '축제 배경, 일정, 참여 개요입니다.',
+                  'Festival background, dates, aur participation overview.'
+                ),
+              },
+              {
+                label: txt('Announcement', 'Announcement', 'Announcement'),
+                href: '/india-pre-selection/announcement',
+                description: txt(
+                  'Official notices, updates, and important reminders.',
+                  '공식 공지, 업데이트, 중요한 안내입니다.',
+                  'Official notices, updates, aur important reminders.'
+                ),
+              },
+              {
+                label: txt('Apply', 'Apply', 'Apply'),
+                href: '/india-pre-selection/apply',
+                description: txt(
+                  'Open the application page and send your submission.',
+                  '신청 페이지를 열고 지원서를 제출하세요.',
+                  'Application page kholkar apna submission bhejein.'
+                ),
+              },
+            ],
           },
         ],
       },

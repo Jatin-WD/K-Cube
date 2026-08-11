@@ -368,6 +368,29 @@ CREATE TABLE IF NOT EXISTS point_transactions (
   CONSTRAINT fk_point_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS india_pre_selection_applications (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  full_name VARCHAR(200) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(30) DEFAULT NULL,
+  nationality VARCHAR(120) DEFAULT NULL,
+  current_city VARCHAR(120) DEFAULT NULL,
+  date_of_birth DATE DEFAULT NULL,
+  performance_category VARCHAR(120) DEFAULT NULL,
+  biography TEXT DEFAULT NULL,
+  video_link VARCHAR(1024) DEFAULT NULL,
+  message TEXT DEFAULT NULL,
+  status ENUM('submitted','reviewing','shortlisted','selected','rejected','withdrawn') NOT NULL DEFAULT 'submitted',
+  points_awarded INT UNSIGNED NOT NULL DEFAULT 0,
+  submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_india_pre_selection_application_user (user_id),
+  INDEX idx_india_pre_selection_application_status (status),
+  CONSTRAINT fk_india_pre_selection_application_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS platform_events (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   title VARCHAR(255) NOT NULL,

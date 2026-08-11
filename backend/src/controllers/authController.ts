@@ -15,9 +15,124 @@ const signToken = (payload: object, secret: Secret, expiresIn: string) => jwt.si
 const normalizeEmail = (email?: string) => String(email || '').trim().toLowerCase();
 const normalizeUsername = (username?: string) => String(username || '').trim();
 const normalizeName = (name?: string) => String(name || '').trim();
+const normalizeReferralCode = (code?: string | null) => String(code || '').trim().toUpperCase();
 const generateReferralCode = (username: string) => {
   const slug = username.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 10) || 'kcube';
   return `${slug}${crypto.randomBytes(3).toString('hex')}`.toUpperCase();
+};
+const REFERRAL_BONUS_POINTS = 30;
+const resolveReferralCode = (bodyOrQuery: any) => normalizeReferralCode(bodyOrQuery?.referral_code ?? bodyOrQuery?.referralCode ?? bodyOrQuery?.ref ?? bodyOrQuery?.referred_by);
+
+const generateUniqueReferralCode = async (username: string) => {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const referralCode = generateReferralCode(username);
+    const [rows] = await pool.query('SELECT id FROM users WHERE referral_code = ? LIMIT 1', [referralCode]);
+    if (!(rows as any[]).length) {
+      return referralCode;
+    }
+  }
+
+  return `${generateReferralCode(username)}${crypto.randomBytes(2).toString('hex')}`.toUpperCase();
+};
+
+const findReferrerByCode = async (referralCode: string) => {
+  const normalizedCode = normalizeReferralCode(referralCode);
+  if (!normalizedCode) return null;
+
+  const [rows] = await pool.query(
+    'SELECT id, referral_code FROM users WHERE UPPER(referral_code) = ? LIMIT 1',
+    [normalizedCode],
+  );
+  return (rows as any[])[0] || null;
+};
+
+const awardReferralPoints = async (referredUserId: number, referralCode?: string | null) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [existingRows] = await connection.query(
+      'SELECT id FROM referrals WHERE referred_user_id = ? LIMIT 1 FOR UPDATE',
+      [referredUserId],
+    );
+    if ((existingRows as any[]).length) {
+      await connection.rollback();
+      return { awarded: false };
+    }
+
+    const [userRows] = await connection.query(
+      'SELECT id, referred_by FROM users WHERE id = ? LIMIT 1 FOR UPDATE',
+      [referredUserId],
+    );
+    const user = (userRows as any[])[0];
+    if (!user) {
+      await connection.rollback();
+      return { awarded: false };
+    }
+
+    const normalizedCode = normalizeReferralCode(referralCode || user.referred_by);
+    if (!normalizedCode) {
+      await connection.rollback();
+      return { awarded: false };
+    }
+
+    const [referrerRows] = await connection.query(
+      'SELECT id, referral_code FROM users WHERE UPPER(referral_code) = ? LIMIT 1 FOR UPDATE',
+      [normalizedCode],
+    );
+    const referrer = (referrerRows as any[])[0];
+    if (!referrer) {
+      await connection.rollback();
+      return { awarded: false };
+    }
+    if (Number(referrer.id) === Number(referredUserId)) {
+      await connection.rollback();
+      throw Object.assign(new Error('Self-referrals are not allowed'), { status: 400, code: 'SELF_REFERRAL_NOT_ALLOWED' });
+    }
+
+    await connection.query(
+      'UPDATE users SET points = GREATEST(points + ?, 0), xp = GREATEST(xp + ?, 0), korea_score = GREATEST(korea_score + ?, 0) WHERE id = ?',
+      [REFERRAL_BONUS_POINTS, REFERRAL_BONUS_POINTS, REFERRAL_BONUS_POINTS, referrer.id],
+    );
+
+    const [balanceRows] = await connection.query('SELECT points FROM users WHERE id = ? LIMIT 1', [referrer.id]);
+    const balance = Number((balanceRows as any[])[0]?.points ?? 0);
+
+    await connection.query(
+      `INSERT INTO referrals
+        (referrer_user_id, referred_user_id, referral_code, status, referrer_points, referred_points, created_at, qualified_at)
+       VALUES (?, ?, ?, 'qualified', ?, 0, NOW(), NOW())`,
+      [referrer.id, referredUserId, referrer.referral_code, REFERRAL_BONUS_POINTS],
+    );
+
+    await connection.query(
+      `INSERT INTO point_transactions
+        (user_id, source_type, source_slug, points_delta, balance_after, status, metadata, created_by, created_at)
+       VALUES (?, 'referral', ?, ?, ?, 'approved', ?, NULL, NOW())`,
+      [
+        referrer.id,
+        `referral-${referredUserId}`,
+        REFERRAL_BONUS_POINTS,
+        balance,
+        JSON.stringify({
+          referrer_user_id: referrer.id,
+          referred_user_id: referredUserId,
+          referral_code: referrer.referral_code,
+          bonus_points: REFERRAL_BONUS_POINTS,
+        }),
+      ],
+    );
+
+    await connection.query('UPDATE users SET referred_by = COALESCE(referred_by, ?) WHERE id = ?', [referrer.referral_code, referredUserId]);
+
+    await connection.commit();
+    return { awarded: true, referralCode: referrer.referral_code, referrerUserId: referrer.id, balance };
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 };
 
 const verifyGoogleCredential = async (body: any) => {
@@ -56,7 +171,7 @@ const verifyGoogleCredential = async (body: any) => {
   return claims;
 };
 
-const publicUserSelect = 'id, email, username, full_name, role, category_access, points, xp, level, profile_image';
+const publicUserSelect = 'id, email, username, full_name, role, category_access, points, xp, level, profile_image, referral_code, referred_by';
 
 const issueTokens = (user: any) => ({
   token: signToken({ id: user.id, role: user.role, category_access: user.category_access }, jwtSecret, '1h'),
@@ -67,7 +182,7 @@ const awardWelcomePoints = async (userId: number) => {
     userId,
     sourceType: 'welcome',
     sourceSlug: 'welcome-bonus',
-    points: 250,
+    points: 100,
     metadata: { reason: 'First registration welcome award' },
     once: true,
   });
@@ -94,6 +209,7 @@ const issueEmailVerification = async (userId: number, email: string, fullName: s
 
 export const register = async (req: Request, res: Response) => {
   const { full_name, username, email, phone, password, category_access } = req.body;
+  const referralCode = resolveReferralCode(req.body);
   const normalizedEmail = normalizeEmail(email);
   const normalizedUsername = normalizeUsername(username);
   const normalizedFullName = normalizeName(full_name);
@@ -101,15 +217,22 @@ export const register = async (req: Request, res: Response) => {
   if (!normalizedEmail || !password || !normalizedUsername || !normalizedFullName) {
     return fail(res, 400, 'VALIDATION_ERROR', 'Missing required fields');
   }
+  if (referralCode) {
+    const referrer = await findReferrerByCode(referralCode);
+    if (!referrer) {
+      return fail(res, 400, 'INVALID_REFERRAL_CODE', 'Referral code is invalid');
+    }
+  }
   const passwordHash = await bcrypt.hash(password, 12);
   const [existing] = await pool.query('SELECT id FROM users WHERE LOWER(email) = ? OR LOWER(username) = ? LIMIT 1', [normalizedEmail, normalizedUsername.toLowerCase()]);
   if ((existing as any[]).length) {
     return fail(res, 409, 'ACCOUNT_EXISTS', 'Email or username already registered');
   }
+  const userReferralCode = await generateUniqueReferralCode(normalizedUsername);
   const result = await pool.query(
-    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, created_at, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'pending')`,
-    [normalizedFullName, normalizedUsername, normalizedEmail, phone || null, passwordHash, 'member', categoryAccess, generateReferralCode(normalizedUsername)]
+    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, referred_by, created_at, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'pending')`,
+    [normalizedFullName, normalizedUsername, normalizedEmail, phone || null, passwordHash, 'member', categoryAccess, userReferralCode, referralCode || null]
   );
   const userId = (result as any)[0].insertId;
   await pool.query(
@@ -125,6 +248,8 @@ export const register = async (req: Request, res: Response) => {
       full_name: normalizedFullName,
       role: 'member',
       category_access: categoryAccess,
+      referral_code: userReferralCode,
+      referred_by: referralCode || null,
       points: 0,
       status: 'pending',
     },
@@ -163,6 +288,7 @@ export const login = async (req: Request, res: Response) => {
       full_name: user.full_name,
       role: user.role,
       category_access: user.category_access,
+      referral_code: user.referral_code,
       points: Number(user.points ?? 0),
     },
     token,
@@ -220,6 +346,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
   if (record.status !== 'active') {
     await pool.query('UPDATE users SET status = ? WHERE id = ?', ['active', record.user_id]);
     await awardWelcomePoints(record.user_id);
+    await awardReferralPoints(record.user_id);
   }
   await pool.query('UPDATE email_verification_tokens SET used_at = NOW() WHERE id = ?', [record.token_id]);
   await pool.query('UPDATE auth_identities SET verified = TRUE, updated_at = NOW() WHERE user_id = ? AND provider = ?', [record.user_id, 'password']);
@@ -250,6 +377,7 @@ export const sendOtp = async (req: Request, res: Response) => {
 
 export const verifyOtp = async (req: Request, res: Response) => {
   const { phone, otp_code, full_name, username, email, category_access } = req.body;
+  const referralCode = resolveReferralCode(req.body);
   if (!phone || !otp_code) return fail(res, 400, 'VALIDATION_ERROR', 'Phone and OTP are required');
 
   const [rows] = await pool.query(
@@ -267,6 +395,13 @@ export const verifyOtp = async (req: Request, res: Response) => {
     const normalizedUsername = normalizeUsername(username) || `kcube_${crypto.randomBytes(4).toString('hex')}`;
     const normalizedFullName = normalizeName(full_name) || 'K-CUBE Member';
     const categoryAccess = category_access || 'category_c';
+    const userReferralCode = await generateUniqueReferralCode(normalizedUsername);
+    if (referralCode) {
+      const referrer = await findReferrerByCode(referralCode);
+      if (!referrer) {
+        return fail(res, 400, 'INVALID_REFERRAL_CODE', 'Referral code is invalid');
+      }
+    }
     if (normalizedEmail) {
       const [existingEmailRows] = await pool.query('SELECT id FROM users WHERE LOWER(email) = ? LIMIT 1', [normalizedEmail]);
       userId = (existingEmailRows as any[])[0]?.id || null;
@@ -276,11 +411,12 @@ export const verifyOtp = async (req: Request, res: Response) => {
       userId = (existingPhoneRows as any[])[0]?.id || null;
     }
     const result = await pool.query(
-      'INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
-      [normalizedFullName, normalizedUsername, normalizedEmail, phone, '', 'member', categoryAccess, 'active']
+      'INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, referred_by, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
+      [normalizedFullName, normalizedUsername, normalizedEmail, phone, '', 'member', categoryAccess, userReferralCode, referralCode || null, 'active']
     );
     userId = (result as any)[0].insertId;
     await awardWelcomePoints(userId);
+    await awardReferralPoints(userId, referralCode);
   } else {
     const updateFields: string[] = [];
     const updateValues: unknown[] = [];
@@ -310,7 +446,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
     }
   }
 
-  const [userRows] = await pool.query('SELECT id, email, username, full_name, role, category_access, points FROM users WHERE id = ? LIMIT 1', [userId]);
+  const [userRows] = await pool.query('SELECT id, email, username, full_name, role, category_access, points, referral_code, referred_by FROM users WHERE id = ? LIMIT 1', [userId]);
   const user = (userRows as any[])[0];
   const token = signToken({ id: user.id, role: user.role, category_access: user.category_access }, jwtSecret, '1h');
   const refreshToken = signToken({ id: user.id }, refreshSecret, '30d');
@@ -336,6 +472,7 @@ export const googleAuth = async (req: Request, res: Response) => {
     const email = normalizeEmail(claims.email);
     const fullName = claims.name || email.split('@')[0] || 'K-CUBE Member';
     const profileImage = claims.picture || null;
+    const referralCode = resolveReferralCode(req.body);
 
     const [identityRows] = await pool.query('SELECT user_id FROM auth_identities WHERE provider = ? AND provider_user_id = ? LIMIT 1', ['google', googleSub]);
     let userId = (identityRows as any[])[0]?.user_id;
@@ -353,13 +490,21 @@ export const googleAuth = async (req: Request, res: Response) => {
         await pool.query('UPDATE users SET google_id = ?, profile_image = COALESCE(profile_image, ?) WHERE id = ?', [googleSub, profileImage, userId]);
       } else {
         const username = `kcube_${crypto.randomBytes(4).toString('hex')}`;
+        if (referralCode) {
+          const referrer = await findReferrerByCode(referralCode);
+          if (!referrer) {
+            return fail(res, 400, 'INVALID_REFERRAL_CODE', 'Referral code is invalid');
+          }
+        }
+        const userReferralCode = await generateUniqueReferralCode(username);
         const result = await pool.query(
-          'INSERT INTO users (full_name, username, email, google_id, profile_image, role, category_access, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
-          [fullName, username, email, googleSub, profileImage, 'member', 'category_c', 'active']
+          'INSERT INTO users (full_name, username, email, google_id, profile_image, role, category_access, referral_code, referred_by, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
+          [fullName, username, email, googleSub, profileImage, 'member', 'category_c', userReferralCode, referralCode || null, 'active']
         );
         userId = (result as any)[0].insertId;
         isNewUser = true;
         await awardWelcomePoints(userId);
+        await awardReferralPoints(userId, referralCode);
       }
 
       await pool.query(

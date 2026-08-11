@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, CheckCircle2, Clapperboard, Gift, Plane, Trophy, UploadCloud, Utensils } from 'lucide-react';
+import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, Plane, Trophy, UploadCloud, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -77,6 +77,7 @@ const MemberDashboard = () => {
   const [learningProgress, setLearningProgress] = useState<LearningProgressRow[]>([]);
   const [learningSessions, setLearningSessions] = useState<LearningSessionRow[]>([]);
   const [learningLoading, setLearningLoading] = useState(false);
+  const [referralMessage, setReferralMessage] = useState('');
 
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -108,6 +109,21 @@ const MemberDashboard = () => {
       router.push(typeof data.redirectUrl === 'string' ? data.redirectUrl : '/shop');
     } catch {
       router.push('/shop');
+    }
+  };
+
+  const copyReferralLink = async () => {
+    if (!user?.referralCode) {
+      setReferralMessage('Referral code unavailable yet.');
+      return;
+    }
+
+    const referralLink = `${window.location.origin}/signup?ref=${encodeURIComponent(user.referralCode)}`;
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setReferralMessage('Referral link copied to clipboard.');
+    } catch {
+      setReferralMessage(`Copy this link: ${referralLink}`);
     }
   };
 
@@ -222,6 +238,23 @@ const MemberDashboard = () => {
             <button type="button" onClick={visitKFood} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909]">
               Visit K-CUBE Shop
             </button>
+
+            <div className="mt-6 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-5">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Invite friends</p>
+              <h3 className="mt-2 text-xl font-black text-white">Earn 30 points per join</h3>
+              <p className="mt-2 text-sm leading-6 text-[#d4dbe7]">
+                Share your referral code. When a new user joins with it and completes signup, you get 30 points automatically.
+              </p>
+              <div className="mt-4 rounded-lg border border-white/10 bg-[#070708] px-4 py-3">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">Your referral code</p>
+                <p className="mt-1 break-all text-lg font-black text-white">{user.referralCode ?? 'Loading...'}</p>
+              </div>
+              <button type="button" onClick={copyReferralLink} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#ffc400]/40 bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909]">
+                <Copy className="h-4 w-4" />
+                Copy invite link
+              </button>
+              {referralMessage ? <p className="mt-3 text-sm leading-6 text-[#d4dbe7]">{referralMessage}</p> : null}
+            </div>
           </aside>
         </div>
       </section>

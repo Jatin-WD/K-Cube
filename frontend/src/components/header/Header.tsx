@@ -19,7 +19,6 @@ const Header = () => {
   const [activeMenuKey, setActiveMenuKey] = useState<string | null>(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
-  const closeMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
   const user = useAppStore((state) => state.user);
@@ -62,28 +61,10 @@ const Header = () => {
   }, [pathname]);
 
   const openMenu = (key: string) => {
-    if (closeMenuTimerRef.current) {
-      clearTimeout(closeMenuTimerRef.current);
-      closeMenuTimerRef.current = null;
-    }
     setActiveMenuKey(key);
   };
 
-  const scheduleCloseMenu = () => {
-    if (closeMenuTimerRef.current) {
-      clearTimeout(closeMenuTimerRef.current);
-    }
-    closeMenuTimerRef.current = setTimeout(() => {
-      setActiveMenuKey(null);
-      closeMenuTimerRef.current = null;
-    }, 300);
-  };
-
   const closeAllMenus = () => {
-    if (closeMenuTimerRef.current) {
-      clearTimeout(closeMenuTimerRef.current);
-      closeMenuTimerRef.current = null;
-    }
     setActiveMenuKey(null);
     setLanguageMenuOpen(false);
   };
@@ -338,6 +319,7 @@ const Header = () => {
       <nav
         aria-label="Primary navigation"
         className="group/nav relative hidden border-b border-[#232f3e] bg-[#232f3e] md:block"
+        onMouseLeave={closeAllMenus}
       >
         <div className="mx-auto flex max-w-[1760px] items-center gap-3 px-3 sm:px-4 lg:px-10">
           <div className="flex min-h-[42px] flex-1 items-center gap-1 overflow-visible px-0 lg:min-h-[54px]">
@@ -345,14 +327,20 @@ const Header = () => {
               const isActive = activeMenuKey === item.label.en;
               if (item.dropdown) {
                 return (
-                  <Link
+                  <button
                     key={item.label.en}
-                    href={item.href}
+                    type="button"
                     aria-haspopup="menu"
                     aria-expanded={isActive}
                     onMouseEnter={() => openMenu(item.label.en)}
                     onFocus={() => openMenu(item.label.en)}
-                    onClick={closeAllMenus}
+                    onClick={() => {
+                      if (isActive) {
+                        closeAllMenus();
+                        return;
+                      }
+                      openMenu(item.label.en);
+                    }}
                     className={`flex h-[42px] items-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-bold transition focus-visible:outline-none sm:h-[48px] sm:px-3 sm:text-sm lg:h-[54px] lg:px-4 lg:text-base ${
                       isActive
                         ? 'bg-white/5 text-[#f3a847] outline outline-1 outline-white/30'
@@ -361,7 +349,7 @@ const Header = () => {
                   >
                     {item.label[language]}
                     <ChevronDown className={`h-3.5 w-3.5 transition ${isActive ? 'text-[#f3a847]' : 'text-[#8792a3]'}`} />
-                  </Link>
+                  </button>
                 );
               }
 
@@ -388,9 +376,13 @@ const Header = () => {
             <div
               className="absolute inset-x-0 top-full z-[130] pt-0"
               onMouseEnter={() => openMenu(activeMenu.label.en)}
-              onMouseLeave={scheduleCloseMenu}
             >
-              <MegaMenu sections={activeMenu.dropdown} language={language} onNavigate={closeAllMenus} />
+              <MegaMenu
+                sections={activeMenu.dropdown}
+                language={language}
+                onNavigate={closeAllMenus}
+                variant={activeMenu.label.en === 'All' ? 'all' : 'default'}
+              />
             </div>
           ) : null}
         </div>
