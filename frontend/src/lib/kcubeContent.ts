@@ -808,6 +808,12 @@ const buildEventsServiceLinks = (): MenuLink[] => [
 
 export const allMenuCategories: AllMenuCategory[] = [
   {
+    label: txt('Events', '이벤트', 'Events'),
+    href: '/events',
+    description: txt('Culture workshops and RSVP-based points.', '문화 워크숍과 RSVP 포인트.', 'Culture workshops aur RSVP based points.'),
+    services: buildEventsServiceLinks(),
+  },
+  {
     label: txt('Activities', '활동', 'Activities'),
     href: '/activities',
     description: txt('K-Pop, K-Dance, culture and food missions.', 'K-Pop, K-Dance, 문화와 음식 미션.', 'K-Pop, K-Dance, culture aur food missions.'),
@@ -876,12 +882,6 @@ export const allMenuCategories: AllMenuCategory[] = [
       },
     ],
   },
-  {
-    label: txt('Events', '이벤트', 'Events'),
-    href: '/events',
-    description: txt('Culture workshops and RSVP-based points.', '문화 워크숍과 RSVP 포인트.', 'Culture workshops aur RSVP based points.'),
-    services: buildEventsServiceLinks(),
-  },
 ];
 
 export const navItems: NavItem[] = [
@@ -900,7 +900,74 @@ export const navItems: NavItem[] = [
       },
     ],
   },
-  { label: txt('Home', '홈', 'Home'), href: '/' },
+  {
+    label: txt('Events', '이벤트', 'Events'),
+    href: '/events',
+    dropdown: [
+      {
+        title: txt('Event Pages', '이벤트 페이지', 'Event Pages'),
+        links: [
+          ...detailItems.filter((item) => item.category === 'events').map((item) => ({
+            label: item.title,
+            href: detailHref(item.category, item.slug),
+            description: item.summary,
+            points: item.points,
+            children: buildSectionPreviewLinks(item),
+          })),
+          {
+            label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
+            href: '/india-pre-selection',
+            description: txt(
+              'Official India pre-selection and festival submission hub for the ITAEWON World Music Spirit Festival 2026.',
+              'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
+              'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.'
+            ),
+            points: 130,
+            children: [
+              {
+                label: txt('Information', 'Information', 'Information'),
+                href: '/india-pre-selection/information',
+                description: txt(
+                  'Festival background, dates, and participation overview.',
+                  '축제 배경, 일정, 참여 개요입니다.',
+                  'Festival background, dates, aur participation overview.'
+                ),
+              },
+              {
+                label: txt('Announcement', 'Announcement', 'Announcement'),
+                href: '/india-pre-selection/announcement',
+                description: txt(
+                  'Official notices, updates, and important reminders.',
+                  '공식 공지, 업데이트, 중요한 안내입니다.',
+                  'Official notices, updates, aur important reminders.'
+                ),
+              },
+              {
+                label: txt('Apply', 'Apply', 'Apply'),
+                href: '/india-pre-selection/apply',
+                description: txt(
+                  'Open the application page and send your submission.',
+                  '신청 페이지를 열고 지원서를 제출하세요.',
+                  'Application page kholkar apna submission bhejein.'
+                ),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: txt('Featured event', '추천 이벤트', 'Featured event'),
+        links: [
+          {
+            label: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
+            href: '/india-pre-selection',
+            description: txt('Dedicated submission page for the K-CUBE India Pre-Selection and singing video applications.', 'K-CUBE India 예선 및 노래 영상 지원 전용 페이지입니다.', 'Dedicated submission page for the K-CUBE India Pre-Selection and singing video applications.'),
+            featured: true,
+          },
+        ],
+      },
+    ],
+  },
   {
     label: txt('Shop', '샵', 'Shop'),
     href: '/shop',
@@ -971,74 +1038,6 @@ export const navItems: NavItem[] = [
             children: buildSectionPreviewLinks(item),
           })),
           { label: txt('Trip to Korea', '한국 여행', 'Trip to Korea'), href: '/trip-to-korea', description: txt('Grand reward page for highest point holders.', '상위 포인트 회원을 위한 대표 리워드 페이지.', 'Highest point holders ke liye grand reward page.') },
-        ],
-      },
-    ],
-  },
-  {
-    label: txt('Events', '이벤트', 'Events'),
-    href: '/events',
-    dropdown: [
-      {
-        title: txt('Event Pages', '이벤트 페이지', 'Event Pages'),
-        links: [
-          ...detailItems.filter((item) => item.category === 'events').map((item) => ({
-            label: item.title,
-            href: detailHref(item.category, item.slug),
-            description: item.summary,
-            points: item.points,
-            children: buildSectionPreviewLinks(item),
-          })),
-          {
-            label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
-            href: '/india-pre-selection',
-            description: txt(
-              'Official India pre-selection and festival submission hub for the ITAEWON World Music Spirit Festival 2026.',
-              'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
-              'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.'
-            ),
-            points: 130,
-            children: [
-              {
-                label: txt('Information', 'Information', 'Information'),
-                href: '/india-pre-selection/information',
-                description: txt(
-                  'Festival background, dates, and participation overview.',
-                  '축제 배경, 일정, 참여 개요입니다.',
-                  'Festival background, dates, aur participation overview.'
-                ),
-              },
-              {
-                label: txt('Announcement', 'Announcement', 'Announcement'),
-                href: '/india-pre-selection/announcement',
-                description: txt(
-                  'Official notices, updates, and important reminders.',
-                  '공식 공지, 업데이트, 중요한 안내입니다.',
-                  'Official notices, updates, aur important reminders.'
-                ),
-              },
-              {
-                label: txt('Apply', 'Apply', 'Apply'),
-                href: '/india-pre-selection/apply',
-                description: txt(
-                  'Open the application page and send your submission.',
-                  '신청 페이지를 열고 지원서를 제출하세요.',
-                  'Application page kholkar apna submission bhejein.'
-                ),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: txt('Featured event', '추천 이벤트', 'Featured event'),
-        links: [
-          {
-            label: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
-            href: '/india-pre-selection',
-            description: txt('Dedicated submission page for the K-CUBE India Pre-Selection and singing video applications.', 'K-CUBE India 예선 및 노래 영상 지원 전용 페이지입니다.', 'Dedicated submission page for the K-CUBE India Pre-Selection and singing video applications.'),
-            featured: true,
-          },
         ],
       },
     ],

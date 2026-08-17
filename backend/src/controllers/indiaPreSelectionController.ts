@@ -13,6 +13,52 @@ const applicationFields = `
   submitted_at, updated_at
 `;
 
+const applicationWithReviewFields = `
+  a.id,
+  a.user_id,
+  a.full_name,
+  a.email,
+  a.phone,
+  a.nationality,
+  a.current_city,
+  a.date_of_birth,
+  a.performance_category,
+  a.biography,
+  a.video_link,
+  a.message,
+  a.status,
+  a.points_awarded,
+  a.submitted_at,
+  a.updated_at,
+  reviewer.full_name AS reviewed_by_name,
+  reviewer.email AS reviewed_by_email,
+  JSON_UNQUOTE(JSON_EXTRACT(review.after_state, '$.review_note')) AS review_note,
+  review.reviewed_at
+`;
+
+const applicationWithReviewQuery = `
+  SELECT ${applicationWithReviewFields}
+  FROM india_pre_selection_applications a
+  LEFT JOIN (
+    SELECT latest.entity_id, latest.after_state, latest.created_by, latest.created_at AS reviewed_at
+    FROM (
+      SELECT
+        entity_id,
+        after_state,
+        created_by,
+        created_at,
+        id,
+        ROW_NUMBER() OVER (PARTITION BY entity_id ORDER BY created_at DESC, id DESC) AS rn
+      FROM admin_audit_logs
+      WHERE entity_type = 'india_pre_selection_application' AND action = 'review'
+    ) latest
+    WHERE latest.rn = 1
+  ) review ON review.entity_id = a.id
+  LEFT JOIN users reviewer ON reviewer.id = review.created_by
+  WHERE a.user_id = ?
+  LIMIT 1
+`;
+
 const cleanText = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
 
 const cleanNullableText = (value: unknown) => {
@@ -40,7 +86,7 @@ export const getMyIndiaPreSelectionApplication = async (req: AuthRequest, res: R
   if (!req.user?.id) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
 
   const [rows] = await pool.query(
-    `SELECT ${applicationFields} FROM india_pre_selection_applications WHERE user_id = ? LIMIT 1`,
+    applicationWithReviewQuery,
     [req.user.id],
   );
 
@@ -163,10 +209,7 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
     awardedPoints = Number(application?.points_awarded || 0);
   }
 
-  const [responseRows] = await pool.query(
-    `SELECT ${applicationFields} FROM india_pre_selection_applications WHERE user_id = ? LIMIT 1`,
-    [req.user.id],
-  );
+  const [responseRows] = await pool.query(applicationWithReviewQuery, [req.user.id]);
 
   return (isNewApplication ? created : ok)(res, {
     application: (responseRows as any[])[0] || application,

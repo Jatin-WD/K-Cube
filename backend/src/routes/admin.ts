@@ -2,6 +2,12 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import {
   getAdminDashboard,
+  listRecentAdminActions,
+  getAdminProfile,
+  updateAdminProfile,
+  changeAdminPassword,
+  listAdminAccounts,
+  createAdminAccount,
   manageUser,
   approveChapter,
   listChapters,
@@ -19,10 +25,22 @@ import {
   adjustPoints,
   listKFoodClaims,
   reviewKFoodClaim,
+  listKFoodProducts,
+  createKFoodProduct,
+  updateKFoodProduct,
+  deleteKFoodProduct,
+  getKFoodOverview,
+  listKFoodFulfillments,
+  upsertKFoodFulfillment,
+  listAdminSubmissions,
   listRewards,
   upsertReward,
   retireReward,
 } from '../controllers/adminController';
+import {
+  listIndiaPreSelectionApplications,
+  reviewIndiaPreSelectionApplication,
+} from '../controllers/indiaPreSelectionAdminController';
 import {
   checkInEvent,
   createEvent,
@@ -39,6 +57,12 @@ const router = Router();
 
 router.use(requireAuth(['admin']));
 router.get('/dashboard', getAdminDashboard);
+router.get('/recent-actions', listRecentAdminActions);
+router.get('/profile', getAdminProfile);
+router.patch('/profile', updateAdminProfile);
+router.patch('/profile/password', changeAdminPassword);
+router.get('/accounts', listAdminAccounts);
+router.post('/accounts', createAdminAccount);
 router.patch('/user/:id', manageUser);
 router.post('/chapter/:id/approve', approveChapter);
 router.get('/chapters', listChapters);
@@ -58,6 +82,17 @@ router.get('/points', listPointTransactions);
 router.post('/points/adjust', adjustPoints);
 router.get('/kfood/claims', listKFoodClaims);
 router.patch('/kfood/claims/:id/review', reviewKFoodClaim);
+router.get('/kfood/products', listKFoodProducts);
+router.post('/kfood/products', createKFoodProduct);
+router.patch('/kfood/products/:slug', updateKFoodProduct);
+router.delete('/kfood/products/:slug', deleteKFoodProduct);
+router.get('/kfood/overview', getKFoodOverview);
+router.get('/kfood/fulfillments', listKFoodFulfillments);
+router.post('/kfood/fulfillments', upsertKFoodFulfillment);
+router.patch('/kfood/fulfillments', upsertKFoodFulfillment);
+router.get('/india-pre-selection/applications', listIndiaPreSelectionApplications);
+router.patch('/india-pre-selection/applications/:id', reviewIndiaPreSelectionApplication);
+router.get('/submissions', listAdminSubmissions);
 router.get('/rewards', listRewards);
 router.post('/rewards', upsertReward);
 router.patch('/rewards/:id', upsertReward);

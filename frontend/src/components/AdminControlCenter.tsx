@@ -19,6 +19,9 @@ import {
   Settings2,
   ShieldCheck,
   ShoppingBag,
+  KeyRound,
+  UserCog,
+  Mic2,
   Trash2,
   Users,
 } from 'lucide-react';
@@ -28,12 +31,16 @@ import { useAppStore } from '@/store/useAppStore';
 
 type AdminSection =
   | 'overview'
+  | 'adminProfile'
+  | 'adminAccounts'
+  | 'submissions'
   | 'website'
   | 'learning'
   | 'users'
   | 'points'
   | 'chapters'
   | 'uploads'
+  | 'indiaPreSelection'
   | 'kfood'
   | 'events'
   | 'rewards'
@@ -143,6 +150,8 @@ type UserRow = {
   state: string | null;
   country: string | null;
   profile_image: string | null;
+  referral_code: string | null;
+  referred_by: string | null;
   created_at: string;
   last_login: string | null;
 };
@@ -181,6 +190,32 @@ type KFoodClaimRow = {
   full_name: string;
   email: string;
   created_at: string;
+};
+
+type IndiaPreSelectionApplicationRow = {
+  id: number;
+  user_id: number;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  nationality: string | null;
+  current_city: string | null;
+  date_of_birth: string | null;
+  performance_category: string | null;
+  biography: string | null;
+  video_link: string | null;
+  message: string | null;
+  status: string;
+  points_awarded: number;
+  submitted_at: string;
+  updated_at: string;
+  user_full_name: string;
+  user_email: string;
+  user_phone: string | null;
+  reviewed_by_name: string | null;
+  reviewed_by_email: string | null;
+  review_note: string | null;
+  reviewed_at: string | null;
 };
 
 type EventRow = {
@@ -234,8 +269,138 @@ type CalendarConnectionRow = {
   updated_at: string;
 };
 
+type ActivityRow = {
+  id: number;
+  action: string;
+  entity_type: string;
+  entity_id: number | null;
+  created_at: string;
+  ip_address: string | null;
+  admin_name: string | null;
+  admin_email: string | null;
+  before_status: string | null;
+  after_status: string | null;
+  review_note: string | null;
+};
+
+type AdminProfileRow = UserRow;
+
+type AdminAccountRow = UserRow;
+
+type LocalizedText = {
+  en: string;
+  ko: string;
+  hi: string;
+};
+
+type KFoodProductRow = {
+  id: string;
+  slug: string;
+  sku: string;
+  title: LocalizedText;
+  subtitle: LocalizedText;
+  description: LocalizedText;
+  category: LocalizedText;
+  categoryKey: string;
+  image: string;
+  price: number;
+  compareAtPrice?: number;
+  rewardPoints: number;
+  inStock: boolean;
+  stockLabel: LocalizedText;
+  badges: LocalizedText[];
+  includes: LocalizedText[];
+};
+
+type KFoodOrderRow = {
+  id: number;
+  receipt: string;
+  context_ref: string | null;
+  amount: string;
+  currency: string;
+  payment_status: string;
+  dispatch_status: string;
+  tracking_number: string | null;
+  carrier: string | null;
+  commission_rate: number | string;
+  commission_amount: number | string;
+  customer_email: string | null;
+  customer_phone: string | null;
+  created_at: string;
+  fulfillment_id: number | null;
+  fulfillment_status: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
+  courier_notes: string | null;
+  dispatch_method: string | null;
+  shipping_name: string | null;
+  shipping_phone: string | null;
+  shipping_address: string | null;
+};
+
+type KFoodFulfillmentRow = {
+  id: number;
+  payment_order_id: number;
+  fulfillment_status: string;
+  tracking_number: string | null;
+  carrier: string | null;
+  dispatch_method: string | null;
+  shipping_name: string | null;
+  shipping_phone: string | null;
+  shipping_address: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
+  courier_notes: string | null;
+  receipt: string;
+  context_ref: string | null;
+  amount: string;
+  currency: string;
+  payment_status: string;
+  full_name: string | null;
+  email: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type SubmissionRow = {
+  id: number;
+  source_type: string;
+  source_label: string;
+  submission_kind: string | null;
+  title: string;
+  description: string | null;
+  status: string;
+  review_note: string | null;
+  points_reward: number;
+  submitted_at: string;
+  reviewed_at: string | null;
+  applicant_name: string | null;
+  applicant_email: string | null;
+  applicant_phone: string | null;
+  payload: Record<string, unknown>;
+};
+
+type KFoodOverviewRow = {
+  productSummary: {
+    totalProducts: number;
+    inStockProducts: number;
+    outOfStockProducts: number;
+  };
+  products: KFoodProductRow[];
+  orders: KFoodOrderRow[];
+  paymentSummary: Array<{ payment_status: string; total_orders: number; total_amount: string }>;
+  weeklyReport: Array<{ period: string; total_orders: number; total_amount: string; commission_amount: string }>;
+  monthlyReport: Array<{ period: string; total_orders: number; total_amount: string; commission_amount: string }>;
+  claimSummary: Array<{ claim_status: string; total_claims: number; total_amount: string; commission_amount: string }>;
+  fulfillments: KFoodFulfillmentRow[];
+};
+
 const adminNav = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Live metrics and shortcuts.' },
+  { id: 'adminProfile', label: 'Profile', icon: UserCog, description: 'Your admin identity and security.' },
+  { id: 'adminAccounts', label: 'Admin Accounts', icon: ShieldCheck, description: 'Multiple admin users and roles.' },
+  { id: 'submissions', label: 'Submissions', icon: FilePenLine, description: 'All participation and form submissions.' },
+  { id: 'indiaPreSelection', label: 'India Pre-Selection', icon: Mic2, description: 'Festival applications and review.' },
   { id: 'website', label: 'Website CMS', icon: FilePenLine, description: 'Pages, inventory, copy blocks.' },
   { id: 'learning', label: 'Learning', icon: BookOpen, description: 'Tracks and question bank.' },
   { id: 'users', label: 'Users', icon: Users, description: 'Profiles, roles and access.' },
@@ -248,6 +413,12 @@ const adminNav = [
   { id: 'announcements', label: 'Announcements', icon: Bell, description: 'CMS notices and broadcasts.' },
   { id: 'calendar', label: 'Calendar', icon: Settings2, description: 'Google Calendar sync.' },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'Usage and activity summary.' },
+] as const;
+
+const adminSidebarGroups = [
+  { title: 'Core', ids: ['overview', 'submissions', 'indiaPreSelection', 'website', 'learning'] },
+  { title: 'Operations', ids: ['users', 'points', 'chapters', 'uploads', 'kfood', 'events', 'rewards'] },
+  { title: 'System', ids: ['adminProfile', 'adminAccounts', 'announcements', 'calendar', 'analytics'] },
 ] as const;
 
 const emptyTrackForm = {
@@ -346,6 +517,31 @@ const emptyAnnouncementForm = {
   title: '',
   body: '',
   created_by: '',
+};
+
+const emptyAdminAccountForm = {
+  full_name: '',
+  username: '',
+  email: '',
+  phone: '',
+  password: '',
+  status: 'active',
+  category_access: 'category_c',
+};
+
+const emptyProfileForm = {
+  full_name: '',
+  phone: '',
+  city: '',
+  state: '',
+  country: '',
+  profile_image: '',
+};
+
+const emptyPasswordForm = {
+  current_password: '',
+  new_password: '',
+  confirm_password: '',
 };
 
 const emptyRewardForm = {
@@ -463,6 +659,7 @@ const AdminControlCenter = () => {
   const [analytics, setAnalytics] = useState<Record<string, number>>({});
   const [users, setUsers] = useState<UserRow[]>([]);
   const [uploads, setUploads] = useState<UploadRow[]>([]);
+  const [indiaApplications, setIndiaApplications] = useState<IndiaPreSelectionApplicationRow[]>([]);
   const [pointTransactions, setPointTransactions] = useState<PointTxRow[]>([]);
   const [claims, setClaims] = useState<KFoodClaimRow[]>([]);
   const [tracks, setTracks] = useState<LearningTrackRow[]>([]);
@@ -474,6 +671,27 @@ const AdminControlCenter = () => {
   const [rewards, setRewards] = useState<RewardRow[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementRow[]>([]);
   const [calendarConnections, setCalendarConnections] = useState<CalendarConnectionRow[]>([]);
+  const [recentActions, setRecentActions] = useState<ActivityRow[]>([]);
+  const [adminProfile, setAdminProfile] = useState<AdminProfileRow | null>(null);
+  const [adminAccounts, setAdminAccounts] = useState<AdminAccountRow[]>([]);
+  const [kfoodProducts, setKfoodProducts] = useState<KFoodProductRow[]>([]);
+  const [kfoodOverview, setKfoodOverview] = useState<KFoodOverviewRow | null>(null);
+  const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<number | null>(null);
+  const [selectedFulfillmentId, setSelectedFulfillmentId] = useState<number | null>(null);
+  const [fulfillmentForm, setFulfillmentForm] = useState({
+    payment_order_id: '',
+    fulfillment_status: 'pending',
+    tracking_number: '',
+    carrier: '',
+    dispatch_method: '',
+    shipping_name: '',
+    shipping_phone: '',
+    shipping_address: '',
+    shipped_at: '',
+    delivered_at: '',
+    courier_notes: '',
+  });
 
   const [selectedTrackId, setSelectedTrackId] = useState<number | null>(null);
   const [trackForm, setTrackForm] = useState(emptyTrackForm);
@@ -484,12 +702,17 @@ const AdminControlCenter = () => {
   const [userForm, setUserForm] = useState(emptyUserForm);
   const [pointsForm, setPointsForm] = useState(emptyPointsForm);
   const [announcementForm, setAnnouncementForm] = useState(emptyAnnouncementForm);
+  const [adminAccountForm, setAdminAccountForm] = useState(emptyAdminAccountForm);
+  const [adminProfileForm, setAdminProfileForm] = useState(emptyProfileForm);
+  const [adminPasswordForm, setAdminPasswordForm] = useState(emptyPasswordForm);
   const [rewardForm, setRewardForm] = useState(emptyRewardForm);
   const [eventForm, setEventForm] = useState(emptyEventForm);
   const [calendarForm, setCalendarForm] = useState(emptyCalendarForm);
 
   const [selectedUploadId, setSelectedUploadId] = useState<number | null>(null);
   const [uploadReview, setUploadReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
+  const [selectedIndiaApplicationId, setSelectedIndiaApplicationId] = useState<number | null>(null);
+  const [indiaApplicationReview, setIndiaApplicationReview] = useState({ status: 'reviewing', review_note: '' });
   const [selectedClaimId, setSelectedClaimId] = useState<number | null>(null);
   const [claimReview, setClaimReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
   const [selectedPageId, setSelectedPageId] = useState<number | null>(null);
@@ -528,9 +751,21 @@ const AdminControlCenter = () => {
     () => uploads.find((entry) => entry.id === selectedUploadId) || null,
     [selectedUploadId, uploads],
   );
+  const selectedIndiaApplication = useMemo(
+    () => indiaApplications.find((entry) => entry.id === selectedIndiaApplicationId) || null,
+    [indiaApplications, selectedIndiaApplicationId],
+  );
   const selectedClaim = useMemo(
     () => claims.find((entry) => entry.id === selectedClaimId) || null,
     [claims, selectedClaimId],
+  );
+  const selectedSubmission = useMemo(
+    () => submissions.find((entry) => entry.id === selectedSubmissionId) || null,
+    [selectedSubmissionId, submissions],
+  );
+  const selectedFulfillment = useMemo(
+    () => kfoodOverview?.fulfillments.find((entry) => entry.id === selectedFulfillmentId) || kfoodOverview?.fulfillments[0] || null,
+    [kfoodOverview, selectedFulfillmentId],
   );
   const selectedCmsPage = useMemo(
     () => pages.find((entry) => entry.id === selectedPageId) || null,
@@ -543,6 +778,14 @@ const AdminControlCenter = () => {
   const filteredUsers = useMemo(
     () => users.filter((entry) => matchesQuery(query, [entry.full_name, entry.username, entry.email, entry.role, entry.status, entry.city, entry.state, entry.country])),
     [query, users],
+  );
+  const filteredAdminAccounts = useMemo(
+    () => adminAccounts.filter((entry) => matchesQuery(query, [entry.full_name, entry.username, entry.email, entry.phone, entry.status, entry.city, entry.state, entry.country])),
+    [adminAccounts, query],
+  );
+  const filteredKFoodProducts = useMemo(
+    () => kfoodProducts.filter((entry) => matchesQuery(query, [entry.slug, entry.sku, entry.title.en, entry.subtitle.en, entry.category.en, entry.categoryKey, entry.inStock ? 'in stock' : 'out of stock'])),
+    [kfoodProducts, query],
   );
   const filteredChapters = useMemo(
     () => chapters.filter((entry) => matchesQuery(query, [entry.name, entry.slug, entry.city, entry.state, entry.country, entry.status, entry.leader_name, entry.leader_email])),
@@ -572,6 +815,33 @@ const AdminControlCenter = () => {
     () => uploads.filter((entry) => matchesQuery(query, [entry.title, entry.category, entry.status, entry.full_name, entry.email])),
     [query, uploads],
   );
+  const filteredIndiaApplications = useMemo(
+    () => indiaApplications.filter((entry) => matchesQuery(query, [entry.full_name, entry.email, entry.status, entry.performance_category, entry.nationality, entry.current_city, entry.review_note])),
+    [indiaApplications, query],
+  );
+  const latestIndiaApplications = useMemo(() => indiaApplications.slice(0, 3), [indiaApplications]);
+  const filteredRecentActions = useMemo(
+    () => recentActions.filter((entry) => matchesQuery(query, [entry.action, entry.entity_type, entry.admin_name, entry.admin_email, entry.after_status, entry.before_status, entry.review_note])),
+    [query, recentActions],
+  );
+  const filteredSubmissions = useMemo(
+    () =>
+      submissions.filter((entry) =>
+        matchesQuery(query, [
+          entry.source_label,
+          entry.source_type,
+          entry.submission_kind,
+          entry.title,
+          entry.description,
+          entry.status,
+          entry.review_note,
+          entry.applicant_name,
+          entry.applicant_email,
+          entry.applicant_phone,
+        ]),
+      ),
+    [query, submissions],
+  );
   const filteredClaims = useMemo(
     () => claims.filter((entry) => matchesQuery(query, [entry.order_id, entry.status, entry.full_name, entry.email, entry.order_total])),
     [claims, query],
@@ -590,9 +860,16 @@ const AdminControlCenter = () => {
       api.get('/admin/dashboard'),
       api.get('/admin/analytics'),
       api.get('/users'),
+      api.get('/admin/profile'),
+      api.get('/admin/accounts'),
       api.get('/admin/uploads'),
+      api.get('/admin/india-pre-selection/applications'),
       api.get('/admin/points'),
       api.get('/admin/kfood/claims'),
+      api.get('/admin/kfood/products'),
+      api.get('/admin/kfood/overview'),
+      api.get('/admin/kfood/fulfillments'),
+      api.get('/admin/submissions'),
       api.get('/learning/admin/tracks'),
       api.get('/learning/admin/questions'),
       api.get('/learning/cms/pages'),
@@ -602,30 +879,45 @@ const AdminControlCenter = () => {
       api.get('/admin/rewards'),
       api.get('/admin/announcements'),
       api.get('/admin/google-calendar/connections'),
+      api.get('/admin/recent-actions'),
     ]);
 
     const dashboardPayload = readPayload<any>(requests[0], {});
     const analyticsPayload = readPayload<Record<string, number>>(requests[1], {});
     const userRows = readPayload<UserRow[]>(requests[2], []);
-    const uploadRows = readPayload<UploadRow[]>(requests[3], []);
-    const pointRows = readPayload<PointTxRow[]>(requests[4], []);
-    const claimRows = readPayload<KFoodClaimRow[]>(requests[5], []);
-    const trackRows = readPayload<LearningTrackRow[]>(requests[6], []);
-    const questionRows = readPayload<LearningQuestionRow[]>(requests[7], []);
-    const pageRows = readPayload<CmsPageRow[]>(requests[8], []);
-    const blockRows = readPayload<CmsBlockRow[]>(requests[9], []);
-    const chapterRows = readPayload<ChapterRow[]>(requests[10], []);
-    const eventRows = readPayload<EventRow[]>(requests[11], []);
-    const rewardRows = readPayload<RewardRow[]>(requests[12], []);
-    const announcementRows = readPayload<AnnouncementRow[]>(requests[13], []);
-    const connectionRows = readPayload<CalendarConnectionRow[]>(requests[14], []);
+    const profileRow = readPayload<AdminProfileRow | null>(requests[3], null);
+    const adminAccountRows = readPayload<AdminAccountRow[]>(requests[4], []);
+    const uploadRows = readPayload<UploadRow[]>(requests[5], []);
+    const indiaRows = readPayload<IndiaPreSelectionApplicationRow[]>(requests[6], []);
+    const pointRows = readPayload<PointTxRow[]>(requests[7], []);
+    const claimRows = readPayload<KFoodClaimRow[]>(requests[8], []);
+    const kfoodProductRows = readPayload<KFoodProductRow[]>(requests[9], []);
+    const kfoodOverviewRows = readPayload<KFoodOverviewRow>(requests[10], null as any);
+    const fulfillmentRows = readPayload<KFoodFulfillmentRow[]>(requests[11], []);
+    const submissionRows = readPayload<SubmissionRow[]>(requests[12], []);
+    const trackRows = readPayload<LearningTrackRow[]>(requests[13], []);
+    const questionRows = readPayload<LearningQuestionRow[]>(requests[14], []);
+    const pageRows = readPayload<CmsPageRow[]>(requests[15], []);
+    const blockRows = readPayload<CmsBlockRow[]>(requests[16], []);
+    const chapterRows = readPayload<ChapterRow[]>(requests[17], []);
+    const eventRows = readPayload<EventRow[]>(requests[18], []);
+    const rewardRows = readPayload<RewardRow[]>(requests[19], []);
+    const announcementRows = readPayload<AnnouncementRow[]>(requests[20], []);
+    const connectionRows = readPayload<CalendarConnectionRow[]>(requests[21], []);
+    const activityRows = readPayload<ActivityRow[]>(requests[22], []);
 
     setDashboardMetrics(dashboardPayload.metrics || {});
     setAnalytics(analyticsPayload);
     setUsers(userRows);
+    setAdminProfile(profileRow || null);
+    setAdminAccounts(adminAccountRows);
     setUploads(uploadRows);
+    setIndiaApplications(indiaRows);
     setPointTransactions(pointRows);
     setClaims(claimRows);
+    setKfoodProducts(kfoodProductRows);
+    setKfoodOverview(kfoodOverviewRows ? { ...kfoodOverviewRows, fulfillments: fulfillmentRows } : null);
+    setSubmissions(submissionRows);
     setTracks(trackRows);
     setQuestions(questionRows);
     setPages(pageRows);
@@ -635,6 +927,18 @@ const AdminControlCenter = () => {
     setRewards(rewardRows);
     setAnnouncements(announcementRows);
     setCalendarConnections(connectionRows);
+    setRecentActions(activityRows);
+
+    if (profileRow) {
+      setAdminProfileForm({
+        full_name: profileRow.full_name || '',
+        phone: profileRow.phone || '',
+        city: profileRow.city || '',
+        state: profileRow.state || '',
+        country: profileRow.country || '',
+        profile_image: profileRow.profile_image || '',
+      });
+    }
 
     if (!selectedTrackId && trackRows.length) {
       setSelectedTrackId(trackRows[0].id);
@@ -692,6 +996,28 @@ const AdminControlCenter = () => {
         calendar_id: first.calendar_id,
         calendar_name: first.calendar_name || 'K-CUBE Calendar',
         sync_mode: first.sync_mode,
+      });
+    }
+    if (!selectedIndiaApplicationId && indiaRows.length) {
+      setSelectedIndiaApplicationId(indiaRows[0].id);
+    }
+    if (!selectedSubmissionId && submissionRows.length) {
+      setSelectedSubmissionId(submissionRows[0].id);
+    }
+    if (!selectedFulfillmentId && fulfillmentRows.length) {
+      setSelectedFulfillmentId(fulfillmentRows[0].id);
+      setFulfillmentForm({
+        payment_order_id: String(fulfillmentRows[0].payment_order_id),
+        fulfillment_status: fulfillmentRows[0].fulfillment_status,
+        tracking_number: fulfillmentRows[0].tracking_number || '',
+        carrier: fulfillmentRows[0].carrier || '',
+        dispatch_method: fulfillmentRows[0].dispatch_method || '',
+        shipping_name: fulfillmentRows[0].shipping_name || '',
+        shipping_phone: fulfillmentRows[0].shipping_phone || '',
+        shipping_address: fulfillmentRows[0].shipping_address || '',
+        shipped_at: fulfillmentRows[0].shipped_at ? fulfillmentRows[0].shipped_at.slice(0, 16) : '',
+        delivered_at: fulfillmentRows[0].delivered_at ? fulfillmentRows[0].delivered_at.slice(0, 16) : '',
+        courier_notes: fulfillmentRows[0].courier_notes || '',
       });
     }
     if (!selectedPageId && pageRows.length) {
@@ -754,6 +1080,47 @@ const AdminControlCenter = () => {
       });
     }
   }, [selectedReward]);
+
+  useEffect(() => {
+    if (selectedFulfillment) {
+      setFulfillmentForm({
+        payment_order_id: String(selectedFulfillment.payment_order_id),
+        fulfillment_status: selectedFulfillment.fulfillment_status,
+        tracking_number: selectedFulfillment.tracking_number || '',
+        carrier: selectedFulfillment.carrier || '',
+        dispatch_method: selectedFulfillment.dispatch_method || '',
+        shipping_name: selectedFulfillment.shipping_name || '',
+        shipping_phone: selectedFulfillment.shipping_phone || '',
+        shipping_address: selectedFulfillment.shipping_address || '',
+        shipped_at: selectedFulfillment.shipped_at ? selectedFulfillment.shipped_at.slice(0, 16) : '',
+        delivered_at: selectedFulfillment.delivered_at ? selectedFulfillment.delivered_at.slice(0, 16) : '',
+        courier_notes: selectedFulfillment.courier_notes || '',
+      });
+    }
+  }, [selectedFulfillment]);
+
+  useEffect(() => {
+    if (selectedIndiaApplication) {
+      setIndiaApplicationReview({
+        status: selectedIndiaApplication.status,
+        review_note: selectedIndiaApplication.review_note || '',
+      });
+    }
+  }, [selectedIndiaApplication]);
+
+  useEffect(() => {
+    if (!indiaApplications.length) {
+      if (selectedIndiaApplicationId !== null) {
+        setSelectedIndiaApplicationId(null);
+      }
+      return;
+    }
+
+    const stillExists = indiaApplications.some((entry) => entry.id === selectedIndiaApplicationId);
+    if (!stillExists) {
+      setSelectedIndiaApplicationId(indiaApplications[0].id);
+    }
+  }, [indiaApplications, selectedIndiaApplicationId]);
 
   useEffect(() => {
     if (selectedEvent) {
@@ -990,6 +1357,51 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
+  const saveAdminProfile = async () => {
+    await api.patch('/admin/profile', {
+      full_name: adminProfileForm.full_name,
+      phone: adminProfileForm.phone || null,
+      city: adminProfileForm.city || null,
+      state: adminProfileForm.state || null,
+      country: adminProfileForm.country || null,
+      profile_image: adminProfileForm.profile_image || null,
+    });
+    setNotice('Admin profile updated.');
+    await loadAdminData();
+  };
+
+  const changeAdminPassword = async () => {
+    if (!adminPasswordForm.current_password || !adminPasswordForm.new_password) {
+      setNotice('Enter both current and new password.');
+      return;
+    }
+    if (adminPasswordForm.new_password !== adminPasswordForm.confirm_password) {
+      setNotice('New password confirmation does not match.');
+      return;
+    }
+    await api.patch('/admin/profile/password', {
+      current_password: adminPasswordForm.current_password,
+      new_password: adminPasswordForm.new_password,
+    });
+    setNotice('Password changed successfully.');
+    setAdminPasswordForm(emptyPasswordForm);
+  };
+
+  const createAdminAccount = async () => {
+    await api.post('/admin/accounts', {
+      full_name: adminAccountForm.full_name,
+      username: adminAccountForm.username,
+      email: adminAccountForm.email,
+      phone: adminAccountForm.phone || null,
+      password: adminAccountForm.password,
+      status: adminAccountForm.status,
+      category_access: adminAccountForm.category_access,
+    });
+    setNotice('Admin account created.');
+    setAdminAccountForm(emptyAdminAccountForm);
+    await loadAdminData();
+  };
+
   const saveChapter = async () => {
     const payload = {
       id: chapterForm.id ? Number(chapterForm.id) : undefined,
@@ -1048,6 +1460,16 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
+  const reviewIndiaApplication = async () => {
+    if (!selectedIndiaApplication) return;
+    await api.patch(`/admin/india-pre-selection/applications/${selectedIndiaApplication.id}`, {
+      status: indiaApplicationReview.status,
+      review_note: indiaApplicationReview.review_note,
+    });
+    setNotice(`India pre-selection application ${indiaApplicationReview.status}.`);
+    await loadAdminData();
+  };
+
   const reviewClaim = async (status: 'approved' | 'rejected') => {
     if (!selectedClaim) return;
     await api.patch(`/admin/kfood/claims/${selectedClaim.id}/review`, {
@@ -1058,6 +1480,26 @@ const AdminControlCenter = () => {
     setNotice(`K-Food claim ${status}.`);
     setSelectedClaimId(null);
     setClaimReview({ status: 'approved', points_reward: 0, review_note: '' });
+    await loadAdminData();
+  };
+
+  const saveFulfillment = async () => {
+    const payload = {
+      payment_order_id: Number(fulfillmentForm.payment_order_id || 0),
+      fulfillment_status: fulfillmentForm.fulfillment_status,
+      tracking_number: fulfillmentForm.tracking_number || null,
+      carrier: fulfillmentForm.carrier || null,
+      dispatch_method: fulfillmentForm.dispatch_method || null,
+      shipping_name: fulfillmentForm.shipping_name || null,
+      shipping_phone: fulfillmentForm.shipping_phone || null,
+      shipping_address: fulfillmentForm.shipping_address || null,
+      shipped_at: fulfillmentForm.shipped_at || null,
+      delivered_at: fulfillmentForm.delivered_at || null,
+      courier_notes: fulfillmentForm.courier_notes || null,
+    };
+
+    await api.post('/admin/kfood/fulfillments', payload);
+    setNotice('K-Food fulfillment saved.');
     await loadAdminData();
   };
 
@@ -1178,22 +1620,130 @@ const AdminControlCenter = () => {
         })}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {adminNav.map((item) => {
-          const Icon = item.icon;
-          return (
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.06fr)_minmax(340px,0.94fr)]">
+        <SectionShell
+          title="Priority workspaces"
+          description="Jump straight into the sections that usually need attention first."
+          actions={<button type="button" onClick={() => setActiveSection('indiaPreSelection')} className="text-sm font-bold text-[#ffc400]">Open India queue</button>}
+        >
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {[
+              { id: 'submissions', label: 'Submissions', description: `${submissions.length} rows`, icon: FilePenLine },
+              { id: 'indiaPreSelection', label: 'India Pre-Selection', description: `${indiaApplications.length} submissions`, icon: Mic2 },
+              { id: 'uploads', label: 'Uploads', description: `${uploads.length} items`, icon: Clapperboard },
+              { id: 'kfood', label: 'K-Food', description: `${claims.length} claims`, icon: ShoppingBag },
+              { id: 'events', label: 'Events', description: `${events.length} events`, icon: CalendarDays },
+              { id: 'website', label: 'Website CMS', description: `${pages.length} pages`, icon: FilePenLine },
+              { id: 'analytics', label: 'Analytics', description: 'Usage summary', icon: BarChart3 },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setActiveSection(item.id as AdminSection)}
+                  className="rounded-2xl border border-white/10 bg-black/20 p-4 text-left transition hover:border-[#ffc400]/60 hover:bg-black/30"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <Icon className="h-5 w-5 text-[#ffc400]" />
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#aab5c6]">
+                      Open
+                    </span>
+                  </div>
+                  <h3 className="mt-4 text-lg font-black text-white">{item.label}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{item.description}</p>
+                </button>
+              );
+            })}
+          </div>
+        </SectionShell>
+
+        <SectionShell
+          title="Recent actions"
+          description="The latest admin activity and moderation history pulled from the audit log."
+          actions={<span className="text-sm font-bold text-[#ffc400]">{filteredRecentActions.length} records</span>}
+        >
+          <div className="space-y-3">
+            {filteredRecentActions.length ? (
+              filteredRecentActions.slice(0, 6).map((entry) => (
+                <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm font-black uppercase tracking-[0.16em] text-[#ffc400]">{entry.action.replace(/_/g, ' ')}</p>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#aab5c6]">
+                      {entry.entity_type.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm font-bold text-white">
+                    {entry.admin_name || entry.admin_email || 'System'} updated {entry.entity_type.replace(/_/g, ' ')}
+                    {entry.entity_id ? ` #${entry.entity_id}` : ''}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-[#aab5c6]">
+                    {entry.before_status && entry.after_status ? `${entry.before_status} -> ${entry.after_status}` : entry.after_status || 'Status changed'}
+                  </p>
+                  {entry.review_note ? (
+                    <p className="mt-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm leading-6 text-[#d4dbe7]">
+                      {entry.review_note}
+                    </p>
+                  ) : null}
+                  <p className="mt-2 text-xs text-[#98a4b1]">
+                    {entry.created_at ? new Date(entry.created_at).toLocaleString() : 'No timestamp'}
+                  </p>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="text-sm font-bold text-white">No recent actions yet.</p>
+                <p className="mt-2 text-sm leading-6 text-[#aab5c6]">
+                  Once reviews and edits happen, the latest admin activity will appear here.
+                </p>
+              </div>
+            )}
+          </div>
+        </SectionShell>
+
+        <SectionShell
+          title="India Pre-Selection submissions"
+          description="The latest festival applications are surfaced here so reviewers can jump into the queue without digging through the sidebar."
+          actions={
             <button
-              key={item.id}
               type="button"
-              onClick={() => setActiveSection(item.id as AdminSection)}
-              className="rounded-2xl border border-white/10 bg-black/20 p-5 text-left transition hover:border-[#ffc400]/60 hover:bg-black/30"
+              onClick={() => setActiveSection('indiaPreSelection')}
+              className="text-sm font-bold text-[#ffc400]"
             >
-              <Icon className="h-6 w-6 text-[#ffc400]" />
-              <h3 className="mt-4 text-xl font-black text-white">{item.label}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{item.description}</p>
+              Open review queue
             </button>
-          );
-        })}
+          }
+        >
+          <div className="grid gap-3">
+            {latestIndiaApplications.length ? (
+              latestIndiaApplications.map((entry) => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  onClick={() => setActiveSection('indiaPreSelection')}
+                  className="rounded-2xl border border-white/10 bg-black/20 p-4 text-left transition hover:border-[#ffc400]/60 hover:bg-black/30"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="font-black text-white">{entry.full_name}</p>
+                    <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-[#ffc400]">
+                      {entry.status}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-[#aab5c6]">
+                    {entry.performance_category || 'Unspecified'} - {entry.email} - {entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}
+                  </p>
+                </button>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="text-sm font-bold text-white">No India Pre-Selection submissions yet.</p>
+                <p className="mt-2 text-sm leading-6 text-[#aab5c6]">
+                  Once applicants submit the form, their rows will appear here and in the dedicated review queue.
+                </p>
+              </div>
+            )}
+          </div>
+        </SectionShell>
       </div>
     </div>
   );
@@ -1713,6 +2263,184 @@ const AdminControlCenter = () => {
     </div>
   );
 
+  const renderAdminProfile = () => {
+    const profile = adminProfile || user;
+    const profileName = adminProfile?.full_name || (user as any).full_name || (user as any).fullName || 'Admin';
+    const profileEmail = adminProfile?.email || user.email || '';
+    const profileRole = adminProfile?.role || user.role || 'admin';
+    const profileStatus = adminProfile?.status || 'active';
+    const profileLastLogin = adminProfile?.last_login || null;
+    const profileReferralCode = adminProfile?.referral_code || 'No code';
+    return (
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(340px,420px)]">
+        <SectionShell
+          title="Admin profile"
+          description="Keep your identity and contact details current, then rotate your password when needed."
+          actions={<span className="text-sm font-bold text-[#ffc400]">Account #{profile.id}</span>}
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              { label: 'Role', value: profileRole },
+              { label: 'Status', value: profileStatus },
+              { label: 'Last login', value: profileLastLogin ? new Date(profileLastLogin).toLocaleString() : 'No login recorded' },
+              { label: 'Referral', value: profileReferralCode },
+            ].map((item) => (
+              <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+                <p className="mt-2 text-sm font-bold text-white">{item.value}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-5 grid gap-3 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="space-y-3">
+              <Field label="Full name">
+                <input className={inputClass} value={adminProfileForm.full_name} onChange={(event) => setAdminProfileForm((state) => ({ ...state, full_name: event.target.value }))} />
+              </Field>
+              <Field label="Phone">
+                <input className={inputClass} value={adminProfileForm.phone} onChange={(event) => setAdminProfileForm((state) => ({ ...state, phone: event.target.value }))} />
+              </Field>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="City">
+                  <input className={inputClass} value={adminProfileForm.city} onChange={(event) => setAdminProfileForm((state) => ({ ...state, city: event.target.value }))} />
+                </Field>
+                <Field label="State">
+                  <input className={inputClass} value={adminProfileForm.state} onChange={(event) => setAdminProfileForm((state) => ({ ...state, state: event.target.value }))} />
+                </Field>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Country">
+                  <input className={inputClass} value={adminProfileForm.country} onChange={(event) => setAdminProfileForm((state) => ({ ...state, country: event.target.value }))} />
+                </Field>
+                <Field label="Profile image">
+                  <input className={inputClass} value={adminProfileForm.profile_image} onChange={(event) => setAdminProfileForm((state) => ({ ...state, profile_image: event.target.value }))} />
+                </Field>
+              </div>
+              <button type="button" onClick={saveAdminProfile} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                <Save className="h-4 w-4" />
+                Save profile
+              </button>
+            </div>
+
+            <div className="space-y-3 rounded-3xl border border-white/10 bg-black/20 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">Security</p>
+              <Field label="Current password">
+                <input type="password" className={inputClass} value={adminPasswordForm.current_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, current_password: event.target.value }))} />
+              </Field>
+              <Field label="New password">
+                <input type="password" className={inputClass} value={adminPasswordForm.new_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, new_password: event.target.value }))} />
+              </Field>
+              <Field label="Confirm password">
+                <input type="password" className={inputClass} value={adminPasswordForm.confirm_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, confirm_password: event.target.value }))} />
+              </Field>
+              <button type="button" onClick={changeAdminPassword} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm font-black text-white">
+                <KeyRound className="h-4 w-4" />
+                Change password
+              </button>
+            </div>
+          </div>
+        </SectionShell>
+
+        <SectionShell title="Profile notes" description="Use this area as a clean reference for the current admin identity and operational posture.">
+          <div className="space-y-3">
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Identity</p>
+              <p className="mt-2 text-sm font-bold text-white">{profileName}</p>
+              <p className="mt-1 text-sm text-[#aab5c6]">{profileEmail}</p>
+            </article>
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Workspace</p>
+              <p className="mt-2 text-sm font-bold text-white">Admin console access</p>
+              <p className="mt-1 text-sm leading-6 text-[#aab5c6]">
+                Keep profile details current so review history, sign-offs and escalations always point to the right person.
+              </p>
+            </article>
+          </div>
+        </SectionShell>
+      </div>
+    );
+  };
+
+  const renderAdminAccounts = () => (
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
+      <SectionShell
+        title="Admin accounts"
+        description="Create additional admin users and keep a tight roster of who has control-center access."
+        actions={<span className="text-sm font-bold text-[#ffc400]">{filteredAdminAccounts.length} admins</span>}
+      >
+        <div className="space-y-3">
+          {filteredAdminAccounts.map((account) => (
+            <article key={account.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="font-black text-white">{account.full_name}</p>
+                  <p className="mt-1 text-sm text-[#aab5c6]">{account.email}</p>
+                </div>
+                <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                  {account.status}
+                </span>
+              </div>
+              <div className="mt-3 grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-2">
+                <p>Username: {account.username}</p>
+                <p>Phone: {account.phone || 'Not set'}</p>
+                <p>Role: {account.role}</p>
+                <p>Created: {account.created_at ? new Date(account.created_at).toLocaleString() : 'Unknown'}</p>
+              </div>
+            </article>
+          ))}
+          {!filteredAdminAccounts.length ? (
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p className="text-sm font-bold text-white">No admin accounts found.</p>
+              <p className="mt-2 text-sm leading-6 text-[#aab5c6]">Create the first admin account from the panel on the right.</p>
+            </div>
+          ) : null}
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Create admin" description="Add another admin account with full control-center access.">
+        <div className="space-y-3">
+          <Field label="Full name">
+            <input className={inputClass} value={adminAccountForm.full_name} onChange={(event) => setAdminAccountForm((state) => ({ ...state, full_name: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Username">
+              <input className={inputClass} value={adminAccountForm.username} onChange={(event) => setAdminAccountForm((state) => ({ ...state, username: event.target.value }))} />
+            </Field>
+            <Field label="Email">
+              <input className={inputClass} value={adminAccountForm.email} onChange={(event) => setAdminAccountForm((state) => ({ ...state, email: event.target.value }))} />
+            </Field>
+          </div>
+          <Field label="Phone">
+            <input className={inputClass} value={adminAccountForm.phone} onChange={(event) => setAdminAccountForm((state) => ({ ...state, phone: event.target.value }))} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Password">
+              <input type="password" className={inputClass} value={adminAccountForm.password} onChange={(event) => setAdminAccountForm((state) => ({ ...state, password: event.target.value }))} />
+            </Field>
+            <Field label="Status">
+              <select className={selectClass} value={adminAccountForm.status} onChange={(event) => setAdminAccountForm((state) => ({ ...state, status: event.target.value }))}>
+                <option value="active">active</option>
+                <option value="pending">pending</option>
+                <option value="suspended">suspended</option>
+              </select>
+            </Field>
+          </div>
+          <Field label="Category access">
+            <select className={selectClass} value={adminAccountForm.category_access} onChange={(event) => setAdminAccountForm((state) => ({ ...state, category_access: event.target.value }))}>
+              <option value="category_a">category_a</option>
+              <option value="category_b">category_b</option>
+              <option value="category_c">category_c</option>
+            </select>
+          </Field>
+          <button type="button" onClick={createAdminAccount} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+            <ShieldCheck className="h-4 w-4" />
+            Create admin account
+          </button>
+        </div>
+      </SectionShell>
+    </div>
+  );
+
   const renderChapters = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Chapter directory" description="Manage branch chapters, leaders and member counts from the admin panel." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredChapters.length} records</span>}>
@@ -1935,6 +2663,221 @@ const AdminControlCenter = () => {
     </div>
   );
 
+  const renderIndiaPreSelection = () => {
+    const counts = {
+      submitted: filteredIndiaApplications.filter((entry) => entry.status === 'submitted').length,
+      reviewing: filteredIndiaApplications.filter((entry) => entry.status === 'reviewing').length,
+      shortlisted: filteredIndiaApplications.filter((entry) => entry.status === 'shortlisted').length,
+      selected: filteredIndiaApplications.filter((entry) => entry.status === 'selected').length,
+      rejected: filteredIndiaApplications.filter((entry) => entry.status === 'rejected').length,
+    };
+
+    return (
+      <div className="space-y-5">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {[
+            { label: 'Submitted', value: counts.submitted },
+            { label: 'Reviewing', value: counts.reviewing },
+            { label: 'Shortlisted', value: counts.shortlisted },
+            { label: 'Selected', value: counts.selected },
+            { label: 'Rejected', value: counts.rejected },
+          ].map((item) => (
+            <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+              <p className="mt-2 text-3xl font-black text-white">{item.value}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
+          <SectionShell
+            title="India Pre-Selection queue"
+            description="A compact reviewer queue with live status chips and audit-safe submission handling."
+            actions={<span className="text-sm font-bold text-[#ffc400]">{filteredIndiaApplications.length} records</span>}
+          >
+            <div className="space-y-3">
+              {filteredIndiaApplications.map((entry) => {
+                const active = selectedIndiaApplicationId === entry.id;
+                return (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    onClick={() => setSelectedIndiaApplicationId(entry.id)}
+                    className={`w-full rounded-2xl border p-4 text-left transition ${
+                      active ? 'border-[#ffc400] bg-black/40 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]' : 'border-white/10 bg-black/20 hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-lg font-black text-white">{entry.full_name}</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                            {entry.status}
+                          </span>
+                          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">
+                            {entry.performance_category || 'Application'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1]">
+                        <p>{entry.current_city || 'No city'}</p>
+                        <p className="mt-1">{entry.nationality || 'No nationality'}</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-3">
+                      <p className="truncate">{entry.email}</p>
+                      <p>{entry.phone || 'No phone'}</p>
+                      <p>{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </SectionShell>
+
+          <SectionShell
+            title="Applicant profile + decision"
+            description="Review the applicant on the left, then finalize moderation from the sticky decision stack."
+          >
+            {selectedIndiaApplication ? (
+              <div className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+                  <div className="space-y-4">
+                    <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">Applicant profile</p>
+                          <h3 className="mt-2 text-3xl font-black text-white">{selectedIndiaApplication.full_name}</h3>
+                          <p className="mt-2 text-sm text-[#aab5c6]">{selectedIndiaApplication.user_email || selectedIndiaApplication.email}</p>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                            {selectedIndiaApplication.status}
+                          </span>
+                          {selectedIndiaApplication.points_awarded ? (
+                            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">
+                              +{selectedIndiaApplication.points_awarded} points
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {[
+                        { label: 'Phone', value: selectedIndiaApplication.user_phone || selectedIndiaApplication.phone || 'No phone' },
+                        { label: 'City', value: selectedIndiaApplication.current_city || 'No city' },
+                        { label: 'Nationality', value: selectedIndiaApplication.nationality || 'No nationality' },
+                        { label: 'DOB', value: selectedIndiaApplication.date_of_birth || 'Not provided' },
+                      ].map((item) => (
+                        <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+                          <p className="mt-2 text-sm font-bold text-white">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Submitted</p>
+                        <p className="mt-2 text-sm font-bold text-white">
+                          {selectedIndiaApplication.submitted_at ? new Date(selectedIndiaApplication.submitted_at).toLocaleString() : 'Unknown'}
+                        </p>
+                      </div>
+                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Reviewed</p>
+                        <p className="mt-2 text-sm font-bold text-white">
+                          {selectedIndiaApplication.reviewed_at ? new Date(selectedIndiaApplication.reviewed_at).toLocaleString() : 'Not reviewed yet'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Biography</p>
+                      <p className="mt-2 text-sm leading-7 text-[#d4dbe7]">{selectedIndiaApplication.biography || 'No biography provided.'}</p>
+                      {selectedIndiaApplication.video_link ? (
+                        <a href={selectedIndiaApplication.video_link} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-bold text-[#ffc400]">
+                          View performance link
+                        </a>
+                      ) : null}
+                    </div>
+
+                    {selectedIndiaApplication.message ? (
+                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Applicant message</p>
+                        <p className="mt-2 text-sm leading-7 text-[#aab5c6]">{selectedIndiaApplication.message}</p>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div className="xl:sticky xl:top-6 space-y-3 self-start">
+                    <div className="rounded-3xl border border-white/10 bg-black/20 p-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">Decision</p>
+                      <Field label="Status">
+                        <select
+                          className={selectClass}
+                          value={indiaApplicationReview.status}
+                          onChange={(event) => setIndiaApplicationReview((state) => ({ ...state, status: event.target.value }))}
+                        >
+                          <option value="submitted">submitted</option>
+                          <option value="reviewing">reviewing</option>
+                          <option value="shortlisted">shortlisted</option>
+                          <option value="selected">selected</option>
+                          <option value="rejected">rejected</option>
+                          <option value="withdrawn">withdrawn</option>
+                        </select>
+                      </Field>
+                      <Field label="Review note">
+                        <textarea
+                          className={`${inputClass} min-h-32`}
+                          value={indiaApplicationReview.review_note}
+                          onChange={(event) => setIndiaApplicationReview((state) => ({ ...state, review_note: event.target.value }))}
+                          placeholder="Short executive note for moderation history."
+                        />
+                      </Field>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-[#ffc400]">Current review</p>
+                      <p className="mt-2 text-sm font-bold text-white">
+                        {selectedIndiaApplication.reviewed_by_name || selectedIndiaApplication.reviewed_by_email || 'No reviewer yet'}
+                      </p>
+                      <p className="mt-1 text-sm text-[#aab5c6]">
+                        {selectedIndiaApplication.reviewed_at ? new Date(selectedIndiaApplication.reviewed_at).toLocaleString() : 'No review timestamp'}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-[#f3a847]/20 bg-[#fff8df] p-4">
+                      <p className="text-sm font-black text-[#111827]">Decision policy</p>
+                      <p className="mt-2 text-sm leading-7 text-[#565959]">
+                        The points award is locked at submission time. Review only adjusts moderation state and the audit trail.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                      <button type="button" onClick={reviewIndiaApplication} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Save review
+                      </button>
+                      <button type="button" onClick={() => setIndiaApplicationReview((state) => ({ ...state, status: 'reviewing' }))} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">
+                        Reviewing
+                      </button>
+                      <button type="button" onClick={() => setIndiaApplicationReview((state) => ({ ...state, status: 'shortlisted' }))} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">
+                        Shortlist
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-[#aab5c6]">Select an application to review it here.</p>
+            )}
+          </SectionShell>
+        </div>
+      </div>
+    );
+  };
+
   const renderKFood = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="K-Food claims" description="Audit purchase claims, coupon references and reward eligibility." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredClaims.length} records</span>}>
@@ -1990,6 +2933,455 @@ const AdminControlCenter = () => {
       </SectionShell>
     </div>
   );
+
+  const renderSubmissions = () => {
+    const counts = {
+      total: filteredSubmissions.length,
+      pending: filteredSubmissions.filter((entry) => ['submitted', 'pending', 'reviewing'].includes(entry.status)).length,
+      reviewed: filteredSubmissions.filter((entry) => ['approved', 'selected', 'shortlisted', 'delivered', 'published'].includes(entry.status)).length,
+      sources: new Set(filteredSubmissions.map((entry) => entry.source_label)).size,
+    };
+
+    return (
+      <div className="space-y-5">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {[
+            { label: 'All submissions', value: counts.total },
+            { label: 'Pending', value: counts.pending },
+            { label: 'Reviewed', value: counts.reviewed },
+            { label: 'Sources', value: counts.sources },
+          ].map((item) => (
+            <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+              <p className="mt-2 text-3xl font-black text-white">{item.value}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,420px)]">
+          <SectionShell
+            title="Submission inbox"
+            description="All participation, event, singing, dancing and form rows are normalized into a single queue."
+            actions={<span className="text-sm font-bold text-[#ffc400]">{filteredSubmissions.length} records</span>}
+          >
+            <div className="space-y-3">
+              {filteredSubmissions.map((entry) => {
+                const active = selectedSubmissionId === entry.id;
+                return (
+                  <button
+                    key={`${entry.source_type}-${entry.id}`}
+                    type="button"
+                    onClick={() => setSelectedSubmissionId(entry.id)}
+                    className={`w-full rounded-2xl border p-4 text-left transition ${
+                      active ? 'border-[#ffc400] bg-black/40 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]' : 'border-white/10 bg-black/20 hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{entry.source_label}</p>
+                        <h3 className="mt-2 truncate text-lg font-black text-white">{entry.title}</h3>
+                      </div>
+                      <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                        {entry.status}
+                      </span>
+                    </div>
+                    <div className="mt-3 grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-2">
+                      <p>{entry.applicant_name || 'Anonymous applicant'}</p>
+                      <p>{entry.submission_kind || 'General submission'}</p>
+                      <p className="sm:col-span-2">{entry.applicant_email || 'No email'} · {entry.applicant_phone || 'No phone'}</p>
+                      <p className="sm:col-span-2">{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
+                    </div>
+                  </button>
+                );
+              })}
+              {!filteredSubmissions.length ? (
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-sm font-bold text-white">No submissions match the current search.</p>
+                  <p className="mt-2 text-sm leading-6 text-[#aab5c6]">Try clearing the search box or switching source filters.</p>
+                </div>
+              ) : null}
+            </div>
+          </SectionShell>
+
+          <SectionShell title="Submission detail" description="Review the full record, payload and audit trail in one clean panel.">
+            {selectedSubmission ? (
+              <div className="space-y-4 xl:sticky xl:top-6 self-start">
+                <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{selectedSubmission.source_label}</p>
+                      <h3 className="mt-2 text-3xl font-black text-white">{selectedSubmission.title}</h3>
+                      <p className="mt-2 text-sm text-[#aab5c6]">{selectedSubmission.submission_kind || 'General submission'}</p>
+                    </div>
+                    <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                      {selectedSubmission.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {[
+                    { label: 'Applicant', value: selectedSubmission.applicant_name || 'Not provided' },
+                    { label: 'Email', value: selectedSubmission.applicant_email || 'Not provided' },
+                    { label: 'Phone', value: selectedSubmission.applicant_phone || 'Not provided' },
+                    { label: 'Points', value: String(selectedSubmission.points_reward || 0) },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+                      <p className="mt-2 text-sm font-bold text-white">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Description</p>
+                  <p className="mt-2 text-sm leading-7 text-[#d4dbe7]">{selectedSubmission.description || 'No description provided.'}</p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Review note</p>
+                  <p className="mt-2 text-sm leading-7 text-[#d4dbe7]">{selectedSubmission.review_note || 'No review note yet.'}</p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Submitted</p>
+                    <p className="mt-2 text-sm font-bold text-white">{selectedSubmission.submitted_at ? new Date(selectedSubmission.submitted_at).toLocaleString() : 'Unknown'}</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Reviewed</p>
+                    <p className="mt-2 text-sm font-bold text-white">{selectedSubmission.reviewed_at ? new Date(selectedSubmission.reviewed_at).toLocaleString() : 'Not reviewed yet'}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Payload</p>
+                  <pre className="mt-3 overflow-x-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-[#d4dbe7]">
+                    {JSON.stringify(selectedSubmission.payload, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-[#aab5c6]">Select a submission to review it here.</p>
+            )}
+          </SectionShell>
+        </div>
+      </div>
+    );
+  };
+
+  const renderKFoodPremium = () => {
+    const productSummary = kfoodOverview?.productSummary;
+    const paymentSummary = kfoodOverview?.paymentSummary || [];
+    const weeklyReport = kfoodOverview?.weeklyReport || [];
+    const monthlyReport = kfoodOverview?.monthlyReport || [];
+    const orders = kfoodOverview?.orders || [];
+    const fulfillments = kfoodOverview?.fulfillments || [];
+    const pendingFulfillments = fulfillments.filter((entry) => ['pending', 'packed', 'dispatched', 'in_transit'].includes(entry.fulfillment_status)).length;
+
+    return (
+      <div className="space-y-5">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {[
+            { label: 'Products', value: productSummary?.totalProducts ?? kfoodProducts.length },
+            { label: 'In stock', value: productSummary?.inStockProducts ?? kfoodProducts.filter((product) => product.inStock).length },
+            { label: 'Orders', value: orders.length || filteredClaims.length },
+            { label: 'Fulfillments', value: fulfillments.length },
+            { label: 'Pending dispatch', value: pendingFulfillments },
+          ].map((item) => (
+            <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+              <p className="mt-2 text-3xl font-black text-white">{item.value}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(340px,420px)]">
+          <SectionShell
+            title="K-Food product listing"
+            description="A product-first admin view with stock state, reward value and live operational markers."
+            actions={<span className="text-sm font-bold text-[#ffc400]">{filteredKFoodProducts.length} products</span>}
+          >
+            <div className="grid gap-3 lg:grid-cols-2">
+              {filteredKFoodProducts.map((product) => (
+                <article key={product.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{product.sku}</p>
+                      <h3 className="mt-2 text-lg font-black text-white">{product.title.en}</h3>
+                      <p className="mt-2 text-sm text-[#aab5c6]">{product.subtitle.en}</p>
+                    </div>
+                    <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${product.inStock ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border border-red-500/30 bg-red-500/10 text-red-300'}`}>
+                      {product.inStock ? 'In stock' : 'Out of stock'}
+                    </span>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">{product.category.en}</span>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">{product.rewardPoints} pts</span>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">₹{product.price}</span>
+                  </div>
+                  <div className="mt-4 grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-2">
+                    <p>Stock: {product.stockLabel.en}</p>
+                    <p>Listing: {product.inStock ? 'Live' : 'Paused'}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </SectionShell>
+
+          <div className="space-y-5 xl:sticky xl:top-6 self-start">
+            <SectionShell title="Fulfillment desk" description="Dispatch, tracking, shipping and delivery are first-class records now." actions={<span className="text-sm font-bold text-[#ffc400]">{fulfillments.length} records</span>}>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[860px] text-left text-sm">
+                  <thead className="text-[#ffc400]">
+                    <tr>
+                      <th className="border-b border-white/10 py-3">Order</th>
+                      <th className="border-b border-white/10 py-3">Payment</th>
+                      <th className="border-b border-white/10 py-3">Fulfillment</th>
+                      <th className="border-b border-white/10 py-3">Tracking</th>
+                      <th className="border-b border-white/10 py-3">Carrier</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-[#d4dbe7]">
+                    {fulfillments.map((entry) => (
+                      <tr key={entry.id}>
+                        <td className="border-b border-white/10 py-3">
+                          <button type="button" onClick={() => setSelectedFulfillmentId(entry.id)} className="text-left font-black text-white">
+                            {entry.receipt}
+                          </button>
+                          <p className="text-xs text-[#98a4b1]">{entry.email || 'No customer email'}</p>
+                        </td>
+                        <td className="border-b border-white/10 py-3">
+                          <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                            {entry.payment_status}
+                          </span>
+                        </td>
+                        <td className="border-b border-white/10 py-3">
+                          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">
+                            {entry.fulfillment_status}
+                          </span>
+                        </td>
+                        <td className="border-b border-white/10 py-3">{entry.tracking_number || 'Pending'}</td>
+                        <td className="border-b border-white/10 py-3">{entry.carrier || 'Not assigned'}</td>
+                      </tr>
+                    ))}
+                    {!fulfillments.length ? (
+                      <tr>
+                        <td className="py-4 text-sm text-[#aab5c6]" colSpan={5}>
+                          No fulfillment rows yet. The table will populate as soon as dispatch records are created.
+                        </td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="mt-5 rounded-3xl border border-white/10 bg-black/20 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">Selected fulfillment</p>
+                    <h3 className="mt-2 text-2xl font-black text-white">{selectedFulfillment?.receipt || 'No fulfillment selected'}</h3>
+                    <p className="mt-2 text-sm text-[#aab5c6]">{selectedFulfillment?.email || 'Choose a row from the table above.'}</p>
+                  </div>
+                  {selectedFulfillment ? (
+                    <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                      {selectedFulfillment.fulfillment_status}
+                    </span>
+                  ) : null}
+                </div>
+
+                {selectedFulfillment ? (
+                  <div className="mt-4 space-y-3">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field label="Payment Order ID">
+                        <input className={inputClass} value={fulfillmentForm.payment_order_id} onChange={(event) => setFulfillmentForm((state) => ({ ...state, payment_order_id: event.target.value }))} />
+                      </Field>
+                      <Field label="Fulfillment Status">
+                        <select className={selectClass} value={fulfillmentForm.fulfillment_status} onChange={(event) => setFulfillmentForm((state) => ({ ...state, fulfillment_status: event.target.value }))}>
+                          <option value="pending">pending</option>
+                          <option value="packed">packed</option>
+                          <option value="dispatched">dispatched</option>
+                          <option value="in_transit">in_transit</option>
+                          <option value="delivered">delivered</option>
+                          <option value="returned">returned</option>
+                          <option value="cancelled">cancelled</option>
+                        </select>
+                      </Field>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field label="Tracking Number">
+                        <input className={inputClass} value={fulfillmentForm.tracking_number} onChange={(event) => setFulfillmentForm((state) => ({ ...state, tracking_number: event.target.value }))} />
+                      </Field>
+                      <Field label="Carrier">
+                        <input className={inputClass} value={fulfillmentForm.carrier} onChange={(event) => setFulfillmentForm((state) => ({ ...state, carrier: event.target.value }))} />
+                      </Field>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field label="Dispatch Method">
+                        <input className={inputClass} value={fulfillmentForm.dispatch_method} onChange={(event) => setFulfillmentForm((state) => ({ ...state, dispatch_method: event.target.value }))} />
+                      </Field>
+                      <Field label="Shipping Name">
+                        <input className={inputClass} value={fulfillmentForm.shipping_name} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_name: event.target.value }))} />
+                      </Field>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field label="Shipping Phone">
+                        <input className={inputClass} value={fulfillmentForm.shipping_phone} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_phone: event.target.value }))} />
+                      </Field>
+                      <Field label="Shipped At">
+                        <input className={inputClass} type="datetime-local" value={fulfillmentForm.shipped_at} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipped_at: event.target.value }))} />
+                      </Field>
+                    </div>
+                    <Field label="Shipping Address">
+                      <textarea className={`${inputClass} min-h-24`} value={fulfillmentForm.shipping_address} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_address: event.target.value }))} />
+                    </Field>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field label="Delivered At">
+                        <input className={inputClass} type="datetime-local" value={fulfillmentForm.delivered_at} onChange={(event) => setFulfillmentForm((state) => ({ ...state, delivered_at: event.target.value }))} />
+                      </Field>
+                      <Field label="Courier Notes">
+                        <textarea className={`${inputClass} min-h-24`} value={fulfillmentForm.courier_notes} onChange={(event) => setFulfillmentForm((state) => ({ ...state, courier_notes: event.target.value }))} />
+                      </Field>
+                    </div>
+                    <button type="button" onClick={saveFulfillment} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                      <Save className="h-4 w-4" /> Save fulfillment
+                    </button>
+                  </div>
+                ) : (
+                  <p className="mt-4 text-sm text-[#aab5c6]">Select any order row to open the fulfillment editor.</p>
+                )}
+              </div>
+            </SectionShell>
+
+            <SectionShell title="Operations board" description="Order status, payment state, dispatch and tracking in one executive rail.">
+              <div className="space-y-3">
+                {orders.slice(0, 6).map((order) => (
+                  <article key={order.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-black text-white">{order.receipt}</p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#98a4b1]">{order.context_ref || 'Shop order'}</p>
+                      </div>
+                      <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                        {order.payment_status}
+                      </span>
+                    </div>
+                    <div className="mt-3 grid gap-2 text-sm text-[#aab5c6]">
+                      <p>Dispatch: {order.dispatch_status}</p>
+                      <p>Tracking: {order.tracking_number || 'Pending'}</p>
+                      <p>Commission: ₹{Number(order.commission_amount || 0).toFixed(2)} @ {order.commission_rate}%</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </SectionShell>
+
+            <SectionShell title="Payment summary" description="A quick read on K-Food order status and payment health.">
+              <div className="space-y-3">
+                {paymentSummary.length ? (
+                  paymentSummary.map((row) => (
+                    <article key={row.payment_status} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="font-black text-white">{row.payment_status}</p>
+                        <span className="text-xs font-black text-[#ffc400]">{row.total_orders} orders</span>
+                      </div>
+                      <p className="mt-2 text-sm text-[#aab5c6]">Revenue ₹{Number(row.total_amount || 0).toFixed(2)}</p>
+                    </article>
+                  ))
+                ) : (
+                  <p className="text-sm text-[#aab5c6]">No payment-order data yet.</p>
+                )}
+              </div>
+            </SectionShell>
+
+            <SectionShell title="Weekly report" description="Recent K-Food activity, revenue and commission snapshots.">
+              <div className="space-y-3">
+                {weeklyReport.slice(0, 5).map((row) => (
+                  <article key={row.period} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-black text-white">{row.period}</p>
+                      <span className="text-xs font-black text-[#ffc400]">{row.total_orders} orders</span>
+                    </div>
+                    <p className="mt-2 text-sm text-[#aab5c6]">Revenue ₹{Number(row.total_amount || 0).toFixed(2)}</p>
+                    <p className="mt-1 text-sm text-[#aab5c6]">Commission ₹{Number(row.commission_amount || 0).toFixed(2)}</p>
+                  </article>
+                ))}
+              </div>
+            </SectionShell>
+
+            <SectionShell title="Monthly report" description="Longer cycle performance for leadership review.">
+              <div className="space-y-3">
+                {monthlyReport.slice(0, 4).map((row) => (
+                  <article key={row.period} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-black text-white">{row.period}</p>
+                      <span className="text-xs font-black text-[#ffc400]">{row.total_orders} orders</span>
+                    </div>
+                    <p className="mt-2 text-sm text-[#aab5c6]">Revenue ₹{Number(row.total_amount || 0).toFixed(2)}</p>
+                    <p className="mt-1 text-sm text-[#aab5c6]">Commission ₹{Number(row.commission_amount || 0).toFixed(2)}</p>
+                  </article>
+                ))}
+              </div>
+            </SectionShell>
+          </div>
+        </div>
+
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
+          <SectionShell title="K-Food claims" description="Audit purchase claims, coupon references and reward eligibility." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredClaims.length} records</span>}>
+            <div className="space-y-3">
+              {filteredClaims.map((entry) => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedClaimId(entry.id);
+                    setClaimReview({ status: 'approved', points_reward: entry.points_reward || 0, review_note: entry.review_note || '' });
+                  }}
+                  className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-left"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-black text-white">{entry.order_id}</p>
+                    <span className="text-xs font-black text-[#ffc400]">{entry.status}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-[#aab5c6]">
+                    {entry.full_name} · {entry.email} · {entry.order_total}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </SectionShell>
+
+          <SectionShell title="Review claim" description="Approve or reject K-Food purchase claims from the admin panel.">
+            {selectedClaim ? (
+              <div className="space-y-3">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-[#ffc400]">{selectedClaim.order_id}</p>
+                  <h3 className="mt-2 text-xl font-black text-white">{selectedClaim.full_name}</h3>
+                  <p className="mt-2 text-sm text-[#aab5c6]">{selectedClaim.order_total}</p>
+                </div>
+                <Field label="Points Reward">
+                  <input className={inputClass} type="number" value={claimReview.points_reward} onChange={(event) => setClaimReview((state) => ({ ...state, points_reward: Number(event.target.value) }))} />
+                </Field>
+                <Field label="Review Note">
+                  <textarea className={`${inputClass} min-h-24`} value={claimReview.review_note} onChange={(event) => setClaimReview((state) => ({ ...state, review_note: event.target.value }))} />
+                </Field>
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => reviewClaim('approved')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                    <CheckCircle2 className="h-4 w-4" /> Approve
+                  </button>
+                  <button type="button" onClick={() => reviewClaim('rejected')} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                    <Trash2 className="h-4 w-4" /> Reject
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-[#aab5c6]">Select a claim to review it here.</p>
+            )}
+          </SectionShell>
+        </div>
+      </div>
+    );
+  };
 
   const renderEvents = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
@@ -2309,6 +3701,12 @@ const AdminControlCenter = () => {
 
   const sectionBody = () => {
     switch (activeSection) {
+      case 'adminProfile':
+        return renderAdminProfile();
+      case 'adminAccounts':
+        return renderAdminAccounts();
+      case 'submissions':
+        return renderSubmissions();
       case 'website':
         return renderWebsite();
       case 'learning':
@@ -2321,8 +3719,10 @@ const AdminControlCenter = () => {
         return renderPoints();
       case 'uploads':
         return renderUploads();
+      case 'indiaPreSelection':
+        return renderIndiaPreSelection();
       case 'kfood':
-        return renderKFood();
+        return renderKFoodPremium();
       case 'events':
         return renderEvents();
       case 'rewards':
@@ -2353,27 +3753,36 @@ const AdminControlCenter = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto px-3 py-4">
-              <div className="space-y-2">
-                {adminNav.map((item) => {
-                  const Icon = item.icon;
-                  const active = activeSection === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setActiveSection(item.id as AdminSection)}
-                      className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
-                        active ? 'border-[#ffc400] bg-[#17171a]' : 'border-white/10 bg-black/20 hover:border-white/20'
-                      }`}
-                    >
-                      <Icon className={`mt-0.5 h-5 w-5 ${active ? 'text-[#ffc400]' : 'text-[#9aa6b4]'}`} />
-                      <div className="min-w-0">
-                        <p className="font-black">{item.label}</p>
-                        <p className="mt-1 text-xs leading-5 text-[#9aa6b4]">{item.description}</p>
-                      </div>
-                    </button>
-                  );
-                })}
+              <div className="space-y-5">
+                {adminSidebarGroups.map((group) => (
+                  <div key={group.title} className="space-y-2">
+                    <p className="px-3 text-[10px] font-black uppercase tracking-[0.28em] text-[#6f7d8d]">{group.title}</p>
+                    <div className="space-y-2">
+                      {group.ids.map((id) => {
+                        const item = adminNav.find((entry) => entry.id === id);
+                        if (!item) return null;
+                        const Icon = item.icon;
+                        const active = activeSection === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => setActiveSection(item.id as AdminSection)}
+                            className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+                              active ? 'border-[#ffc400] bg-[#17171a]' : 'border-white/10 bg-black/20 hover:border-white/20'
+                            }`}
+                          >
+                            <Icon className={`mt-0.5 h-5 w-5 ${active ? 'text-[#ffc400]' : 'text-[#9aa6b4]'}`} />
+                            <div className="min-w-0">
+                              <p className="font-black">{item.label}</p>
+                              <p className="mt-1 text-xs leading-5 text-[#9aa6b4]">{item.description}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 

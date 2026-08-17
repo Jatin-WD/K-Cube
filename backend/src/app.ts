@@ -15,6 +15,7 @@ import eventRoutes from './routes/events';
 import indiaPreSelectionRoutes from './routes/indiaPreSelection';
 import integrationRoutes from './routes/integrations';
 import paymentRoutes from './routes/payments';
+import bootstrapDatabase from './db/bootstrap';
 import { API_PREFIX, KCUBE_SERVE_FRONTEND } from './config';
 
 export const app = express();
@@ -72,9 +73,15 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 import { PORT } from './config';
 
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`K-CUBE backend running on http://localhost:${PORT}${API_PREFIX}`);
-  });
+  bootstrapDatabase()
+    .catch((error) => {
+      console.error('Database bootstrap failed:', error);
+    })
+    .finally(() => {
+      app.listen(PORT, () => {
+        console.log(`K-CUBE backend running on http://localhost:${PORT}${API_PREFIX}`);
+      });
+    });
 }
 
 export default app;

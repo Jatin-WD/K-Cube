@@ -51,6 +51,9 @@ const IndiaPreSelectionApplicationForm = () => {
   const [error, setError] = useState('');
   const [status, setStatus] = useState<string | null>(null);
   const [points, setPoints] = useState<number>(0);
+  const [reviewNote, setReviewNote] = useState('');
+  const [reviewedBy, setReviewedBy] = useState('');
+  const [reviewedAt, setReviewedAt] = useState('');
 
   useEffect(() => {
     setForm(emptyForm(user || undefined));
@@ -87,6 +90,9 @@ const IndiaPreSelectionApplicationForm = () => {
         });
         setStatus(application.status || 'submitted');
         setPoints(Number(application.points_awarded || 0));
+        setReviewNote(application.review_note || '');
+        setReviewedBy(application.reviewed_by_name || application.reviewed_by_email || '');
+        setReviewedAt(application.reviewed_at ? new Date(application.reviewed_at).toLocaleString() : '');
       } catch (requestError: any) {
         const code = requestError?.response?.status;
         if (code !== 404 && code !== 401) {
@@ -130,6 +136,9 @@ const IndiaPreSelectionApplicationForm = () => {
 
       setStatus(application?.status || 'submitted');
       setPoints(Number(application?.points_awarded || awarded || 0));
+      setReviewNote(application?.review_note || '');
+      setReviewedBy(application?.reviewed_by_name || application?.reviewed_by_email || '');
+      setReviewedAt(application?.reviewed_at ? new Date(application.reviewed_at).toLocaleString() : '');
       setMessage(
         awarded > 0
           ? `Application saved inside K-CUBE and ${awarded} points added.`
@@ -203,6 +212,26 @@ const IndiaPreSelectionApplicationForm = () => {
       <p className="mt-3 max-w-4xl text-sm leading-7 text-[#565959]">
         This form keeps the full application inside K-CUBE instead of sending it by email. Submit once, edit later if needed, and the first submission awards your points automatically.
       </p>
+
+      {(status || reviewNote) ? (
+        <div className="mt-5 grid gap-3 rounded-[24px] border border-[#d5d9d9] bg-[#f7fafa] p-4 sm:grid-cols-3">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Current status</p>
+            <p className="mt-2 text-sm font-bold text-[#111827]">{status || 'Not submitted yet'}</p>
+          </div>
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Reviewed by</p>
+            <p className="mt-2 text-sm font-bold text-[#111827]">{reviewedBy || 'Awaiting admin review'}</p>
+            {reviewedAt ? <p className="mt-1 text-xs text-[#565959]">{reviewedAt}</p> : null}
+          </div>
+          <div className="sm:col-span-1">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Review note</p>
+            <p className="mt-2 text-sm leading-6 text-[#565959]">
+              {reviewNote || 'Your application is saved. Once the admin reviews it, the note will appear here.'}
+            </p>
+          </div>
+        </div>
+      ) : null}
 
       {loading ? (
         <div className="mt-6 flex items-center gap-3 rounded-[22px] border border-[#d5d9d9] bg-[#f7fafa] px-4 py-4 text-sm font-semibold text-[#565959]">
