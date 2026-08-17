@@ -22,7 +22,11 @@ import {
   KeyRound,
   UserCog,
   Mic2,
+  ExternalLink,
+  FileText,
+  PlayCircle,
   Trash2,
+  X,
   Users,
 } from 'lucide-react';
 import api from '@/lib/api';
@@ -608,6 +612,117 @@ const readPayload = <T,>(result: PromiseSettledResult<any>, fallback: T): T => {
   return (result.value?.data?.data ?? result.value?.data ?? fallback) as T;
 };
 
+const humanizeKey = (key: string) =>
+  key
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const isProbablyUrl = (value: string) => /^https?:\/\/\S+$/i.test(value.trim());
+
+const extractYouTubeId = (value: string) => {
+  const match =
+    value.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i) ||
+    value.match(/[?&]v=([A-Za-z0-9_-]{6,})/i);
+  return match?.[1] || null;
+};
+
+const tryParseStructuredValue = (value: unknown): unknown => {
+  if (typeof value !== 'string') return value;
+  const trimmed = value.trim();
+  if (!trimmed) return value;
+
+  const attempts = [trimmed];
+  try {
+    const maybeUnquoted = JSON.parse(trimmed);
+    if (typeof maybeUnquoted === 'string') {
+      attempts.push(maybeUnquoted.trim());
+    } else {
+      return maybeUnquoted;
+    }
+  } catch {
+    // fall through to raw attempts
+  }
+
+  for (const attempt of attempts) {
+    try {
+      return JSON.parse(attempt);
+    } catch {
+      // keep trying
+    }
+  }
+
+  return value;
+};
+
+const normalizeSubmissionPayload = (payload: unknown): Record<string, unknown> => {
+  const parsed = tryParseStructuredValue(payload);
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    return parsed as Record<string, unknown>;
+  }
+  return { payload: parsed };
+};
+
+const stringifySubmissionValue = (value: unknown) => {
+  if (value == null) return '';
+  if (typeof value === 'string') return value.trim();
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+};
+
+const isMediaKey = (key: string) => /video|media|url|link|attachment|attachment_url/i.test(key);
+
+const submissionFieldsFromPayload = (payload: unknown) => {
+  const structuredPayload = normalizeSubmissionPayload(payload);
+  const entries = Object.entries(structuredPayload).map(([key, rawValue]) => {
+    const value = tryParseStructuredValue(rawValue);
+    if (Array.isArray(value)) {
+      return {
+        key,
+        label: humanizeKey(key),
+        kind: 'list' as const,
+        value: value.map((item) => stringifySubmissionValue(item)).filter(Boolean),
+        rawValue: value,
+      };
+    }
+    if (value && typeof value === 'object') {
+      return {
+        key,
+        label: humanizeKey(key),
+        kind: 'object' as const,
+        value: value as Record<string, unknown>,
+        rawValue: value,
+      };
+    }
+    if (typeof value === 'string' && isProbablyUrl(value)) {
+      return {
+        key,
+        label: humanizeKey(key),
+        kind: extractYouTubeId(value) ? ('video' as const) : ('url' as const),
+        value,
+        rawValue: value,
+      };
+    }
+    return {
+      key,
+      label: humanizeKey(key),
+      kind: 'text' as const,
+      value: stringifySubmissionValue(value) || '-',
+      rawValue: value,
+    };
+  });
+
+  const mediaEntries = entries.filter((entry) => entry.kind === 'video' || entry.kind === 'url' || isMediaKey(entry.key));
+  const contentEntries = entries.filter((entry) => !mediaEntries.includes(entry));
+
+  return { entries, mediaEntries, contentEntries };
+};
+
 const SectionShell = ({
   title,
   description,
@@ -678,6 +793,7 @@ const AdminControlCenter = () => {
   const [kfoodOverview, setKfoodOverview] = useState<KFoodOverviewRow | null>(null);
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<number | null>(null);
+  const [submissionDetailOpen, setSubmissionDetailOpen] = useState(false);
   const [selectedFulfillmentId, setSelectedFulfillmentId] = useState<number | null>(null);
   const [fulfillmentForm, setFulfillmentForm] = useState({
     payment_order_id: '',
@@ -1118,6 +1234,17 @@ const AdminControlCenter = () => {
       });
     }
   }, [selectedIndiaApplication]);
+
+  useEffect(() => {
+    if (!submissionDetailOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSubmissionDetailOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [submissionDetailOpen]);
 
   useEffect(() => {
     if (!indiaApplications.length) {
@@ -2954,33 +3081,34 @@ const AdminControlCenter = () => {
       india: filteredSubmissions.filter((entry) => entry.source_type === 'india_pre_selection').length,
       other: filteredSubmissions.filter((entry) => entry.source_type !== 'india_pre_selection').length,
     };
+    const submissionPayloadView = selectedSubmission ? submissionFieldsFromPayload(selectedSubmission.payload) : null;
 
     return (
-      <div className="space-y-5">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
-          {[
-            { label: 'All submissions', value: counts.total },
-            { label: 'Pending', value: counts.pending },
-            { label: 'Reviewed', value: counts.reviewed },
-            { label: 'Sources', value: counts.sources },
-            { label: 'India Pre-Selection', value: counts.india },
-            { label: 'Other sources', value: counts.other },
-          ].map((item) => (
-            <article
-              key={item.label}
-              className={`rounded-2xl border p-5 ${
-                item.label === 'India Pre-Selection'
-                  ? 'border-[#ffc400]/35 bg-gradient-to-br from-[#ffc400]/12 via-black/20 to-black/25 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]'
-                  : 'border-white/10 bg-black/20'
-              }`}
-            >
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
-              <p className="mt-2 text-3xl font-black text-white">{item.value}</p>
-            </article>
-          ))}
-        </div>
+      <>
+        <div className="space-y-5">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+            {[
+              { label: 'All submissions', value: counts.total },
+              { label: 'Pending', value: counts.pending },
+              { label: 'Reviewed', value: counts.reviewed },
+              { label: 'Sources', value: counts.sources },
+              { label: 'India Pre-Selection', value: counts.india },
+              { label: 'Other sources', value: counts.other },
+            ].map((item) => (
+              <article
+                key={item.label}
+                className={`rounded-2xl border p-5 ${
+                  item.label === 'India Pre-Selection'
+                    ? 'border-[#ffc400]/35 bg-gradient-to-br from-[#ffc400]/12 via-black/20 to-black/25 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]'
+                    : 'border-white/10 bg-black/20'
+                }`}
+              >
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+                <p className="mt-2 text-3xl font-black text-white">{item.value}</p>
+              </article>
+            ))}
+          </div>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,420px)]">
           <SectionShell
             title="Submission inbox"
             description="All participation, event, singing, dancing and form rows are normalized into a single queue."
@@ -3002,19 +3130,22 @@ const AdminControlCenter = () => {
                   <button
                     key={`${entry.source_type}-${entry.id}`}
                     type="button"
-                    onClick={() => setSelectedSubmissionId(entry.id)}
-                    className={`w-full rounded-2xl border p-4 text-left transition ${
+                    onClick={() => {
+                      setSelectedSubmissionId(entry.id);
+                      setSubmissionDetailOpen(true);
+                    }}
+                    className={`group w-full overflow-hidden rounded-2xl border text-left transition ${
                       active
                         ? isIndia
-                          ? 'border-[#ffc400] bg-gradient-to-br from-[#ffc400]/15 via-black/40 to-black/35 shadow-[0_0_0_1px_rgba(255,196,0,0.18)]'
+                          ? 'border-[#ffc400] bg-gradient-to-br from-[#ffc400]/18 via-black/40 to-black/35 shadow-[0_0_0_1px_rgba(255,196,0,0.18)]'
                           : 'border-[#ffc400] bg-black/40 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]'
                         : isIndia
                           ? 'border-[#ffc400]/35 bg-gradient-to-br from-[#ffc400]/10 via-black/25 to-black/20 hover:border-[#ffc400]/60'
                           : 'border-white/10 bg-black/20 hover:border-white/20'
                     }`}
                   >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="min-w-0">
+                    <div className={`grid gap-4 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] ${isIndia ? 'border-l-4 border-[#ffc400]' : 'border-l-4 border-transparent'}`}>
+                      <div className="min-w-0 space-y-3">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{entry.source_label}</p>
                           {isIndia ? (
@@ -3022,18 +3153,32 @@ const AdminControlCenter = () => {
                               Highlighted
                             </span>
                           ) : null}
+                          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-[#d4dbe7]">
+                            {entry.source_type.replace(/_/g, ' ')}
+                          </span>
                         </div>
-                        <h3 className="mt-2 truncate text-lg font-black text-white">{entry.title}</h3>
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <h3 className="truncate text-lg font-black text-white">{entry.title}</h3>
+                            <p className="mt-1 text-sm text-[#aab5c6]">{entry.submission_kind || 'General submission'}</p>
+                          </div>
+                          <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${isIndia ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]'}`}>
+                            {entry.status}
+                          </span>
+                        </div>
+                        <div className="grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-2">
+                          <p className="truncate">{entry.applicant_name || 'Anonymous applicant'}</p>
+                          <p className="truncate">{entry.applicant_email || 'No email'}</p>
+                          <p className="truncate">{entry.applicant_phone || 'No phone'}</p>
+                          <p className="truncate">{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
+                        </div>
                       </div>
-                      <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${isIndia ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]'}`}>
-                        {entry.status}
-                      </span>
-                    </div>
-                    <div className="mt-3 grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-2">
-                      <p>{entry.applicant_name || 'Anonymous applicant'}</p>
-                      <p>{entry.submission_kind || 'General submission'}</p>
-                      <p className="sm:col-span-2">{entry.applicant_email || 'No email'} | {entry.applicant_phone || 'No phone'}</p>
-                      <p className="sm:col-span-2">{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
+                      <div className="flex min-w-[150px] flex-col items-start gap-2 sm:items-end">
+                        <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#d4dbe7]">
+                          Review queue
+                        </span>
+                        <span className="text-xs text-[#7d8a99] group-hover:text-[#d4dbe7]">Click to open details</span>
+                      </div>
                     </div>
                   </button>
                 );
@@ -3046,79 +3191,234 @@ const AdminControlCenter = () => {
               ) : null}
             </div>
           </SectionShell>
+        </div>
 
-          <SectionShell title="Submission detail" description="Review the full record, payload and audit trail in one clean panel.">
-            {selectedSubmission ? (
-              <div className="space-y-4 xl:sticky xl:top-6 self-start">
-                <div className={`rounded-3xl border p-5 ${selectedSubmission.source_type === 'india_pre_selection' ? 'border-[#ffc400]/40 bg-gradient-to-br from-[#ffc400]/15 via-black/30 to-black/20' : 'border-white/10 bg-black/20'}`}>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{selectedSubmission.source_label}</p>
-                        {selectedSubmission.source_type === 'india_pre_selection' ? (
-                          <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-[#ffc400]">
-                            Priority review
-                          </span>
-                        ) : null}
+        {submissionDetailOpen && selectedSubmission ? (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+            onClick={() => setSubmissionDetailOpen(false)}
+          >
+            <div
+              className="max-h-[92vh] w-full max-w-7xl overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0d12] shadow-[0_32px_100px_rgba(0,0,0,0.65)]"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{selectedSubmission.source_label}</p>
+                    {selectedSubmission.source_type === 'india_pre_selection' ? (
+                      <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-[#ffc400]">
+                        Priority review
+                      </span>
+                    ) : null}
+                  </div>
+                  <h3 className="mt-2 text-2xl font-black text-white sm:text-3xl">{selectedSubmission.title}</h3>
+                  <p className="mt-2 text-sm text-[#aab5c6]">{selectedSubmission.submission_kind || 'General submission'}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSubmissionDetailOpen(false)}
+                  className="rounded-full border border-white/10 bg-black/30 p-3 text-[#d4dbe7] transition hover:border-[#ffc400]/40 hover:text-white"
+                  aria-label="Close submission details"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="grid max-h-[calc(92vh-73px)] gap-0 overflow-y-auto xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,380px)]">
+                <div className="space-y-5 p-5">
+                  <div className={`rounded-3xl border p-5 ${selectedSubmission.source_type === 'india_pre_selection' ? 'border-[#ffc400]/40 bg-gradient-to-br from-[#ffc400]/15 via-black/30 to-black/20' : 'border-white/10 bg-black/20'}`}>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="space-y-3">
+                        <span className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${selectedSubmission.source_type === 'india_pre_selection' ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-white/10 bg-white/5 text-[#d4dbe7]'}`}>
+                          {selectedSubmission.status}
+                        </span>
+                        <div className="flex flex-wrap items-center gap-2 text-sm text-[#aab5c6]">
+                          <span>{selectedSubmission.applicant_name || 'Not provided'}</span>
+                          <span className="text-[#4b5563]">|</span>
+                          <span>{selectedSubmission.applicant_email || 'No email'}</span>
+                          <span className="text-[#4b5563]">|</span>
+                          <span>{selectedSubmission.applicant_phone || 'No phone'}</span>
+                        </div>
                       </div>
-                      <h3 className="mt-2 text-3xl font-black text-white">{selectedSubmission.title}</h3>
-                      <p className="mt-2 text-sm text-[#aab5c6]">{selectedSubmission.submission_kind || 'General submission'}</p>
+                      <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-right">
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Points</p>
+                        <p className="mt-1 text-2xl font-black text-white">{selectedSubmission.points_reward || 0}</p>
+                      </div>
                     </div>
-                    <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${selectedSubmission.source_type === 'india_pre_selection' ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]'}`}>
-                      {selectedSubmission.status}
-                    </span>
                   </div>
-                </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {[
-                    { label: 'Applicant', value: selectedSubmission.applicant_name || 'Not provided' },
-                    { label: 'Email', value: selectedSubmission.applicant_email || 'Not provided' },
-                    { label: 'Phone', value: selectedSubmission.applicant_phone || 'Not provided' },
-                    { label: 'Source', value: selectedSubmission.source_label || 'Unknown source' },
-                    { label: 'Points', value: String(selectedSubmission.points_reward || 0) },
-                  ].map((item) => (
-                    <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
-                      <p className="mt-2 text-sm font-bold text-white">{item.value}</p>
+                  {submissionPayloadView?.contentEntries.length ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-[#ffc400]" />
+                        <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">Submission content</p>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {submissionPayloadView.contentEntries.map((entry) => {
+                          if (entry.kind === 'list') {
+                            return (
+                              <div key={entry.key} className="rounded-2xl border border-white/10 bg-black/20 p-4 sm:col-span-2">
+                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{entry.label}</p>
+                                <ul className="mt-3 space-y-2 text-sm text-[#d4dbe7]">
+                                  {entry.value.length ? entry.value.map((item) => <li key={`${entry.key}-${item}`} className="rounded-xl border border-white/10 bg-black/30 px-3 py-2">{item}</li>) : <li className="text-[#7d8a99]">No items provided</li>}
+                                </ul>
+                              </div>
+                            );
+                          }
+
+                          if (entry.kind === 'object') {
+                            return (
+                              <div key={entry.key} className="rounded-2xl border border-white/10 bg-black/20 p-4 sm:col-span-2">
+                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{entry.label}</p>
+                                <pre className="mt-3 overflow-x-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-[#d4dbe7]">
+                                  {JSON.stringify(entry.value, null, 2)}
+                                </pre>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div key={entry.key} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{entry.label}</p>
+                              <p className="mt-2 text-sm leading-6 text-[#d4dbe7] break-words">{entry.value}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  ))}
+                  ) : null}
+
+                  {submissionPayloadView?.mediaEntries.length ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <PlayCircle className="h-4 w-4 text-[#ffc400]" />
+                        <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">Media and links</p>
+                      </div>
+                      <div className="grid gap-3">
+                        {submissionPayloadView.mediaEntries.map((entry) => {
+                          const stringValue = stringifySubmissionValue(entry.rawValue);
+                          const youtubeId = typeof stringValue === 'string' ? extractYouTubeId(stringValue) : null;
+                          return (
+                            <div key={entry.key} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                              <div className="flex items-center justify-between gap-3">
+                                <div>
+                                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{entry.label}</p>
+                                  <p className="mt-2 text-sm text-[#d4dbe7] break-all">{stringValue || 'No link provided'}</p>
+                                </div>
+                                {youtubeId ? (
+                                  <a
+                                    href={`https://www.youtube.com/watch?v=${youtubeId}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-xl border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black text-[#ffc400]"
+                                  >
+                                    <ExternalLink className="h-4 w-4" />
+                                    Open
+                                  </a>
+                                ) : isProbablyUrl(stringValue) ? (
+                                  <a
+                                    href={stringValue}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-xl border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black text-[#ffc400]"
+                                  >
+                                    <ExternalLink className="h-4 w-4" />
+                                    Open
+                                  </a>
+                                ) : null}
+                              </div>
+                              {youtubeId ? (
+                                <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-black/30">
+                                  <iframe
+                                    className="aspect-video w-full"
+                                    src={`https://www.youtube.com/embed/${youtubeId}`}
+                                    title={`${entry.label} preview`}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                  />
+                                </div>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {selectedSubmission.description ? (
+                    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Description</p>
+                      <p className="mt-2 text-sm leading-7 text-[#d4dbe7]">{selectedSubmission.description}</p>
+                    </div>
+                  ) : null}
+
+                  <details className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <summary className="cursor-pointer list-none text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">
+                      Raw payload
+                    </summary>
+                    <pre className="mt-3 overflow-x-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-[#d4dbe7]">
+                      {JSON.stringify(selectedSubmission.payload, null, 2)}
+                    </pre>
+                  </details>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Description</p>
-                  <p className="mt-2 text-sm leading-7 text-[#d4dbe7]">{selectedSubmission.description || 'No description provided.'}</p>
-                </div>
+                <div className="border-t border-white/10 p-5 xl:border-l xl:border-t-0">
+                  <div className="sticky top-0 space-y-4">
+                    <div className="rounded-3xl border border-[#ffc400]/35 bg-gradient-to-br from-[#ffc400]/12 via-black/25 to-black/20 p-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">Applicant profile</p>
+                          <h4 className="mt-2 text-2xl font-black text-white">{selectedSubmission.applicant_name || 'Applicant'}</h4>
+                          <p className="mt-2 text-sm text-[#aab5c6]">{selectedSubmission.submission_kind || 'Submission'}</p>
+                        </div>
+                        <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                          {selectedSubmission.source_type.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Review note</p>
-                  <p className="mt-2 text-sm leading-7 text-[#d4dbe7]">{selectedSubmission.review_note || 'No review note yet.'}</p>
-                </div>
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                      {[
+                        { label: 'Applicant', value: selectedSubmission.applicant_name || 'Not provided' },
+                        { label: 'Email', value: selectedSubmission.applicant_email || 'Not provided' },
+                        { label: 'Phone', value: selectedSubmission.applicant_phone || 'Not provided' },
+                        { label: 'Source', value: selectedSubmission.source_label || 'Unknown source' },
+                        { label: 'Submitted', value: selectedSubmission.submitted_at ? new Date(selectedSubmission.submitted_at).toLocaleString() : 'Unknown' },
+                        { label: 'Reviewed', value: selectedSubmission.reviewed_at ? new Date(selectedSubmission.reviewed_at).toLocaleString() : 'Not reviewed yet' },
+                      ].map((item) => (
+                        <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+                          <p className="mt-2 text-sm font-bold text-white break-words">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Submitted</p>
-                    <p className="mt-2 text-sm font-bold text-white">{selectedSubmission.submitted_at ? new Date(selectedSubmission.submitted_at).toLocaleString() : 'Unknown'}</p>
+                    {selectedSubmission.review_note ? (
+                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Review note</p>
+                        <p className="mt-2 text-sm leading-7 text-[#d4dbe7]">{selectedSubmission.review_note}</p>
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Review note</p>
+                        <p className="mt-2 text-sm leading-7 text-[#aab5c6]">No review note yet.</p>
+                      </div>
+                    )}
+
+                    <div className="rounded-2xl border border-[#ffc400]/20 bg-[#ffc400]/5 p-4">
+                      <p className="text-sm font-black text-[#ffc400]">Priority review</p>
+                      <p className="mt-2 text-sm leading-7 text-[#d4dbe7]">
+                        India Pre-Selection submissions stay highlighted at the top of the queue, but every source now opens in the same readable popup.
+                      </p>
+                    </div>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Reviewed</p>
-                    <p className="mt-2 text-sm font-bold text-white">{selectedSubmission.reviewed_at ? new Date(selectedSubmission.reviewed_at).toLocaleString() : 'Not reviewed yet'}</p>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Payload</p>
-                  <pre className="mt-3 overflow-x-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-[#d4dbe7]">
-                    {JSON.stringify(selectedSubmission.payload, null, 2)}
-                  </pre>
                 </div>
               </div>
-            ) : (
-              <p className="text-sm text-[#aab5c6]">Select a submission to review it here.</p>
-            )}
-          </SectionShell>
-        </div>
-      </div>
+            </div>
+          </div>
+        ) : null}
+      </>
     );
   };
 
