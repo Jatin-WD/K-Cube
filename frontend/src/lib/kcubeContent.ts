@@ -763,6 +763,7 @@ const itaewonSubmissionLink: MenuLink = {
     'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.',
   ),
   points: 130,
+  featured: true,
   children: [
     {
       label: txt('Information', 'Information', 'Information'),
@@ -804,7 +805,6 @@ const buildEventsServiceLinks = (): MenuLink[] => [
       description: item.summary,
       points: item.points,
       children: buildSectionPreviewLinks(item),
-      featured: item.slug === 'culture-workshops',
     })),
 ];
 

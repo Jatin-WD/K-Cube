@@ -248,7 +248,7 @@ const Header = () => {
               <Link
                 href="/study-abroad"
                 onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center rounded-sm border border-[#f3a847]/70 bg-[#f3a847]/12 px-3 py-2 text-sm font-black text-[#f3a847]"
+                className="inline-flex items-center justify-center rounded-sm border border-[#ffd814] bg-[#ffd814] px-3 py-2 text-sm font-black text-[#111827] shadow-sm transition hover:bg-[#f7ca00]"
               >
                 Study Abroad
               </Link>
@@ -384,7 +384,7 @@ const Header = () => {
           <Link
             href="/study-abroad"
             onClick={closeAllMenus}
-            className="hidden shrink-0 items-center gap-2 rounded-sm border border-[#f3a847]/60 bg-[#f3a847]/12 px-3 py-2 text-xs font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:inline-flex xl:px-4 xl:text-sm"
+            className="hidden shrink-0 items-center gap-2 rounded-sm border border-[#ffd814] bg-[#ffd814] px-3 py-2 text-xs font-black text-[#111827] shadow-sm transition hover:bg-[#f7ca00] xl:inline-flex xl:px-4 xl:text-sm"
           >
             Study Abroad
           </Link>
