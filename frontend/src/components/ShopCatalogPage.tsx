@@ -1,10 +1,11 @@
 "use client";
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Coins, Lock, Minus, Plus, ShoppingBag, SlidersHorizontal, Sparkles, Trash2 } from 'lucide-react';
 import { startRazorpayCheckout } from '@/lib/razorpay';
-import { shopCategories, shopCopy, shopProducts } from '@/lib/shopCatalog';
+import { fetchLiveShopProducts } from '@/lib/shopApi';
+import { shopCategories, shopCopy, shopProducts as staticShopProducts, type ShopProduct } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
 
 const PAGE_SIZE = 12;
@@ -28,18 +29,38 @@ const ShopCatalogPage = () => {
   const [sortMode, setSortMode] = useState<SortMode>('az');
   const [page, setPage] = useState(1);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [products, setProducts] = useState<ShopProduct[]>(staticShopProducts);
+
+  useEffect(() => {
+    let mounted = true;
+
+    fetchLiveShopProducts()
+      .then((liveProducts) => {
+        if (!mounted || !Array.isArray(liveProducts) || !liveProducts.length) return;
+        setProducts(liveProducts);
+      })
+      .catch(() => {
+        if (mounted) {
+          setProducts(staticShopProducts);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const cartItems = cart
     .map((item) => {
-      const product = shopProducts.find((entry) => entry.id === item.productId);
+      const product = products.find((entry) => entry.id === item.productId);
       return product ? { product, quantity: item.quantity } : null;
     })
-    .filter((item): item is { product: (typeof shopProducts)[number]; quantity: number } => Boolean(item));
+    .filter((item): item is { product: ShopProduct; quantity: number } => Boolean(item));
 
   const filteredProducts = useMemo(() => {
     const base = activeCategory === 'all'
-      ? [...shopProducts]
-      : shopProducts.filter((product) => product.categoryKey === activeCategory);
+      ? [...products]
+      : products.filter((product) => product.categoryKey === activeCategory);
 
     return base.sort((left, right) => {
       if (sortMode === 'price-low') return left.price - right.price;
@@ -47,7 +68,7 @@ const ShopCatalogPage = () => {
       if (sortMode === 'rewards') return right.rewardPoints - left.rewardPoints;
       return left.title.en.localeCompare(right.title.en);
     });
-  }, [activeCategory, sortMode]);
+  }, [activeCategory, products, sortMode]);
 
   const pageCount = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
   const visibleProducts = filteredProducts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

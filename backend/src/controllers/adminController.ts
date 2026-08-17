@@ -5,6 +5,7 @@ import { awardPoints } from '../services/pointsService';
 import { fail, ok } from '../lib/apiResponse';
 import { AuthRequest } from '../middleware/auth';
 import { createShopProduct, deleteShopProduct, listShopProducts, updateShopProduct } from '../services/shopCatalogService';
+export { syncWooCommerceProducts } from './shopController';
 
 const profileFields = 'id, full_name, username, email, phone, role, category_access, profile_image, city, state, country, status, created_at, last_login';
 

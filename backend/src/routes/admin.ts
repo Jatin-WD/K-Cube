@@ -29,6 +29,7 @@ import {
   createKFoodProduct,
   updateKFoodProduct,
   deleteKFoodProduct,
+  syncWooCommerceProducts,
   getKFoodOverview,
   listKFoodFulfillments,
   upsertKFoodFulfillment,
@@ -86,6 +87,7 @@ router.get('/kfood/products', listKFoodProducts);
 router.post('/kfood/products', createKFoodProduct);
 router.patch('/kfood/products/:slug', updateKFoodProduct);
 router.delete('/kfood/products/:slug', deleteKFoodProduct);
+router.post('/kfood/products/import', syncWooCommerceProducts);
 router.get('/kfood/overview', getKFoodOverview);
 router.get('/kfood/fulfillments', listKFoodFulfillments);
 router.post('/kfood/fulfillments', upsertKFoodFulfillment);

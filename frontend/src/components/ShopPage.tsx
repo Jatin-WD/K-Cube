@@ -1,10 +1,12 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, Coins, Lock, Minus, Plus, ShoppingBag, Sparkles, Trash2 } from 'lucide-react';
 import { startRazorpayCheckout } from '@/lib/razorpay';
-import { shopCopy, shopProducts } from '@/lib/shopContent';
+import { shopCopy } from '@/lib/shopContent';
+import { fetchLiveShopProducts } from '@/lib/shopApi';
+import { shopProducts as staticShopProducts, type ShopProduct } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
 
 const ShopPage = () => {
@@ -21,13 +23,33 @@ const ShopPage = () => {
   const t = shopCopy[language];
   const [message, setMessage] = useState('');
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [products, setProducts] = useState<ShopProduct[]>(staticShopProducts);
+
+  useEffect(() => {
+    let mounted = true;
+
+    fetchLiveShopProducts()
+      .then((liveProducts) => {
+        if (!mounted || !Array.isArray(liveProducts) || !liveProducts.length) return;
+        setProducts(liveProducts);
+      })
+      .catch(() => {
+        if (mounted) {
+          setProducts(staticShopProducts);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const cartItems = cart
     .map((item) => {
-      const product = shopProducts.find((entry) => entry.id === item.productId);
+      const product = products.find((entry) => entry.id === item.productId);
       return product ? { product, quantity: item.quantity } : null;
     })
-    .filter((item): item is { product: (typeof shopProducts)[number]; quantity: number } => Boolean(item));
+    .filter((item): item is { product: ShopProduct; quantity: number } => Boolean(item));
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const rewardTotal = cartItems.reduce((sum, item) => sum + item.product.rewardPoints * item.quantity, 0);
@@ -139,7 +161,7 @@ const ShopPage = () => {
             {message ? <p className="rounded-2xl border border-[#f3a847]/40 bg-[#fff8e1] px-5 py-4 text-sm font-bold text-[#7a3b00]">{message}</p> : null}
 
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {shopProducts.map((product) => (
+              {products.map((product) => (
                 <article key={product.id} className="overflow-hidden rounded-[2rem] border border-[#d5d9d9] bg-white shadow-[0_18px_40px_rgba(0,0,0,0.08)]">
                   <div className="h-56 bg-cover bg-center" style={{ backgroundImage: `url(${product.image})` }} />
                   <div className="p-5">

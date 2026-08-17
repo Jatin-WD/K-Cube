@@ -316,6 +316,32 @@ type KFoodProductRow = {
   includes: LocalizedText[];
 };
 
+type KFoodProductForm = {
+  id: string;
+  slug: string;
+  sku: string;
+  title_en: string;
+  title_ko: string;
+  title_hi: string;
+  subtitle_en: string;
+  subtitle_ko: string;
+  subtitle_hi: string;
+  description_en: string;
+  description_ko: string;
+  description_hi: string;
+  categoryKey: string;
+  image: string;
+  price: string;
+  compareAtPrice: string;
+  rewardPoints: string;
+  inStock: boolean;
+  stockLabel_en: string;
+  stockLabel_ko: string;
+  stockLabel_hi: string;
+  badges_json: string;
+  includes_json: string;
+};
+
 type KFoodOrderRow = {
   id: number;
   receipt: string;
@@ -582,6 +608,32 @@ const emptyCalendarForm = {
   sync_mode: 'admin_oauth',
 };
 
+const emptyKFoodProductForm: KFoodProductForm = {
+  id: '',
+  slug: '',
+  sku: '',
+  title_en: '',
+  title_ko: '',
+  title_hi: '',
+  subtitle_en: '',
+  subtitle_ko: '',
+  subtitle_hi: '',
+  description_en: '',
+  description_ko: '',
+  description_hi: '',
+  categoryKey: 'sauces',
+  image: '',
+  price: '0',
+  compareAtPrice: '',
+  rewardPoints: '0',
+  inStock: true,
+  stockLabel_en: 'In stock',
+  stockLabel_ko: 'In stock',
+  stockLabel_hi: 'In stock',
+  badges_json: '[]',
+  includes_json: '[]',
+};
+
 const safeJson = (value: string, fallback: unknown[]) => {
   try {
     const parsed = JSON.parse(value);
@@ -599,6 +651,75 @@ const safeJsonObject = (value: string, fallback: Record<string, unknown> = {}) =
     return fallback;
   }
 };
+
+const readLocalizedText = (value: unknown, fallback: string): LocalizedText => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const record = value as Partial<LocalizedText>;
+    return {
+      en: String(record.en || fallback),
+      ko: String(record.ko || record.en || fallback),
+      hi: String(record.hi || record.en || fallback),
+    };
+  }
+
+  const text = String(value || fallback);
+  return { en: text, ko: text, hi: text };
+};
+
+const readLocalizedArray = (value: unknown, fallbackPrefix: string) => {
+  const entries = Array.isArray(value) ? value : [];
+  return entries.map((item, index) => readLocalizedText(item, `${fallbackPrefix} ${index + 1}`));
+};
+
+const buildLocalizedText = (en: string, ko: string, hi: string, fallback = '') => ({
+  en: en.trim() || fallback,
+  ko: ko.trim() || en.trim() || fallback,
+  hi: hi.trim() || en.trim() || fallback,
+});
+
+const parseKFoodProductForm = (form: KFoodProductForm) => ({
+  id: form.id.trim() || form.slug.trim() || form.title_en.trim() || 'new-product',
+  slug: form.slug.trim(),
+  sku: form.sku.trim(),
+  title: buildLocalizedText(form.title_en, form.title_ko, form.title_hi, form.slug || 'New product'),
+  subtitle: buildLocalizedText(form.subtitle_en, form.subtitle_ko, form.subtitle_hi, form.title_en || 'New product'),
+  description: buildLocalizedText(form.description_en, form.description_ko, form.description_hi, form.title_en || 'New product'),
+  categoryKey: form.categoryKey.trim() || 'sauces',
+  image: form.image.trim(),
+  price: Number(form.price || 0),
+  compareAtPrice: form.compareAtPrice.trim() ? Number(form.compareAtPrice) : undefined,
+  rewardPoints: Number(form.rewardPoints || 0),
+  inStock: Boolean(form.inStock),
+  stockLabel: buildLocalizedText(form.stockLabel_en, form.stockLabel_ko, form.stockLabel_hi, form.inStock ? 'In stock' : 'Out of stock'),
+  badges: readLocalizedArray(safeJson(form.badges_json, []), 'Badge'),
+  includes: readLocalizedArray(safeJson(form.includes_json, []), 'Item'),
+});
+
+const formFromKFoodProduct = (product: KFoodProductRow): KFoodProductForm => ({
+  id: product.id,
+  slug: product.slug,
+  sku: product.sku,
+  title_en: product.title.en,
+  title_ko: product.title.ko,
+  title_hi: product.title.hi,
+  subtitle_en: product.subtitle.en,
+  subtitle_ko: product.subtitle.ko,
+  subtitle_hi: product.subtitle.hi,
+  description_en: product.description.en,
+  description_ko: product.description.ko,
+  description_hi: product.description.hi,
+  categoryKey: product.categoryKey,
+  image: product.image,
+  price: String(product.price ?? 0),
+  compareAtPrice: product.compareAtPrice == null ? '' : String(product.compareAtPrice),
+  rewardPoints: String(product.rewardPoints ?? 0),
+  inStock: product.inStock,
+  stockLabel_en: product.stockLabel.en,
+  stockLabel_ko: product.stockLabel.ko,
+  stockLabel_hi: product.stockLabel.hi,
+  badges_json: JSON.stringify(product.badges || [], null, 2),
+  includes_json: JSON.stringify(product.includes || [], null, 2),
+});
 
 const normalize = (value: unknown) => String(value ?? '').toLowerCase();
 
@@ -791,6 +912,9 @@ const AdminControlCenter = () => {
   const [adminAccounts, setAdminAccounts] = useState<AdminAccountRow[]>([]);
   const [kfoodProducts, setKfoodProducts] = useState<KFoodProductRow[]>([]);
   const [kfoodOverview, setKfoodOverview] = useState<KFoodOverviewRow | null>(null);
+  const [selectedKFoodProductSlug, setSelectedKFoodProductSlug] = useState('');
+  const [kfoodProductForm, setKFoodProductForm] = useState<KFoodProductForm>(emptyKFoodProductForm);
+  const [kfoodImportUrls, setKFoodImportUrls] = useState('');
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<number | null>(null);
   const [submissionDetailOpen, setSubmissionDetailOpen] = useState(false);
@@ -882,6 +1006,10 @@ const AdminControlCenter = () => {
   const selectedFulfillment = useMemo(
     () => kfoodOverview?.fulfillments.find((entry) => entry.id === selectedFulfillmentId) || kfoodOverview?.fulfillments[0] || null,
     [kfoodOverview, selectedFulfillmentId],
+  );
+  const selectedKFoodProduct = useMemo(
+    () => kfoodProducts.find((entry) => entry.slug === selectedKFoodProductSlug) || null,
+    [kfoodProducts, selectedKFoodProductSlug],
   );
   const selectedCmsPage = useMemo(
     () => pages.find((entry) => entry.id === selectedPageId) || null,
@@ -1150,12 +1278,28 @@ const AdminControlCenter = () => {
     if (!selectedPageId && pageRows.length) {
       setSelectedPageId(pageRows[0].id);
     }
+    if (!selectedKFoodProductSlug && kfoodProductRows.length) {
+      setSelectedKFoodProductSlug(kfoodProductRows[0].slug);
+      setKFoodProductForm(formFromKFoodProduct(kfoodProductRows[0]));
+    }
   };
 
   useEffect(() => {
     if (!user || user.role !== 'admin') return;
     loadAdminData().catch(() => setNotice('Failed to load admin data.'));
   }, [user]);
+
+  useEffect(() => {
+    if (!selectedKFoodProductSlug && kfoodProducts.length) {
+      setSelectedKFoodProductSlug(kfoodProducts[0].slug);
+      setKFoodProductForm(formFromKFoodProduct(kfoodProducts[0]));
+    }
+  }, [kfoodProducts, selectedKFoodProductSlug]);
+
+  useEffect(() => {
+    if (!selectedKFoodProduct) return;
+    setKFoodProductForm(formFromKFoodProduct(selectedKFoodProduct));
+  }, [selectedKFoodProduct]);
 
   useEffect(() => {
     if (!selectedTrack) return;
@@ -1639,6 +1783,66 @@ const AdminControlCenter = () => {
     await api.post('/admin/kfood/fulfillments', payload);
     setNotice('K-Food fulfillment saved.');
     await loadAdminData();
+  };
+
+  const selectKFoodProduct = (product: KFoodProductRow) => {
+    setSelectedKFoodProductSlug(product.slug);
+    setKFoodProductForm(formFromKFoodProduct(product));
+  };
+
+  const resetKFoodProductForm = () => {
+    setSelectedKFoodProductSlug('');
+    setKFoodProductForm(emptyKFoodProductForm);
+  };
+
+  const saveKFoodProduct = async () => {
+    const payload = parseKFoodProductForm(kfoodProductForm);
+    if (selectedKFoodProduct) {
+      await api.patch(`/admin/kfood/products/${selectedKFoodProduct.slug}`, payload);
+      setNotice(`K-Food product "${payload.title.en}" updated.`);
+    } else {
+      await api.post('/admin/kfood/products', payload);
+      setNotice(`K-Food product "${payload.title.en}" created.`);
+    }
+    await loadAdminData();
+    const nextProducts = (await api.get('/admin/kfood/products')).data?.data ?? [];
+    const savedProduct = nextProducts.find((product: KFoodProductRow) => product.slug === payload.slug) || nextProducts[0] || null;
+    if (savedProduct) {
+      setSelectedKFoodProductSlug(savedProduct.slug);
+      setKFoodProductForm(formFromKFoodProduct(savedProduct));
+    } else {
+      resetKFoodProductForm();
+    }
+  };
+
+  const deleteKFoodProduct = async () => {
+    if (!selectedKFoodProduct) return;
+    await api.delete(`/admin/kfood/products/${selectedKFoodProduct.slug}`);
+    setNotice(`K-Food product "${selectedKFoodProduct.title.en}" deleted.`);
+    await loadAdminData();
+    resetKFoodProductForm();
+  };
+
+  const syncKFoodProducts = async () => {
+    const urls = kfoodImportUrls
+      .split(/\r?\n/)
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    if (!urls.length) {
+      setNotice('Add at least one WooCommerce URL first.');
+      return;
+    }
+
+    await api.post('/admin/kfood/products/import', { urls });
+    setNotice(`Imported ${urls.length} WooCommerce source URL(s).`);
+    await loadAdminData();
+    const refreshed = (await api.get('/admin/kfood/products')).data?.data ?? [];
+    const first = refreshed[0];
+    if (first) {
+      setSelectedKFoodProductSlug(first.slug);
+      setKFoodProductForm(formFromKFoodProduct(first));
+    }
   };
 
   const saveReward = async () => {
@@ -3448,163 +3652,346 @@ const AdminControlCenter = () => {
           ))}
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(340px,420px)]">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(360px,420px)]">
           <SectionShell
-            title="K-Food product listing"
-            description="A product-first admin view with stock state, reward value and live operational markers."
+            title="K-Food product manager"
+            description="Click any product to edit it, review live stock status, or create a new item from the sticky editor."
             actions={<span className="text-sm font-bold text-[#ffc400]">{filteredKFoodProducts.length} products</span>}
           >
-            <div className="grid gap-3 lg:grid-cols-2">
-              {filteredKFoodProducts.map((product) => (
-                <article key={product.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{product.sku}</p>
-                      <h3 className="mt-2 text-lg font-black text-white">{product.title.en}</h3>
-                      <p className="mt-2 text-sm text-[#aab5c6]">{product.subtitle.en}</p>
+            <div className="space-y-3">
+              {filteredKFoodProducts.map((product) => {
+                const isSelected = product.slug === selectedKFoodProductSlug;
+                return (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => selectKFoodProduct(product)}
+                    className={`w-full rounded-3xl border p-4 text-left transition ${
+                      isSelected
+                        ? 'border-[#ffc400]/70 bg-[#ffc400]/10 shadow-[0_0_0_1px_rgba(255,196,0,0.24)]'
+                        : 'border-white/10 bg-black/20 hover:border-[#ffc400]/30 hover:bg-black/25'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-black/30">
+                        {product.image ? <img src={product.image} alt={product.title.en} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-xs font-black text-[#98a4b1]">No image</div>}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#ffc400]">{product.category.en}</p>
+                              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">{product.sku || product.slug}</span>
+                            </div>
+                            <h3 className="mt-2 text-lg font-black text-white">{product.title.en}</h3>
+                            <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#aab5c6]">{product.subtitle.en}</p>
+                          </div>
+                          <span
+                            className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${
+                              product.inStock ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border border-red-500/30 bg-red-500/10 text-red-300'
+                            }`}
+                          >
+                            {product.inStock ? 'In stock' : 'Out of stock'}
+                          </span>
+                        </div>
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">Rs {Number(product.price || 0).toFixed(0)}</span>
+                          <span className="rounded-full border border-[#ffc400]/25 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">{product.rewardPoints} points</span>
+                          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">{product.stockLabel.en}</span>
+                        </div>
+                      </div>
                     </div>
-                    <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${product.inStock ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border border-red-500/30 bg-red-500/10 text-red-300'}`}>
-                      {product.inStock ? 'In stock' : 'Out of stock'}
-                    </span>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">{product.category.en}</span>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">{product.rewardPoints} pts</span>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">₹{product.price}</span>
-                  </div>
-                  <div className="mt-4 grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-2">
-                    <p>Stock: {product.stockLabel.en}</p>
-                    <p>Listing: {product.inStock ? 'Live' : 'Paused'}</p>
-                  </div>
-                </article>
-              ))}
+                  </button>
+                );
+              })}
+              {!filteredKFoodProducts.length ? (
+                <div className="rounded-3xl border border-dashed border-white/15 bg-black/20 p-6 text-sm text-[#aab5c6]">
+                  No K-Food products found. Add one from the editor or import WooCommerce links below.
+                </div>
+              ) : null}
             </div>
           </SectionShell>
 
           <div className="space-y-5 xl:sticky xl:top-6 self-start">
-            <SectionShell title="Fulfillment desk" description="Dispatch, tracking, shipping and delivery are first-class records now." actions={<span className="text-sm font-bold text-[#ffc400]">{fulfillments.length} records</span>}>
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[860px] text-left text-sm">
-                  <thead className="text-[#ffc400]">
-                    <tr>
-                      <th className="border-b border-white/10 py-3">Order</th>
-                      <th className="border-b border-white/10 py-3">Payment</th>
-                      <th className="border-b border-white/10 py-3">Fulfillment</th>
-                      <th className="border-b border-white/10 py-3">Tracking</th>
-                      <th className="border-b border-white/10 py-3">Carrier</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-[#d4dbe7]">
-                    {fulfillments.map((entry) => (
-                      <tr key={entry.id}>
-                        <td className="border-b border-white/10 py-3">
-                          <button type="button" onClick={() => setSelectedFulfillmentId(entry.id)} className="text-left font-black text-white">
-                            {entry.receipt}
-                          </button>
-                          <p className="text-xs text-[#98a4b1]">{entry.email || 'No customer email'}</p>
-                        </td>
-                        <td className="border-b border-white/10 py-3">
-                          <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
-                            {entry.payment_status}
-                          </span>
-                        </td>
-                        <td className="border-b border-white/10 py-3">
-                          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">
-                            {entry.fulfillment_status}
-                          </span>
-                        </td>
-                        <td className="border-b border-white/10 py-3">{entry.tracking_number || 'Pending'}</td>
-                        <td className="border-b border-white/10 py-3">{entry.carrier || 'Not assigned'}</td>
-                      </tr>
-                    ))}
-                    {!fulfillments.length ? (
-                      <tr>
-                        <td className="py-4 text-sm text-[#aab5c6]" colSpan={5}>
-                          No fulfillment rows yet. The table will populate as soon as dispatch records are created.
-                        </td>
-                      </tr>
-                    ) : null}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="mt-5 rounded-3xl border border-white/10 bg-black/20 p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">Selected fulfillment</p>
-                    <h3 className="mt-2 text-2xl font-black text-white">{selectedFulfillment?.receipt || 'No fulfillment selected'}</h3>
-                    <p className="mt-2 text-sm text-[#aab5c6]">{selectedFulfillment?.email || 'Choose a row from the table above.'}</p>
-                  </div>
-                  {selectedFulfillment ? (
-                    <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
-                      {selectedFulfillment.fulfillment_status}
-                    </span>
+            <SectionShell
+              title={selectedKFoodProductSlug ? 'Edit product' : 'Create product'}
+              description="Update product fields, pricing, labels, badges and listing state."
+              actions={
+                <div className="flex items-center gap-3">
+                  {selectedKFoodProduct ? <span className="text-sm font-bold text-[#ffc400]">{selectedKFoodProduct.slug}</span> : null}
+                  {selectedKFoodProductSlug ? (
+                    <button type="button" onClick={resetKFoodProductForm} className="text-sm font-bold text-[#ffc400]">
+                      Reset
+                    </button>
                   ) : null}
                 </div>
+              }
+            >
+              <div className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Slug">
+                    <input className={inputClass} value={kfoodProductForm.slug} onChange={(event) => setKFoodProductForm((state) => ({ ...state, slug: event.target.value }))} />
+                  </Field>
+                  <Field label="SKU">
+                    <input className={inputClass} value={kfoodProductForm.sku} onChange={(event) => setKFoodProductForm((state) => ({ ...state, sku: event.target.value }))} />
+                  </Field>
+                </div>
 
-                {selectedFulfillment ? (
-                  <div className="mt-4 space-y-3">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <Field label="Payment Order ID">
-                        <input className={inputClass} value={fulfillmentForm.payment_order_id} onChange={(event) => setFulfillmentForm((state) => ({ ...state, payment_order_id: event.target.value }))} />
-                      </Field>
-                      <Field label="Fulfillment Status">
-                        <select className={selectClass} value={fulfillmentForm.fulfillment_status} onChange={(event) => setFulfillmentForm((state) => ({ ...state, fulfillment_status: event.target.value }))}>
-                          <option value="pending">pending</option>
-                          <option value="packed">packed</option>
-                          <option value="dispatched">dispatched</option>
-                          <option value="in_transit">in_transit</option>
-                          <option value="delivered">delivered</option>
-                          <option value="returned">returned</option>
-                          <option value="cancelled">cancelled</option>
-                        </select>
-                      </Field>
-                    </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <Field label="Tracking Number">
-                        <input className={inputClass} value={fulfillmentForm.tracking_number} onChange={(event) => setFulfillmentForm((state) => ({ ...state, tracking_number: event.target.value }))} />
-                      </Field>
-                      <Field label="Carrier">
-                        <input className={inputClass} value={fulfillmentForm.carrier} onChange={(event) => setFulfillmentForm((state) => ({ ...state, carrier: event.target.value }))} />
-                      </Field>
-                    </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <Field label="Dispatch Method">
-                        <input className={inputClass} value={fulfillmentForm.dispatch_method} onChange={(event) => setFulfillmentForm((state) => ({ ...state, dispatch_method: event.target.value }))} />
-                      </Field>
-                      <Field label="Shipping Name">
-                        <input className={inputClass} value={fulfillmentForm.shipping_name} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_name: event.target.value }))} />
-                      </Field>
-                    </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <Field label="Shipping Phone">
-                        <input className={inputClass} value={fulfillmentForm.shipping_phone} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_phone: event.target.value }))} />
-                      </Field>
-                      <Field label="Shipped At">
-                        <input className={inputClass} type="datetime-local" value={fulfillmentForm.shipped_at} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipped_at: event.target.value }))} />
-                      </Field>
-                    </div>
-                    <Field label="Shipping Address">
-                      <textarea className={`${inputClass} min-h-24`} value={fulfillmentForm.shipping_address} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_address: event.target.value }))} />
-                    </Field>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <Field label="Delivered At">
-                        <input className={inputClass} type="datetime-local" value={fulfillmentForm.delivered_at} onChange={(event) => setFulfillmentForm((state) => ({ ...state, delivered_at: event.target.value }))} />
-                      </Field>
-                      <Field label="Courier Notes">
-                        <textarea className={`${inputClass} min-h-24`} value={fulfillmentForm.courier_notes} onChange={(event) => setFulfillmentForm((state) => ({ ...state, courier_notes: event.target.value }))} />
-                      </Field>
-                    </div>
-                    <button type="button" onClick={saveFulfillment} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
-                      <Save className="h-4 w-4" /> Save fulfillment
-                    </button>
+                <Field label="Title">
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <input className={inputClass} placeholder="English" value={kfoodProductForm.title_en} onChange={(event) => setKFoodProductForm((state) => ({ ...state, title_en: event.target.value }))} />
+                    <input className={inputClass} placeholder="Korean" value={kfoodProductForm.title_ko} onChange={(event) => setKFoodProductForm((state) => ({ ...state, title_ko: event.target.value }))} />
+                    <input className={inputClass} placeholder="Hindi" value={kfoodProductForm.title_hi} onChange={(event) => setKFoodProductForm((state) => ({ ...state, title_hi: event.target.value }))} />
                   </div>
-                ) : (
-                  <p className="mt-4 text-sm text-[#aab5c6]">Select any order row to open the fulfillment editor.</p>
-                )}
+                </Field>
+
+                <Field label="Subtitle">
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <input className={inputClass} placeholder="English" value={kfoodProductForm.subtitle_en} onChange={(event) => setKFoodProductForm((state) => ({ ...state, subtitle_en: event.target.value }))} />
+                    <input className={inputClass} placeholder="Korean" value={kfoodProductForm.subtitle_ko} onChange={(event) => setKFoodProductForm((state) => ({ ...state, subtitle_ko: event.target.value }))} />
+                    <input className={inputClass} placeholder="Hindi" value={kfoodProductForm.subtitle_hi} onChange={(event) => setKFoodProductForm((state) => ({ ...state, subtitle_hi: event.target.value }))} />
+                  </div>
+                </Field>
+
+                <Field label="Description">
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <textarea className={`${inputClass} min-h-24`} placeholder="English" value={kfoodProductForm.description_en} onChange={(event) => setKFoodProductForm((state) => ({ ...state, description_en: event.target.value }))} />
+                    <textarea className={`${inputClass} min-h-24`} placeholder="Korean" value={kfoodProductForm.description_ko} onChange={(event) => setKFoodProductForm((state) => ({ ...state, description_ko: event.target.value }))} />
+                    <textarea className={`${inputClass} min-h-24`} placeholder="Hindi" value={kfoodProductForm.description_hi} onChange={(event) => setKFoodProductForm((state) => ({ ...state, description_hi: event.target.value }))} />
+                  </div>
+                </Field>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Category key">
+                    <input className={inputClass} value={kfoodProductForm.categoryKey} onChange={(event) => setKFoodProductForm((state) => ({ ...state, categoryKey: event.target.value }))} />
+                  </Field>
+                  <Field label="Image URL">
+                    <input className={inputClass} value={kfoodProductForm.image} onChange={(event) => setKFoodProductForm((state) => ({ ...state, image: event.target.value }))} />
+                  </Field>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <Field label="Price">
+                    <input className={inputClass} type="number" value={kfoodProductForm.price} onChange={(event) => setKFoodProductForm((state) => ({ ...state, price: event.target.value }))} />
+                  </Field>
+                  <Field label="Compare at">
+                    <input className={inputClass} type="number" value={kfoodProductForm.compareAtPrice} onChange={(event) => setKFoodProductForm((state) => ({ ...state, compareAtPrice: event.target.value }))} />
+                  </Field>
+                  <Field label="Reward points">
+                    <input className={inputClass} type="number" value={kfoodProductForm.rewardPoints} onChange={(event) => setKFoodProductForm((state) => ({ ...state, rewardPoints: event.target.value }))} />
+                  </Field>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <Field label="Stock label">
+                    <input className={inputClass} value={kfoodProductForm.stockLabel_en} onChange={(event) => setKFoodProductForm((state) => ({ ...state, stockLabel_en: event.target.value }))} />
+                  </Field>
+                  <Field label="Stock label ko">
+                    <input className={inputClass} value={kfoodProductForm.stockLabel_ko} onChange={(event) => setKFoodProductForm((state) => ({ ...state, stockLabel_ko: event.target.value }))} />
+                  </Field>
+                  <Field label="Stock label hi">
+                    <input className={inputClass} value={kfoodProductForm.stockLabel_hi} onChange={(event) => setKFoodProductForm((state) => ({ ...state, stockLabel_hi: event.target.value }))} />
+                  </Field>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Badges JSON">
+                    <textarea className={`${inputClass} min-h-24`} value={kfoodProductForm.badges_json} onChange={(event) => setKFoodProductForm((state) => ({ ...state, badges_json: event.target.value }))} />
+                  </Field>
+                  <Field label="Includes JSON">
+                    <textarea className={`${inputClass} min-h-24`} value={kfoodProductForm.includes_json} onChange={(event) => setKFoodProductForm((state) => ({ ...state, includes_json: event.target.value }))} />
+                  </Field>
+                </div>
+
+                <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-[#d4dbe7]">
+                  <input type="checkbox" checked={kfoodProductForm.inStock} onChange={(event) => setKFoodProductForm((state) => ({ ...state, inStock: event.target.checked }))} />
+                  Active stock / visible on live shop
+                </label>
+
+                <div className="flex flex-wrap gap-3">
+                  <button type="button" onClick={saveKFoodProduct} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                    <Save className="h-4 w-4" />
+                    {selectedKFoodProduct ? 'Save product' : 'Create product'}
+                  </button>
+                  {selectedKFoodProduct ? (
+                    <button type="button" onClick={deleteKFoodProduct} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                      <Trash2 className="h-4 w-4" />
+                      Delete product
+                    </button>
+                  ) : null}
+                </div>
               </div>
             </SectionShell>
 
+            <SectionShell
+              title="WooCommerce import"
+              description="Paste k-food.in product category or page URLs and sync them into the product catalog."
+              actions={
+                <button type="button" onClick={syncKFoodProducts} className="inline-flex items-center gap-2 text-sm font-bold text-[#ffc400]">
+                  <ExternalLink className="h-4 w-4" />
+                  Sync now
+                </button>
+              }
+            >
+              <div className="space-y-3">
+                <textarea
+                  className={`${inputClass} min-h-40`}
+                  placeholder="https://k-food.in/shop/\nhttps://k-food.in/shop/page/2/\nhttps://k-food.in/shop/page/3/"
+                  value={kfoodImportUrls}
+                  onChange={(event) => setKFoodImportUrls(event.target.value)}
+                />
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    'https://k-food.in/shop/',
+                    'https://k-food.in/shop/page/2/',
+                    'https://k-food.in/shop/page/3/',
+                    'https://k-food.in/shop/page/4/',
+                    'https://k-food.in/shop/page/5/',
+                  ].map((url) => (
+                    <button
+                      key={url}
+                      type="button"
+                      onClick={() => setKFoodImportUrls((current) => (current.includes(url) ? current : `${current}${current ? '\n' : ''}${url}`))}
+                      className="rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]"
+                    >
+                      + Add page {url.match(/page\/(\d+)/)?.[1] || '1'}
+                    </button>
+                  ))}
+                </div>
+                <button type="button" onClick={syncKFoodProducts} className="inline-flex items-center gap-2 rounded-xl border border-[#ffc400]/40 bg-[#ffc400]/10 px-4 py-3 text-sm font-black text-[#ffc400]">
+                  <ExternalLink className="h-4 w-4" />
+                  Import and sync products
+                </button>
+              </div>
+            </SectionShell>
+          </div>
+        </div>
+
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
+          <SectionShell title="Fulfillment desk" description="Dispatch, tracking, shipping and delivery are first-class records now." actions={<span className="text-sm font-bold text-[#ffc400]">{fulfillments.length} records</span>}>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[860px] text-left text-sm">
+                <thead className="text-[#ffc400]">
+                  <tr>
+                    <th className="border-b border-white/10 py-3">Order</th>
+                    <th className="border-b border-white/10 py-3">Payment</th>
+                    <th className="border-b border-white/10 py-3">Fulfillment</th>
+                    <th className="border-b border-white/10 py-3">Tracking</th>
+                    <th className="border-b border-white/10 py-3">Carrier</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[#d4dbe7]">
+                  {fulfillments.map((entry) => (
+                    <tr key={entry.id}>
+                      <td className="border-b border-white/10 py-3">
+                        <button type="button" onClick={() => setSelectedFulfillmentId(entry.id)} className="text-left font-black text-white">
+                          {entry.receipt}
+                        </button>
+                        <p className="text-xs text-[#98a4b1]">{entry.email || 'No customer email'}</p>
+                      </td>
+                      <td className="border-b border-white/10 py-3">
+                        <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                          {entry.payment_status}
+                        </span>
+                      </td>
+                      <td className="border-b border-white/10 py-3">
+                        <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">
+                          {entry.fulfillment_status}
+                        </span>
+                      </td>
+                      <td className="border-b border-white/10 py-3">{entry.tracking_number || 'Pending'}</td>
+                      <td className="border-b border-white/10 py-3">{entry.carrier || 'Not assigned'}</td>
+                    </tr>
+                  ))}
+                  {!fulfillments.length ? (
+                    <tr>
+                      <td className="py-4 text-sm text-[#aab5c6]" colSpan={5}>
+                        No fulfillment rows yet. The table will populate as soon as dispatch records are created.
+                      </td>
+                    </tr>
+                  ) : null}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-5 rounded-3xl border border-white/10 bg-black/20 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">Selected fulfillment</p>
+                  <h3 className="mt-2 text-2xl font-black text-white">{selectedFulfillment?.receipt || 'No fulfillment selected'}</h3>
+                  <p className="mt-2 text-sm text-[#aab5c6]">{selectedFulfillment?.email || 'Choose a row from the table above.'}</p>
+                </div>
+                {selectedFulfillment ? (
+                  <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                    {selectedFulfillment.fulfillment_status}
+                  </span>
+                ) : null}
+              </div>
+
+              {selectedFulfillment ? (
+                <div className="mt-4 space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field label="Payment Order ID">
+                      <input className={inputClass} value={fulfillmentForm.payment_order_id} onChange={(event) => setFulfillmentForm((state) => ({ ...state, payment_order_id: event.target.value }))} />
+                    </Field>
+                    <Field label="Fulfillment Status">
+                      <select className={selectClass} value={fulfillmentForm.fulfillment_status} onChange={(event) => setFulfillmentForm((state) => ({ ...state, fulfillment_status: event.target.value }))}>
+                        <option value="pending">pending</option>
+                        <option value="packed">packed</option>
+                        <option value="dispatched">dispatched</option>
+                        <option value="in_transit">in_transit</option>
+                        <option value="delivered">delivered</option>
+                        <option value="returned">returned</option>
+                        <option value="cancelled">cancelled</option>
+                      </select>
+                    </Field>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field label="Tracking Number">
+                      <input className={inputClass} value={fulfillmentForm.tracking_number} onChange={(event) => setFulfillmentForm((state) => ({ ...state, tracking_number: event.target.value }))} />
+                    </Field>
+                    <Field label="Carrier">
+                      <input className={inputClass} value={fulfillmentForm.carrier} onChange={(event) => setFulfillmentForm((state) => ({ ...state, carrier: event.target.value }))} />
+                    </Field>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field label="Dispatch Method">
+                      <input className={inputClass} value={fulfillmentForm.dispatch_method} onChange={(event) => setFulfillmentForm((state) => ({ ...state, dispatch_method: event.target.value }))} />
+                    </Field>
+                    <Field label="Shipping Name">
+                      <input className={inputClass} value={fulfillmentForm.shipping_name} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_name: event.target.value }))} />
+                    </Field>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field label="Shipping Phone">
+                      <input className={inputClass} value={fulfillmentForm.shipping_phone} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_phone: event.target.value }))} />
+                    </Field>
+                    <Field label="Shipped At">
+                      <input className={inputClass} type="datetime-local" value={fulfillmentForm.shipped_at} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipped_at: event.target.value }))} />
+                    </Field>
+                  </div>
+                  <Field label="Shipping Address">
+                    <textarea className={`${inputClass} min-h-24`} value={fulfillmentForm.shipping_address} onChange={(event) => setFulfillmentForm((state) => ({ ...state, shipping_address: event.target.value }))} />
+                  </Field>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field label="Delivered At">
+                      <input className={inputClass} type="datetime-local" value={fulfillmentForm.delivered_at} onChange={(event) => setFulfillmentForm((state) => ({ ...state, delivered_at: event.target.value }))} />
+                    </Field>
+                    <Field label="Courier Notes">
+                      <textarea className={`${inputClass} min-h-24`} value={fulfillmentForm.courier_notes} onChange={(event) => setFulfillmentForm((state) => ({ ...state, courier_notes: event.target.value }))} />
+                    </Field>
+                  </div>
+                  <button type="button" onClick={saveFulfillment} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                    <Save className="h-4 w-4" /> Save fulfillment
+                  </button>
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-[#aab5c6]">Select any order row to open the fulfillment editor.</p>
+              )}
+            </div>
+          </SectionShell>
+
+          <div className="space-y-5 self-start xl:sticky xl:top-6">
             <SectionShell title="Operations board" description="Order status, payment state, dispatch and tracking in one executive rail.">
               <div className="space-y-3">
                 {orders.slice(0, 6).map((order) => (
@@ -3621,7 +4008,7 @@ const AdminControlCenter = () => {
                     <div className="mt-3 grid gap-2 text-sm text-[#aab5c6]">
                       <p>Dispatch: {order.dispatch_status}</p>
                       <p>Tracking: {order.tracking_number || 'Pending'}</p>
-                      <p>Commission: ₹{Number(order.commission_amount || 0).toFixed(2)} @ {order.commission_rate}%</p>
+                      <p>Commission: Rs {Number(order.commission_amount || 0).toFixed(2)} @ {order.commission_rate}%</p>
                     </div>
                   </article>
                 ))}
@@ -3637,7 +4024,7 @@ const AdminControlCenter = () => {
                         <p className="font-black text-white">{row.payment_status}</p>
                         <span className="text-xs font-black text-[#ffc400]">{row.total_orders} orders</span>
                       </div>
-                      <p className="mt-2 text-sm text-[#aab5c6]">Revenue ₹{Number(row.total_amount || 0).toFixed(2)}</p>
+                      <p className="mt-2 text-sm text-[#aab5c6]">Revenue Rs {Number(row.total_amount || 0).toFixed(2)}</p>
                     </article>
                   ))
                 ) : (
@@ -3654,8 +4041,8 @@ const AdminControlCenter = () => {
                       <p className="font-black text-white">{row.period}</p>
                       <span className="text-xs font-black text-[#ffc400]">{row.total_orders} orders</span>
                     </div>
-                    <p className="mt-2 text-sm text-[#aab5c6]">Revenue ₹{Number(row.total_amount || 0).toFixed(2)}</p>
-                    <p className="mt-1 text-sm text-[#aab5c6]">Commission ₹{Number(row.commission_amount || 0).toFixed(2)}</p>
+                    <p className="mt-2 text-sm text-[#aab5c6]">Revenue Rs {Number(row.total_amount || 0).toFixed(2)}</p>
+                    <p className="mt-1 text-sm text-[#aab5c6]">Commission Rs {Number(row.commission_amount || 0).toFixed(2)}</p>
                   </article>
                 ))}
               </div>
@@ -3669,8 +4056,8 @@ const AdminControlCenter = () => {
                       <p className="font-black text-white">{row.period}</p>
                       <span className="text-xs font-black text-[#ffc400]">{row.total_orders} orders</span>
                     </div>
-                    <p className="mt-2 text-sm text-[#aab5c6]">Revenue ₹{Number(row.total_amount || 0).toFixed(2)}</p>
-                    <p className="mt-1 text-sm text-[#aab5c6]">Commission ₹{Number(row.commission_amount || 0).toFixed(2)}</p>
+                    <p className="mt-2 text-sm text-[#aab5c6]">Revenue Rs {Number(row.total_amount || 0).toFixed(2)}</p>
+                    <p className="mt-1 text-sm text-[#aab5c6]">Commission Rs {Number(row.commission_amount || 0).toFixed(2)}</p>
                   </article>
                 ))}
               </div>

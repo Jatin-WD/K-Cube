@@ -14,6 +14,7 @@ import engagementRoutes from './routes/engagement';
 import eventRoutes from './routes/events';
 import indiaPreSelectionRoutes from './routes/indiaPreSelection';
 import integrationRoutes from './routes/integrations';
+import shopRoutes from './routes/shop';
 import paymentRoutes from './routes/payments';
 import bootstrapDatabase from './db/bootstrap';
 import { API_PREFIX, KCUBE_SERVE_FRONTEND } from './config';
@@ -49,6 +50,7 @@ app.use(`${API_PREFIX}/engagement`, engagementRoutes);
 app.use(`${API_PREFIX}/events`, eventRoutes);
 app.use(`${API_PREFIX}/india-pre-selection`, indiaPreSelectionRoutes);
 app.use(`${API_PREFIX}/integrations`, integrationRoutes);
+app.use(`${API_PREFIX}/shop`, shopRoutes);
 app.use(`${API_PREFIX}/payments`, paymentRoutes);
 
 if (KCUBE_SERVE_FRONTEND !== 'true') {
