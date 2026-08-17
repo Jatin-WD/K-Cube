@@ -4,7 +4,7 @@ import { AuthRequest } from '../middleware/auth';
 import { awardPoints } from '../services/pointsService';
 import { created, fail, ok } from '../lib/apiResponse';
 
-const APPLICATION_POINTS = 130;
+const APPLICATION_POINTS = 200;
 const APPLICATION_SOURCE_SLUG = 'india-pre-selection-application';
 
 const applicationFields = `
