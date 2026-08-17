@@ -842,6 +842,16 @@ const AdminControlCenter = () => {
       ),
     [query, submissions],
   );
+  const prioritizedSubmissions = useMemo(
+    () =>
+      [...filteredSubmissions].sort((left, right) => {
+        const leftPriority = left.source_type === 'india_pre_selection' ? 0 : 1;
+        const rightPriority = right.source_type === 'india_pre_selection' ? 0 : 1;
+        if (leftPriority !== rightPriority) return leftPriority - rightPriority;
+        return new Date(String(right.submitted_at || right.reviewed_at || 0)).getTime() - new Date(String(left.submitted_at || left.reviewed_at || 0)).getTime();
+      }),
+    [filteredSubmissions],
+  );
   const filteredClaims = useMemo(
     () => claims.filter((entry) => matchesQuery(query, [entry.order_id, entry.status, entry.full_name, entry.email, entry.order_total])),
     [claims, query],
@@ -1002,7 +1012,8 @@ const AdminControlCenter = () => {
       setSelectedIndiaApplicationId(indiaRows[0].id);
     }
     if (!selectedSubmissionId && submissionRows.length) {
-      setSelectedSubmissionId(submissionRows[0].id);
+      const prioritySubmission = submissionRows.find((entry) => entry.source_type === 'india_pre_selection') || submissionRows[0];
+      setSelectedSubmissionId(prioritySubmission.id);
     }
     if (!selectedFulfillmentId && fulfillmentRows.length) {
       setSelectedFulfillmentId(fulfillmentRows[0].id);
@@ -2940,18 +2951,29 @@ const AdminControlCenter = () => {
       pending: filteredSubmissions.filter((entry) => ['submitted', 'pending', 'reviewing'].includes(entry.status)).length,
       reviewed: filteredSubmissions.filter((entry) => ['approved', 'selected', 'shortlisted', 'delivered', 'published'].includes(entry.status)).length,
       sources: new Set(filteredSubmissions.map((entry) => entry.source_label)).size,
+      india: filteredSubmissions.filter((entry) => entry.source_type === 'india_pre_selection').length,
+      other: filteredSubmissions.filter((entry) => entry.source_type !== 'india_pre_selection').length,
     };
 
     return (
       <div className="space-y-5">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
           {[
             { label: 'All submissions', value: counts.total },
             { label: 'Pending', value: counts.pending },
             { label: 'Reviewed', value: counts.reviewed },
             { label: 'Sources', value: counts.sources },
+            { label: 'India Pre-Selection', value: counts.india },
+            { label: 'Other sources', value: counts.other },
           ].map((item) => (
-            <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
+            <article
+              key={item.label}
+              className={`rounded-2xl border p-5 ${
+                item.label === 'India Pre-Selection'
+                  ? 'border-[#ffc400]/35 bg-gradient-to-br from-[#ffc400]/12 via-black/20 to-black/25 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]'
+                  : 'border-white/10 bg-black/20'
+              }`}
+            >
               <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
               <p className="mt-2 text-3xl font-black text-white">{item.value}</p>
             </article>
@@ -2965,23 +2987,45 @@ const AdminControlCenter = () => {
             actions={<span className="text-sm font-bold text-[#ffc400]">{filteredSubmissions.length} records</span>}
           >
             <div className="space-y-3">
-              {filteredSubmissions.map((entry) => {
+              <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#ffc400]/20 bg-[#ffc400]/5 px-4 py-3">
+                <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400]">
+                  Priority source
+                </span>
+                <p className="text-sm text-[#d4dbe7]">
+                  India Pre-Selection submissions are highlighted first so the festival workflow is easy to scan.
+                </p>
+              </div>
+              {prioritizedSubmissions.map((entry) => {
                 const active = selectedSubmissionId === entry.id;
+                const isIndia = entry.source_type === 'india_pre_selection';
                 return (
                   <button
                     key={`${entry.source_type}-${entry.id}`}
                     type="button"
                     onClick={() => setSelectedSubmissionId(entry.id)}
                     className={`w-full rounded-2xl border p-4 text-left transition ${
-                      active ? 'border-[#ffc400] bg-black/40 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]' : 'border-white/10 bg-black/20 hover:border-white/20'
+                      active
+                        ? isIndia
+                          ? 'border-[#ffc400] bg-gradient-to-br from-[#ffc400]/15 via-black/40 to-black/35 shadow-[0_0_0_1px_rgba(255,196,0,0.18)]'
+                          : 'border-[#ffc400] bg-black/40 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]'
+                        : isIndia
+                          ? 'border-[#ffc400]/35 bg-gradient-to-br from-[#ffc400]/10 via-black/25 to-black/20 hover:border-[#ffc400]/60'
+                          : 'border-white/10 bg-black/20 hover:border-white/20'
                     }`}
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{entry.source_label}</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{entry.source_label}</p>
+                          {isIndia ? (
+                            <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-[#ffc400]">
+                              Highlighted
+                            </span>
+                          ) : null}
+                        </div>
                         <h3 className="mt-2 truncate text-lg font-black text-white">{entry.title}</h3>
                       </div>
-                      <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                      <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${isIndia ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]'}`}>
                         {entry.status}
                       </span>
                     </div>
@@ -3006,14 +3050,21 @@ const AdminControlCenter = () => {
           <SectionShell title="Submission detail" description="Review the full record, payload and audit trail in one clean panel.">
             {selectedSubmission ? (
               <div className="space-y-4 xl:sticky xl:top-6 self-start">
-                <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
+                <div className={`rounded-3xl border p-5 ${selectedSubmission.source_type === 'india_pre_selection' ? 'border-[#ffc400]/40 bg-gradient-to-br from-[#ffc400]/15 via-black/30 to-black/20' : 'border-white/10 bg-black/20'}`}>
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{selectedSubmission.source_label}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{selectedSubmission.source_label}</p>
+                        {selectedSubmission.source_type === 'india_pre_selection' ? (
+                          <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-[#ffc400]">
+                            Priority review
+                          </span>
+                        ) : null}
+                      </div>
                       <h3 className="mt-2 text-3xl font-black text-white">{selectedSubmission.title}</h3>
                       <p className="mt-2 text-sm text-[#aab5c6]">{selectedSubmission.submission_kind || 'General submission'}</p>
                     </div>
-                    <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
+                    <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${selectedSubmission.source_type === 'india_pre_selection' ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]'}`}>
                       {selectedSubmission.status}
                     </span>
                   </div>
@@ -3024,6 +3075,7 @@ const AdminControlCenter = () => {
                     { label: 'Applicant', value: selectedSubmission.applicant_name || 'Not provided' },
                     { label: 'Email', value: selectedSubmission.applicant_email || 'Not provided' },
                     { label: 'Phone', value: selectedSubmission.applicant_phone || 'Not provided' },
+                    { label: 'Source', value: selectedSubmission.source_label || 'Unknown source' },
                     { label: 'Points', value: String(selectedSubmission.points_reward || 0) },
                   ].map((item) => (
                     <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">

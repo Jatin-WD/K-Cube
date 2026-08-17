@@ -438,9 +438,9 @@ export const listAdminSubmissions = async (_req: Request, res: Response) => {
       kp.points_reward,
       kp.created_at AS submitted_at,
       kp.reviewed_at,
-      u.full_name,
-      u.email,
-      u.phone,
+      u.full_name AS applicant_name,
+      u.email AS applicant_email,
+      u.phone AS applicant_phone,
       JSON_OBJECT(
         'order_total', kp.order_total,
         'coupon_code', kp.coupon_code,
