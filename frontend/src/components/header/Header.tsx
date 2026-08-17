@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, BriefcaseBusiness, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
+import { BriefcaseBusiness, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import { copy, navItems } from '@/lib/kcubeContent';
 import { useAppStore, type Language } from '@/store/useAppStore';
@@ -176,10 +176,6 @@ const Header = () => {
               <Plane className="h-4 w-4" />
               {t.koreaTrip}
             </Link>
-            <button aria-label="Notifications" className="relative hidden h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[#232f3e] transition hover:bg-[#37475a] sm:flex xl:h-10 xl:w-10">
-              <Bell className="h-5 w-5" />
-              <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-[#ff4d4d]" />
-            </button>
             {user ? (
               <div className="group/account relative">
                 <button className="flex shrink-0 items-center gap-2 text-xs leading-tight xl:text-sm">
