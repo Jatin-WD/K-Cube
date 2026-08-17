@@ -25,6 +25,9 @@ type ItaewonSubServicePageProps = {
     email?: string;
     emailHref?: string;
     emailLabel?: string;
+    phone?: string;
+    phoneHref?: string;
+    phoneLabel?: string;
     extra?: string;
   };
   children?: ReactNode;
@@ -143,6 +146,18 @@ const ItaewonSubServicePage = ({
                     {contact.emailLabel || contact.email}
                     <ArrowRight className="h-4 w-4" />
                   </a>
+                ) : null}
+                {contact?.phone ? (
+                  <div className="mt-3 rounded-[18px] border border-[#d5d9d9] bg-white px-4 py-3">
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#565959]">Phone</p>
+                    {contact.phoneHref ? (
+                      <a href={contact.phoneHref} className="mt-1 block text-base font-black text-[#111827] transition hover:text-[#b12704]">
+                        {contact.phoneLabel || contact.phone}
+                      </a>
+                    ) : (
+                      <p className="mt-1 text-base font-black text-[#111827]">{contact.phoneLabel || contact.phone}</p>
+                    )}
+                  </div>
                 ) : null}
                 {contact?.extra ? <p className="mt-2 text-sm leading-7 text-[#565959]">{contact.extra}</p> : null}
               </div>

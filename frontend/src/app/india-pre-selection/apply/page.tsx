@@ -39,8 +39,14 @@ export default function ApplyPage() {
       secondaryLinks={secondaryLinks}
       contact={{
         title: 'Internal review',
-        body: 'Applications are stored inside K-CUBE and reviewed by the team from the backend. No email submission is needed.',
-        extra: 'If the team needs follow-up details, they can contact you from the saved record.',
+        body: 'Applications are stored inside K-CUBE and reviewed by the team from the backend. For official contact, use the dedicated mailbox and phone below.',
+        email: 'kcubeadm@gmail.com',
+        emailHref: 'mailto:kcubeadm@gmail.com',
+        emailLabel: 'kcubeadm@gmail.com',
+        phone: '9810097323',
+        phoneHref: 'tel:+919810097323',
+        phoneLabel: '9810097323',
+        extra: 'If the team needs follow-up details, they can also contact you from the saved record.',
       }}
     >
       <IndiaPreSelectionApplicationForm />

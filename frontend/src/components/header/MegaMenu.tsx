@@ -208,7 +208,7 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
             </div>
           </section>
 
-          <aside className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-[#131921] bg-[#131921] p-4 text-white">
+          <aside className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-[#131921] bg-[#131921] p-4 pb-6 text-white">
             <div className="flex items-center justify-between gap-3">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f3a847]">Service preview</p>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-black text-[#d5d9d9]">
@@ -217,7 +217,7 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
               </span>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+            <div className="min-h-0 flex-1 overflow-y-auto pr-1 pb-2">
               <p className="mt-4 text-sm font-bold uppercase tracking-[0.16em] text-[#f3a847]">{activeCategory?.label[language]}</p>
               <h3 className="mt-2 text-[clamp(1.7rem,2vw,2.35rem)] font-black leading-tight text-white">{activeCategoryService?.label[language]}</h3>
               {activeCategoryService?.featured ? (
@@ -421,7 +421,7 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
                   target="_blank"
                   rel="noreferrer"
                   onClick={onNavigate}
-                  className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
+                  className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
                 >
                   Open external service
                   <ExternalLink className="h-4 w-4" />
@@ -430,7 +430,7 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
                 <Link
                   href={openHref}
                   onClick={onNavigate}
-                  className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
+                className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
                 >
                   Open service
                   <ChevronRight className="h-4 w-4" />

@@ -270,6 +270,42 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
         </div>
       </section>
 
+      {pageKey === 'about' ? (
+        <section id="contact" className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
+          <div className="mx-auto max-w-[1760px] rounded-sm border border-[#d5d9d9] bg-[#111827] p-4 text-white shadow-sm sm:p-5">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f3a847]">Contact</p>
+                <h2 className="mt-2 text-xl font-black sm:text-2xl">Contact K-CUBE</h2>
+              </div>
+              <p className="max-w-2xl text-sm leading-6 text-[#d5d9d9]">
+                For partnership, support, festival coordination, or study abroad inquiries, reach the K-CUBE team directly.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <article className="rounded-sm border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#f3a847]">Email</p>
+                <a href="mailto:kcubeadm@gmail.com" className="mt-2 block text-lg font-black text-white transition hover:text-[#ffd814] sm:text-xl">
+                  kcubeadm@gmail.com
+                </a>
+                <p className="mt-2 text-sm leading-6 text-[#d5d9d9]">
+                  Primary contact mailbox for admin coordination and business inquiries.
+                </p>
+              </article>
+              <article className="rounded-sm border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#f3a847]">Phone</p>
+                <a href="tel:+919810097323" className="mt-2 block text-lg font-black text-white transition hover:text-[#ffd814] sm:text-xl">
+                  9810097323
+                </a>
+                <p className="mt-2 text-sm leading-6 text-[#d5d9d9]">
+                  Mr. Tae Hwan Lim
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       {showActions ? (
         <section id="point-actions" className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10">
           <div className="mx-auto max-w-[1760px] rounded-sm border border-[#d5d9d9] bg-white p-4 shadow-sm sm:p-5">
