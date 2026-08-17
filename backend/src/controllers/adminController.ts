@@ -649,9 +649,12 @@ export const listAnnouncements = async (_req: Request, res: Response) => {
 
 export const listContentUploads = async (_req: Request, res: Response) => {
   const [rows] = await pool.query(`
-    SELECT uploads.*, users.full_name, users.email
+    SELECT
+      uploads.*,
+      COALESCE(users.full_name, 'Unknown user') AS full_name,
+      COALESCE(users.email, 'unknown@example.com') AS email
     FROM content_uploads uploads
-    JOIN users ON users.id = uploads.user_id
+    LEFT JOIN users ON users.id = uploads.user_id
     ORDER BY uploads.created_at DESC
     LIMIT 300
   `);

@@ -163,8 +163,8 @@ type UploadRow = {
   status: string;
   points_reward: number;
   review_note: string | null;
-  full_name: string;
-  email: string;
+  full_name: string | null;
+  email: string | null;
   created_at: string;
 };
 
@@ -2626,7 +2626,7 @@ const AdminControlCenter = () => {
                 <span className="text-xs font-black text-[#ffc400]">{entry.status}</span>
               </div>
               <p className="mt-2 text-sm text-[#aab5c6]">
-                {entry.category} · {entry.full_name} · {entry.email}
+                {entry.category} · {entry.full_name || 'Unknown user'} · {entry.email || 'No email'}
               </p>
             </button>
           ))}
@@ -2639,7 +2639,7 @@ const AdminControlCenter = () => {
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <p className="text-xs uppercase tracking-[0.22em] text-[#ffc400]">{selectedUpload.category}</p>
               <h3 className="mt-2 text-xl font-black">{selectedUpload.title}</h3>
-              <p className="mt-2 text-sm text-[#aab5c6]">{selectedUpload.full_name}</p>
+              <p className="mt-2 text-sm text-[#aab5c6]">{selectedUpload.full_name || 'Unknown user'}</p>
             </div>
             <Field label="Points Reward">
               <input className={inputClass} type="number" value={uploadReview.points_reward} onChange={(event) => setUploadReview((state) => ({ ...state, points_reward: Number(event.target.value) }))} />
