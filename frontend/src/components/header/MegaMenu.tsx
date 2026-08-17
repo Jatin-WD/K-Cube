@@ -228,18 +228,18 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
               <p className="mt-3 text-sm leading-6 text-[#d5d9d9]">{activeCategoryService?.description[language]}</p>
 
               {activeCategoryChild ? (
-                <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#9fb2bd]">Inside this service</p>
+                <div className="mt-4 rounded-2xl border border-[#f3a847]/20 bg-[linear-gradient(180deg,rgba(243,168,71,0.12),rgba(17,24,39,0.9))] p-4 shadow-[0_18px_35px_rgba(0,0,0,0.18)]">
+                  <p className="text-[11px] font-black uppercase tracking-[0.26em] text-[#ffd814]">Inside this service</p>
                   <Link href={activeCategoryChild.href} onClick={onNavigate} className="mt-2 block">
-                    <span className="block text-sm font-black text-white">{activeCategoryChild.label[language]}</span>
-                    <span className="mt-1 block text-xs leading-5 text-[#d5d9d9]">{activeCategoryChild.description[language]}</span>
+                    <span className="block text-base font-black text-white">{activeCategoryChild.label[language]}</span>
+                    <span className="mt-1 block text-sm leading-6 text-[#d5d9d9]">{activeCategoryChild.description[language]}</span>
                   </Link>
                 </div>
               ) : null}
 
               <div className="mt-4 flex flex-wrap gap-2">
-                {activeCategoryService?.points ? <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">+{activeCategoryService.points} points</span> : null}
-                <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-[#d5d9d9]">
+                {activeCategoryService?.points ? <span className="rounded-full border border-[#ffd814]/25 bg-[#ffd814] px-4 py-2 text-sm font-black tracking-[0.02em] text-[#111827] shadow-[0_10px_18px_rgba(255,216,20,0.22)]">+{activeCategoryService.points} points</span> : null}
+                <span className="rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-sm font-black text-[#eef2f7]">
                   {activeCategoryService?.external ? 'External service' : 'Internal service'}
                 </span>
               </div>
@@ -398,18 +398,18 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
             <p className="mt-3 text-sm leading-6 text-[#d5d9d9]">{activeLink?.description[language]}</p>
 
             {activeChild ? (
-              <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#9fb2bd]">Inside this service</p>
+              <div className="mt-4 rounded-2xl border border-[#f3a847]/20 bg-[linear-gradient(180deg,rgba(243,168,71,0.12),rgba(17,24,39,0.9))] p-4 shadow-[0_18px_35px_rgba(0,0,0,0.18)]">
+                <p className="text-[11px] font-black uppercase tracking-[0.26em] text-[#ffd814]">Inside this service</p>
                 <Link href={activeChild.href} onClick={onNavigate} className="mt-2 block">
-                  <span className="block text-sm font-black text-white">{activeChild.label[language]}</span>
-                  <span className="mt-1 block text-xs leading-5 text-[#d5d9d9]">{activeChild.description[language]}</span>
+                  <span className="block text-base font-black text-white">{activeChild.label[language]}</span>
+                  <span className="mt-1 block text-sm leading-6 text-[#d5d9d9]">{activeChild.description[language]}</span>
                 </Link>
               </div>
             ) : null}
 
             <div className="mt-4 flex flex-wrap gap-2">
-              {activeLink?.points ? <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">+{activeLink.points} points</span> : null}
-              <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-[#d5d9d9]">
+              {activeLink?.points ? <span className="rounded-full border border-[#ffd814]/25 bg-[#ffd814] px-4 py-2 text-sm font-black tracking-[0.02em] text-[#111827] shadow-[0_10px_18px_rgba(255,216,20,0.22)]">+{activeLink.points} points</span> : null}
+              <span className="rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-sm font-black text-[#eef2f7]">
                 {activeLink?.external ? 'External service' : 'Internal service'}
               </span>
             </div>
