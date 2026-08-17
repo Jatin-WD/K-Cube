@@ -203,7 +203,7 @@ const IndiaPreSelectionApplicationForm = () => {
           <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Apply inside K-CUBE</h2>
         </div>
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">+130 points</span>
+          <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">+200 points</span>
           <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">Saved to your account</span>
           <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">{status || 'Not submitted yet'}</span>
         </div>

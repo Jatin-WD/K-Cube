@@ -762,7 +762,7 @@ const itaewonSubmissionLink: MenuLink = {
     'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
     'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.',
   ),
-  points: 130,
+  points: 200,
   featured: true,
   children: [
     {
@@ -936,22 +936,6 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: txt('Korean Learning', '한국어 학습', 'Korean Learning'),
-    href: '/learning',
-    dropdown: [
-      {
-        title: txt('Learning Pages', '학습 페이지', 'Learning Pages'),
-        links: detailItems.filter((item) => item.category === 'learning').map((item) => ({
-          label: item.title,
-          href: detailHref(item.category, item.slug),
-          description: item.summary,
-          points: item.points,
-          children: buildSectionPreviewLinks(item),
-        })),
-      },
-    ],
-  },
-  {
     label: txt('K-Food', 'K-푸드', 'K-Food'),
     href: '/kfood',
     dropdown: [
@@ -985,6 +969,22 @@ export const navItems: NavItem[] = [
           })),
           { label: txt('Trip to Korea', '한국 여행', 'Trip to Korea'), href: '/trip-to-korea', description: txt('Grand reward page for highest point holders.', '상위 포인트 회원을 위한 대표 리워드 페이지.', 'Highest point holders ke liye grand reward page.') },
         ],
+      },
+    ],
+  },
+  {
+    label: txt('Korean Learning', '한국어 학습', 'Korean Learning'),
+    href: '/learning',
+    dropdown: [
+      {
+        title: txt('Learning Pages', '학습 페이지', 'Learning Pages'),
+        links: detailItems.filter((item) => item.category === 'learning').map((item) => ({
+          label: item.title,
+          href: detailHref(item.category, item.slug),
+          description: item.summary,
+          points: item.points,
+          children: buildSectionPreviewLinks(item),
+        })),
       },
     ],
   },
