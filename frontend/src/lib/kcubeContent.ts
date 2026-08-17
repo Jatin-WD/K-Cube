@@ -1,7 +1,7 @@
 ﻿import type { Language } from '@/store/useAppStore';
 import { shopMenuLinks } from '@/lib/shopCatalog';
 
-export type PageKey = 'home' | 'activities' | 'learning' | 'kfood' | 'rewards' | 'events' | 'about' | 'apply' | 'trip';
+export type PageKey = 'home' | 'activities' | 'learning' | 'kfood' | 'rewards' | 'events' | 'about' | 'apply' | 'trip' | 'studyAbroad';
 export type DetailCategory = 'activities' | 'learning' | 'kfood' | 'rewards' | 'events';
 
 export type LocalText = Record<Language, string>;
@@ -754,7 +754,48 @@ export interface AllMenuCategory {
 
 const buildShopServiceLinks = (): MenuLink[] => shopMenuLinks.slice(0, 5);
 
+const itaewonSubmissionLink: MenuLink = {
+  label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
+  href: '/india-pre-selection',
+  description: txt(
+    'Official India pre-selection and festival submission hub for the ITAEWON World Music Spirit Festival 2026.',
+    'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
+    'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.',
+  ),
+  points: 130,
+  children: [
+    {
+      label: txt('Information', 'Information', 'Information'),
+      href: '/india-pre-selection/information',
+      description: txt(
+        'Festival background, dates, and participation overview.',
+        '축제 배경, 일정, 참여 개요입니다.',
+        'Festival background, dates, aur participation overview.',
+      ),
+    },
+    {
+      label: txt('Announcement', 'Announcement', 'Announcement'),
+      href: '/india-pre-selection/announcement',
+      description: txt(
+        'Official notices, updates, and important reminders.',
+        '공식 공지, 업데이트, 중요한 안내입니다.',
+        'Official notices, updates, aur important reminders.',
+      ),
+    },
+    {
+      label: txt('Apply', 'Apply', 'Apply'),
+      href: '/india-pre-selection/apply',
+      description: txt(
+        'Open the application page and send your submission.',
+        '신청 페이지를 열고 지원서를 제출하세요.',
+        'Application page kholkar apna submission bhejein.',
+      ),
+    },
+  ],
+};
+
 const buildEventsServiceLinks = (): MenuLink[] => [
+  itaewonSubmissionLink,
   ...detailItems
     .filter((item) => item.category === 'events')
     .map((item) => ({
@@ -765,45 +806,6 @@ const buildEventsServiceLinks = (): MenuLink[] => [
       children: buildSectionPreviewLinks(item),
       featured: item.slug === 'culture-workshops',
     })),
-  {
-    label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
-    href: '/india-pre-selection',
-    description: txt(
-      'Official India pre-selection and festival submission hub for the ITAEWON World Music Spirit Festival 2026.',
-      'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
-      'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.',
-    ),
-    points: 130,
-    children: [
-      {
-        label: txt('Information', 'Information', 'Information'),
-        href: '/india-pre-selection/information',
-        description: txt(
-          'Festival background, dates, and participation overview.',
-          '축제 배경, 일정, 참여 개요입니다.',
-          'Festival background, dates, aur participation overview.',
-        ),
-      },
-      {
-        label: txt('Announcement', 'Announcement', 'Announcement'),
-        href: '/india-pre-selection/announcement',
-        description: txt(
-          'Official notices, updates, and important reminders.',
-          '공식 공지, 업데이트, 중요한 안내입니다.',
-          'Official notices, updates, aur important reminders.',
-        ),
-      },
-      {
-        label: txt('Apply', 'Apply', 'Apply'),
-        href: '/india-pre-selection/apply',
-        description: txt(
-          'Open the application page and send your submission.',
-          '신청 페이지를 열고 지원서를 제출하세요.',
-          'Application page kholkar apna submission bhejein.',
-        ),
-      },
-    ],
-  },
 ];
 
 export const allMenuCategories: AllMenuCategory[] = [
@@ -862,26 +864,6 @@ export const allMenuCategories: AllMenuCategory[] = [
     description: txt('Buy Korean products directly on K-CUBE with account rewards.', 'K-CUBE에서 한국 상품을 직접 구매하고 계정 리워드를 받으세요.', 'K-CUBE par Korean products directly buy karo aur account rewards pao.'),
     services: buildShopServiceLinks(),
   },
-  {
-    label: txt('Rewards', '리워드', 'Rewards'),
-    href: '/rewards',
-    description: txt('Points wallet, redemption and Korea trip progress.', '포인트 지갑, 교환, 한국 여행 진행.', 'Points wallet, redemption aur Korea trip progress.'),
-    services: [
-      ...detailItems
-        .filter((item) => item.category === 'rewards')
-        .map((item) => ({
-          label: item.title,
-          href: detailHref(item.category, item.slug),
-          description: item.summary,
-          children: buildSectionPreviewLinks(item),
-        })),
-      {
-        label: txt('Trip to Korea', '한국 여행', 'Trip to Korea'),
-        href: '/trip-to-korea',
-        description: txt('Grand reward page for highest point holders.', '상위 포인트 회원을 위한 대표 리워드 페이지.', 'Highest point holders ke liye grand reward page.'),
-      },
-    ],
-  },
 ];
 
 export const navItems: NavItem[] = [
@@ -907,52 +889,16 @@ export const navItems: NavItem[] = [
       {
         title: txt('Event Pages', '이벤트 페이지', 'Event Pages'),
         links: [
-          ...detailItems.filter((item) => item.category === 'events').map((item) => ({
-            label: item.title,
-            href: detailHref(item.category, item.slug),
-            description: item.summary,
-            points: item.points,
-            children: buildSectionPreviewLinks(item),
-          })),
-          {
-            label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
-            href: '/india-pre-selection',
-            description: txt(
-              'Official India pre-selection and festival submission hub for the ITAEWON World Music Spirit Festival 2026.',
-              'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
-              'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.'
-            ),
-            points: 130,
-            children: [
-              {
-                label: txt('Information', 'Information', 'Information'),
-                href: '/india-pre-selection/information',
-                description: txt(
-                  'Festival background, dates, and participation overview.',
-                  '축제 배경, 일정, 참여 개요입니다.',
-                  'Festival background, dates, aur participation overview.'
-                ),
-              },
-              {
-                label: txt('Announcement', 'Announcement', 'Announcement'),
-                href: '/india-pre-selection/announcement',
-                description: txt(
-                  'Official notices, updates, and important reminders.',
-                  '공식 공지, 업데이트, 중요한 안내입니다.',
-                  'Official notices, updates, aur important reminders.'
-                ),
-              },
-              {
-                label: txt('Apply', 'Apply', 'Apply'),
-                href: '/india-pre-selection/apply',
-                description: txt(
-                  'Open the application page and send your submission.',
-                  '신청 페이지를 열고 지원서를 제출하세요.',
-                  'Application page kholkar apna submission bhejein.'
-                ),
-              },
-            ],
-          },
+          itaewonSubmissionLink,
+          ...detailItems
+            .filter((item) => item.category === 'events')
+            .map((item) => ({
+              label: item.title,
+              href: detailHref(item.category, item.slug),
+              description: item.summary,
+              points: item.points,
+              children: buildSectionPreviewLinks(item),
+            })),
         ],
       },
       {
@@ -1123,6 +1069,12 @@ export const pages: Record<PageKey, PageContent> = {
     primaryHref: '/events/culture-workshops',
     cards: [
       {
+        title: itaewonSubmissionLink.label,
+        description: itaewonSubmissionLink.description,
+        href: itaewonSubmissionLink.href,
+        cta: txt('Open dedicated page', '전용 페이지 열기', 'Dedicated page kholo'),
+      },
+      {
         title: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
         description: txt('Dedicated submission page for the ITAEWON World Music Spirit Festival 2026 with exact timeline and application details.', 'ITAEWON World Music Spirit Festival 2026을 위한 전용 신청 페이지입니다.', 'ITAEWON World Music Spirit Festival 2026 ke liye dedicated submission page.'),
         href: '/india-pre-selection',
@@ -1173,6 +1125,19 @@ export const pages: Record<PageKey, PageContent> = {
       { title: txt('Qualification', '자격', 'Qualification'), description: txt('Only verified points count toward trip eligibility.', '검증된 포인트만 여행 자격에 반영됩니다.', 'Sirf verified points trip eligibility mein count honge.'), href: '/rewards/points-system', cta: txt('See rules', '규칙 보기', 'Rules dekhein') },
       { title: txt('Monthly race', '월간 레이스', 'Monthly race'), description: txt('Admins can review users, points, fraud flags and final winners.', '관리자는 사용자, 포인트, 부정 플래그, 최종 우승자를 검토합니다.', 'Admins users, points, fraud flags aur winners review karte hain.'), href: '/admin', cta: txt('Admin CMS', '관리자 CMS', 'Admin CMS') },
       { title: txt('Culture journey', '문화 여정', 'Culture journey'), description: txt('The reward celebrates Korean culture, food, language and community.', '이 리워드는 한국 문화, 음식, 언어, 커뮤니티를 기념합니다.', 'Reward Korean culture, food, language aur community celebrate karta hai.'), href: '/activities', cta: txt('Explore', '둘러보기', 'Explore') },
+    ],
+  },
+  studyAbroad: {
+    badge: txt('Study Abroad', '유학', 'Study Abroad'),
+    title: txt('Study abroad guidance for Korean language, education, and cultural preparation', '한국어, 교육, 문화 준비를 위한 유학 안내', 'Korean language, education aur cultural prep ke liye study abroad guidance'),
+    subtitle: txt('A highlighted admin-facing landing page for program inquiries, visa guidance, intake tracking, and partner college workflows.', '프로그램 문의, 비자 안내, 모집 추적, 파트너 대학 워크플로우를 위한 강조된 랜딩 페이지입니다.', 'Program inquiries, visa guidance, intake tracking aur partner college workflows ke liye highlighted landing page.'),
+    description: txt('Use this page to surface study abroad opportunities, partner institutions, admissions guidance, document checklists, and support workflows.', '이 페이지에서 유학 기회, 파트너 기관, 입학 안내, 서류 체크리스트, 지원 워크플로우를 보여줄 수 있습니다.', 'Is page par study abroad opportunities, partner institutions, admissions guidance aur support workflows dikhaye ja sakte hain.'),
+    primaryCta: txt('Open inquiry form', '문의 양식 열기', 'Inquiry form kholo'),
+    primaryHref: '/contact',
+    cards: [
+      { title: txt('Partner colleges', '파트너 대학', 'Partner colleges'), description: txt('Track institutions, programs, and intake cycles.', '기관, 프로그램, 모집 주기를 추적합니다.', 'Institutions, programs aur intake cycles track karein.'), href: '/about#contact', cta: txt('See partners', '파트너 보기', 'Partners dekhein') },
+      { title: txt('Visa support', '비자 지원', 'Visa support'), description: txt('Document checklists, deadlines, and support notes.', '서류 체크리스트, 마감일, 지원 메모.', 'Document checklists, deadlines aur support notes.'), href: '/about#contact', cta: txt('View support', '지원 보기', 'Support dekhein') },
+      { title: txt('Intake tracking', '모집 추적', 'Intake tracking'), description: txt('Keep inquiries, applicants, and follow-ups organized.', '문의, 지원자, 후속 조치를 정리합니다.', 'Inquiries, applicants aur follow-ups organize karein.'), href: '/admin', cta: txt('Open admin', '관리자 열기', 'Admin kholo') },
     ],
   },
 };

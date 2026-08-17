@@ -40,6 +40,11 @@ const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string
     strip: 'Redeem points and climb toward the Korea trip leaderboard',
     accent: 'Rewards Hub',
   },
+  studyAbroad: {
+    hero: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1800&q=80',
+    strip: 'Study abroad guidance, partner colleges, visa support and intake tracking',
+    accent: 'Study Abroad',
+  },
   events: {
     hero: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1800&q=80',
     strip: 'Workshops, RSVP campaigns and Korean community moments',

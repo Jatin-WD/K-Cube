@@ -244,6 +244,22 @@ const Header = () => {
               <Plane className="h-4 w-4" />
               {t.koreaTrip}
             </Link>
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/study-abroad"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center justify-center rounded-sm border border-[#f3a847]/70 bg-[#f3a847]/12 px-3 py-2 text-sm font-black text-[#f3a847]"
+              >
+                Study Abroad
+              </Link>
+              <Link
+                href="/india-pre-selection"
+                onClick={() => setMobileMenuOpen(false)}
+                className="inline-flex items-center justify-center rounded-sm border border-[#f3a847]/70 bg-[#f3a847]/12 px-3 py-2 text-sm font-black text-[#f3a847]"
+              >
+                India Pre-Selection
+              </Link>
+            </div>
             <div className="grid gap-1 rounded-sm border border-white/10 bg-[#131921] p-2">
               {navItems.map((item) => (
                 <div key={item.label.en} className="border-b border-white/10 last:border-b-0">
@@ -365,6 +381,13 @@ const Header = () => {
               );
             })}
           </div>
+          <Link
+            href="/study-abroad"
+            onClick={closeAllMenus}
+            className="hidden shrink-0 items-center gap-2 rounded-sm border border-[#f3a847]/60 bg-[#f3a847]/12 px-3 py-2 text-xs font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:inline-flex xl:px-4 xl:text-sm"
+          >
+            Study Abroad
+          </Link>
           <Link
             href="/india-pre-selection"
             onClick={closeAllMenus}
