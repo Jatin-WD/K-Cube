@@ -315,142 +315,165 @@ export const upsertKFoodFulfillment = async (req: Request, res: Response) => {
 };
 
 export const listAdminSubmissions = async (_req: Request, res: Response) => {
-  const [uploads] = await pool.query(`
-    SELECT
-      uploads.id,
-      'content_upload' AS source_type,
-      'Content Upload' AS source_label,
-      uploads.category AS submission_kind,
-      uploads.title,
-      uploads.description,
-      uploads.status,
-      uploads.review_note,
-      uploads.points_reward,
-      uploads.created_at AS submitted_at,
-      uploads.reviewed_at,
-      users.full_name AS applicant_name,
-      users.email AS applicant_email,
-      users.phone AS applicant_phone,
-      JSON_OBJECT('video_url', uploads.video_url, 'thumbnail_url', uploads.thumbnail_url) AS payload
-    FROM content_uploads uploads
-    LEFT JOIN users ON users.id = uploads.user_id
-    ORDER BY uploads.created_at DESC
-    LIMIT 150
-  `);
+  const safeQuery = async <T,>(label: string, sql: string, params: unknown[] = []) => {
+    try {
+      const [rows] = await pool.query(sql, params);
+      return rows as T[];
+    } catch (error) {
+      console.error(`Failed to load admin submissions source: ${label}`, error);
+      return [] as T[];
+    }
+  };
 
-  const [india] = await pool.query(`
-    SELECT
-      a.id,
-      'india_pre_selection' AS source_type,
-      'India Pre-Selection' AS source_label,
-      a.performance_category AS submission_kind,
-      a.full_name AS title,
-      a.biography AS description,
-      a.status,
-      NULL AS review_note,
-      a.points_awarded,
-      a.submitted_at,
-      a.updated_at AS reviewed_at,
-      a.full_name AS applicant_name,
-      a.email AS applicant_email,
-      a.phone AS applicant_phone,
-      JSON_OBJECT(
-        'nationality', a.nationality,
-        'current_city', a.current_city,
-        'date_of_birth', a.date_of_birth,
-        'video_link', a.video_link,
-        'message', a.message
-      ) AS payload
-    FROM india_pre_selection_applications a
-    ORDER BY a.updated_at DESC, a.submitted_at DESC
-    LIMIT 150
-  `);
-
-  const [events] = await pool.query(`
-    SELECT
-      rsvp.id,
-      'event_rsvp' AS source_type,
-      'Event RSVP' AS source_label,
-      e.slug AS submission_kind,
-      e.title,
-      CONCAT('RSVP status: ', rsvp.status) AS description,
-      rsvp.status,
-      NULL AS review_note,
-      0 AS points_reward,
-      rsvp.created_at AS submitted_at,
-      rsvp.updated_at AS reviewed_at,
-      u.full_name AS applicant_name,
-      u.email AS applicant_email,
-      u.phone AS applicant_phone,
-      JSON_OBJECT(
-        'event_id', e.id,
-        'event_slug', e.slug,
-        'event_title', e.title,
-        'checked_in_at', rsvp.checked_in_at
-      ) AS payload
-    FROM platform_event_rsvps rsvp
-    LEFT JOIN platform_events e ON e.id = rsvp.event_id
-    LEFT JOIN users u ON u.id = rsvp.user_id
-    ORDER BY rsvp.updated_at DESC, rsvp.created_at DESC
-    LIMIT 150
-  `);
-
-  const [courses] = await pool.query(`
-    SELECT
-      co.id,
-      'learning_course' AS source_type,
-      'Learning Course' AS source_label,
-      co.action AS submission_kind,
-      co.course_title AS title,
-      co.track_slug AS description,
-      co.status,
-      NULL AS review_note,
-      co.points_reward,
-      co.created_at AS submitted_at,
-      co.updated_at AS reviewed_at,
-      u.full_name AS applicant_name,
-      u.email AS applicant_email,
-      u.phone AS applicant_phone,
-      JSON_OBJECT(
-        'course_id', co.course_id,
-        'course_title', co.course_title,
-        'track_slug', co.track_slug,
-        'action', co.action,
-        'price', co.price,
-        'payment_status', co.payment_status
-      ) AS payload
-    FROM learning_course_orders co
-    LEFT JOIN users u ON u.id = co.user_id
-    ORDER BY co.updated_at DESC, co.created_at DESC
-    LIMIT 150
-  `);
-
-  const [claims] = await pool.query(`
-    SELECT
-      kp.id,
-      'kfood_purchase' AS source_type,
-      'K-Food Purchase' AS source_label,
-      kp.order_id AS submission_kind,
-      kp.order_id AS title,
-      CONCAT('Order total: ', kp.order_total) AS description,
-      kp.status,
-      kp.review_note,
-      kp.points_reward,
-      kp.created_at AS submitted_at,
-      kp.reviewed_at,
-      u.full_name AS applicant_name,
-      u.email AS applicant_email,
-      u.phone AS applicant_phone,
-      JSON_OBJECT(
-        'order_total', kp.order_total,
-        'coupon_code', kp.coupon_code,
-        'reviewed_by', kp.reviewed_by
-      ) AS payload
-    FROM kfood_purchases kp
-    LEFT JOIN users u ON u.id = kp.user_id
-    ORDER BY kp.updated_at DESC, kp.created_at DESC
-    LIMIT 150
-  `);
+  const [uploads, india, events, courses, claims] = await Promise.all([
+    safeQuery(
+      'content_upload',
+      `
+        SELECT
+          uploads.id,
+          'content_upload' AS source_type,
+          'Content Upload' AS source_label,
+          uploads.category AS submission_kind,
+          uploads.title,
+          uploads.description,
+          uploads.status,
+          uploads.review_note,
+          uploads.points_reward,
+          uploads.created_at AS submitted_at,
+          uploads.reviewed_at,
+          users.full_name AS applicant_name,
+          users.email AS applicant_email,
+          users.phone AS applicant_phone,
+          JSON_OBJECT('video_url', uploads.video_url, 'thumbnail_url', uploads.thumbnail_url) AS payload
+        FROM content_uploads uploads
+        LEFT JOIN users ON users.id = uploads.user_id
+        ORDER BY uploads.created_at DESC
+        LIMIT 150
+      `,
+    ),
+    safeQuery(
+      'india_pre_selection',
+      `
+        SELECT
+          a.id,
+          'india_pre_selection' AS source_type,
+          'India Pre-Selection' AS source_label,
+          a.performance_category AS submission_kind,
+          a.full_name AS title,
+          a.biography AS description,
+          a.status,
+          NULL AS review_note,
+          a.points_awarded,
+          a.submitted_at,
+          a.updated_at AS reviewed_at,
+          a.full_name AS applicant_name,
+          a.email AS applicant_email,
+          a.phone AS applicant_phone,
+          JSON_OBJECT(
+            'nationality', a.nationality,
+            'current_city', a.current_city,
+            'date_of_birth', a.date_of_birth,
+            'video_link', a.video_link,
+            'message', a.message
+          ) AS payload
+        FROM india_pre_selection_applications a
+        ORDER BY a.updated_at DESC, a.submitted_at DESC
+        LIMIT 150
+      `,
+    ),
+    safeQuery(
+      'event_rsvp',
+      `
+        SELECT
+          rsvp.id,
+          'event_rsvp' AS source_type,
+          'Event RSVP' AS source_label,
+          e.slug AS submission_kind,
+          e.title,
+          CONCAT('RSVP status: ', rsvp.status) AS description,
+          rsvp.status,
+          NULL AS review_note,
+          0 AS points_reward,
+          rsvp.created_at AS submitted_at,
+          rsvp.updated_at AS reviewed_at,
+          u.full_name AS applicant_name,
+          u.email AS applicant_email,
+          u.phone AS applicant_phone,
+          JSON_OBJECT(
+            'event_id', e.id,
+            'event_slug', e.slug,
+            'event_title', e.title,
+            'checked_in_at', rsvp.checked_in_at
+          ) AS payload
+        FROM platform_event_rsvps rsvp
+        LEFT JOIN platform_events e ON e.id = rsvp.event_id
+        LEFT JOIN users u ON u.id = rsvp.user_id
+        ORDER BY rsvp.updated_at DESC, rsvp.created_at DESC
+        LIMIT 150
+      `,
+    ),
+    safeQuery(
+      'learning_course',
+      `
+        SELECT
+          co.id,
+          'learning_course' AS source_type,
+          'Learning Course' AS source_label,
+          co.action AS submission_kind,
+          co.course_title AS title,
+          co.track_slug AS description,
+          co.status,
+          NULL AS review_note,
+          co.points_reward,
+          co.created_at AS submitted_at,
+          co.updated_at AS reviewed_at,
+          u.full_name AS applicant_name,
+          u.email AS applicant_email,
+          u.phone AS applicant_phone,
+          JSON_OBJECT(
+            'course_id', co.course_id,
+            'course_title', co.course_title,
+            'track_slug', co.track_slug,
+            'action', co.action,
+            'price', co.price,
+            'payment_status', co.payment_status
+          ) AS payload
+        FROM learning_course_orders co
+        LEFT JOIN users u ON u.id = co.user_id
+        ORDER BY co.updated_at DESC, co.created_at DESC
+        LIMIT 150
+      `,
+    ),
+    safeQuery(
+      'kfood_purchase',
+      `
+        SELECT
+          kp.id,
+          'kfood_purchase' AS source_type,
+          'K-Food Purchase' AS source_label,
+          kp.order_id AS submission_kind,
+          kp.order_id AS title,
+          CONCAT('Order total: ', kp.order_total) AS description,
+          kp.status,
+          kp.review_note,
+          kp.points_reward,
+          kp.created_at AS submitted_at,
+          kp.reviewed_at,
+          u.full_name AS applicant_name,
+          u.email AS applicant_email,
+          u.phone AS applicant_phone,
+          JSON_OBJECT(
+            'order_total', kp.order_total,
+            'coupon_code', kp.coupon_code,
+            'reviewed_by', kp.reviewed_by
+          ) AS payload
+        FROM kfood_purchases kp
+        LEFT JOIN users u ON u.id = kp.user_id
+        ORDER BY kp.updated_at DESC, kp.created_at DESC
+        LIMIT 150
+      `,
+    ),
+  ]);
 
   const rows = [
     ...(uploads as any[]),
