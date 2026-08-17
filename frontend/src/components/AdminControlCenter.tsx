@@ -3032,7 +3032,7 @@ const AdminControlCenter = () => {
                     <div className="mt-3 grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-2">
                       <p>{entry.applicant_name || 'Anonymous applicant'}</p>
                       <p>{entry.submission_kind || 'General submission'}</p>
-                      <p className="sm:col-span-2">{entry.applicant_email || 'No email'} · {entry.applicant_phone || 'No phone'}</p>
+                      <p className="sm:col-span-2">{entry.applicant_email || 'No email'} | {entry.applicant_phone || 'No phone'}</p>
                       <p className="sm:col-span-2">{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
                     </div>
                   </button>
@@ -3727,29 +3727,171 @@ const AdminControlCenter = () => {
     </div>
   );
 
-  const renderAnalytics = () => (
-    <div className="space-y-5">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {[
-          { label: 'Active users', value: analytics.activeUsers ?? 0 },
-          { label: 'Sessions 24h', value: analytics.sessionsLast24h ?? 0 },
-          { label: 'Active lessons', value: analytics.activeLessons ?? 0 },
-          { label: 'Active rewards', value: analytics.activeRewards ?? 0 },
-        ].map((item) => (
-          <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
-            <p className="text-sm text-[#aab5c6]">{item.label}</p>
-            <p className="mt-2 text-3xl font-black">{item.value}</p>
-          </article>
-        ))}
-      </div>
+  const renderAnalytics = () => {
+    const executiveMetrics = [
+      { label: 'Active users', value: analytics.activeUsers ?? 0, note: 'Accounts active in the current window' },
+      { label: 'Sessions 24h', value: analytics.sessionsLast24h ?? 0, note: 'Recent site and admin activity' },
+      { label: 'Active lessons', value: analytics.activeLessons ?? 0, note: 'Learning surfaces currently published' },
+      { label: 'Active rewards', value: analytics.activeRewards ?? 0, note: 'Reward catalog items available now' },
+    ];
 
-      <SectionShell title="Raw dashboard snapshot" description="This panel can be extended with charts later, but the data source is already live.">
-        <pre className="overflow-x-auto rounded-2xl border border-white/10 bg-black/20 p-4 text-xs leading-6 text-[#d4dbe7]">
-          {JSON.stringify({ dashboardMetrics, analytics }, null, 2)}
-        </pre>
-      </SectionShell>
-    </div>
-  );
+    const moduleHealth = [
+      { label: 'Users', value: dashboardMetrics.totalUsers ?? users.length, detail: 'Identity and access roster' },
+      { label: 'Points', value: dashboardMetrics.totalPoints ?? 0, detail: 'Ledger-backed balance total' },
+      { label: 'XP', value: dashboardMetrics.totalXp ?? 0, detail: 'Progress and engagement score' },
+      { label: 'Published pages', value: pages.filter((page) => page.status === 'published').length, detail: 'Live CMS inventory' },
+      { label: 'Submissions', value: submissions.length, detail: 'Unified inbox rows' },
+      { label: 'India queue', value: indiaApplications.length, detail: 'Highlighted festival applications' },
+      { label: 'K-Food claims', value: claims.length, detail: 'Purchase claims and fulfillment state' },
+      { label: 'Events', value: events.length, detail: 'Scheduled platform events' },
+    ];
+
+    const pulseItems = filteredRecentActions.slice(0, 5);
+
+    return (
+      <div className="space-y-5">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {executiveMetrics.map((item) => (
+            <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+              <p className="mt-2 text-3xl font-black text-white">{item.value}</p>
+              <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{item.note}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.12fr)_minmax(340px,0.88fr)]">
+          <SectionShell
+            title="Live operational snapshot"
+            description="A clean executive read on the major surfaces that drive the admin console."
+            actions={<span className="text-sm font-bold text-[#ffc400]">Live data</span>}
+          >
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {moduleHealth.map((item) => (
+                <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
+                  <p className="mt-2 text-2xl font-black text-white">{item.value}</p>
+                  <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{item.detail}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#98a4b1]">Module focus</p>
+                  <p className="mt-2 text-sm leading-6 text-[#aab5c6]">
+                    Use this area as a quick operational map before jumping into detailed sections.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: 'Submissions', value: submissions.length },
+                    { label: 'India', value: indiaApplications.length },
+                    { label: 'K-Food', value: claims.length },
+                    { label: 'CMS', value: pages.length },
+                  ].map((item) => (
+                    <span
+                      key={item.label}
+                      className="rounded-full border border-[#ffc400]/25 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400]"
+                    >
+                      {item.label} {item.value}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-4 overflow-hidden rounded-2xl border border-white/10">
+                <div className="grid grid-cols-2 border-b border-white/10 bg-white/5 px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] sm:grid-cols-[1.4fr_0.8fr_0.8fr]">
+                  <span>Surface</span>
+                  <span>Count</span>
+                  <span>Status</span>
+                </div>
+                {[
+                  { label: 'Users', count: users.length, status: 'Connected' },
+                  { label: 'Submissions', count: submissions.length, status: submissions.length ? 'Flowing' : 'Idle' },
+                  { label: 'India Pre-Selection', count: indiaApplications.length, status: indiaApplications.length ? 'Priority' : 'Waiting' },
+                  { label: 'K-Food', count: claims.length, status: claims.length ? 'Active' : 'Waiting' },
+                  { label: 'Announcements', count: announcements.length, status: announcements.length ? 'Publishing' : 'Idle' },
+                ].map((item, index) => (
+                  <div
+                    key={item.label}
+                    className={`grid grid-cols-2 px-4 py-3 text-sm sm:grid-cols-[1.4fr_0.8fr_0.8fr] ${index !== 4 ? 'border-b border-white/10' : ''}`}
+                  >
+                    <span className="font-bold text-white">{item.label}</span>
+                    <span className="text-[#d4dbe7]">{item.count}</span>
+                    <span className={`font-black uppercase tracking-[0.16em] ${item.status === 'Priority' ? 'text-[#ffc400]' : 'text-[#aab5c6]'}`}>{item.status}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </SectionShell>
+
+          <SectionShell
+            title="Activity pulse"
+            description="The latest admin activity and moderation history, presented as a compact feed."
+            actions={<span className="text-sm font-bold text-[#ffc400]">{pulseItems.length} records</span>}
+          >
+            <div className="space-y-3">
+              {pulseItems.length ? (
+                pulseItems.map((entry) => (
+                  <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400]">{entry.action.replace(/_/g, ' ')}</p>
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#aab5c6]">
+                        {entry.entity_type.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm font-bold text-white">
+                      {entry.admin_name || entry.admin_email || 'System'} updated {entry.entity_type.replace(/_/g, ' ')}
+                      {entry.entity_id ? ` #${entry.entity_id}` : ''}
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-[#aab5c6]">
+                      {entry.before_status && entry.after_status ? `${entry.before_status} -> ${entry.after_status}` : entry.after_status || 'Status changed'}
+                    </p>
+                    {entry.review_note ? (
+                      <p className="mt-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm leading-6 text-[#d4dbe7]">
+                        {entry.review_note}
+                      </p>
+                    ) : null}
+                    <p className="mt-2 text-xs text-[#98a4b1]">
+                      {entry.created_at ? new Date(entry.created_at).toLocaleString() : 'No timestamp'}
+                    </p>
+                  </article>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-sm font-bold text-white">No recent actions yet.</p>
+                  <p className="mt-2 text-sm leading-6 text-[#aab5c6]">
+                    Once reviews and edits happen, the latest admin activity will appear here.
+                  </p>
+                </div>
+              )}
+            </div>
+          </SectionShell>
+        </div>
+
+        <SectionShell
+          title="Executive guidance"
+          description="The panel is now arranged around the busiest workflows so reviewers and operators can work faster."
+        >
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              { label: 'Review first', value: 'Submissions and India Pre-Selection stay highlighted in the queue.' },
+              { label: 'Operate clearly', value: 'K-Food now exposes products, fulfillments, orders, payment and reports.' },
+              { label: 'Manage safely', value: 'Admin profile, password and extra admin accounts are first-class controls.' },
+              { label: 'Ship faster', value: 'Announcements, events, CMS and calendar tools are kept in dedicated workspaces.' },
+            ].map((item) => (
+              <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#ffc400]">{item.label}</p>
+                <p className="mt-2 text-sm leading-6 text-[#d4dbe7]">{item.value}</p>
+              </article>
+            ))}
+          </div>
+        </SectionShell>
+      </div>
+    );
+  };
 
   const sectionBody = () => {
     switch (activeSection) {
