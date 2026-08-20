@@ -4703,7 +4703,7 @@ const AdminControlCenter = () => {
 
         <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[auto_minmax(0,1fr)]">
           <aside
-            className={`border-b border-[#2c3338] bg-[#1d2327] transition-[width] duration-200 ease-out lg:sticky lg:top-[88px] lg:block lg:h-[calc(100vh-88px)] lg:border-b-0 lg:border-r lg:overflow-hidden ${
+            className={`border-b border-[#2c3338] bg-[#1d2327] transition-[width] duration-200 ease-out lg:sticky lg:top-0 lg:block lg:h-[calc(100vh-88px)] lg:border-b-0 lg:border-r lg:overflow-hidden ${
               sidebarOpen ? 'w-full lg:w-[300px]' : 'w-full lg:w-[88px]'
             }`}
           >
