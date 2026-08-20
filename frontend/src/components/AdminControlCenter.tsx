@@ -15,6 +15,7 @@ import {
   FilePenLine,
   Gift,
   LayoutDashboard,
+  Menu,
   Save,
   Settings2,
   ShieldCheck,
@@ -890,6 +891,7 @@ const AdminControlCenter = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [notice, setNotice] = useState('');
   const [adminQuery, setAdminQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [dashboardMetrics, setDashboardMetrics] = useState<Record<string, number>>({});
   const [analytics, setAnalytics] = useState<Record<string, number>>({});
@@ -958,6 +960,13 @@ const AdminControlCenter = () => {
   const [selectedPageId, setSelectedPageId] = useState<number | null>(null);
 
   const query = adminQuery.trim().toLowerCase();
+  const adminInitials = (user?.fullName || 'K-CUBE Admin')
+    .split(' ')
+    .map((part) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   const selectedTrack = useMemo(
     () => tracks.find((track) => track.id === selectedTrackId) || null,
@@ -4623,27 +4632,60 @@ const AdminControlCenter = () => {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#070708] text-white">
       <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-40 flex h-[100px] items-center border-b border-white/10 bg-[#101114]/95 px-5 backdrop-blur">
+        <header className="sticky top-0 z-40 flex h-[100px] items-center border-b border-white/8 bg-[#0d0f12] px-4 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
           <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
-            <div className="flex min-w-0 items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#ffc400] text-xl font-black text-[#111111]">
+            <div className="flex min-w-0 items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setSidebarOpen((open) => !open)}
+                aria-label="Toggle admin menu"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/5 text-white transition hover:border-[#ffc400]/60 hover:text-[#ffc400]"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ffc400] text-lg font-black text-[#111111]">
                 K
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-[0.38em] text-[#ffc400]">Admin Panel</p>
-                <h1 className="truncate text-2xl font-black leading-tight">K-CUBE control center</h1>
-                <p className="mt-1 text-sm text-[#9aa6b4]">WordPress-style workspace for content, users, rewards, events, and commerce.</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.42em] text-[#ffc400]">Admin Panel</p>
+                <h1 className="truncate text-xl font-black leading-tight">K-CUBE control center</h1>
+                <p className="mt-0.5 text-xs text-[#9aa6b4]">Compact workspace for content, users, rewards, events, and commerce.</p>
               </div>
             </div>
 
-            <div className="hidden items-center gap-3 xl:flex">
-              <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm text-[#c8d2e1]">
-                {user?.fullName || 'K-CUBE Admin'}
-              </div>
-              <button type="button" onClick={() => setActiveSection('overview')} className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm font-bold text-white transition hover:border-[#ffc400] hover:text-[#ffc400]">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={() => setActiveSection('announcements')}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/5 text-[#c8d2e1] transition hover:border-[#ffc400]/60 hover:text-[#ffc400]"
+                aria-label="Notifications"
+              >
+                <span className="relative inline-flex">
+                  <Bell className="h-5 w-5" />
+                  <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border border-[#0d0f12] bg-[#ffc400]" />
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveSection('overview')}
+                className="hidden rounded-full border border-white/8 bg-white/5 px-4 py-2 text-sm font-bold text-white transition hover:border-[#ffc400]/60 hover:text-[#ffc400] md:inline-flex"
+              >
                 Dashboard
               </button>
-              <Link href="/" className="inline-flex items-center gap-2 rounded-full bg-[#ffc400] px-4 py-2 text-sm font-black text-[#111111] transition hover:brightness-110">
+              <button
+                type="button"
+                onClick={() => setActiveSection('adminProfile')}
+                className="inline-flex items-center gap-3 rounded-xl border border-white/8 bg-white/5 px-3 py-2 text-left transition hover:border-[#ffc400]/60"
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ffc400] text-xs font-black text-[#111111]">
+                  {adminInitials || 'KA'}
+                </span>
+                <span className="hidden min-w-0 flex-col text-left sm:flex">
+                  <span className="truncate text-sm font-black text-white">{user?.fullName || 'K-CUBE Admin'}</span>
+                  <span className="text-[11px] uppercase tracking-[0.22em] text-[#9aa6b4]">Administrator</span>
+                </span>
+              </button>
+              <Link href="/" className="hidden items-center gap-2 rounded-full bg-[#ffc400] px-4 py-2 text-sm font-black text-[#111111] transition hover:brightness-110 lg:inline-flex">
                 <ExternalLink className="h-4 w-4" />
                 Open site
               </Link>
@@ -4652,7 +4694,7 @@ const AdminControlCenter = () => {
         </header>
 
         <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[300px_minmax(0,1fr)]">
-          <aside className="border-b border-white/10 bg-[#0b0b0d] lg:sticky lg:top-[100px] lg:h-[calc(100vh-100px)] lg:border-b-0 lg:border-r">
+          <aside className={`${sidebarOpen ? 'block' : 'hidden'} border-b border-white/10 bg-[#0b0b0d] lg:sticky lg:top-[100px] lg:h-[calc(100vh-100px)] lg:border-b-0 lg:border-r`}>
             <div className="flex h-full flex-col">
               <div className="border-b border-white/10 px-5 py-6">
                 <p className="text-xs font-black uppercase tracking-[0.35em] text-[#ffc400]">Admin CMS</p>
