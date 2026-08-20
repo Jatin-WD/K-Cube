@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAppStore, type Language } from '@/store/useAppStore';
 
 const footerCopy: Record<Language, Record<string, string>> = {
@@ -65,7 +66,12 @@ const footerCopy: Record<Language, Record<string, string>> = {
 
 const InternalFooter = () => {
   const language = useAppStore((state) => state.language);
+  const pathname = usePathname();
   const t = footerCopy[language];
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <footer className="border-t border-white/10 bg-[#09090a] px-5 py-12 text-[#aab5c6] lg:px-10">

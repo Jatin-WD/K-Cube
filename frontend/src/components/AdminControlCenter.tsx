@@ -4622,61 +4622,90 @@ const AdminControlCenter = () => {
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#070708] text-white">
-      <div className="grid min-h-screen overflow-x-hidden lg:grid-cols-[300px_minmax(0,1fr)]">
-        <aside className="border-b border-white/10 bg-[#0b0b0d] lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
-          <div className="flex h-full flex-col">
-            <div className="border-b border-white/10 px-5 py-6">
-              <p className="text-xs font-black uppercase tracking-[0.35em] text-[#ffc400]">Admin CMS</p>
-              <h1 className="mt-3 text-3xl font-black leading-tight">K-CUBE control center</h1>
-              <p className="mt-3 text-sm leading-6 text-[#9aa6b4]">
-                WordPress-style operational control for content, users, learning, rewards, events and commerce.
-              </p>
-            </div>
-
-            <div className="flex-1 overflow-y-auto px-3 py-4">
-              <div className="space-y-5">
-                {adminSidebarGroups.map((group) => (
-                  <div key={group.title} className="space-y-2">
-                    <p className="px-3 text-[10px] font-black uppercase tracking-[0.28em] text-[#6f7d8d]">{group.title}</p>
-                    <div className="space-y-2">
-                      {group.ids.map((id) => {
-                        const item = adminNav.find((entry) => entry.id === id);
-                        if (!item) return null;
-                        const Icon = item.icon;
-                        const active = activeSection === item.id;
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => setActiveSection(item.id as AdminSection)}
-                            className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
-                              active ? 'border-[#ffc400] bg-[#17171a]' : 'border-white/10 bg-black/20 hover:border-white/20'
-                            }`}
-                          >
-                            <Icon className={`mt-0.5 h-5 w-5 ${active ? 'text-[#ffc400]' : 'text-[#9aa6b4]'}`} />
-                            <div className="min-w-0">
-                              <p className="font-black">{item.label}</p>
-                              <p className="mt-1 text-xs leading-5 text-[#9aa6b4]">{item.description}</p>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
+      <div className="flex min-h-screen flex-col">
+        <header className="sticky top-0 z-40 flex h-[100px] items-center border-b border-white/10 bg-[#101114]/95 px-5 backdrop-blur">
+          <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#ffc400] text-xl font-black text-[#111111]">
+                K
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-[0.38em] text-[#ffc400]">Admin Panel</p>
+                <h1 className="truncate text-2xl font-black leading-tight">K-CUBE control center</h1>
+                <p className="mt-1 text-sm text-[#9aa6b4]">WordPress-style workspace for content, users, rewards, events, and commerce.</p>
               </div>
             </div>
 
-            <div className="border-t border-white/10 p-5">
-              <Link href="/admin/login" className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-4 py-3 text-sm font-black text-white transition hover:border-[#ffc400] hover:text-[#ffc400]">
-                Switch admin
+            <div className="hidden items-center gap-3 xl:flex">
+              <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm text-[#c8d2e1]">
+                {user?.fullName || 'K-CUBE Admin'}
+              </div>
+              <button type="button" onClick={() => setActiveSection('overview')} className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm font-bold text-white transition hover:border-[#ffc400] hover:text-[#ffc400]">
+                Dashboard
+              </button>
+              <Link href="/" className="inline-flex items-center gap-2 rounded-full bg-[#ffc400] px-4 py-2 text-sm font-black text-[#111111] transition hover:brightness-110">
+                <ExternalLink className="h-4 w-4" />
+                Open site
               </Link>
             </div>
           </div>
-        </aside>
+        </header>
 
-        <div className="min-w-0 px-5 py-6 lg:px-8 lg:py-8">
-          <div className="mx-auto min-w-0 max-w-[1600px] space-y-6">
+        <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[300px_minmax(0,1fr)]">
+          <aside className="border-b border-white/10 bg-[#0b0b0d] lg:sticky lg:top-[100px] lg:h-[calc(100vh-100px)] lg:border-b-0 lg:border-r">
+            <div className="flex h-full flex-col">
+              <div className="border-b border-white/10 px-5 py-6">
+                <p className="text-xs font-black uppercase tracking-[0.35em] text-[#ffc400]">Admin CMS</p>
+                <h2 className="mt-3 text-3xl font-black leading-tight">K-CUBE control center</h2>
+                <p className="mt-3 text-sm leading-6 text-[#9aa6b4]">
+                  WordPress-style operational control for content, users, learning, rewards, events and commerce.
+                </p>
+              </div>
+
+              <div className="flex-1 overflow-y-auto px-3 py-4">
+                <div className="space-y-5">
+                  {adminSidebarGroups.map((group) => (
+                    <div key={group.title} className="space-y-2">
+                      <p className="px-3 text-[10px] font-black uppercase tracking-[0.28em] text-[#6f7d8d]">{group.title}</p>
+                      <div className="space-y-2">
+                        {group.ids.map((id) => {
+                          const item = adminNav.find((entry) => entry.id === id);
+                          if (!item) return null;
+                          const Icon = item.icon;
+                          const active = activeSection === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => setActiveSection(item.id as AdminSection)}
+                              className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+                                active ? 'border-[#ffc400] bg-[#17171a]' : 'border-white/10 bg-black/20 hover:border-white/20'
+                              }`}
+                            >
+                              <Icon className={`mt-0.5 h-5 w-5 ${active ? 'text-[#ffc400]' : 'text-[#9aa6b4]'}`} />
+                              <div className="min-w-0">
+                                <p className="font-black">{item.label}</p>
+                                <p className="mt-1 text-xs leading-5 text-[#9aa6b4]">{item.description}</p>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-white/10 p-5">
+                <Link href="/admin/login" className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-4 py-3 text-sm font-black text-white transition hover:border-[#ffc400] hover:text-[#ffc400]">
+                  Switch admin
+                </Link>
+              </div>
+            </div>
+          </aside>
+
+          <div className="min-w-0 px-5 py-6 lg:px-8 lg:py-8">
+            <div className="mx-auto min-w-0 max-w-[1600px] space-y-6">
             <section className="min-w-0 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)]">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
@@ -4709,6 +4738,7 @@ const AdminControlCenter = () => {
             {sectionBody()}
           </div>
         </div>
+      </div>
       </div>
     </main>
   );

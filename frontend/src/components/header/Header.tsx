@@ -24,8 +24,14 @@ const Header = () => {
   const user = useAppStore((state) => state.user);
   const signOut = useAppStore((state) => state.signOut);
   const pathname = usePathname();
+  const isAdminRoute = pathname.startsWith('/admin');
   const t = copy[language];
   const activeMenu = navItems.find((item) => item.label.en === activeMenuKey && item.dropdown?.length) ?? null;
+
+  const closeAllMenus = () => {
+    setActiveMenuKey(null);
+    setLanguageMenuOpen(false);
+  };
 
   useEffect(
     () => {
@@ -64,10 +70,9 @@ const Header = () => {
     setActiveMenuKey(key);
   };
 
-  const closeAllMenus = () => {
-    setActiveMenuKey(null);
-    setLanguageMenuOpen(false);
-  };
+  if (isAdminRoute) {
+    return null;
+  }
 
   return (
     <header ref={headerRef} className="relative z-50 border-b border-[#232f3e] bg-[#131921] text-white shadow-[0_10px_24px_rgba(0,0,0,0.24)] md:sticky md:top-0">
