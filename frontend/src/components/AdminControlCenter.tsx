@@ -4708,11 +4708,11 @@ const AdminControlCenter = () => {
             }`}
           >
             <div className="flex h-full min-h-0 flex-col">
-              <div className="flex-1 overflow-y-auto px-1.5 py-2.5">
-                <div className="space-y-3">
+              <div className="flex-1 overflow-y-auto px-1 py-1.5">
+                <div className="space-y-2.5">
                   {adminSidebarGroups.map((group) => (
                     <div key={group.title} className="space-y-2">
-                      <p className={`px-3 text-[10px] font-black uppercase tracking-[0.28em] text-[#7c8794] ${sidebarOpen ? '' : 'lg:hidden'}`}>{group.title}</p>
+                      <p className="sr-only">{group.title}</p>
                       <div className="space-y-1.5">
                         {group.ids.map((id) => {
                           const item = adminNav.find((entry) => entry.id === id);
