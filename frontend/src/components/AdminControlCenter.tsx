@@ -4654,6 +4654,14 @@ const AdminControlCenter = () => {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden items-center gap-1 rounded-full border border-[#3c434a] bg-[#23282d] px-1 py-1 text-[11px] font-bold text-[#b4b9be] md:flex">
+                <button type="button" className="rounded-full px-3 py-1 transition hover:bg-[#2c3338] hover:text-[#f0f0f1]">
+                  Screen Options
+                </button>
+                <button type="button" className="rounded-full px-3 py-1 transition hover:bg-[#2c3338] hover:text-[#f0f0f1]">
+                  Help
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={() => setActiveSection('announcements')}
@@ -4696,7 +4704,7 @@ const AdminControlCenter = () => {
         <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[auto_minmax(0,1fr)]">
           <aside
             className={`border-b border-[#2c3338] bg-[#1d2327] transition-[width] duration-200 ease-out lg:sticky lg:top-[88px] lg:block lg:h-[calc(100vh-88px)] lg:border-b-0 lg:border-r lg:overflow-hidden ${
-              sidebarOpen ? 'w-full lg:w-[300px]' : 'w-full lg:w-[96px]'
+              sidebarOpen ? 'w-full lg:w-[300px]' : 'w-full lg:w-[88px]'
             }`}
           >
             <div className="flex h-full min-h-0 flex-col">
@@ -4708,12 +4716,12 @@ const AdminControlCenter = () => {
                 </p>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-2 py-3">
-                <div className="space-y-4">
+              <div className="flex-1 overflow-y-auto px-1.5 py-2.5">
+                <div className="space-y-3">
                   {adminSidebarGroups.map((group) => (
                     <div key={group.title} className="space-y-2">
                       <p className={`px-3 text-[10px] font-black uppercase tracking-[0.28em] text-[#7c8794] ${sidebarOpen ? '' : 'lg:hidden'}`}>{group.title}</p>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         {group.ids.map((id) => {
                           const item = adminNav.find((entry) => entry.id === id);
                           if (!item) return null;
@@ -4725,16 +4733,16 @@ const AdminControlCenter = () => {
                               type="button"
                               onClick={() => setActiveSection(item.id as AdminSection)}
                               title={item.label}
-                              className={`flex w-full items-center rounded-xl border px-3 py-3 text-left transition ${
+                              className={`flex w-full items-center rounded-xl border px-2.5 py-2.5 text-left transition ${
                                 sidebarOpen ? 'gap-3' : 'justify-center'
                               } ${
                                 active
-                                  ? 'border-[#2271b1] bg-[#2c3338] text-white shadow-[inset_0_0_0_1px_rgba(255,185,0,0.15)]'
+                                  ? 'border-[#2271b1] border-l-4 border-l-[#2271b1] bg-[#2c3338] text-white shadow-[inset_0_0_0_1px_rgba(255,185,0,0.15)]'
                                   : 'border-[#2c3338] bg-[#1d2327] text-[#f0f0f1] hover:border-[#3c434a] hover:bg-[#23282d]'
                               }`}
                             >
-                              <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-[#ffb900] text-[#111111]' : 'bg-[#2c3338] text-[#b4b9be]'}`}>
-                                <Icon className="h-5 w-5" />
+                              <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-[#ffb900] text-[#111111]' : 'bg-[#2c3338] text-[#b4b9be]'}`}>
+                                <Icon className="h-4 w-4" />
                               </span>
                               <div className={`min-w-0 ${sidebarOpen ? '' : 'lg:hidden'}`}>
                                 <p className="font-black">{item.label}</p>
@@ -4749,10 +4757,10 @@ const AdminControlCenter = () => {
                 </div>
               </div>
 
-              <div className="border-t border-[#2c3338] p-4">
+              <div className="border-t border-[#2c3338] p-3">
                 <Link
                   href="/admin/login"
-                  className="inline-flex w-full items-center justify-center rounded-xl border border-[#2c3338] bg-[#23282d] px-4 py-3 text-sm font-black text-[#f0f0f1] transition hover:border-[#2271b1] hover:bg-[#2c3338]"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-[#2c3338] bg-[#23282d] px-3 py-2.5 text-sm font-black text-[#f0f0f1] transition hover:border-[#2271b1] hover:bg-[#2c3338]"
                 >
                   Switch admin
                 </Link>
