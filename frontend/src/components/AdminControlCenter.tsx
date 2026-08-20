@@ -4708,14 +4708,6 @@ const AdminControlCenter = () => {
             }`}
           >
             <div className="flex h-full min-h-0 flex-col">
-              <div className="border-b border-[#2c3338] px-4 py-5">
-                <p className={`text-[10px] font-black uppercase tracking-[0.34em] text-[#ffb900] ${sidebarOpen ? '' : 'lg:hidden'}`}>Admin CMS</p>
-                <h2 className={`mt-2 font-black leading-tight text-[#f0f0f1] ${sidebarOpen ? 'text-2xl' : 'lg:hidden'}`}>K-CUBE control center</h2>
-                <p className={`mt-2 text-sm leading-6 text-[#b4b9be] ${sidebarOpen ? '' : 'lg:hidden'}`}>
-                  WordPress-style operational control for content, users, learning, rewards, events and commerce.
-                </p>
-              </div>
-
               <div className="flex-1 overflow-y-auto px-1.5 py-2.5">
                 <div className="space-y-3">
                   {adminSidebarGroups.map((group) => (
