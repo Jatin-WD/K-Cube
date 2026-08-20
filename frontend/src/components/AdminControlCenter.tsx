@@ -891,7 +891,7 @@ const AdminControlCenter = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [notice, setNotice] = useState('');
   const [adminQuery, setAdminQuery] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [dashboardMetrics, setDashboardMetrics] = useState<Record<string, number>>({});
   const [analytics, setAnalytics] = useState<Record<string, number>>({});
@@ -4632,24 +4632,24 @@ const AdminControlCenter = () => {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#070708] text-white">
       <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-40 flex h-[100px] items-center border-b border-white/8 bg-[#0d0f12] px-4 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+        <header className="sticky top-0 z-40 flex h-[88px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
           <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               <button
                 type="button"
                 onClick={() => setSidebarOpen((open) => !open)}
                 aria-label="Toggle admin menu"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/5 text-white transition hover:border-[#ffc400]/60 hover:text-[#ffc400]"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#3c434a] bg-[#2c3338] text-[#f0f0f1] transition hover:bg-[#32373c] hover:text-white"
               >
                 <Menu className="h-5 w-5" />
               </button>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ffc400] text-lg font-black text-[#111111]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffb900] text-lg font-black text-[#111111]">
                 K
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-[0.42em] text-[#ffc400]">Admin Panel</p>
-                <h1 className="truncate text-xl font-black leading-tight">K-CUBE control center</h1>
-                <p className="mt-0.5 text-xs text-[#9aa6b4]">Compact workspace for content, users, rewards, events, and commerce.</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.42em] text-[#ffb900]">Admin Panel</p>
+                <h1 className="truncate text-lg font-black leading-tight text-[#f0f0f1]">K-CUBE control center</h1>
+                <p className="mt-0.5 text-xs text-[#b4b9be]">Compact workspace for content, users, rewards, events, and commerce.</p>
               </div>
             </div>
 
@@ -4657,35 +4657,35 @@ const AdminControlCenter = () => {
               <button
                 type="button"
                 onClick={() => setActiveSection('announcements')}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/5 text-[#c8d2e1] transition hover:border-[#ffc400]/60 hover:text-[#ffc400]"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#3c434a] bg-[#2c3338] text-[#f0f0f1] transition hover:bg-[#32373c] hover:text-white"
                 aria-label="Notifications"
               >
                 <span className="relative inline-flex">
                   <Bell className="h-5 w-5" />
-                  <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border border-[#0d0f12] bg-[#ffc400]" />
+                  <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border border-[#1d2327] bg-[#ffb900]" />
                 </span>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveSection('overview')}
-                className="hidden rounded-full border border-white/8 bg-white/5 px-4 py-2 text-sm font-bold text-white transition hover:border-[#ffc400]/60 hover:text-[#ffc400] md:inline-flex"
+                className="hidden rounded-full border border-[#3c434a] bg-[#2c3338] px-4 py-2 text-sm font-bold text-[#f0f0f1] transition hover:bg-[#32373c] md:inline-flex"
               >
                 Dashboard
               </button>
               <button
                 type="button"
                 onClick={() => setActiveSection('adminProfile')}
-                className="inline-flex items-center gap-3 rounded-xl border border-white/8 bg-white/5 px-3 py-2 text-left transition hover:border-[#ffc400]/60"
+                className="inline-flex items-center gap-3 rounded-lg border border-[#3c434a] bg-[#2c3338] px-3 py-2 text-left transition hover:bg-[#32373c]"
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ffc400] text-xs font-black text-[#111111]">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ffb900] text-xs font-black text-[#111111]">
                   {adminInitials || 'KA'}
                 </span>
                 <span className="hidden min-w-0 flex-col text-left sm:flex">
-                  <span className="truncate text-sm font-black text-white">{user?.fullName || 'K-CUBE Admin'}</span>
-                  <span className="text-[11px] uppercase tracking-[0.22em] text-[#9aa6b4]">Administrator</span>
+                  <span className="truncate text-sm font-black text-[#f0f0f1]">{user?.fullName || 'K-CUBE Admin'}</span>
+                  <span className="text-[11px] uppercase tracking-[0.22em] text-[#b4b9be]">Administrator</span>
                 </span>
               </button>
-              <Link href="/" className="hidden items-center gap-2 rounded-full bg-[#ffc400] px-4 py-2 text-sm font-black text-[#111111] transition hover:brightness-110 lg:inline-flex">
+              <Link href="/" className="hidden items-center gap-2 rounded-full bg-[#ffb900] px-4 py-2 text-sm font-black text-[#111111] transition hover:brightness-110 lg:inline-flex">
                 <ExternalLink className="h-4 w-4" />
                 Open site
               </Link>
@@ -4695,24 +4695,24 @@ const AdminControlCenter = () => {
 
         <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[auto_minmax(0,1fr)]">
           <aside
-            className={`border-b border-white/10 bg-[#0b0b0d] transition-[width] duration-200 ease-out lg:sticky lg:top-[100px] lg:h-[calc(100vh-100px)] lg:border-b-0 lg:border-r ${
-              sidebarOpen ? 'w-full lg:w-[300px]' : 'w-full lg:w-[88px]'
+            className={`border-b border-[#2c3338] bg-[#1d2327] transition-[width] duration-200 ease-out lg:sticky lg:top-[88px] lg:block lg:h-[calc(100vh-88px)] lg:border-b-0 lg:border-r lg:overflow-hidden ${
+              sidebarOpen ? 'w-full lg:w-[300px]' : 'w-full lg:w-[96px]'
             }`}
           >
-            <div className="flex h-full flex-col">
-              <div className={`border-b border-white/10 px-5 py-6 ${sidebarOpen ? '' : 'lg:px-4'}`}>
-                <p className={`text-xs font-black uppercase tracking-[0.35em] text-[#ffc400] ${sidebarOpen ? '' : 'lg:hidden'}`}>Admin CMS</p>
-                <h2 className={`mt-3 font-black leading-tight ${sidebarOpen ? 'text-3xl' : 'lg:hidden'}`}>K-CUBE control center</h2>
-                <p className={`mt-3 text-sm leading-6 text-[#9aa6b4] ${sidebarOpen ? '' : 'lg:hidden'}`}>
+            <div className="flex h-full min-h-0 flex-col">
+              <div className="border-b border-[#2c3338] px-4 py-5">
+                <p className={`text-[10px] font-black uppercase tracking-[0.34em] text-[#ffb900] ${sidebarOpen ? '' : 'lg:hidden'}`}>Admin CMS</p>
+                <h2 className={`mt-2 font-black leading-tight text-[#f0f0f1] ${sidebarOpen ? 'text-2xl' : 'lg:hidden'}`}>K-CUBE control center</h2>
+                <p className={`mt-2 text-sm leading-6 text-[#b4b9be] ${sidebarOpen ? '' : 'lg:hidden'}`}>
                   WordPress-style operational control for content, users, learning, rewards, events and commerce.
                 </p>
               </div>
 
-              <div className={`flex-1 overflow-y-auto py-4 ${sidebarOpen ? 'px-3' : 'px-2 lg:px-2'}`}>
-                <div className="space-y-5">
+              <div className="flex-1 overflow-y-auto px-2 py-3">
+                <div className="space-y-4">
                   {adminSidebarGroups.map((group) => (
                     <div key={group.title} className="space-y-2">
-                      <p className={`px-3 text-[10px] font-black uppercase tracking-[0.28em] text-[#6f7d8d] ${sidebarOpen ? '' : 'lg:hidden'}`}>{group.title}</p>
+                      <p className={`px-3 text-[10px] font-black uppercase tracking-[0.28em] text-[#7c8794] ${sidebarOpen ? '' : 'lg:hidden'}`}>{group.title}</p>
                       <div className="space-y-2">
                         {group.ids.map((id) => {
                           const item = adminNav.find((entry) => entry.id === id);
@@ -4725,16 +4725,20 @@ const AdminControlCenter = () => {
                               type="button"
                               onClick={() => setActiveSection(item.id as AdminSection)}
                               title={item.label}
-                              className={`flex w-full items-start rounded-2xl border text-left transition ${
-                                sidebarOpen ? 'gap-3 px-4 py-3' : 'justify-center px-2 py-3 lg:px-2'
+                              className={`flex w-full items-center rounded-xl border px-3 py-3 text-left transition ${
+                                sidebarOpen ? 'gap-3' : 'justify-center'
                               } ${
-                                active ? 'border-[#ffc400] bg-[#17171a]' : 'border-white/10 bg-black/20 hover:border-white/20'
+                                active
+                                  ? 'border-[#2271b1] bg-[#2c3338] text-white shadow-[inset_0_0_0_1px_rgba(255,185,0,0.15)]'
+                                  : 'border-[#2c3338] bg-[#1d2327] text-[#f0f0f1] hover:border-[#3c434a] hover:bg-[#23282d]'
                               }`}
                             >
-                              <Icon className={`mt-0.5 h-5 w-5 ${active ? 'text-[#ffc400]' : 'text-[#9aa6b4]'}`} />
+                              <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-[#ffb900] text-[#111111]' : 'bg-[#2c3338] text-[#b4b9be]'}`}>
+                                <Icon className="h-5 w-5" />
+                              </span>
                               <div className={`min-w-0 ${sidebarOpen ? '' : 'lg:hidden'}`}>
                                 <p className="font-black">{item.label}</p>
-                                <p className="mt-1 text-xs leading-5 text-[#9aa6b4]">{item.description}</p>
+                                <p className="mt-0.5 text-xs leading-5 text-[#b4b9be]">{item.description}</p>
                               </div>
                             </button>
                           );
@@ -4745,15 +4749,12 @@ const AdminControlCenter = () => {
                 </div>
               </div>
 
-              <div className="border-t border-white/10 p-5">
+              <div className="border-t border-[#2c3338] p-4">
                 <Link
                   href="/admin/login"
-                  className={`inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-4 py-3 text-sm font-black text-white transition hover:border-[#ffc400] hover:text-[#ffc400] ${
-                    sidebarOpen ? '' : 'lg:px-2'
-                  }`}
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-[#2c3338] bg-[#23282d] px-4 py-3 text-sm font-black text-[#f0f0f1] transition hover:border-[#2271b1] hover:bg-[#2c3338]"
                 >
-                  <span className={sidebarOpen ? '' : 'lg:hidden'}>Switch admin</span>
-                  <span className={`text-lg ${sidebarOpen ? 'hidden' : 'lg:inline-flex'}`}>↔</span>
+                  Switch admin
                 </Link>
               </div>
             </div>
