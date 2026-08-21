@@ -66,7 +66,7 @@ export default function IndiaPreSelectionApplyPage() {
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-[#b12704]">Application access</p>
                 <h1 className="mt-2 text-3xl font-black tracking-tight text-[#111827] sm:text-4xl">
-                  Submit inside K-CUBE
+                  Submit for Itaewon event
                 </h1>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-[#565959]">
                   You are signed in, so the form stays attached to your account and saves your application in one place.
@@ -213,7 +213,7 @@ export default function IndiaPreSelectionApplyPage() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">Application access</p>
-              <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Submit inside K-CUBE</h2>
+              <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Submit for Itaewon event</h2>
             </div>
             <p className="max-w-3xl text-sm leading-7 text-[#565959]">
               Once you sign in, the page keeps the process focused on the form and hides the extra guidance for a cleaner submission flow.

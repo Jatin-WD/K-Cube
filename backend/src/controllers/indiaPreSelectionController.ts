@@ -40,12 +40,12 @@ const applicationWithReviewQuery = `
   SELECT ${applicationWithReviewFields}
   FROM india_pre_selection_applications a
   LEFT JOIN (
-    SELECT latest.entity_id, latest.after_state, latest.created_by, latest.created_at AS reviewed_at
+    SELECT latest.entity_id, latest.after_state, latest.admin_user_id AS created_by, latest.created_at AS reviewed_at
     FROM (
       SELECT
         entity_id,
         after_state,
-        created_by,
+        admin_user_id,
         created_at,
         id,
         ROW_NUMBER() OVER (PARTITION BY entity_id ORDER BY created_at DESC, id DESC) AS rn
