@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, CalendarDays, Globe2, MapPinned, Mic2, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import { ArrowRight, CalendarDays, Globe2, Mic2, ShieldCheck, Sparkles, Users } from 'lucide-react';
 
 export const metadata = {
   title: 'K-CUBE India Pre-Selection | ITAEWON World Music Spirit Festival 2026',
@@ -81,7 +81,7 @@ export default function IndiaPreSelectionPage() {
             <div className="mt-6 rounded-[24px] border border-[#f3a847]/50 bg-[#f3a847]/10 p-4 sm:p-5">
               <p className="text-[10px] font-black uppercase tracking-[0.26em] text-[#f3a847]">Main announcement</p>
               <p className="mt-3 text-sm leading-7 text-[#f8fafc] sm:text-base">
-                On <span className="font-black text-[#ffd814]">25 August 2026</span>, K-CUBE will conduct the <span className="font-black text-[#ffd814]">1st audition</span> through this website on behalf of the Indian organiser of the ITAEWON World Music Spirit Festival 2026. We have been specifically asked to select participants from India for this Music Spirit journey.
+                On <span className="font-black text-[#ffd814]">30 August 2026</span>, K-CUBE will conduct the <span className="font-black text-[#ffd814]">1st audition</span> through this website on behalf of the Indian organiser of the ITAEWON World Music Spirit Festival 2026. We have been specifically asked to select participants from India for this Music Spirit journey.
               </p>
               <p className="mt-3 text-sm leading-7 text-[#d5d9d9]">
                 All applications for this page are submitted through the internal Apply page inside K-CUBE. No email submission is needed.
@@ -271,13 +271,13 @@ export default function IndiaPreSelectionPage() {
               {[
                 {
                   title: 'India pre-selection deadline',
-                  date: 'August 25, 2026',
+                  date: 'August 30, 2026',
                   note: 'Submit your application and performance video by this date.',
                   accent: true,
                 },
                 {
                   title: 'Official second round',
-                  date: 'September 15, 2026',
+                  date: 'September 30, 2026',
                   note: 'Final official round before the festival stage path.',
                 },
                 {

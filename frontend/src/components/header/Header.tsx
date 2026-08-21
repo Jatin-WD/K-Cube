@@ -77,7 +77,7 @@ const Header = () => {
   return (
     <header ref={headerRef} className="relative z-50 border-b border-[#232f3e] bg-[#131921] text-white shadow-[0_10px_24px_rgba(0,0,0,0.24)] md:sticky md:top-0">
       <div className="hidden border-b border-[#232f3e] bg-[#131921] sm:block">
-        <div className="mx-auto flex max-w-[1760px] items-center gap-4 overflow-x-auto px-4 py-2 text-xs text-[#d5d9d9] sm:justify-end sm:text-sm lg:px-10">
+        <div className="mx-auto flex max-w-[1760px] items-center gap-4 overflow-x-auto px-4 py-1.5 text-[11px] text-[#d5d9d9] sm:justify-end sm:text-xs lg:px-10">
           <Link href="/apply-for-manpower" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[#f3a847]">
             <BriefcaseBusiness className="h-4 w-4" />
             {t.manpower}
@@ -93,32 +93,32 @@ const Header = () => {
       </div>
 
       <div className="border-b border-[#232f3e] bg-[#131921]">
-        <div className="mx-auto grid max-w-[1760px] grid-cols-[1fr_auto] gap-3 px-3 py-3 sm:px-4 md:grid-cols-[220px_minmax(260px,1fr)] xl:grid-cols-[260px_minmax(360px,1fr)_auto] xl:items-center xl:px-10">
-          <Link href="/" className="flex min-w-0 items-center gap-3 sm:gap-4">
-            <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-[#f3a847] text-lg font-black text-[#111827] sm:h-10 sm:w-10">
+        <div className="mx-auto grid max-w-[1760px] grid-cols-[1fr_auto] gap-2.5 px-3 py-2.5 sm:px-4 md:grid-cols-[210px_minmax(260px,1fr)] xl:grid-cols-[250px_minmax(360px,1fr)_auto] xl:items-center xl:px-10">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+            <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#f3a847] text-[15px] font-black text-[#111827] sm:h-9 sm:w-9">
               K
             </span>
             <span className="min-w-0">
-              <span className="block text-[18px] font-black leading-none tracking-tight text-white sm:text-[22px]">K-CUBE</span>
-              <span className="block text-[9px] font-bold uppercase tracking-[0.18em] text-[#f3a847] sm:text-[11px] sm:tracking-[0.34em]">Korean Ecosystem</span>
+              <span className="block text-[17px] font-black leading-none tracking-tight text-white sm:text-[20px]">K-CUBE</span>
+              <span className="block text-[8px] font-bold uppercase tracking-[0.18em] text-[#f3a847] sm:text-[10px] sm:tracking-[0.3em]">Korean Ecosystem</span>
             </span>
           </Link>
 
-          <form className="order-3 col-span-full flex min-h-[42px] overflow-hidden rounded-sm border-2 border-transparent bg-white text-[#101012] shadow-[0_8px_18px_rgba(0,0,0,0.2)] focus-within:border-[#f3a847] md:order-none md:col-span-1 md:min-h-[46px]">
+          <form className="order-3 col-span-full flex min-h-[38px] overflow-hidden rounded-sm border-2 border-transparent bg-white text-[#101012] shadow-[0_8px_18px_rgba(0,0,0,0.2)] focus-within:border-[#f3a847] md:order-none md:col-span-1 md:min-h-[40px]">
             <label className="sr-only" htmlFor="header-search">
               Search K-CUBE
             </label>
             <input
               id="header-search"
-              className="min-w-0 flex-1 px-3 text-sm text-[#171717] outline-none placeholder:text-[#8f95a3] sm:px-5 sm:text-base"
+              className="min-w-0 flex-1 px-3 text-sm text-[#171717] outline-none placeholder:text-[#8f95a3] sm:px-4 sm:text-sm"
               placeholder={t.search}
             />
             <button
               type="submit"
               aria-label="Search"
-              className="flex w-12 items-center justify-center bg-[#f3a847] text-[#111827] transition hover:bg-[#ffa41c] sm:w-16"
+              className="flex w-11 items-center justify-center bg-[#f3a847] text-[#111827] transition hover:bg-[#ffa41c] sm:w-12"
             >
-              <Search className="h-6 w-6" />
+              <Search className="h-5 w-5" />
             </button>
           </form>
 
@@ -128,9 +128,9 @@ const Header = () => {
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[#232f3e] text-white transition hover:bg-[#37475a] md:hidden"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[#232f3e] text-white transition hover:bg-[#37475a] md:hidden"
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? <X className="h-[18px] w-[18px]" /> : <Menu className="h-[18px] w-[18px]" />}
             </button>
             <div
               className="relative"
@@ -142,11 +142,11 @@ const Header = () => {
                 aria-haspopup="menu"
                 aria-expanded={languageMenuOpen}
                 onClick={() => setLanguageMenuOpen((open) => !open)}
-                className="inline-flex h-9 shrink-0 items-center gap-2 rounded-sm border border-[#f3a847]/50 bg-[#232f3e] px-3 text-xs font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:h-10 xl:text-sm"
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm border border-[#f3a847]/50 bg-[#232f3e] px-2.5 text-[11px] font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:h-9 xl:text-xs"
               >
-                <Languages className="h-4 w-4" />
+                <Languages className="h-3.5 w-3.5" />
                 {languageLabels[language]}
-                <ChevronDown className="h-3.5 w-3.5" />
+                <ChevronDown className="h-3 w-3" />
               </button>
               <div
                 className={`absolute right-0 top-full z-[140] w-52 pt-2 transition ${
@@ -176,19 +176,19 @@ const Header = () => {
 
             <Link
               href="/trip-to-korea"
-              className="hidden h-9 shrink-0 items-center gap-2 rounded-sm bg-[#ffd814] px-3 text-xs font-black text-[#111827] transition hover:bg-[#f7ca00] sm:inline-flex xl:h-10 xl:px-4 xl:text-sm"
+              className="hidden h-8 shrink-0 items-center gap-2 rounded-sm bg-[#ffd814] px-3 text-[11px] font-black text-[#111827] transition hover:bg-[#f7ca00] sm:inline-flex xl:h-9 xl:px-3.5 xl:text-xs"
             >
-              <Plane className="h-4 w-4" />
+              <Plane className="h-3.5 w-3.5" />
               {t.koreaTrip}
             </Link>
             {user ? (
               <div className="group/account relative">
-                <button className="flex shrink-0 items-center gap-2 text-xs leading-tight xl:text-sm">
-                  <User className="h-5 w-5 text-[#c8d2e1]" />
+                <button className="flex shrink-0 items-center gap-2 text-[11px] leading-tight xl:text-xs">
+                  <User className="h-[18px] w-[18px] text-[#c8d2e1]" />
                   <span>
                     <span className="block text-[#b9c5d6]">{t.hello}</span>
-                    <span className="block text-base font-bold text-white">
-                      {user.fullName} <ChevronDown className="inline h-4 w-4" />
+                    <span className="block text-sm font-bold text-white xl:text-[15px]">
+                      {user.fullName} <ChevronDown className="inline h-3.5 w-3.5" />
                     </span>
                   </span>
                 </button>
@@ -206,10 +206,10 @@ const Header = () => {
               </div>
             ) : (
               <div className="hidden items-center gap-2 sm:flex">
-                <Link href="/signin" className="shrink-0 rounded-sm border border-white/30 px-3 py-2 text-xs font-bold text-white hover:border-[#f3a847] hover:text-[#f3a847] xl:text-sm">
+                <Link href="/signin" className="shrink-0 rounded-sm border border-white/30 px-3 py-1.5 text-xs font-bold text-white hover:border-[#f3a847] hover:text-[#f3a847] xl:text-[13px]">
                   {t.signIn}
                 </Link>
-                <Link href="/signup" className="shrink-0 rounded-sm bg-[#ffd814] px-3 py-2 text-xs font-black text-[#111827] hover:bg-[#f7ca00] xl:text-sm">
+                <Link href="/signup" className="shrink-0 rounded-sm bg-[#ffd814] px-3 py-1.5 text-xs font-black text-[#111827] hover:bg-[#f7ca00] xl:text-[13px]">
                   {t.signUp}
                 </Link>
               </div>
@@ -338,8 +338,8 @@ const Header = () => {
         className="group/nav relative hidden border-b border-[#232f3e] bg-[#232f3e] md:block"
         onMouseLeave={closeAllMenus}
       >
-        <div className="mx-auto flex max-w-[1760px] items-center gap-3 px-3 sm:px-4 lg:px-10">
-          <div className="flex min-h-[42px] flex-1 items-center gap-1 overflow-visible px-0 lg:min-h-[54px]">
+        <div className="mx-auto flex max-w-[1760px] items-center gap-2 px-3 sm:px-4 lg:px-10">
+          <div className="flex min-h-[34px] flex-1 items-center gap-0.5 overflow-visible px-0 lg:min-h-[40px]">
             {navItems.map((item) => {
               const isActive = activeMenuKey === item.label.en;
               if (item.dropdown) {
@@ -358,7 +358,7 @@ const Header = () => {
                       }
                       openMenu(item.label.en);
                     }}
-                    className={`flex h-[42px] items-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-bold transition focus-visible:outline-none sm:h-[48px] sm:px-3 sm:text-sm lg:h-[54px] lg:px-4 lg:text-base ${
+                    className={`flex h-[34px] items-center gap-1 whitespace-nowrap px-2 text-[11px] font-bold transition focus-visible:outline-none sm:h-[38px] sm:px-2.5 sm:text-xs lg:h-[40px] lg:px-3 lg:text-sm ${
                       isActive
                         ? 'bg-white/5 text-[#f3a847] outline outline-1 outline-white/30'
                         : 'text-white hover:outline hover:outline-1 hover:outline-white'
@@ -375,7 +375,7 @@ const Header = () => {
                   key={item.label.en}
                   href={item.href}
                   onClick={closeAllMenus}
-                  className="flex h-[42px] items-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-bold text-white transition hover:outline hover:outline-1 hover:outline-white focus-visible:text-[#f3a847] focus-visible:outline-none sm:h-[48px] sm:px-3 sm:text-sm lg:h-[54px] lg:px-4 lg:text-base"
+                  className="flex h-[34px] items-center gap-1 whitespace-nowrap px-2 text-[11px] font-bold text-white transition hover:outline hover:outline-1 hover:outline-white focus-visible:text-[#f3a847] focus-visible:outline-none sm:h-[38px] sm:px-2.5 sm:text-xs lg:h-[40px] lg:px-3 lg:text-sm"
                 >
                   {item.label[language]}
                 </Link>
@@ -385,14 +385,14 @@ const Header = () => {
           <Link
             href="/study-abroad"
             onClick={closeAllMenus}
-            className="hidden shrink-0 items-center gap-2 rounded-sm border border-[#ffd814] bg-[#ffd814] px-3 py-2 text-xs font-black text-[#111827] shadow-sm transition hover:bg-[#f7ca00] xl:inline-flex xl:px-4 xl:text-sm"
+            className="hidden shrink-0 items-center gap-1.5 rounded-sm border border-[#ffd814] bg-[#ffd814] px-2.5 py-1 text-[11px] font-black text-[#111827] shadow-sm transition hover:bg-[#f7ca00] xl:inline-flex xl:px-3 xl:text-xs"
           >
             Study Abroad
           </Link>
           <Link
             href="/india-pre-selection"
             onClick={closeAllMenus}
-            className="hidden shrink-0 items-center gap-2 rounded-sm border border-[#f3a847]/60 bg-[#f3a847]/12 px-3 py-2 text-xs font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:inline-flex xl:px-4 xl:text-sm"
+            className="hidden shrink-0 items-center gap-1.5 rounded-sm border border-[#f3a847]/60 bg-[#f3a847]/12 px-2.5 py-1 text-[11px] font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:inline-flex xl:px-3 xl:text-xs"
           >
             India Pre-Selection
           </Link>

@@ -1,11 +1,12 @@
 "use client";
 
 import Link from 'next/link';
-import { ArrowRight, Check, Coins, Gift, Plane, ShoppingBag, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, Check, Coins, Gift, Plane, ShoppingBag, Star } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
 import { shopProducts } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
 import IndiaPreSelectionSection from './home/IndiaPreSelectionSection';
+import IndiaPreSelectionPopup from './home/IndiaPreSelectionPopup';
 
 interface KCubePageProps {
   pageKey: PageKey;
@@ -16,9 +17,9 @@ const isExternal = (href: string) => href.startsWith('http');
 
 const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string }> = {
   home: {
-    hero: 'https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1800&q=80',
-    strip: 'Korean culture, food, learning and rewards in one member marketplace',
-    accent: 'K-CUBE Deals',
+    hero: '/assets/k-cube-banner.png',
+    strip: 'NEXT EVENT · K-CUBE INDIA PRE-SELECTION · AUGUST 30, 2026',
+    accent: 'Next event',
   },
   activities: {
     hero: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1800&q=80',
@@ -84,6 +85,12 @@ const marketplaceTiles = [
 ];
 
 const featuredShopProducts = shopProducts.slice(0, 3);
+const homeSelectionSupportPoints = [
+  { value: '100 pts', label: 'K-CUBE Registration' },
+  { value: '+200 pts', label: 'Preliminary Round Video Submission' },
+  { value: '+300 pts', label: 'Passing the Preliminary Round' },
+  { value: '+1,000 pts', label: 'Passing the Final Selection' },
+] as const;
 
 const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const language = useAppStore((state) => state.language);
@@ -97,6 +104,8 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
   return (
     <main className="min-h-screen bg-[#e7e7e7] text-[#111827]">
+      {pageKey === 'home' ? <IndiaPreSelectionPopup /> : null}
+
       <section className="border-b border-[#d5d9d9] bg-[#131921] px-3 py-2 text-xs text-white sm:px-4 sm:py-3 sm:text-sm lg:px-10">
         <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-3">
           <span className="rounded-sm bg-[#f3a847] px-3 py-1 font-black text-[#111827]">{visual.accent}</span>
@@ -108,78 +117,147 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       </section>
 
       <section
-        className="relative border-b border-[#d5d9d9] bg-cover bg-center px-3 py-5 sm:px-4 sm:py-8 lg:px-10 lg:py-12"
-        style={{ backgroundImage: `linear-gradient(90deg, rgba(19,25,33,0.92), rgba(19,25,33,0.66), rgba(19,25,33,0.12)), url(${visual.hero})` }}
+        className="relative overflow-hidden border-b border-[#d5d9d9] bg-cover bg-center px-3 py-5 sm:px-4 sm:py-8 lg:px-10 lg:py-12"
+        style={{
+          backgroundImage: `linear-gradient(90deg, rgba(8,12,20,0.97) 0%, rgba(8,12,20,0.92) 38%, rgba(8,12,20,0.72) 58%, rgba(8,12,20,0.18) 100%), url(${visual.hero})`,
+        }}
       >
-        <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[1.1fr_370px] lg:items-stretch">
-          <div className="py-3 sm:min-h-[420px] sm:py-8">
-            <p className="inline-flex rounded-sm border border-[#f3a847]/70 bg-[#f3a847] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-[#111827] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.2em]">
-              {page.badge[language]}
-            </p>
-            <h1 className="mt-4 max-w-5xl text-2xl font-black leading-tight tracking-tight text-white drop-shadow-xl sm:mt-6 sm:text-5xl lg:text-6xl">
-              {page.title[language]}
-            </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-6 text-[#f3f4f6] sm:mt-5 sm:text-lg sm:leading-8">{page.subtitle[language]}</p>
-            <p className="mt-3 max-w-3xl text-xs leading-6 text-[#d5d9d9] sm:mt-4 sm:text-sm sm:leading-7">{page.description[language]}</p>
-            <div className="mt-5 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-3">
-              {isExternal(page.primaryHref) ? (
-                <a
-                  href={page.primaryHref}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] shadow hover:bg-[#f7ca00]"
-                >
-                  {page.primaryCta[language]} <ArrowRight className="h-4 w-4" />
-                </a>
-              ) : (
-                <Link
-                  href={page.primaryHref}
-                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] shadow hover:bg-[#f7ca00]"
-                >
-                  {page.primaryCta[language]} <ArrowRight className="h-4 w-4" />
-                </Link>
-              )}
-              <Link
-                href="/rewards"
-                className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/40 bg-[#111827]/70 px-5 py-3 text-sm font-bold text-white transition hover:border-[#ffd814] hover:text-[#ffd814]"
-              >
-                {t.koreaTrip}
-              </Link>
-            </div>
-          </div>
-
-          <aside className="rounded-sm border border-[#d5d9d9] bg-white p-4 text-[#111827] shadow-[0_12px_30px_rgba(0,0,0,0.22)] sm:p-5">
-            <div className="flex items-center justify-between gap-4 border-b border-[#d5d9d9] pb-5">
-              <div>
-                <p className="text-sm font-bold text-[#565959]">{t.pointsWallet}</p>
-                <p className="mt-1 text-4xl font-black text-[#b12704]">{user ? points : '--'}</p>
-              </div>
-              <div className="flex h-14 w-14 items-center justify-center rounded-sm bg-[#ffd814] text-[#111827]">
-                <Coins className="h-7 w-7" />
-              </div>
-            </div>
-            <div className="mt-5 grid gap-3">
-              <div className="rounded-sm border border-[#d5d9d9] bg-[#f7fafa] p-4">
-                <div className="flex items-center gap-3">
-                  <Gift className="h-5 w-5 text-[#b12704]" />
-                  <p className="text-sm font-bold text-[#111827]">100 welcome points</p>
+        <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-1 lg:items-stretch">
+          {pageKey === 'home' ? (
+            <div className="py-3 sm:min-h-[440px] sm:py-8">
+                <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#f3a847]/60 bg-[#f3a847] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-[#111827] shadow-[0_8px_24px_rgba(243,168,71,0.18)] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.2em]">
+                  <span className="h-2 w-2 rounded-full bg-[#111827]" />
+                  ITAEWON WORLD MUSIC SPIRIT FESTIVAL 2026
                 </div>
-                <p className="mt-2 text-sm leading-6 text-[#565959]">
-                  {user ? `${copy[language].hello}, ${user.fullName}` : t.welcomeBonus}
+                <h1 className="mt-4 max-w-5xl text-3xl font-black leading-[0.96] tracking-tight text-white drop-shadow-xl sm:mt-6 sm:text-4xl lg:text-6xl">
+                  K-CUBE INDIA PRE-SELECTION
+                </h1>
+                <div className="mt-5 inline-flex flex-col rounded-[24px] border border-[#f3a847]/35 bg-[#f3a847]/10 px-5 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.2)]">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#f3a847]">Application deadline</p>
+                  <p className="mt-2 text-xl font-black uppercase tracking-[0.18em] text-[#ffd814] sm:text-2xl">AUGUST 30, 2026</p>
+                </div>
+                <p className="mt-3 max-w-3xl text-base font-semibold leading-7 text-[#f3f4f6] sm:text-lg">
+                  Your voice. Your message. Your stage.
                 </p>
-              </div>
-              <div className="rounded-sm border border-[#d5d9d9] bg-[#f7fafa] p-4">
-                <div className="flex items-center gap-3">
-                  <Plane className="h-5 w-5 text-[#b12704]" />
-                  <p className="text-sm font-bold text-[#111827]">{t.koreaTrip}</p>
+                <div className="mt-5 rounded-[24px] border border-[#f3a847]/25 bg-[#0f1726]/82 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.18)] backdrop-blur-sm sm:p-5">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="max-w-2xl">
+                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#f3a847]">Important selection & travel support</p>
+                      <h2 className="mt-2 text-xl font-black leading-tight text-white sm:text-2xl">Selection, points, airfare, and accommodation</h2>
+                    </div>
+                    <Link
+                      href="/india-pre-selection/announcement"
+                      className="inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-sm border border-white/15 bg-white/[0.04] px-4 py-2.5 text-sm font-black text-white transition hover:border-[#ffd814] hover:text-[#ffd814]"
+                    >
+                      View Full Announcement
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    {homeSelectionSupportPoints.map((item) => (
+                      <div key={item.label} className="rounded-[18px] border border-white/10 bg-white/[0.03] p-3">
+                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#ffd814]">{item.value}</p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-[#f8fafc]">{item.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-1 text-sm text-[#d5d9d9]">
+                      <p className="font-semibold text-[#f8fafc]">Apply before the deadline to stay in the selection flow.</p>
+                      <p>Use the notice board for the latest updates and the main information page for the broader festival story.</p>
+                    </div>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
+                      <Link
+                        href="/india-pre-selection/apply"
+                        className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] shadow-[0_18px_40px_rgba(255,216,20,0.24)] transition hover:bg-[#f7ca00]"
+                      >
+                        Apply Now
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                      <Link
+                        href="/india-pre-selection"
+                        className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/25 bg-[#0b1220]/60 px-5 py-3 text-sm font-bold text-white transition hover:border-[#ffd814] hover:text-[#ffd814]"
+                      >
+                        View Event Details
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#d5d9d9]">
-                  <div className="h-full rounded-full bg-[#ffa41c]" style={{ width: `${user ? Math.min(points / 20, 100) : 0}%` }} />
-                </div>
-                <p className="mt-2 text-sm leading-6 text-[#565959]">{t.tripLine}</p>
-              </div>
             </div>
-          </aside>
+          ) : (
+            <>
+              <div className="py-3 sm:min-h-[420px] sm:py-8">
+                <p className="inline-flex rounded-sm border border-[#f3a847]/70 bg-[#f3a847] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-[#111827] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.2em]">
+                  {page.badge[language]}
+                </p>
+                <h1 className="mt-4 max-w-5xl text-2xl font-black leading-tight tracking-tight text-white drop-shadow-xl sm:mt-6 sm:text-5xl lg:text-6xl">
+                  {page.title[language]}
+                </h1>
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-[#f3f4f6] sm:mt-5 sm:text-lg sm:leading-8">{page.subtitle[language]}</p>
+                <p className="mt-3 max-w-3xl text-xs leading-6 text-[#d5d9d9] sm:mt-4 sm:text-sm sm:leading-7">{page.description[language]}</p>
+                <div className="mt-5 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-3">
+                  {isExternal(page.primaryHref) ? (
+                    <a
+                      href={page.primaryHref}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] shadow hover:bg-[#f7ca00]"
+                    >
+                      {page.primaryCta[language]} <ArrowRight className="h-4 w-4" />
+                    </a>
+                  ) : (
+                    <Link
+                      href={page.primaryHref}
+                      className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] shadow hover:bg-[#f7ca00]"
+                    >
+                      {page.primaryCta[language]} <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  )}
+                  <Link
+                    href="/rewards"
+                    className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/40 bg-[#111827]/70 px-5 py-3 text-sm font-bold text-white transition hover:border-[#ffd814] hover:text-[#ffd814]"
+                  >
+                    {t.koreaTrip}
+                  </Link>
+                </div>
+              </div>
+
+              <aside className="rounded-sm border border-[#d5d9d9] bg-white p-4 text-[#111827] shadow-[0_12px_30px_rgba(0,0,0,0.22)] sm:p-5">
+                <div className="flex items-center justify-between gap-4 border-b border-[#d5d9d9] pb-5">
+                  <div>
+                    <p className="text-sm font-bold text-[#565959]">{t.pointsWallet}</p>
+                    <p className="mt-1 text-4xl font-black text-[#b12704]">{user ? points : '--'}</p>
+                  </div>
+                  <div className="flex h-14 w-14 items-center justify-center rounded-sm bg-[#ffd814] text-[#111827]">
+                    <Coins className="h-7 w-7" />
+                  </div>
+                </div>
+                <div className="mt-5 grid gap-3">
+                  <div className="rounded-sm border border-[#d5d9d9] bg-[#f7fafa] p-4">
+                    <div className="flex items-center gap-3">
+                      <Gift className="h-5 w-5 text-[#b12704]" />
+                      <p className="text-sm font-bold text-[#111827]">100 welcome points</p>
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-[#565959]">
+                      {user ? `${copy[language].hello}, ${user.fullName}` : t.welcomeBonus}
+                    </p>
+                  </div>
+                  <div className="rounded-sm border border-[#d5d9d9] bg-[#f7fafa] p-4">
+                    <div className="flex items-center gap-3">
+                      <Plane className="h-5 w-5 text-[#b12704]" />
+                      <p className="text-sm font-bold text-[#111827]">{t.koreaTrip}</p>
+                    </div>
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#d5d9d9]">
+                      <div className="h-full rounded-full bg-[#ffa41c]" style={{ width: `${user ? Math.min(points / 20, 100) : 0}%` }} />
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-[#565959]">{t.tripLine}</p>
+                  </div>
+                </div>
+              </aside>
+            </>
+          )}
         </div>
       </section>
 
@@ -198,7 +276,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       </section>
 
       <section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
-        <div className="mx-auto max-w-[1760px] rounded-sm border border-[#d5d9d9] bg-white p-4 shadow-sm sm:p-5">
+        <div className="mx-auto max-w-[1760px] rounded-[28px] border border-[#d5d9d9] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">{visual.accent}</p>
@@ -208,32 +286,37 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
               <Star className="h-4 w-4 fill-[#ffa41c] text-[#ffa41c]" /> Curated for India
             </span>
           </div>
-          <div className="grid auto-cols-[86%] grid-flow-col gap-3 overflow-x-auto pb-1 md:auto-cols-auto md:grid-flow-row md:grid-cols-3 md:gap-4 md:overflow-visible md:pb-0">
-          {page.cards.map((card, index) => (
-            <article key={card.title.en} className="overflow-hidden rounded-sm border border-[#d5d9d9] bg-[#f7fafa]">
-              <div className="h-36 bg-cover bg-center sm:h-44" style={{ backgroundImage: `url(${cardImages[index % cardImages.length]})` }} />
-              <div className="p-4 sm:p-5">
-              <Sparkles className="h-6 w-6 text-[#b12704]" />
-              <h3 className="mt-3 text-lg font-black text-[#111827] sm:mt-4 sm:text-xl">{card.title[language]}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#565959] sm:mt-3 sm:min-h-[76px] sm:leading-7">{card.description[language]}</p>
-              {isExternal(card.href) ? (
-                <a href={card.href} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#007185] hover:text-[#c7511f]">
-                  {card.cta[language]} <ArrowRight className="h-4 w-4" />
-                </a>
-              ) : (
-                <Link href={card.href} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#007185] hover:text-[#c7511f]">
-                  {card.cta[language]} <ArrowRight className="h-4 w-4" />
-                </Link>
-              )}
-              </div>
-            </article>
-          ))}
+          <div className="grid gap-4 md:grid-cols-3">
+            {page.cards.map((card, index) => (
+              <article key={card.title.en} className="overflow-hidden rounded-[28px] border border-[#d5d9d9] bg-[#f7fafa] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                <div className="grid grid-rows-[220px_1fr] sm:grid-rows-[240px_1fr]">
+                  <div
+                    className="relative bg-cover bg-center"
+                    style={{ backgroundImage: `linear-gradient(180deg, rgba(17,24,39,0.04), rgba(17,24,39,0.5)), url(${cardImages[index % cardImages.length]})` }}
+                  />
+                  <div className="p-5 sm:p-6">
+                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#b12704]">{visual.accent}</p>
+                    <h3 className="mt-3 text-xl font-black text-[#111827] sm:text-2xl">{card.title[language]}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[#565959]">{card.description[language]}</p>
+                    {isExternal(card.href) ? (
+                      <a href={card.href} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[#b12704] hover:text-[#c7511f]">
+                        {card.cta[language]} <ArrowRight className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <Link href={card.href} className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[#b12704] hover:text-[#c7511f]">
+                        {card.cta[language]} <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
-        <div className="mx-auto max-w-[1760px] rounded-sm border border-[#d5d9d9] bg-[#111827] p-4 text-white shadow-sm sm:p-5">
+        <div className="mx-auto max-w-[1760px] rounded-[28px] border border-[#d5d9d9] bg-[#111827] p-4 text-white shadow-sm sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f3a847]">Shop spotlight</p>
@@ -243,11 +326,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
               Open shop <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid auto-cols-[84%] grid-flow-col gap-3 overflow-x-auto pb-1 md:auto-cols-auto md:grid-flow-row md:grid-cols-3 md:gap-4 md:overflow-visible md:pb-0">
+          <div className="grid gap-4 md:grid-cols-3">
             {featuredShopProducts.map((product) => (
-              <article key={product.id} className="overflow-hidden rounded-sm border border-white/10 bg-white/[0.04]">
-                <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(180deg, rgba(17,24,39,0.08), rgba(17,24,39,0.72)), url(${product.image})` }} />
-                <div className="p-4 sm:p-5">
+              <article key={product.id} className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.04]">
+                <div className="h-44 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(180deg, rgba(17,24,39,0.08), rgba(17,24,39,0.72)), url(${product.image})` }} />
+                <div className="p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f3a847]">{product.category.en}</p>
                     <span className="rounded-full bg-[#ffd814] px-3 py-1 text-xs font-black text-[#111827]">+{product.rewardPoints} pts</span>
@@ -308,7 +391,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
       {showActions ? (
         <section id="point-actions" className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10">
-          <div className="mx-auto max-w-[1760px] rounded-sm border border-[#d5d9d9] bg-white p-4 shadow-sm sm:p-5">
+          <div className="mx-auto max-w-[1760px] rounded-[28px] border border-[#d5d9d9] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
             <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704] sm:text-sm sm:tracking-[0.24em]">{t.earnPoints}</p>
@@ -319,10 +402,10 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {actions.map((action) => {
+              {actions.slice(0, 6).map((action) => {
                 const completed = completedActions.includes(action.id);
                 return (
-                  <article key={action.id} className="rounded-sm border border-[#d5d9d9] bg-[#f7fafa] p-4 sm:p-5">
+                  <article key={action.id} className="rounded-[24px] border border-[#d5d9d9] bg-[#f7fafa] p-4 sm:p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#b12704] sm:text-xs sm:tracking-[0.22em]">{action.category[language]}</p>
@@ -351,6 +434,12 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   </article>
                 );
               })}
+            </div>
+            <div className="mt-6 flex justify-center">
+              <Link href="/rewards#point-actions" className="inline-flex items-center gap-2 rounded-sm border border-[#d5d9d9] bg-white px-5 py-3 text-sm font-black text-[#111827] transition hover:border-[#f3a847] hover:text-[#b12704]">
+                View All Point Actions
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
           </div>
         </section>

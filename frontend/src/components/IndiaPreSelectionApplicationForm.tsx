@@ -19,6 +19,10 @@ type ApplicationFormState = {
   message: string;
 };
 
+type IndiaPreSelectionApplicationFormProps = {
+  compact?: boolean;
+};
+
 const emptyForm = (profile?: { fullName?: string; email?: string; phone?: string }): ApplicationFormState => ({
   full_name: profile?.fullName || '',
   email: profile?.email || '',
@@ -41,7 +45,7 @@ const categoryOptions = [
   'Other',
 ];
 
-const IndiaPreSelectionApplicationForm = () => {
+const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelectionApplicationFormProps) => {
   const user = useAppStore((state) => state.user);
   const awardPoints = useAppStore((state) => state.awardPoints);
   const [form, setForm] = useState<ApplicationFormState>(() => emptyForm(user || undefined));
@@ -168,7 +172,7 @@ const IndiaPreSelectionApplicationForm = () => {
 
   if (!user) {
     return (
-      <div className="mt-8 rounded-[28px] border border-[#f3a847]/30 bg-[#fff8df] p-6 shadow-sm">
+      <div className={`${compact ? '' : 'mt-8'} rounded-[28px] border border-[#f3a847]/30 bg-[#fff8df] p-6 shadow-sm`}>
         <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#b12704]">
           <ShieldCheck className="h-4 w-4" />
           Internal application
@@ -196,42 +200,46 @@ const IndiaPreSelectionApplicationForm = () => {
   }
 
   return (
-    <div id="application" className="mt-8 rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm sm:p-6 lg:p-8">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">Application form</p>
-          <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Apply inside K-CUBE</h2>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">+200 points</span>
-          <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">Saved to your account</span>
-          <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">{status || 'Not submitted yet'}</span>
-        </div>
-      </div>
+    <div id="application" className={`${compact ? '' : 'mt-8'} rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm sm:p-6 lg:p-8`}>
+      {compact ? null : (
+        <>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">Application form</p>
+              <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Apply inside K-CUBE</h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">+200 points</span>
+              <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">Saved to your account</span>
+              <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">{status || 'Not submitted yet'}</span>
+            </div>
+          </div>
 
-      <p className="mt-3 max-w-4xl text-sm leading-7 text-[#565959]">
-        This form keeps the full application inside K-CUBE instead of sending it by email. Submit once, edit later if needed, and the first submission awards your points automatically.
-      </p>
+          <p className="mt-3 max-w-4xl text-sm leading-7 text-[#565959]">
+            This form keeps the full application inside K-CUBE instead of sending it by email. Submit once, edit later if needed, and the first submission awards your points automatically.
+          </p>
 
-      {(status || reviewNote) ? (
-        <div className="mt-5 grid gap-3 rounded-[24px] border border-[#d5d9d9] bg-[#f7fafa] p-4 sm:grid-cols-3">
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Current status</p>
-            <p className="mt-2 text-sm font-bold text-[#111827]">{status || 'Not submitted yet'}</p>
-          </div>
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Reviewed by</p>
-            <p className="mt-2 text-sm font-bold text-[#111827]">{reviewedBy || 'Awaiting admin review'}</p>
-            {reviewedAt ? <p className="mt-1 text-xs text-[#565959]">{reviewedAt}</p> : null}
-          </div>
-          <div className="sm:col-span-1">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Review note</p>
-            <p className="mt-2 text-sm leading-6 text-[#565959]">
-              {reviewNote || 'Your application is saved. Once the admin reviews it, the note will appear here.'}
-            </p>
-          </div>
-        </div>
-      ) : null}
+          {(status || reviewNote) ? (
+            <div className="mt-5 grid gap-3 rounded-[24px] border border-[#d5d9d9] bg-[#f7fafa] p-4 sm:grid-cols-3">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Current status</p>
+                <p className="mt-2 text-sm font-bold text-[#111827]">{status || 'Not submitted yet'}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Reviewed by</p>
+                <p className="mt-2 text-sm font-bold text-[#111827]">{reviewedBy || 'Awaiting admin review'}</p>
+                {reviewedAt ? <p className="mt-1 text-xs text-[#565959]">{reviewedAt}</p> : null}
+              </div>
+              <div className="sm:col-span-1">
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Review note</p>
+                <p className="mt-2 text-sm leading-6 text-[#565959]">
+                  {reviewNote || 'Your application is saved. Once the admin reviews it, the note will appear here.'}
+                </p>
+              </div>
+            </div>
+          ) : null}
+        </>
+      )}
 
       {loading ? (
         <div className="mt-6 flex items-center gap-3 rounded-[22px] border border-[#d5d9d9] bg-[#f7fafa] px-4 py-4 text-sm font-semibold text-[#565959]">
