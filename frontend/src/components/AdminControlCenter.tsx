@@ -4744,9 +4744,9 @@ const AdminControlCenter = () => {
           </div>
         </header>
 
-        <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[auto_minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[248px_minmax(0,1fr)]">
           <aside
-            className={`border-b border-[#2c3338] bg-[#1d2327] lg:sticky lg:top-0 lg:block lg:h-[calc(100vh-72px)] lg:w-[248px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
+            className={`border-b border-[#2c3338] bg-[#1d2327] lg:fixed lg:left-0 lg:top-[72px] lg:z-30 lg:block lg:h-[calc(100vh-72px)] lg:w-[248px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
               sidebarOpen ? 'w-full' : 'w-full'
             }`}
           >
@@ -4803,7 +4803,7 @@ const AdminControlCenter = () => {
             </div>
           </aside>
 
-          <div className="min-w-0 px-5 py-6 lg:px-8 lg:py-8">
+          <div className="min-w-0 px-5 py-6 lg:col-start-2 lg:px-8 lg:py-8">
             <div className="mx-auto min-w-0 max-w-[1600px] space-y-6">
             <section className="min-w-0 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-4 shadow-[0_30px_100px_rgba(0,0,0,0.4)] lg:p-5">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
