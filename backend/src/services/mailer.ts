@@ -74,16 +74,19 @@ export const sendIndiaPreSelectionSubmissionEmail = async (application: {
 }) => {
   const mailer = getTransporter();
   if (!mailer) {
-    if (NODE_ENV !== 'production') {
-      console.log('[email:india-pre-selection]', { to: application.email, cc: INDIA_PRE_SELECTION_EMAIL_CC });
-    }
+    console.warn('[email:india-pre-selection] SMTP is not configured; notification skipped', {
+      smtpHostConfigured: Boolean(SMTP_HOST),
+      smtpUserConfigured: Boolean(SMTP_USER),
+      smtpPasswordConfigured: Boolean(SMTP_PASSWORD),
+      recipients: INDIA_PRE_SELECTION_EMAIL_CC,
+    });
     return { skipped: true };
   }
 
   await mailer.sendMail({
     from: SMTP_FROM,
-    to: application.email,
-    cc: INDIA_PRE_SELECTION_EMAIL_CC,
+    to: INDIA_PRE_SELECTION_EMAIL_CC,
+    replyTo: application.email,
     subject: `India Pre-Selection application received: ${application.full_name}`,
     text: [
       `A new India Pre-Selection application was submitted by ${application.full_name}.`,

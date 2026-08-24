@@ -249,12 +249,15 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
         console.error('Failed to sync India pre-selection application to Google Sheets', syncError);
       });
 
-      void sendIndiaPreSelectionSubmissionEmail(application).catch((mailError: unknown) => {
-        console.error('Failed to send India pre-selection submission email', mailError);
-      });
     }
   } else {
     awardedPoints = Number(application?.points_awarded || 0);
+  }
+
+  if (application) {
+    void sendIndiaPreSelectionSubmissionEmail(application).catch((mailError: unknown) => {
+      console.error('Failed to send India pre-selection submission email', mailError);
+    });
   }
 
   const [responseRows] = await pool.query(applicationWithReviewQuery, [req.user.id]);
