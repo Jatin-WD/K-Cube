@@ -9,6 +9,24 @@ import {
 
 const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const SHEET_HEADERS = [
+  'Submitted At',
+  'Application ID',
+  'User ID',
+  'Full Name',
+  'Email',
+  'Phone',
+  'Nationality',
+  'Current City',
+  'Date of Birth',
+  'Performance Category',
+  'Biography',
+  'Video Link',
+  'Message',
+  'Status',
+  'Points Awarded',
+  'Updated At',
+];
 
 type SheetApplicationPayload = {
   id?: number | null;
@@ -103,6 +121,33 @@ const toCellValue = (value: unknown) => {
   return typeof value === 'string' ? value : String(value);
 };
 
+const ensureSheetHeaders = async (accessToken: string, sheetName: string) => {
+  const headerRange = encodeURIComponent(`${sheetName}!A1:P1`);
+  const readResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_SPREADSHEET_ID}/values/${headerRange}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!readResponse.ok) {
+    throw new Error(`Google Sheets header read failed: ${readResponse.status} ${await readResponse.text()}`);
+  }
+
+  const current = await readResponse.json() as { values?: string[][] };
+  if (current.values?.[0]?.length === SHEET_HEADERS.length && current.values[0].every((value, index) => value === SHEET_HEADERS[index])) {
+    return;
+  }
+
+  const writeResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_SPREADSHEET_ID}/values/${headerRange}?valueInputOption=RAW`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ majorDimension: 'ROWS', values: [SHEET_HEADERS] }),
+  });
+  if (!writeResponse.ok) {
+    throw new Error(`Google Sheets header write failed: ${writeResponse.status} ${await writeResponse.text()}`);
+  }
+};
+
 export const syncIndiaPreSelectionApplicationToSheets = async (application: SheetApplicationPayload) => {
   if (!GOOGLE_SHEETS_SYNC_ENABLED) return;
   if (!GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL || !GOOGLE_SHEETS_PRIVATE_KEY || !GOOGLE_SHEETS_SPREADSHEET_ID) return;
@@ -111,6 +156,7 @@ export const syncIndiaPreSelectionApplicationToSheets = async (application: Shee
   if (!accessToken) return;
 
   const sheetName = GOOGLE_SHEETS_TAB_NAME || 'Applications';
+  await ensureSheetHeaders(accessToken, sheetName);
   const submittedAt = toCellValue(application.submitted_at || application.updated_at || new Date());
   const updatedAt = toCellValue(application.updated_at || application.submitted_at || new Date());
   const row = [
