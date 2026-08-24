@@ -7,17 +7,38 @@ import { ArrowRight, X } from 'lucide-react';
 
 export default function IndiaPreSelectionPopup() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
+    // Keep this popup desktop-only, including large touch devices that should
+    // not see the announcement modal.
+    const mediaQuery = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
+
+    const updateIsDesktop = () => {
+      setIsDesktop(mediaQuery.matches);
+    };
+
+    updateIsDesktop();
+    mediaQuery.addEventListener('change', updateIsDesktop);
+
+    return () => mediaQuery.removeEventListener('change', updateIsDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) {
+      setIsOpen(false);
+      return;
+    }
+
     const timer = window.setTimeout(() => {
       setIsOpen(true);
     }, 3500);
 
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [isDesktop]);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen || !isDesktop) {
       return;
     }
 
@@ -27,7 +48,7 @@ export default function IndiaPreSelectionPopup() {
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isOpen]);
+  }, [isOpen, isDesktop]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -41,6 +62,10 @@ export default function IndiaPreSelectionPopup() {
   }, []);
 
   if (!isOpen) {
+    return null;
+  }
+
+  if (!isDesktop) {
     return null;
   }
 
