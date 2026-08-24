@@ -4683,7 +4683,7 @@ const AdminControlCenter = () => {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#070708] text-white">
       <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-40 flex h-[72px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
+        <header className="fixed inset-x-0 top-0 z-40 flex h-[72px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
           <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffb900] text-lg font-black text-[#111111]">
@@ -4744,7 +4744,7 @@ const AdminControlCenter = () => {
           </div>
         </header>
 
-        <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[248px_minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 overflow-x-hidden pt-[72px] lg:grid-cols-[248px_minmax(0,1fr)]">
           <aside
             className={`border-b border-[#2c3338] bg-[#1d2327] lg:fixed lg:left-0 lg:top-[72px] lg:z-30 lg:block lg:h-[calc(100vh-72px)] lg:w-[248px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
               sidebarOpen ? 'w-full' : 'w-full'
