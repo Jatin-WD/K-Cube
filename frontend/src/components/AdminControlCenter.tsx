@@ -16,7 +16,6 @@ import {
   FilePenLine,
   Gift,
   LayoutDashboard,
-  Menu,
   Save,
   Settings2,
   ShieldCheck,
@@ -26,6 +25,7 @@ import {
   Mic2,
   ExternalLink,
   FileText,
+  LogOut,
   PlayCircle,
   Trash2,
   X,
@@ -898,7 +898,7 @@ const AdminControlCenter = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [notice, setNotice] = useState('');
   const [adminQuery, setAdminQuery] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarOpen = true;
 
   const [dashboardMetrics, setDashboardMetrics] = useState<Record<string, number>>({});
   const [analytics, setAnalytics] = useState<Record<string, number>>({});
@@ -1684,6 +1684,15 @@ const AdminControlCenter = () => {
     });
     setNotice('Password changed successfully.');
     setAdminPasswordForm(emptyPasswordForm);
+  };
+
+  const logoutAdmin = async () => {
+    try {
+      await api.post('/auth/logout');
+    } finally {
+      useAppStore.getState().signOut();
+      window.location.assign('/admin/login');
+    }
   };
 
   const createAdminAccount = async () => {
@@ -2697,6 +2706,10 @@ const AdminControlCenter = () => {
                 <KeyRound className="h-4 w-4" />
                 Change password
               </button>
+              <button type="button" onClick={logoutAdmin} className="inline-flex items-center gap-2 rounded-xl border border-red-500/30 px-4 py-3 text-sm font-black text-red-300 transition hover:border-red-400/60 hover:bg-red-500/10">
+                <LogOut className="h-4 w-4" />
+                Log out securely
+              </button>
             </div>
           </div>
         </SectionShell>
@@ -2725,7 +2738,7 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
       <SectionShell
         title="Admin accounts"
-        description="Create additional admin users and keep a tight roster of who has control-center access."
+        description="Create full administrator accounts here. Manager access is assigned from Users; event-only access is not yet available as a separate permission scope."
         actions={<span className="text-sm font-bold text-[#ffc400]">{filteredAdminAccounts.length} admins</span>}
       >
         <div className="space-y-3">
@@ -4670,17 +4683,9 @@ const AdminControlCenter = () => {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#070708] text-white">
       <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-40 flex h-[88px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
+        <header className="sticky top-0 z-40 flex h-[72px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
           <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setSidebarOpen((open) => !open)}
-                aria-label="Toggle admin menu"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#3c434a] bg-[#2c3338] text-[#f0f0f1] transition hover:bg-[#32373c] hover:text-white"
-              >
-                <Menu className="h-5 w-5" />
-              </button>
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffb900] text-lg font-black text-[#111111]">
                 K
               </div>
@@ -4741,8 +4746,8 @@ const AdminControlCenter = () => {
 
         <div className="grid min-h-0 flex-1 overflow-x-hidden lg:grid-cols-[auto_minmax(0,1fr)]">
           <aside
-            className={`border-b border-[#2c3338] bg-[#1d2327] transition-[width] duration-200 ease-out lg:sticky lg:top-0 lg:block lg:h-[calc(100vh-88px)] lg:border-b-0 lg:border-r lg:overflow-hidden ${
-              sidebarOpen ? 'w-full lg:w-[300px]' : 'w-full lg:w-[88px]'
+            className={`border-b border-[#2c3338] bg-[#1d2327] lg:sticky lg:top-0 lg:block lg:h-[calc(100vh-72px)] lg:w-[248px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
+              sidebarOpen ? 'w-full' : 'w-full'
             }`}
           >
             <div className="flex h-full min-h-0 flex-col">
@@ -4800,12 +4805,12 @@ const AdminControlCenter = () => {
 
           <div className="min-w-0 px-5 py-6 lg:px-8 lg:py-8">
             <div className="mx-auto min-w-0 max-w-[1600px] space-y-6">
-            <section className="min-w-0 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)]">
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <section className="min-w-0 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-4 shadow-[0_30px_100px_rgba(0,0,0,0.4)] lg:p-5">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.26em] text-[#ffc400]">Admin Dashboard</p>
-                  <h2 className="mt-3 text-4xl font-black">Full website control, all in one place.</h2>
-                  <p className="mt-3 max-w-3xl text-sm leading-7 text-[#aab5c6]">
+                  <h2 className="mt-2 text-3xl font-black">Full website control, all in one place.</h2>
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[#aab5c6]">
                     Edit pages, learning content, users, points, rewards, events, announcements and integrations from a single admin workspace.
                   </p>
                   {notice ? <p className="mt-4 text-sm font-bold text-[#ffcf86]">{notice}</p> : null}
