@@ -112,7 +112,7 @@ export default function IndiaPreSelectionApplyPage() {
           </div>
         </section>
 
-        <section className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10">
+        <section className="px-3 pb-12 pt-6 sm:px-4 sm:pb-16 sm:pt-8 lg:px-10">
           <div className="mx-auto max-w-[1760px] rounded-[30px] border border-[#d5d9d9] bg-white p-5 shadow-sm sm:p-6 lg:p-8">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div>
