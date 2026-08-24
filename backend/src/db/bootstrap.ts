@@ -20,7 +20,7 @@ export const bootstrapDatabase = async () => {
       PRIMARY KEY (id),
       UNIQUE KEY uniq_kfood_fulfillment_payment_order (payment_order_id),
       INDEX idx_kfood_fulfillment_status (fulfillment_status),
-      CONSTRAINT fk_kfood_fulfillment_payment_order FOREIGN KEY (payment_order_id) REFERENCES payment_orders(id) ON DELETE CASCADE
+      INDEX idx_kfood_fulfillment_payment_order (payment_order_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 };
