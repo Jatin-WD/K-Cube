@@ -9,16 +9,12 @@ export default function VerifyEmailClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  const [state, setState] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('Verifying your email...');
+  const [state, setState] = useState<'loading' | 'success' | 'error'>(token ? 'loading' : 'error');
+  const [message, setMessage] = useState(token ? 'Verifying your email...' : 'Verification token is missing.');
   const [verifiedEmail, setVerifiedEmail] = useState('');
 
   useEffect(() => {
-    if (!token) {
-      setState('error');
-      setMessage('Verification token is missing.');
-      return;
-    }
+    if (!token) return;
 
     let isMounted = true;
 
@@ -35,9 +31,17 @@ export default function VerifyEmailClient() {
         setTimeout(() => {
           router.replace(`/signin?verified=1${data.email ? `&email=${encodeURIComponent(data.email)}` : ''}`);
         }, 1400);
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (!isMounted) return;
-        const apiMessage = error?.response?.data?.error?.message || error?.response?.data?.message;
+        const apiError = error as {
+          response?: {
+            data?: {
+              error?: { message?: string };
+              message?: string;
+            };
+          };
+        };
+        const apiMessage = apiError.response?.data?.error?.message || apiError.response?.data?.message;
         setState('error');
         setMessage(apiMessage || 'Verification link is invalid or expired.');
       }

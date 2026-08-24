@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Check, Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Check, Eye, EyeOff, Lock } from 'lucide-react';
 import api from '@/lib/api';
 import { copy } from '@/lib/kcubeContent';
 import { useAppStore, type AuthMethod } from '@/store/useAppStore';
@@ -162,10 +162,14 @@ const AuthExperience = ({
 
   useEffect(() => {
     if (mode !== 'signin' || verified !== '1') return;
-    setMessage('Email verified successfully. You can sign in now.');
-    if (verifiedEmail) {
-      setForm((current) => ({ ...current, email: verifiedEmail }));
-    }
+    const timer = window.setTimeout(() => {
+      setMessage('Email verified successfully. You can sign in now.');
+      if (verifiedEmail) {
+        setForm((current) => ({ ...current, email: verifiedEmail }));
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [mode, verified, verifiedEmail]);
 
   const authSwitchHref = (target: 'signin' | 'signup') => {

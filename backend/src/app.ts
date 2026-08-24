@@ -17,9 +17,30 @@ import integrationRoutes from './routes/integrations';
 import shopRoutes from './routes/shop';
 import paymentRoutes from './routes/payments';
 import bootstrapDatabase from './db/bootstrap';
-import { API_PREFIX, KCUBE_SERVE_FRONTEND } from './config';
+import { API_PREFIX, APP_URL, KCUBE_SERVE_FRONTEND, NODE_ENV } from './config';
 
 export const app = express();
+
+const normalizeOrigin = (value: string) => {
+  try {
+    return new URL(value).origin;
+  } catch {
+    return value;
+  }
+};
+
+const allowedOrigins = new Set(
+  [
+    APP_URL,
+    process.env.FRONTEND_URL,
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+  ]
+    .filter((origin): origin is string => Boolean(origin))
+    .map(normalizeOrigin),
+);
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -33,7 +54,23 @@ app.use(helmet({
     },
   },
 }));
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+  credentials: true,
+  origin(origin, callback) {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const normalizedOrigin = normalizeOrigin(origin);
+    if (allowedOrigins.has(normalizedOrigin) || NODE_ENV !== 'production') {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -76,13 +113,14 @@ import { PORT } from './config';
 
 if (require.main === module) {
   bootstrapDatabase()
-    .catch((error) => {
-      console.error('Database bootstrap failed:', error);
-    })
-    .finally(() => {
+    .then(() => {
       app.listen(PORT, () => {
         console.log(`K-CUBE backend running on http://localhost:${PORT}${API_PREFIX}`);
       });
+    })
+    .catch((error) => {
+      console.error('Database bootstrap failed:', error);
+      process.exit(1);
     });
 }
 

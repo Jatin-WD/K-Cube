@@ -46,6 +46,12 @@ declare global {
   }
 }
 
+type RazorpayResponsePayload = {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+
 let razorpayScriptPromise: Promise<boolean> | null = null;
 
 const loadRazorpayScript = () => {
@@ -126,7 +132,7 @@ export const startRazorpayCheckout = async (
       modal: {
         ondismiss: () => reject(new Error('Payment was cancelled')),
       },
-      handler: async (responsePayload: any) => {
+      handler: async (responsePayload: RazorpayResponsePayload) => {
         try {
           const verifyResponse = await api.post('/payments/verify', {
             paymentOrderId: order.paymentOrderId,

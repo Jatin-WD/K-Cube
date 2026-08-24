@@ -10,8 +10,8 @@ import { useAppStore, type Language } from '@/store/useAppStore';
 
 const languageLabels: Record<Language, string> = {
   en: 'EN',
-  ko: '한국어',
-  hi: 'हिन्दी',
+  ko: '\uD55C\uAD6D\uC5B4',
+  hi: '\u0939\u093F\u0928\u094D\u0926\u0940',
 };
 
 const Header = () => {
@@ -60,11 +60,6 @@ const Header = () => {
     },
     [],
   );
-
-  useEffect(() => {
-    closeAllMenus();
-    setMobileMenuOpen(false);
-  }, [pathname]);
 
   const openMenu = (key: string) => {
     setActiveMenuKey(key);
@@ -402,6 +397,7 @@ const Header = () => {
               onMouseEnter={() => openMenu(activeMenu.label.en)}
             >
               <MegaMenu
+                key={`${activeMenu.label.en}-${activeMenu.dropdown.length}`}
                 sections={activeMenu.dropdown}
                 language={language}
                 onNavigate={closeAllMenus}

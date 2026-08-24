@@ -20,7 +20,21 @@ const KoreanLearningHub = () => {
         const payload = response.data?.data || response.data;
         if (!cancelled && Array.isArray(payload) && payload.length) {
           setRemoteTracks(
-            payload.map((track: any) => ({
+            payload.map((track: {
+              slug: string;
+              title: string;
+              eyebrow: string;
+              intro: string;
+              accent: string;
+              rewardPoints?: number;
+              reward_points?: number;
+              bankSize?: number;
+              bank_size?: number;
+              stepSize?: number;
+              step_size?: number;
+              overview?: string[];
+              loginCopy?: string[];
+            }) => ({
               slug: track.slug,
               title: track.title,
               eyebrow: track.eyebrow,

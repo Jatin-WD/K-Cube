@@ -734,17 +734,6 @@ const buildSectionPreviewLinks = (item: DetailItem): MenuLink[] =>
     points: item.points,
   })) ?? [];
 
-const buildCategoryPreviewLinks = (category: DetailCategory): MenuLink[] =>
-  detailItems
-    .filter((item) => item.category === category)
-    .slice(0, 3)
-    .map((item) => ({
-      label: item.title,
-      href: detailHref(item.category, item.slug),
-      description: item.summary,
-      points: item.points,
-    }));
-
 export interface AllMenuCategory {
   label: LocalText;
   href: string;

@@ -747,8 +747,8 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
 
       awardLearningPoints(`razorpay-payment-${payment.paymentOrderId}`, payment.pointsAwarded || product.points);
       setNotice(`${product.title} payment successful. +${payment.pointsAwarded || product.points} points synced.`);
-    } catch (error: any) {
-      setNotice(error?.message || 'Payment could not be completed.');
+    } catch (error: unknown) {
+      setNotice(error instanceof Error ? error.message : 'Payment could not be completed.');
     } finally {
       setIsPurchasing(false);
     }

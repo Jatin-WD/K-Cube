@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronRight, ExternalLink, Sparkles } from 'lucide-react';
 import type { Language } from '@/store/useAppStore';
@@ -39,27 +39,6 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
   const activeCategoryChildren = activeCategoryService?.children ?? [];
   const activeCategoryChild = activeCategoryChildren[activeChildIndex] ?? activeCategoryChildren[0];
   const activeCategoryHref = activeCategoryChild?.href ?? activeCategoryService?.href ?? activeCategory?.href;
-
-  useEffect(() => {
-    setActiveCategoryIndex(0);
-    setActiveServiceIndex(0);
-    setActiveChildIndex(0);
-  }, [isAllMenu, sections]);
-
-  useEffect(() => {
-    const featuredIndex = sections[0]?.links.findIndex((link) => link.featured) ?? -1;
-    setActiveLinkIndex(featuredIndex >= 0 ? featuredIndex : 0);
-    setActiveChildIndex(0);
-  }, [sections]);
-
-  useEffect(() => {
-    if (activeLinkIndex > serviceLinks.length - 1) {
-      setActiveLinkIndex(0);
-    }
-    if (activeChildIndex > activeChildren.length - 1) {
-      setActiveChildIndex(0);
-    }
-  }, [activeLinkIndex, activeChildIndex, serviceLinks.length, activeChildren.length]);
 
   if (!activeSection) return null;
 

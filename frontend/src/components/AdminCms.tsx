@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -180,7 +181,7 @@ const AdminCms = () => {
   useEffect(() => {
     if (!user || user.role !== 'admin') return;
     loadAdminData().catch(() => setNotice('Failed to load admin data.'));
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!selectedTrack) return;

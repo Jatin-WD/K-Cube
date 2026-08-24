@@ -24,6 +24,7 @@ const ShopPage = () => {
   const [message, setMessage] = useState('');
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [products, setProducts] = useState<ShopProduct[]>(staticShopProducts);
+  const formatCurrency = (amount: number) => `\u20B9${amount.toLocaleString('en-IN')}`;
 
   useEffect(() => {
     let mounted = true;
@@ -66,10 +67,11 @@ const ShopPage = () => {
     setMessage('');
 
     try {
+      const contextRef = `shop-${user.id}-${subtotal}-${cartItems.length}`;
       const payment = await startRazorpayCheckout({
         amount: subtotal,
         contextType: 'shop',
-        contextRef: `shop-${Date.now()}`,
+        contextRef,
         description: 'K-CUBE shop order',
         customerEmail: user.email ?? null,
         customerPhone: user.phone ?? null,
@@ -113,8 +115,9 @@ const ShopPage = () => {
       }
 
       setMessage(`Payment successful. Your order has been placed and +${payment.pointsAwarded || rewardTotal} points are synced.`);
-    } catch (error: any) {
-      setMessage(error?.message || 'Payment could not be completed.');
+    } catch (error: unknown) {
+      const messageText = error instanceof Error ? error.message : 'Payment could not be completed.';
+      setMessage(messageText);
     } finally {
       setIsCheckingOut(false);
     }
@@ -177,7 +180,7 @@ const ShopPage = () => {
                     <p className="mt-3 text-sm leading-6 text-[#5d646d]">{product.subtitle[language]}</p>
                     <div className="mt-5 flex items-end justify-between gap-3">
                       <div>
-                        <p className="text-2xl font-black text-[#111827]">Rs. {product.price}</p>
+                        <p className="text-2xl font-black text-[#111827]">{formatCurrency(product.price)}</p>
                         <p className="mt-1 text-sm font-bold text-[#b12704]">+{product.rewardPoints} pts</p>
                       </div>
                       <span className="rounded-full bg-[#fff4cc] px-3 py-1 text-xs font-black text-[#7a3b00]">{product.stockLabel[language]}</span>
@@ -227,7 +230,7 @@ const ShopPage = () => {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-black text-white">{product.title[language]}</p>
-                        <p className="mt-1 text-sm text-[#d5d9d9]">Rs. {product.price} each</p>
+                        <p className="mt-1 text-sm text-[#d5d9d9]">{formatCurrency(product.price)} each</p>
                       </div>
                       <button type="button" onClick={() => removeFromCart(product.id)} className="text-[#f3a847]">
                         <Trash2 className="h-4 w-4" />
@@ -255,7 +258,7 @@ const ShopPage = () => {
             <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#d5d9d9]">Subtotal</span>
-                <span className="font-black text-white">Rs. {subtotal}</span>
+                <span className="font-black text-white">{formatCurrency(subtotal)}</span>
               </div>
               <div className="mt-3 flex items-center justify-between text-sm">
                 <span className="text-[#d5d9d9]">{t.orderRewards}</span>
@@ -287,7 +290,7 @@ const ShopPage = () => {
               <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#f3a847]">Recent order</p>
                 <p className="mt-2 font-black text-white">{orders[0].items[0]?.title}</p>
-                <p className="mt-1 text-sm text-[#d5d9d9]">Rs. {orders[0].total} • +{orders[0].rewardPoints} pts</p>
+                <p className="mt-1 text-sm text-[#d5d9d9]">{formatCurrency(orders[0].total)} +{orders[0].rewardPoints} pts</p>
               </div>
             ) : null}
           </aside>

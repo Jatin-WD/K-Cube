@@ -139,7 +139,21 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
           overview: Array.isArray(payload.overview) ? payload.overview : [],
           loginCopy: Array.isArray(payload.loginCopy) ? payload.loginCopy : [],
           questionPool: Array.isArray(payload.questionPool)
-            ? payload.questionPool.map((question: any) => ({
+            ? payload.questionPool.map((question: {
+                questionKey?: string | number;
+                id?: string | number;
+                type?: QuizRound['type'];
+                tag?: string;
+                prompt?: string;
+                korean?: string;
+                answer?: string;
+                options?: unknown[];
+                words?: unknown[];
+                cards?: unknown[];
+                pairs?: unknown[];
+                hint?: string;
+                points?: number;
+              }) => ({
                 id: String(question.questionKey ?? question.id),
                 type: question.type,
                 tag: question.tag,
@@ -190,18 +204,22 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   const [attempts, setAttempts] = useState<SessionAttempt[]>([]);
 
   useEffect(() => {
-    setActiveIndex(0);
-    setSelected('');
-    setBuiltWords([]);
-    setMatched([]);
-    setHearts(5);
-    setXp(0);
-    setStreak(0);
-    setSessionPoints(0);
-    setCompleted(false);
-    setNotice('');
-    setStatus('idle');
-    setAttempts([]);
+    const timer = window.setTimeout(() => {
+      setActiveIndex(0);
+      setSelected('');
+      setBuiltWords([]);
+      setMatched([]);
+      setHearts(5);
+      setXp(0);
+      setStreak(0);
+      setSessionPoints(0);
+      setCompleted(false);
+      setNotice('');
+      setStatus('idle');
+      setAttempts([]);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [track?.slug, activeSeed]);
 
   useEffect(() => {
@@ -213,7 +231,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
         const response = await api.get('/learning/me/progress');
         const payload = response.data?.data || response.data;
         const progressRow = Array.isArray(payload?.progress)
-          ? payload.progress.find((item: any) => item.trackSlug === track.slug)
+          ? payload.progress.find((item: { trackSlug?: string }) => item.trackSlug === track.slug)
           : null;
         if (!cancelled && progressRow) {
           setStreak(Number(progressRow.currentStreak || 0));
@@ -228,7 +246,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
     return () => {
       cancelled = true;
     };
-  }, [signedIn, track?.slug]);
+  }, [signedIn, track, track?.slug]);
 
   if (!track || !sessionTrack) return null;
 

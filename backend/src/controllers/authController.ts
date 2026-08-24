@@ -5,7 +5,7 @@ import jwt, { Secret } from 'jsonwebtoken';
 import pool from '../db/pool';
 import { awardPoints } from '../services/pointsService';
 import { created, fail, ok } from '../lib/apiResponse';
-import { JWT_SECRET, JWT_REFRESH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_AUTH_REDIRECT_URI, GOOGLE_ALLOWED_WORKSPACE_DOMAIN } from '../config';
+import { JWT_SECRET, JWT_REFRESH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_AUTH_REDIRECT_URI, GOOGLE_ALLOWED_WORKSPACE_DOMAIN, NODE_ENV } from '../config';
 import { buildVerificationUrl, createVerificationToken, hashVerificationToken, sendVerificationEmail } from '../services/mailer';
 
 const jwtSecret: Secret = JWT_SECRET;
@@ -371,8 +371,12 @@ export const sendOtp = async (req: Request, res: Response) => {
     [phone, otpCode]
   );
 
-  // Temporary flow: return the code directly until SMS provider wiring is added.
-  return ok(res, { message: 'OTP generated', otpCode });
+  const response: Record<string, unknown> = { message: 'OTP generated' };
+  if (NODE_ENV !== 'production') {
+    response.otpCode = otpCode;
+  }
+
+  return ok(res, response);
 };
 
 export const verifyOtp = async (req: Request, res: Response) => {

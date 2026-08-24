@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CalendarDays, CheckCircle2, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
+import { CheckCircle2, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -54,14 +54,17 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [status, setStatus] = useState<string | null>(null);
-  const [points, setPoints] = useState<number>(0);
   const [reviewNote, setReviewNote] = useState('');
   const [reviewedBy, setReviewedBy] = useState('');
   const [reviewedAt, setReviewedAt] = useState('');
 
   useEffect(() => {
-    setForm(emptyForm(user || undefined));
-  }, [user?.id, user?.fullName, user?.email, user?.phone]);
+    const timer = window.setTimeout(() => {
+      setForm(emptyForm(user || undefined));
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [user]);
 
   useEffect(() => {
     let alive = true;
@@ -93,14 +96,19 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
           message: application.message || '',
         });
         setStatus(application.status || 'submitted');
-        setPoints(Number(application.points_awarded || 0));
         setReviewNote(application.review_note || '');
         setReviewedBy(application.reviewed_by_name || application.reviewed_by_email || '');
         setReviewedAt(application.reviewed_at ? new Date(application.reviewed_at).toLocaleString() : '');
-      } catch (requestError: any) {
-        const code = requestError?.response?.status;
+      } catch (requestError: unknown) {
+        const error = requestError as {
+          response?: {
+            status?: number;
+            data?: { error?: { message?: string } };
+          };
+        };
+        const code = error.response?.status;
         if (code !== 404 && code !== 401) {
-          setError(requestError?.response?.data?.error?.message || 'Could not load your saved application.');
+          setError(error.response?.data?.error?.message || 'Could not load your saved application.');
         }
       } finally {
         if (alive) setLoading(false);
@@ -139,7 +147,6 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
       }
 
       setStatus(application?.status || 'submitted');
-      setPoints(Number(application?.points_awarded || awarded || 0));
       setReviewNote(application?.review_note || '');
       setReviewedBy(application?.reviewed_by_name || application?.reviewed_by_email || '');
       setReviewedAt(application?.reviewed_at ? new Date(application.reviewed_at).toLocaleString() : '');
@@ -163,8 +170,11 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
           message: application.message || form.message,
         });
       }
-    } catch (requestError: any) {
-      setError(requestError?.response?.data?.error?.message || 'Could not submit your application right now.');
+    } catch (requestError: unknown) {
+      const error = requestError as {
+        response?: { data?: { error?: { message?: string } } };
+      };
+      setError(error.response?.data?.error?.message || 'Could not submit your application right now.');
     } finally {
       setSubmitting(false);
     }

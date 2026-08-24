@@ -25,10 +25,7 @@ export default function IndiaPreSelectionPopup() {
   }, []);
 
   useEffect(() => {
-    if (!isDesktop) {
-      setIsOpen(false);
-      return;
-    }
+    if (!isDesktop) return;
 
     const timer = window.setTimeout(() => {
       setIsOpen(true);
