@@ -3048,7 +3048,7 @@ const AdminControlCenter = () => {
           ))}
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(560px,1.1fr)_minmax(480px,0.9fr)]">
           <SectionShell
             title="India Pre-Selection queue"
             description="A compact reviewer queue with live status chips and audit-safe submission handling."
@@ -3099,8 +3099,8 @@ const AdminControlCenter = () => {
             description="Review the applicant on the left, then finalize moderation from the sticky decision stack."
           >
             {selectedIndiaApplication ? (
-              <div className="space-y-4">
-                <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+              <div className="min-w-0 space-y-4">
+                <div className="grid min-w-0 gap-4 2xl:grid-cols-[minmax(0,1fr)_minmax(280px,300px)]">
                   <div className="space-y-4">
                     <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
                       <div className="flex flex-wrap items-start justify-between gap-3">
