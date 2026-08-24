@@ -961,6 +961,7 @@ const AdminControlCenter = () => {
   const [selectedUploadId, setSelectedUploadId] = useState<number | null>(null);
   const [uploadReview, setUploadReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
   const [selectedIndiaApplicationId, setSelectedIndiaApplicationId] = useState<number | null>(null);
+  const [indiaReviewModalOpen, setIndiaReviewModalOpen] = useState(false);
   const [indiaApplicationReview, setIndiaApplicationReview] = useState({ status: 'reviewing', review_note: '' });
   const [selectedClaimId, setSelectedClaimId] = useState<number | null>(null);
   const [claimReview, setClaimReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
@@ -3048,55 +3049,75 @@ const AdminControlCenter = () => {
           ))}
         </div>
 
-        <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(560px,1.1fr)_minmax(480px,0.9fr)]">
+        <div className="min-w-0">
           <SectionShell
             title="India Pre-Selection queue"
-            description="A compact reviewer queue with live status chips and audit-safe submission handling."
+            description="Review every applicant from one full-width queue. Open a submission for complete details, moderation, and email follow-up."
             actions={<span className="text-sm font-bold text-[#ffc400]">{filteredIndiaApplications.length} records</span>}
           >
-            <div className="space-y-3">
+            <div className="overflow-hidden rounded-2xl border border-white/10">
+              <div className="hidden grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_150px_170px_150px] gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] lg:grid">
+                <span>Applicant</span>
+                <span>Contact</span>
+                <span>Location</span>
+                <span>Submitted</span>
+                <span className="text-right">Actions</span>
+              </div>
+              <div className="divide-y divide-white/10">
               {filteredIndiaApplications.map((entry) => {
                 const active = selectedIndiaApplicationId === entry.id;
+                const applicantEmail = entry.user_email || entry.email;
+                const mailHref = `mailto:${applicantEmail}?subject=${encodeURIComponent(`K-CUBE India Pre-Selection update for ${entry.full_name}`)}&body=${encodeURIComponent(`Hello ${entry.full_name},\n\nThank you for your India Pre-Selection application.\n\nRegards,\nK-CUBE Admin`)}`;
                 return (
-                  <button
+                  <div
                     key={entry.id}
-                    type="button"
-                    onClick={() => setSelectedIndiaApplicationId(entry.id)}
-                    className={`w-full rounded-2xl border p-4 text-left transition ${
-                      active ? 'border-[#ffc400] bg-black/40 shadow-[0_0_0_1px_rgba(255,196,0,0.12)]' : 'border-white/10 bg-black/20 hover:border-white/20'
-                    }`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => { setSelectedIndiaApplicationId(entry.id); setIndiaReviewModalOpen(true); }}
+                    onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedIndiaApplicationId(entry.id); setIndiaReviewModalOpen(true); } }}
+                    className={`grid cursor-pointer gap-4 px-5 py-5 text-left transition hover:bg-white/[0.04] lg:grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_150px_170px_150px] lg:items-center ${active ? 'bg-[#ffc400]/[0.06]' : 'bg-black/10'}`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
                         <p className="truncate text-lg font-black text-white">{entry.full_name}</p>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
-                            {entry.status}
-                          </span>
-                          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">
-                            {entry.performance_category || 'Application'}
-                          </span>
-                        </div>
+                        <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">{entry.status}</span>
                       </div>
-                      <div className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1]">
-                        <p>{entry.current_city || 'No city'}</p>
-                        <p className="mt-1">{entry.nationality || 'No nationality'}</p>
-                      </div>
+                      <p className="mt-2 text-sm text-[#aab5c6]">{entry.performance_category || 'Application'} / {entry.points_awarded || 0} points awarded</p>
                     </div>
-                    <div className="mt-3 grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-3">
-                      <p className="truncate">{entry.email}</p>
-                      <p>{entry.phone || 'No phone'}</p>
-                      <p>{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
+                    <div className="min-w-0 text-sm text-[#aab5c6]">
+                      <p className="truncate">{applicantEmail}</p>
+                      <p className="mt-1">{entry.phone || 'No phone'}</p>
                     </div>
-                  </button>
+                    <div className="text-sm text-[#d4dbe7]">
+                      <p>{entry.current_city || 'No city'}</p>
+                      <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[#98a4b1]">{entry.nationality || 'No nationality'}</p>
+                    </div>
+                    <p className="text-sm text-[#aab5c6]">{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
+                    <div className="flex flex-wrap gap-2 lg:justify-end" onClick={(event) => event.stopPropagation()}>
+                      <button type="button" onClick={() => { setSelectedIndiaApplicationId(entry.id); setIndiaReviewModalOpen(true); }} className="rounded-xl bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]">Open review</button>
+                      <a href={mailHref} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-bold text-white hover:border-[#ffc400]/50">Reply by email</a>
+                    </div>
+                  </div>
                 );
               })}
+              {!filteredIndiaApplications.length ? <p className="px-5 py-10 text-center text-sm text-[#aab5c6]">No applications match your search.</p> : null}
+              </div>
             </div>
           </SectionShell>
 
+          <div className={indiaReviewModalOpen && selectedIndiaApplication ? 'fixed inset-0 z-[90] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm' : 'hidden'} onClick={() => setIndiaReviewModalOpen(false)}>
+          <div className="max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-[28px] border border-white/10 bg-[#101014] p-5 shadow-[0_32px_100px_rgba(0,0,0,0.7)]" onClick={(event) => event.stopPropagation()}>
+          <div className="mb-5 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">India Pre-Selection review</p>
+              <h2 className="mt-2 text-2xl font-black text-white">Applicant details and decision</h2>
+              <p className="mt-2 text-sm text-[#aab5c6]">Review the submission carefully, update its status, and contact the applicant when needed.</p>
+            </div>
+            <button type="button" onClick={() => setIndiaReviewModalOpen(false)} className="rounded-full border border-white/10 p-2 text-[#d4dbe7] hover:border-[#ffc400]/50 hover:text-white" aria-label="Close review"><X className="h-5 w-5" /></button>
+          </div>
           <SectionShell
             title="Applicant profile + decision"
-            description="Review the applicant on the left, then finalize moderation from the sticky decision stack."
+            description="Complete application information and moderation controls."
           >
             {selectedIndiaApplication ? (
               <div className="min-w-0 space-y-4">
@@ -3108,6 +3129,12 @@ const AdminControlCenter = () => {
                           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">Applicant profile</p>
                           <h3 className="mt-2 text-3xl font-black text-white">{selectedIndiaApplication.full_name}</h3>
                           <p className="mt-2 text-sm text-[#aab5c6]">{selectedIndiaApplication.user_email || selectedIndiaApplication.email}</p>
+                          <a
+                            href={`mailto:${selectedIndiaApplication.user_email || selectedIndiaApplication.email}?subject=${encodeURIComponent(`K-CUBE India Pre-Selection update for ${selectedIndiaApplication.full_name}`)}`}
+                            className="mt-3 inline-flex rounded-xl border border-[#ffc400]/40 bg-[#ffc400]/10 px-3 py-2 text-xs font-black text-[#ffc400] hover:bg-[#ffc400]/20"
+                          >
+                            Reply by email
+                          </a>
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">
@@ -3232,6 +3259,8 @@ const AdminControlCenter = () => {
               <p className="text-sm text-[#aab5c6]">Select an application to review it here.</p>
             )}
           </SectionShell>
+        </div>
+        </div>
         </div>
       </div>
     );
