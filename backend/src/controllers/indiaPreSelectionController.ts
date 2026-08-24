@@ -3,9 +3,18 @@ import pool from '../db/pool';
 import { AuthRequest } from '../middleware/auth';
 import { awardPoints } from '../services/pointsService';
 import { created, fail, ok } from '../lib/apiResponse';
+import { syncIndiaPreSelectionApplicationToSheets } from '../services/googleSheetsService';
 
 const APPLICATION_POINTS = 200;
 const APPLICATION_SOURCE_SLUG = 'india-pre-selection-application';
+const PERFORMANCE_CATEGORIES = new Set([
+  'Singer',
+  'Musical artist',
+  'Dancer',
+  'Group performance',
+  'Instrumentalist',
+  'Other',
+]);
 
 const applicationFields = `
   id, user_id, full_name, email, phone, nationality, current_city, date_of_birth,
@@ -66,12 +75,31 @@ const cleanNullableText = (value: unknown) => {
   return text.length ? text : null;
 };
 
+const cleanEmail = (value: unknown) => cleanText(value).toLowerCase();
+
 const parseDate = (value: unknown) => {
   const text = cleanText(value);
   if (!text) return null;
   const parsed = new Date(text);
   if (Number.isNaN(parsed.getTime())) return undefined;
+  const today = new Date();
+  if (parsed.getTime() > today.getTime()) return undefined;
   return parsed.toISOString().slice(0, 10);
+};
+
+const normalizeVideoLink = (value: unknown) => {
+  const text = cleanText(value);
+  if (!text) return null;
+
+  const candidate = /^https?:\/\//i.test(text) ? text : `https://${text}`;
+  try {
+    const url = new URL(candidate);
+    if (!['http:', 'https:'].includes(url.protocol)) return null;
+    if (!url.hostname) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
 };
 
 const getCurrentUser = async (userId: number) => {
@@ -101,22 +129,26 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
   if (!user) return fail(res, 404, 'NOT_FOUND', 'User not found');
 
   const fullName = cleanText(req.body.full_name || user.full_name);
-  const email = cleanText(req.body.email || user.email);
+  const email = cleanEmail(req.body.email || user.email);
   const phone = cleanNullableText(req.body.phone || user.phone);
   const nationality = cleanNullableText(req.body.nationality);
   const currentCity = cleanNullableText(req.body.current_city);
   const dateOfBirth = parseDate(req.body.date_of_birth);
   const performanceCategory = cleanText(req.body.performance_category);
   const biography = cleanNullableText(req.body.biography);
-  const videoLink = cleanText(req.body.video_link);
+  const videoLink = normalizeVideoLink(req.body.video_link);
   const message = cleanNullableText(req.body.message);
 
   if (!fullName || !email || !performanceCategory || !videoLink) {
-    return fail(res, 400, 'VALIDATION_ERROR', 'Full name, email, performance category and video link are required');
+    return fail(res, 400, 'VALIDATION_ERROR', 'Full name, email, performance category and a valid video link are required');
   }
 
   if (dateOfBirth === undefined) {
     return fail(res, 400, 'VALIDATION_ERROR', 'Date of birth must be a valid date');
+  }
+
+  if (!PERFORMANCE_CATEGORIES.has(performanceCategory)) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Select a valid performance category');
   }
 
   const [existingRows] = await pool.query(
@@ -204,6 +236,17 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
         'UPDATE india_pre_selection_applications SET points_awarded = ? WHERE user_id = ?',
         [APPLICATION_POINTS, req.user.id],
       );
+    }
+
+    if (application) {
+      void syncIndiaPreSelectionApplicationToSheets({
+        ...application,
+        points_awarded: awardedPoints > 0 ? APPLICATION_POINTS : Number(application.points_awarded || 0),
+        submitted_at: application.submitted_at || new Date().toISOString(),
+        updated_at: application.updated_at || new Date().toISOString(),
+      }).catch((syncError: unknown) => {
+        console.error('Failed to sync India pre-selection application to Google Sheets', syncError);
+      });
     }
   } else {
     awardedPoints = Number(application?.points_awarded || 0);

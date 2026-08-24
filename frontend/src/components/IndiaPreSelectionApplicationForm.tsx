@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Loader2, ShieldCheck, Sparkles, X } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -21,6 +21,18 @@ type ApplicationFormState = {
 
 type IndiaPreSelectionApplicationFormProps = {
   compact?: boolean;
+};
+
+type SavedApplication = ApplicationFormState & {
+  id?: number | null;
+  status?: string | null;
+  points_awarded?: number | null;
+  submitted_at?: string | null;
+  updated_at?: string | null;
+  review_note?: string | null;
+  reviewed_by_name?: string | null;
+  reviewed_by_email?: string | null;
+  reviewed_at?: string | null;
 };
 
 const emptyForm = (profile?: { fullName?: string; email?: string; phone?: string }): ApplicationFormState => ({
@@ -45,10 +57,38 @@ const categoryOptions = [
   'Other',
 ];
 
+const isValidVideoLink = (value: string) => {
+  const text = value.trim();
+  if (!text) return false;
+  const candidate = /^https?:\/\//i.test(text) ? text : `https://${text}`;
+  try {
+    const url = new URL(candidate);
+    if (!['http:', 'https:'].includes(url.protocol)) return false;
+    if (!url.hostname) return false;
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const normalizeVideoLink = (value: string) => {
+  const text = value.trim();
+  if (!text) return '';
+  return /^https?:\/\//i.test(text) ? text : `https://${text}`;
+};
+
+const formatDateTime = (value?: string | null) => {
+  if (!value) return '';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return '';
+  return parsed.toLocaleString();
+};
+
 const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelectionApplicationFormProps) => {
   const user = useAppStore((state) => state.user);
   const awardPoints = useAppStore((state) => state.awardPoints);
   const [form, setForm] = useState<ApplicationFormState>(() => emptyForm(user || undefined));
+  const [submittedApplication, setSubmittedApplication] = useState<SavedApplication | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
@@ -57,6 +97,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
   const [reviewNote, setReviewNote] = useState('');
   const [reviewedBy, setReviewedBy] = useState('');
   const [reviewedAt, setReviewedAt] = useState('');
+  const [successVisible, setSuccessVisible] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -83,6 +124,29 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
           return;
         }
 
+        const nextApplication: SavedApplication = {
+          id: application.id ?? null,
+          full_name: application.full_name || user.fullName || '',
+          email: application.email || user.email || '',
+          phone: application.phone || user.phone || '',
+          nationality: application.nationality || 'India',
+          current_city: application.current_city || '',
+          date_of_birth: application.date_of_birth ? String(application.date_of_birth).slice(0, 10) : '',
+          performance_category: application.performance_category || '',
+          biography: application.biography || '',
+          video_link: application.video_link || '',
+          message: application.message || '',
+          status: application.status || 'submitted',
+          points_awarded: Number(application.points_awarded || 0),
+          submitted_at: application.submitted_at || null,
+          updated_at: application.updated_at || null,
+          review_note: application.review_note || '',
+          reviewed_by_name: application.reviewed_by_name || '',
+          reviewed_by_email: application.reviewed_by_email || '',
+          reviewed_at: application.reviewed_at || '',
+        };
+
+        setSubmittedApplication(nextApplication);
         setForm({
           full_name: application.full_name || user.fullName || '',
           email: application.email || user.email || '',
@@ -135,9 +199,18 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
       return;
     }
 
+    if (!isValidVideoLink(form.video_link)) {
+      setError('Please enter a valid YouTube, Google Drive, or public video URL.');
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const response = await api.post('/india-pre-selection/applications', form);
+      const payload = {
+        ...form,
+        video_link: normalizeVideoLink(form.video_link),
+      };
+      const response = await api.post('/india-pre-selection/applications', payload);
       const data = response.data?.data ?? response.data ?? {};
       const application = data.application ?? null;
       const awarded = Number(data.points_awarded || 0);
@@ -150,26 +223,35 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
       setReviewNote(application?.review_note || '');
       setReviewedBy(application?.reviewed_by_name || application?.reviewed_by_email || '');
       setReviewedAt(application?.reviewed_at ? new Date(application.reviewed_at).toLocaleString() : '');
+      const nextApplication: SavedApplication = {
+        id: application?.id ?? null,
+        full_name: application?.full_name || payload.full_name,
+        email: application?.email || payload.email,
+        phone: application?.phone ?? payload.phone,
+        nationality: application?.nationality ?? payload.nationality,
+        current_city: application?.current_city ?? payload.current_city,
+        date_of_birth: application?.date_of_birth ? String(application.date_of_birth).slice(0, 10) : payload.date_of_birth,
+        performance_category: application?.performance_category || payload.performance_category,
+        biography: application?.biography ?? payload.biography,
+        video_link: application?.video_link || payload.video_link,
+        message: application?.message ?? payload.message,
+        status: application?.status || 'submitted',
+        points_awarded: Number(application?.points_awarded || awarded || 0),
+        submitted_at: application?.submitted_at || new Date().toISOString(),
+        updated_at: application?.updated_at || new Date().toISOString(),
+        review_note: application?.review_note || '',
+        reviewed_by_name: application?.reviewed_by_name || '',
+        reviewed_by_email: application?.reviewed_by_email || '',
+        reviewed_at: application?.reviewed_at || '',
+      };
+
+      setSubmittedApplication(nextApplication);
       setMessage(
         awarded > 0
           ? `Application saved inside K-CUBE and ${awarded} points added.`
-          : 'Application updated inside K-CUBE.',
+          : 'Application submitted inside K-CUBE.',
       );
-
-      if (application) {
-        setForm({
-          full_name: application.full_name || form.full_name,
-          email: application.email || form.email,
-          phone: application.phone || form.phone,
-          nationality: application.nationality || form.nationality,
-          current_city: application.current_city || form.current_city,
-          date_of_birth: application.date_of_birth ? String(application.date_of_birth).slice(0, 10) : form.date_of_birth,
-          performance_category: application.performance_category || form.performance_category,
-          biography: application.biography || form.biography,
-          video_link: application.video_link || form.video_link,
-          message: application.message || form.message,
-        });
-      }
+      setSuccessVisible(true);
     } catch (requestError: unknown) {
       const error = requestError as {
         response?: { data?: { error?: { message?: string } } };
@@ -205,6 +287,147 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
             Create account
           </Link>
         </div>
+      </div>
+    );
+  }
+
+  if (!loading && submittedApplication) {
+    return (
+      <div className={`${compact ? '' : 'mt-8'} rounded-[28px] border border-[#d5d9d9] bg-[#0b1220] p-5 text-white shadow-sm sm:p-6 lg:p-8`}>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-3xl">
+            <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-[#f3a847]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#f3a847]">
+              <CheckCircle2 className="h-4 w-4" />
+              Submission received
+            </p>
+            <h2 className="mt-4 text-2xl font-black text-white sm:text-3xl">Your application is already saved</h2>
+            <p className="mt-3 text-sm leading-7 text-[#d5d9d9]">
+              We have stored your India pre-selection submission inside your K-CUBE account. You do not need to submit the same form again.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full border border-[#f3a847]/40 bg-[#fff8df] px-3 py-1 text-xs font-black text-[#111827]">
+              {submittedApplication.status || 'submitted'}
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-white">
+              Saved to account
+            </span>
+          </div>
+        </div>
+
+        {message ? (
+          <div className="mt-5 rounded-[22px] border border-emerald-300/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-100">
+            {message}
+          </div>
+        ) : null}
+
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Submitted by</p>
+            <p className="mt-2 text-sm font-bold text-white">{submittedApplication.full_name}</p>
+            <p className="mt-1 text-sm text-[#d5d9d9]">{submittedApplication.email}</p>
+          </div>
+          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Performance category</p>
+            <p className="mt-2 text-sm font-bold text-white">{submittedApplication.performance_category}</p>
+            <p className="mt-1 text-sm text-[#d5d9d9]">{submittedApplication.current_city || 'Current city not added'}</p>
+          </div>
+          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Submitted at</p>
+            <p className="mt-2 text-sm font-bold text-white">{formatDateTime(submittedApplication.submitted_at) || 'Just now'}</p>
+            <p className="mt-1 text-sm text-[#d5d9d9]">The application is now locked to your account.</p>
+          </div>
+          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Video link</p>
+            <a
+              href={submittedApplication.video_link}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-flex items-center gap-2 text-sm font-bold text-white underline decoration-white/40 underline-offset-4 transition hover:text-[#ffd814]"
+            >
+              Open submitted video link
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-3 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Next step</p>
+            <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">
+              Keep checking Announcement for live updates. If the review team adds feedback, it will appear in your account.
+            </p>
+          </div>
+          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Review note</p>
+            <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">
+              {reviewNote || 'Your submission is waiting for admin review.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/india-pre-selection/announcement"
+            className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
+          >
+            Check announcement
+          </Link>
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-bold text-white transition hover:border-[#ffd814] hover:text-[#ffd814]"
+          >
+            Back to home
+          </Link>
+        </div>
+
+        {successVisible ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm">
+            <div className="w-full max-w-lg rounded-[28px] border border-white/10 bg-[#0b1220] p-5 text-white shadow-2xl sm:p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-[#f3a847]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#f3a847]">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Submission successful
+                  </p>
+                  <h3 className="mt-4 text-2xl font-black text-white">Application saved successfully</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSuccessVisible(false)}
+                  className="rounded-full border border-white/10 bg-white/[0.04] p-2 text-white transition hover:bg-white/[0.08]"
+                  aria-label="Close success message"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <p className="mt-3 text-sm leading-7 text-[#d5d9d9]">
+                Your application is now stored in K-CUBE and linked to your account. The same form will not appear again for this account.
+              </p>
+              <div className="mt-5 rounded-[22px] border border-white/10 bg-white/[0.03] p-4">
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">What happens next</p>
+                <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">
+                  We will keep the data in your account, and if Google Sheets sync is enabled on the backend, the same submission will also be pushed into the team spreadsheet.
+                </p>
+              </div>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => setSuccessVisible(false)}
+                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
+                >
+                  Continue
+                </button>
+                <Link
+                  href="/india-pre-selection/announcement"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-bold text-white transition hover:border-[#ffd814] hover:text-[#ffd814]"
+                >
+                  View announcement
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -355,9 +578,12 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 required
                 value={form.video_link}
                 onChange={(event) => updateField('video_link', event.target.value)}
-                placeholder="YouTube, Google Drive, or public video URL"
+                placeholder="https://youtube.com, Google Drive, or public video URL"
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:border-[#f3a847] focus:bg-white"
               />
+              <p className="text-xs font-medium leading-5 text-[#565959]">
+                Paste a public video link. YouTube and Google Drive links are supported, and links without http:// or https:// will be normalized.
+              </p>
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
               Message to the K-CUBE team

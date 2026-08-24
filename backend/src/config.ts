@@ -44,6 +44,11 @@ export const GOOGLE_CALENDAR_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_CALENDAR
 export const GOOGLE_CALENDAR_PRIVATE_KEY = process.env.GOOGLE_CALENDAR_PRIVATE_KEY || '';
 export const GOOGLE_WORKSPACE_DELEGATED_ADMIN_EMAIL = process.env.GOOGLE_WORKSPACE_DELEGATED_ADMIN_EMAIL || '';
 export const GOOGLE_CALENDAR_SYNC_MODE = process.env.GOOGLE_CALENDAR_SYNC_MODE || 'admin_oauth';
+export const GOOGLE_SHEETS_SPREADSHEET_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '';
+export const GOOGLE_SHEETS_TAB_NAME = process.env.GOOGLE_SHEETS_TAB_NAME || 'Applications';
+export const GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL || '';
+export const GOOGLE_SHEETS_PRIVATE_KEY = process.env.GOOGLE_SHEETS_PRIVATE_KEY || '';
+export const GOOGLE_SHEETS_SYNC_ENABLED = String(process.env.GOOGLE_SHEETS_SYNC_ENABLED || '').toLowerCase() === 'true';
 export const SMTP_HOST = process.env.SMTP_HOST || '';
 export const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 export const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true';
