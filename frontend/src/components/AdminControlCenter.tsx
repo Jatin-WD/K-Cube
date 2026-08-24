@@ -1979,10 +1979,10 @@ const AdminControlCenter = () => {
         ].map((item) => {
           const Icon = item.icon;
           return (
-            <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <Icon className="h-6 w-6 text-[#ffc400]" />
-              <p className="mt-4 text-sm text-[#aab5c6]">{item.label}</p>
-              <p className="mt-2 text-3xl font-black">{item.value}</p>
+              <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-3.5">
+              <Icon className="h-5 w-5 text-[#ffc400]" />
+              <p className="mt-2 text-sm text-[#aab5c6]">{item.label}</p>
+              <p className="mt-1 text-2xl font-black">{item.value}</p>
             </article>
           );
         })}
@@ -4805,18 +4805,18 @@ const AdminControlCenter = () => {
 
           <div className="min-w-0 px-5 py-6 lg:col-start-2 lg:px-8 lg:py-8">
             <div className="mx-auto min-w-0 max-w-[1600px] space-y-6">
-            <section className="min-w-0 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-4 shadow-[0_30px_100px_rgba(0,0,0,0.4)] lg:p-5">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <section className="min-w-0 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-3 shadow-[0_30px_100px_rgba(0,0,0,0.4)] lg:p-4">
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.26em] text-[#ffc400]">Admin Dashboard</p>
-                  <h2 className="mt-2 text-3xl font-black">Full website control, all in one place.</h2>
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[#aab5c6]">
+                  <h2 className="mt-1 text-2xl font-black">Full website control, all in one place.</h2>
+                  <p className="mt-1 max-w-none text-sm leading-5 text-[#aab5c6] lg:whitespace-nowrap">
                     Edit pages, learning content, users, points, rewards, events, announcements and integrations from a single admin workspace.
                   </p>
                   {notice ? <p className="mt-4 text-sm font-bold text-[#ffcf86]">{notice}</p> : null}
                 </div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="min-w-[260px] flex-1">
+                <div className="flex flex-wrap items-center gap-2 lg:flex-nowrap">
+                  <div className="min-w-[220px] flex-1">
                     <input
                       value={adminQuery}
                       onChange={(event) => setAdminQuery(event.target.value)}
