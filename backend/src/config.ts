@@ -49,6 +49,10 @@ export const GOOGLE_SHEETS_TAB_NAME = process.env.GOOGLE_SHEETS_TAB_NAME || 'App
 export const GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL || '';
 export const GOOGLE_SHEETS_PRIVATE_KEY = process.env.GOOGLE_SHEETS_PRIVATE_KEY || '';
 export const GOOGLE_SHEETS_SYNC_ENABLED = String(process.env.GOOGLE_SHEETS_SYNC_ENABLED || '').toLowerCase() === 'true';
+export const INDIA_PRE_SELECTION_EMAIL_CC = (process.env.INDIA_PRE_SELECTION_EMAIL_CC || 'kcubeadm@gmail.com,taehwanlim@gmail.com,lkmallshop@gmail.com')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
 export const SMTP_HOST = process.env.SMTP_HOST || '';
 export const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 export const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true';

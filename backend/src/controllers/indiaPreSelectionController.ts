@@ -4,6 +4,7 @@ import { AuthRequest } from '../middleware/auth';
 import { awardPoints } from '../services/pointsService';
 import { created, fail, ok } from '../lib/apiResponse';
 import { syncIndiaPreSelectionApplicationToSheets } from '../services/googleSheetsService';
+import { sendIndiaPreSelectionSubmissionEmail } from '../services/mailer';
 
 const APPLICATION_POINTS = 200;
 const APPLICATION_SOURCE_SLUG = 'india-pre-selection-application';
@@ -246,6 +247,10 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
         updated_at: application.updated_at || new Date().toISOString(),
       }).catch((syncError: unknown) => {
         console.error('Failed to sync India pre-selection application to Google Sheets', syncError);
+      });
+
+      void sendIndiaPreSelectionSubmissionEmail(application).catch((mailError: unknown) => {
+        console.error('Failed to send India pre-selection submission email', mailError);
       });
     }
   } else {

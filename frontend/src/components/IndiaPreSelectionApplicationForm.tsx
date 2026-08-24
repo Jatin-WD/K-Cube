@@ -98,6 +98,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
   const [reviewedBy, setReviewedBy] = useState('');
   const [reviewedAt, setReviewedAt] = useState('');
   const [successVisible, setSuccessVisible] = useState(false);
+  const [videoLinkTouched, setVideoLinkTouched] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -193,6 +194,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
     event.preventDefault();
     setError('');
     setMessage('');
+    setVideoLinkTouched(true);
 
     if (!user) {
       setError('Please sign in first to submit your application inside K-CUBE.');
@@ -577,12 +579,19 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
               <input
                 required
                 value={form.video_link}
-                onChange={(event) => updateField('video_link', event.target.value)}
+                onChange={(event) => {
+                  setVideoLinkTouched(true);
+                  updateField('video_link', event.target.value);
+                }}
+                onBlur={() => setVideoLinkTouched(true)}
                 placeholder="https://youtube.com, Google Drive, or public video URL"
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:border-[#f3a847] focus:bg-white"
+                aria-invalid={videoLinkTouched && !isValidVideoLink(form.video_link)}
+                className={`rounded-2xl border bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:bg-white ${videoLinkTouched && !isValidVideoLink(form.video_link) ? 'border-red-500 focus:border-red-500' : 'border-[#d5d9d9] focus:border-[#f3a847]'}`}
               />
-              <p className="text-xs font-medium leading-5 text-[#565959]">
-                Paste a public video link. YouTube and Google Drive links are supported, and links without http:// or https:// will be normalized.
+              <p className={`text-xs font-medium leading-5 ${videoLinkTouched && !isValidVideoLink(form.video_link) ? 'text-red-600' : 'text-[#565959]'}`}>
+                {videoLinkTouched && !isValidVideoLink(form.video_link)
+                  ? 'Please enter a proper public video link, for example https://youtube.com/... or https://drive.google.com/....'
+                  : 'Paste a public video link. YouTube and Google Drive links are supported, and links without http:// or https:// will be normalized.'}
               </p>
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
