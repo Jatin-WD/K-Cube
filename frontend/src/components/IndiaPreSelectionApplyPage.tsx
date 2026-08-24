@@ -60,7 +60,7 @@ export default function IndiaPreSelectionApplyPage() {
   if (user) {
     return (
       <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,216,20,0.16),_transparent_28%),_linear-gradient(180deg,#f4f1ea_0%,#ece8dc_100%)] text-[#111827]">
-        <section className="px-3 py-8 sm:px-4 sm:py-10 lg:px-10 lg:py-12">
+        <section className="hidden">
           <div className="mx-auto grid max-w-[1760px] gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
             <article className="overflow-hidden rounded-[32px] border border-[#d5d9d9] bg-[linear-gradient(180deg,#111827_0%,#0b1220_100%)] p-6 text-white shadow-[0_30px_80px_rgba(0,0,0,0.24)] sm:p-8 lg:p-10">
               <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-[#f3a847]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.26em] text-[#f3a847]">
