@@ -4683,7 +4683,7 @@ const AdminControlCenter = () => {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#070708] text-white">
       <div className="flex min-h-screen flex-col">
-        <header className="fixed inset-x-0 top-0 z-40 flex h-[72px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
+        <header className="fixed inset-x-0 top-0 z-40 flex h-[64px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
           <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffb900] text-lg font-black text-[#111111]">
@@ -4744,14 +4744,14 @@ const AdminControlCenter = () => {
           </div>
         </header>
 
-        <div className="grid min-h-0 flex-1 overflow-x-hidden pt-[72px] lg:grid-cols-[248px_minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 overflow-x-hidden pt-[64px] lg:grid-cols-[220px_minmax(0,1fr)]">
           <aside
-            className={`border-b border-[#2c3338] bg-[#1d2327] lg:fixed lg:left-0 lg:top-[72px] lg:z-30 lg:block lg:h-[calc(100vh-72px)] lg:w-[248px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
+            className={`border-b border-[#2c3338] bg-[#1d2327] lg:fixed lg:left-0 lg:top-[64px] lg:z-30 lg:block lg:h-[calc(100vh-64px)] lg:w-[220px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
               sidebarOpen ? 'w-full' : 'w-full'
             }`}
           >
             <div className="flex h-full min-h-0 flex-col">
-              <div className="flex-1 overflow-y-auto px-1 py-1.5">
+              <div className="admin-scrollbar flex-1 overflow-y-auto px-1 py-1.5">
                 <div className="space-y-2.5">
                   {adminSidebarGroups.map((group) => (
                     <div key={group.title} className="space-y-2">
@@ -4768,7 +4768,7 @@ const AdminControlCenter = () => {
                               type="button"
                               onClick={() => setActiveSection(item.id as AdminSection)}
                               title={item.label}
-                              className={`flex w-full items-center rounded-xl border px-2.5 py-2.5 text-left transition ${
+                              className={`flex w-full items-center rounded-xl border px-2 py-2 text-left transition ${
                                 sidebarOpen ? 'gap-3' : 'justify-center'
                               } ${
                                 active
@@ -4776,12 +4776,12 @@ const AdminControlCenter = () => {
                                   : 'border-[#2c3338] bg-[#1d2327] text-[#f0f0f1] hover:border-[#3c434a] hover:bg-[#23282d]'
                               }`}
                             >
-                              <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-[#ffb900] text-[#111111]' : 'bg-[#2c3338] text-[#b4b9be]'}`}>
+                              <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-[#ffb900] text-[#111111]' : 'bg-[#2c3338] text-[#b4b9be]'}`}>
                                 <Icon className="h-4 w-4" />
                               </span>
                               <div className={`min-w-0 ${sidebarOpen ? '' : 'lg:hidden'}`}>
-                                <p className="font-black">{item.label}</p>
-                                <p className="mt-0.5 text-xs leading-5 text-[#b4b9be]">{item.description}</p>
+                                <p className="text-sm font-black">{item.label}</p>
+                                <p className="mt-0.5 text-[11px] leading-4 text-[#b4b9be]">{item.description}</p>
                               </div>
                             </button>
                           );

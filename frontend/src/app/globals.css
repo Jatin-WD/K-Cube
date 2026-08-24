@@ -86,3 +86,28 @@ body.learning-game-mode > div > header,
 body.learning-game-mode > div > footer {
   display: none;
 }
+
+.admin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #59636b #171b1e;
+  scrollbar-gutter: stable;
+}
+
+.admin-scrollbar::-webkit-scrollbar {
+  width: 7px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: #171b1e;
+  border-radius: 999px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ffc400, #7e858b);
+  border: 2px solid #171b1e;
+  border-radius: 999px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #ffc400;
+}
