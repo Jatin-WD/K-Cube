@@ -6,7 +6,7 @@ import pool from '../db/pool';
 import { awardPoints } from '../services/pointsService';
 import { created, fail, ok } from '../lib/apiResponse';
 import { JWT_SECRET, JWT_REFRESH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_AUTH_REDIRECT_URI, GOOGLE_ALLOWED_WORKSPACE_DOMAIN, NODE_ENV } from '../config';
-import { buildVerificationUrl, createVerificationToken, hashVerificationToken, sendVerificationEmail } from '../services/mailer';
+import { buildVerificationUrl, createVerificationToken, hashVerificationToken, sendUserRegistrationNotificationEmail, sendVerificationEmail } from '../services/mailer';
 
 const jwtSecret: Secret = JWT_SECRET;
 const refreshSecret: Secret = JWT_REFRESH_SECRET;
@@ -198,13 +198,20 @@ const issueEmailVerification = async (userId: number, email: string, fullName: s
     'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at, created_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR), NOW())',
     [userId, tokenHash]
   );
+
+  let verificationEmailSent = true;
+  let verificationEmailError: string | null = null;
+
   try {
-    await sendVerificationEmail(email, fullName, verificationUrl);
+    const delivery = await sendVerificationEmail(email, fullName, verificationUrl);
+    verificationEmailSent = !delivery.skipped;
   } catch (error) {
+    verificationEmailSent = false;
+    verificationEmailError = error instanceof Error ? error.message : 'Failed to send verification email';
     console.error('Failed to send verification email', error);
   }
 
-  return { verificationUrl };
+  return { verificationUrl, verificationEmailSent, verificationEmailError };
 };
 
 export const register = async (req: Request, res: Response) => {
@@ -239,7 +246,16 @@ export const register = async (req: Request, res: Response) => {
     'INSERT IGNORE INTO auth_identities (user_id, provider, provider_user_id, email, verified, created_at, updated_at) VALUES (?, ?, ?, ?, FALSE, NOW(), NOW())',
     [userId, 'password', normalizedEmail, normalizedEmail],
   );
-  const { verificationUrl } = await issueEmailVerification(userId, normalizedEmail, normalizedFullName);
+  const { verificationUrl, verificationEmailSent, verificationEmailError } = await issueEmailVerification(userId, normalizedEmail, normalizedFullName);
+  void sendUserRegistrationNotificationEmail({
+    full_name: normalizedFullName,
+    username: normalizedUsername,
+    email: normalizedEmail,
+    phone: phone || null,
+    category_access: categoryAccess,
+  }).catch((error: unknown) => {
+    console.error('Failed to send user registration notification', error);
+  });
   return created(res, {
     user: {
       id: userId,
@@ -254,7 +270,11 @@ export const register = async (req: Request, res: Response) => {
       status: 'pending',
     },
     verificationRequired: true,
-    message: 'Verification email sent. Please confirm your email before signing in.',
+    verificationEmailSent,
+    verificationEmailError,
+    message: verificationEmailSent
+      ? 'Verification email sent. Please confirm your email before signing in.'
+      : 'Account created, but the verification email could not be delivered. Please try again or contact support.',
     verificationUrl: process.env.NODE_ENV === 'production' ? undefined : verificationUrl,
   });
 };
@@ -315,10 +335,14 @@ export const resendVerification = async (req: Request, res: Response) => {
     return ok(res, { alreadyVerified: true, message: 'Account is already verified.' });
   }
 
-  const { verificationUrl } = await issueEmailVerification(user.id, user.email, user.full_name);
+  const { verificationUrl, verificationEmailSent, verificationEmailError } = await issueEmailVerification(user.id, user.email, user.full_name);
   return ok(res, {
     resent: true,
-    message: 'Verification email sent again. Please check your inbox.',
+    verificationEmailSent,
+    verificationEmailError,
+    message: verificationEmailSent
+      ? 'Verification email sent again. Please check your inbox.'
+      : 'Verification email could not be delivered. Please check SMTP configuration.',
     verificationUrl: process.env.NODE_ENV === 'production' ? undefined : verificationUrl,
   });
 };
@@ -509,6 +533,14 @@ export const googleAuth = async (req: Request, res: Response) => {
         isNewUser = true;
         await awardWelcomePoints(userId);
         await awardReferralPoints(userId, referralCode);
+        void sendUserRegistrationNotificationEmail({
+          full_name: fullName,
+          username,
+          email,
+          category_access: 'category_c',
+        }).catch((error: unknown) => {
+          console.error('Failed to send Google user registration notification', error);
+        });
       }
 
       await pool.query(

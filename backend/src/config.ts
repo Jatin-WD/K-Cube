@@ -59,6 +59,7 @@ export const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() =
 export const SMTP_USER = process.env.SMTP_USER || '';
 export const SMTP_PASSWORD = process.env.SMTP_PASSWORD || '';
 export const SMTP_FROM = process.env.SMTP_FROM || 'K-CUBE <no-reply@k-cube.local>';
+export const REGISTRATION_NOTIFICATION_EMAIL = process.env.REGISTRATION_NOTIFICATION_EMAIL || SMTP_USER;
 export const PETPOOJA_API_BASE_URL = process.env.PETPOOJA_API_BASE_URL || '';
 export const PETPOOJA_API_KEY = process.env.PETPOOJA_API_KEY || '';
 export const PETPOOJA_WEBHOOK_SECRET = process.env.PETPOOJA_WEBHOOK_SECRET || '';

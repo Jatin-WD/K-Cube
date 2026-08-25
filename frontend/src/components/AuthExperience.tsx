@@ -208,6 +208,13 @@ const AuthExperience = ({
 
       if (mode === 'signup' && data.verificationRequired) {
         setMessage(data.message || 'Verification email sent. Please check your inbox before signing in.');
+        if (data.verificationEmailSent === false) {
+          setMessage(
+            typeof data.verificationEmailError === 'string' && data.verificationEmailError
+              ? `${data.message || 'Account created, but verification email could not be delivered.'} ${data.verificationEmailError}`
+              : data.message || 'Account created, but verification email could not be delivered.'
+          );
+        }
         const referralCode = typeof data.user?.referral_code === 'string'
           ? data.user.referral_code
           : typeof data.user?.referralCode === 'string'

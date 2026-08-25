@@ -1,8 +1,11 @@
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
-import { APP_URL, INDIA_PRE_SELECTION_EMAIL_CC, NODE_ENV, SMTP_FROM, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_SECURE, SMTP_USER } from '../config';
+import { APP_URL, INDIA_PRE_SELECTION_EMAIL_CC, NODE_ENV, REGISTRATION_NOTIFICATION_EMAIL, SMTP_FROM, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_SECURE, SMTP_USER } from '../config';
 
 let transporter: nodemailer.Transporter | null = null;
+
+// A local placeholder sender breaks Gmail/domain alignment and often lands in spam.
+const getFromAddress = () => SMTP_FROM.includes('@k-cube.local') ? SMTP_USER : (SMTP_FROM || SMTP_USER);
 
 const getTransporter = () => {
   if (transporter) return transporter;
@@ -36,18 +39,26 @@ export const hashVerificationToken = (token: string) => crypto.createHash('sha25
 
 export const sendVerificationEmail = async (to: string, fullName: string, verificationUrl: string) => {
   const mailer = getTransporter();
+  const from = getFromAddress();
 
   if (!mailer) {
+    const error = new Error('SMTP is not configured for verification email delivery');
     if (NODE_ENV !== 'production') {
       console.log('[email:verification]', { to, verificationUrl });
+      return { skipped: true, error };
     }
-    return { skipped: true };
+    throw error;
   }
 
   await mailer.sendMail({
-    from: SMTP_FROM,
+    from,
+    replyTo: SMTP_USER || from,
     to,
     subject: 'Verify your K-CUBE account',
+    headers: {
+      'X-Auto-Response-Suppress': 'All',
+      'Auto-Submitted': 'auto-generated',
+    },
     text: `Hi ${fullName},\n\nPlease verify your K-CUBE account by opening this link:\n${verificationUrl}\n\nIf you did not sign up, you can ignore this email.`,
     html: `
       <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
@@ -59,6 +70,39 @@ export const sendVerificationEmail = async (to: string, fullName: string, verifi
         <p style="margin:0;font-size:14px;color:#2563eb;word-break:break-all">${verificationUrl}</p>
       </div>
     `,
+  });
+
+  return { skipped: false };
+};
+
+export const sendUserRegistrationNotificationEmail = async (user: {
+  full_name: string;
+  username: string;
+  email: string;
+  phone?: string | null;
+  category_access?: string | null;
+  registered_at?: string | Date | null;
+}) => {
+  const mailer = getTransporter();
+  if (!mailer || !REGISTRATION_NOTIFICATION_EMAIL) {
+    console.warn('[email:user-registration] SMTP or recipient is not configured; notification skipped');
+    return { skipped: true };
+  }
+
+  await mailer.sendMail({
+    from: getFromAddress(),
+    to: REGISTRATION_NOTIFICATION_EMAIL,
+    replyTo: user.email,
+    subject: `New K-CUBE user registered: ${user.full_name}`,
+    text: [
+      'A new user registered on K-CUBE.',
+      `Name: ${user.full_name}`,
+      `Username: ${user.username}`,
+      `Email: ${user.email}`,
+      `Phone: ${user.phone || 'Not provided'}`,
+      `Category: ${user.category_access || 'Not provided'}`,
+      `Registered at: ${user.registered_at || new Date().toISOString()}`,
+    ].join('\n'),
   });
 
   return { skipped: false };
