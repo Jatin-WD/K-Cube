@@ -971,6 +971,7 @@ const AdminControlCenter = () => {
   const [reviewSuccess, setReviewSuccess] = useState('');
   const [userSuccess, setUserSuccess] = useState('');
   const [emailSuccess, setEmailSuccess] = useState('');
+  const [emailSending, setEmailSending] = useState(false);
   const [userDeleteConfirm, setUserDeleteConfirm] = useState(false);
   const [adminQuery, setAdminQuery] = useState('');
   const sidebarOpen = true;
@@ -2103,9 +2104,11 @@ const AdminControlCenter = () => {
 
   const sendEmailMessage = async (mode: 'bulk' | 'single') => {
     const form = mode === 'bulk' ? bulkEmailForm : singleEmailForm;
-    if (mode === 'bulk' && typeof window !== 'undefined' && !window.confirm(`Send this email to all ${users.length} non-deleted users with email addresses?`)) return;
+    if (mode === 'bulk' && typeof window !== 'undefined' && !window.confirm(`Send this email to all ${emailRecipientCount || users.length} non-deleted users with email addresses?`)) return;
 
     try {
+      setNotice('');
+      setEmailSending(true);
       const response = await api.post('/admin/email/send', { ...form, mode });
       const count = Number(response.data?.data?.recipient_count || 0);
       setEmailSuccess(`${mode === 'bulk' ? 'Promotional email' : 'Email'} sent successfully to ${count} recipient${count === 1 ? '' : 's'}.`);
@@ -2115,6 +2118,8 @@ const AdminControlCenter = () => {
     } catch (error: unknown) {
       const response = (error as { response?: { data?: { error?: { message?: string } } } }).response;
       setNotice(response?.data?.error?.message || 'Email could not be sent. Check the details and try again.');
+    } finally {
+      setEmailSending(false);
     }
   };
 
@@ -2122,6 +2127,12 @@ const AdminControlCenter = () => {
 
   const renderSendEmail = () => (
     <div className="space-y-5">
+      {emailSending ? (
+        <div className="rounded-2xl border border-[#ffc400]/30 bg-[#ffc400]/10 p-4" role="status" aria-live="polite">
+          <div className="flex items-center justify-between gap-3"><p className="text-sm font-black text-[#ffc400]">Sending email...</p><span className="text-xs text-[#d4dbe7]">Please keep this page open</span></div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-black/30"><div className="h-full w-1/2 animate-pulse rounded-full bg-[#ffc400]" /></div>
+        </div>
+      ) : null}
       <div className="grid gap-5 xl:grid-cols-2">
         <SectionShell
           title="All users"
@@ -2135,7 +2146,7 @@ const AdminControlCenter = () => {
             <Field label="Message">
               <textarea className={`${inputClass} min-h-48`} placeholder="Write the promotional message..." value={bulkEmailForm.body} onChange={(event) => setBulkEmailForm((state) => ({ ...state, body: event.target.value }))} />
             </Field>
-            <button type="button" onClick={() => void sendEmailMessage('bulk')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+            <button type="button" disabled={emailSending} onClick={() => void sendEmailMessage('bulk')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111] disabled:cursor-wait disabled:opacity-60">
               <Send className="h-4 w-4" /> Send to all users
             </button>
           </div>
@@ -2159,7 +2170,7 @@ const AdminControlCenter = () => {
             <Field label="Message">
               <textarea className={`${inputClass} min-h-32`} placeholder="Write your message..." value={singleEmailForm.body} onChange={(event) => setSingleEmailForm((state) => ({ ...state, body: event.target.value }))} />
             </Field>
-            <button type="button" onClick={() => void sendEmailMessage('single')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+            <button type="button" disabled={emailSending} onClick={() => void sendEmailMessage('single')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111] disabled:cursor-wait disabled:opacity-60">
               <Send className="h-4 w-4" /> Send email
             </button>
           </div>
@@ -2177,18 +2188,19 @@ const AdminControlCenter = () => {
         </div>
         <div className="overflow-hidden rounded-2xl border border-white/10">
           <div className="hidden grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)] gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] lg:grid">
-            <span>S.No.</span><span>Title</span><span>Type</span><span>Recipients</span><span>Sent</span><span>Status</span>
+            <span>S.No.</span><span>Title</span><span>Type</span><span>Recipients</span><span>Sent</span><span>Status</span><span className="text-right">Action</span>
           </div>
           <div className="divide-y divide-white/10">
             <PaginatedList items={filteredSentEmails}>
               {(visibleEmails, emailOffset) => visibleEmails.map((email, index) => (
-                <button key={email.id} type="button" onClick={() => setSelectedSentEmail(email)} className="grid w-full gap-3 px-5 py-4 text-left transition hover:bg-white/[0.04] lg:grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)] lg:items-center">
+                <button key={email.id} type="button" onClick={() => setSelectedSentEmail(email)} className="grid w-full gap-3 px-5 py-4 text-left transition hover:bg-white/[0.04] lg:grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)_70px] lg:items-center">
                   <span className="text-sm font-bold text-[#7d8a99]">{emailOffset + index + 1}</span>
                   <div className="min-w-0"><p className="truncate text-sm font-black text-white">{email.subject}</p><p className="mt-1 truncate text-xs text-[#aab5c6]">{email.delivery_mode === 'bulk' ? 'All users' : (parseEmailList(email.recipient_names_json)[0] || parseEmailList(email.recipients_json)[0] || 'Recipient')}</p></div>
                   <span className="text-xs font-black uppercase tracking-[0.14em] text-[#aab5c6]">{email.delivery_mode}</span>
                   <span className="text-sm text-[#d4dbe7]">{email.recipient_count}</span>
                   <span className="text-sm text-[#aab5c6]">{email.sent_at ? new Date(email.sent_at).toLocaleString() : 'Not sent'}</span>
                   <div><span className={`rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${email.status === 'sent' ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300' : 'border-red-400/30 bg-red-400/10 text-red-300'}`}>{email.status}</span>{email.error_message ? <p className="mt-2 text-xs text-red-300">{email.error_message}</p> : null}</div>
+                  <span className="text-right text-xs font-black text-[#ffc400]">Open</span>
                 </button>
               ))}
             </PaginatedList>
