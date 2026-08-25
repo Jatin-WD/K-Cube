@@ -863,15 +863,15 @@ const SectionShell = ({
   children: ReactNode;
   actions?: ReactNode;
 }) => (
-  <section className="min-w-0 rounded-2xl border border-white/10 bg-[#101014] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
-    <div className="flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-start lg:justify-between">
+  <section className="admin-section-shell min-w-0 rounded-xl border border-white/10 bg-[#101014] p-4">
+    <div className="flex flex-col gap-2 border-b border-white/10 pb-3 lg:flex-row lg:items-start lg:justify-between">
       <div>
-        <h2 className="text-2xl font-black text-white">{title}</h2>
-        {description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-[#aab5c6]">{description}</p> : null}
+        <h2 className="text-xl font-black text-white">{title}</h2>
+        {description ? <p className="mt-1 max-w-3xl text-sm leading-6 text-[#aab5c6]">{description}</p> : null}
       </div>
       {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
     </div>
-    <div className="min-w-0 pt-5">{children}</div>
+    <div className="min-w-0 pt-4">{children}</div>
   </section>
 );
 
@@ -889,9 +889,9 @@ const Field = ({
 );
 
 const inputClass =
-  'w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-[#627085] focus:border-[#ffc400]';
+  'w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#627085] focus:border-[#ffc400]';
 const selectClass =
-  'w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none transition focus:border-[#ffc400]';
+  'w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none transition focus:border-[#ffc400]';
 
 const AdminControlCenter = () => {
   const user = useAppStore((state) => state.user);
@@ -4681,7 +4681,7 @@ const AdminControlCenter = () => {
   };
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#070708] text-white">
+    <main className="admin-control-center min-h-screen overflow-x-hidden bg-[#070708] text-white">
       <div className="flex min-h-screen flex-col">
         <header className="fixed inset-x-0 top-0 z-40 flex h-[64px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
           <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
@@ -4752,11 +4752,11 @@ const AdminControlCenter = () => {
           >
             <div className="flex h-full min-h-0 flex-col">
               <div className="admin-scrollbar flex-1 overflow-y-auto px-1 py-1.5">
-                <div className="space-y-2.5">
+                <div className="space-y-1.5">
                   {adminSidebarGroups.map((group) => (
-                    <div key={group.title} className="space-y-2">
+                    <div key={group.title} className="space-y-1">
                       <p className="sr-only">{group.title}</p>
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         {group.ids.map((id) => {
                           const item = adminNav.find((entry) => entry.id === id);
                           if (!item) return null;
@@ -4768,7 +4768,7 @@ const AdminControlCenter = () => {
                               type="button"
                               onClick={() => setActiveSection(item.id as AdminSection)}
                               title={item.label}
-                              className={`flex w-full items-center rounded-xl border px-2 py-2 text-left transition ${
+                              className={`flex w-full items-center rounded-lg border px-2 py-1.5 text-left transition ${
                                 sidebarOpen ? 'gap-3' : 'justify-center'
                               } ${
                                 active
@@ -4779,7 +4779,7 @@ const AdminControlCenter = () => {
                               <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-[#ffb900] text-[#111111]' : 'bg-[#2c3338] text-[#b4b9be]'}`}>
                                 <Icon className="h-4 w-4" />
                               </span>
-                              <div className={`min-w-0 ${sidebarOpen ? '' : 'lg:hidden'}`}>
+                              <div className={`admin-nav-copy min-w-0 ${sidebarOpen ? '' : 'lg:hidden'}`}>
                                 <p className="text-sm font-black">{item.label}</p>
                                 <p className="mt-0.5 text-[11px] leading-4 text-[#b4b9be]">{item.description}</p>
                               </div>
@@ -4804,8 +4804,8 @@ const AdminControlCenter = () => {
           </aside>
 
           <div className="min-w-0 px-5 py-6 lg:col-start-2 lg:px-8 lg:py-8">
-            <div className="mx-auto min-w-0 max-w-[1600px] space-y-6">
-            <section className="min-w-0 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-3 shadow-[0_30px_100px_rgba(0,0,0,0.4)] lg:p-4">
+            <div className="mx-auto min-w-0 max-w-[1600px] space-y-4">
+            <section className="admin-hero-panel min-w-0 rounded-xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-4">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.26em] text-[#ffc400]">Admin Dashboard</p>

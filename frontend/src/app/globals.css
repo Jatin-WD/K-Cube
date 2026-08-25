@@ -111,3 +111,31 @@ body.learning-game-mode > div > footer {
 .admin-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #ffc400;
 }
+
+/* Keep the admin workspace dense like a practical CMS rather than a dashboard of oversized cards. */
+.admin-control-center .rounded-3xl {
+  border-radius: 0.75rem !important;
+}
+
+.admin-control-center .rounded-2xl {
+  border-radius: 0.625rem !important;
+}
+
+.admin-control-center [class*="shadow-"] {
+  box-shadow: none !important;
+}
+
+.admin-control-center [class~="bg-black/20"] {
+  background-color: rgba(0, 0, 0, 0.16);
+}
+
+.admin-control-center .admin-section-shell > div:last-child {
+  min-height: 0;
+}
+
+@media (min-width: 1024px) {
+  .admin-control-center .admin-nav-copy p:last-child {
+    font-size: 10px;
+    line-height: 1.25;
+  }
+}
