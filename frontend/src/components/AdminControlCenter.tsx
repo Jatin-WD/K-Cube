@@ -893,6 +893,39 @@ const inputClass =
 const selectClass =
   'w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none transition focus:border-[#ffc400]';
 
+const PaginatedList = <T,>({
+  items,
+  pageSize = 20,
+  children,
+}: {
+  items: T[];
+  pageSize?: number;
+  children: (visibleItems: T[]) => ReactNode;
+}) => {
+  const [page, setPage] = useState(1);
+  const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
+  const safePage = Math.min(page, pageCount);
+
+  useEffect(() => {
+    setPage(1);
+  }, [items.length]);
+
+  return (
+    <>
+      {children(items.slice((safePage - 1) * pageSize, safePage * pageSize))}
+      {items.length > pageSize ? (
+        <div className="flex items-center justify-between border-t border-white/10 pt-3">
+          <p className="text-xs text-[#7d8a99]">Page {safePage} of {pageCount}</p>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={safePage === 1} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Previous</button>
+            <button type="button" onClick={() => setPage((current) => Math.min(pageCount, current + 1))} disabled={safePage === pageCount} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Next</button>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+};
+
 const AdminControlCenter = () => {
   const user = useAppStore((state) => state.user);
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
@@ -1774,6 +1807,31 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
+  const openSubmissionReview = (submission: SubmissionRow) => {
+    setSubmissionDetailOpen(false);
+    if (submission.source_type === 'content_upload') {
+      const upload = uploads.find((entry) => entry.id === submission.id);
+      setSelectedUploadId(submission.id);
+      setUploadReview({
+        status: upload?.status === 'rejected' ? 'rejected' : 'approved',
+        points_reward: upload?.points_reward || submission.points_reward || 0,
+        review_note: upload?.review_note || submission.review_note || '',
+      });
+      setActiveSection('uploads');
+      return;
+    }
+    if (submission.source_type === 'kfood_purchase') {
+      const claim = claims.find((entry) => entry.id === submission.id);
+      setSelectedClaimId(submission.id);
+      setClaimReview({
+        status: claim?.status === 'rejected' ? 'rejected' : 'approved',
+        points_reward: claim?.points_reward || submission.points_reward || 0,
+        review_note: claim?.review_note || submission.review_note || '',
+      });
+      setActiveSection('kfood');
+    }
+  };
+
   const reviewIndiaApplication = async () => {
     if (!selectedIndiaApplication) return;
     if (indiaApplicationReview.status === 'rejected' && !indiaApplicationReview.review_note.trim()) {
@@ -2157,7 +2215,8 @@ const AdminControlCenter = () => {
 
       <SectionShell title="CMS pages" description="Pick a page first, then edit its metadata and attached CMS blocks." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPages.length} pages</span>}>
         <div className="grid gap-3 md:grid-cols-2">
-          {filteredPages.map((page) => (
+          <PaginatedList items={filteredPages}>
+            {(visiblePages) => visiblePages.map((page) => (
             <button
               key={page.id}
               type="button"
@@ -2184,7 +2243,8 @@ const AdminControlCenter = () => {
               <p className="mt-2 font-black">{page.titleEn}</p>
               <p className="mt-1 text-sm text-[#aab5c6]">{page.slug}</p>
             </button>
-          ))}
+            ))}
+          </PaginatedList>
         </div>
       </SectionShell>
 
@@ -2302,7 +2362,8 @@ const AdminControlCenter = () => {
 
       <SectionShell title="Block library" description="All blocks attached to the selected page are listed below." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredBlocks.length} blocks</span>}>
         <div className="space-y-3">
-          {filteredBlocks.map((block) => (
+          <PaginatedList items={filteredBlocks}>
+            {(visibleBlocksPage) => visibleBlocksPage.map((block) => (
             <button
               key={block.id}
               type="button"
@@ -2329,7 +2390,8 @@ const AdminControlCenter = () => {
                 {block.page_title} · {block.block_type} · order {block.sort_order}
               </p>
             </button>
-          ))}
+            ))}
+          </PaginatedList>
           {!visibleBlocks.length ? <p className="text-sm text-[#aab5c6]">No blocks yet for this page.</p> : null}
         </div>
       </SectionShell>
@@ -2340,7 +2402,8 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(320px,360px)_minmax(0,1fr)]">
       <SectionShell title="Learning track editor" description="Create and maintain lesson tracks, reward points and JSON copy blocks used by the learning journeys." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredTracks.length} tracks</span>}>
         <div className="space-y-3">
-          {filteredTracks.map((track) => (
+          <PaginatedList items={filteredTracks}>
+            {(visibleTracks) => visibleTracks.map((track) => (
             <button
               key={track.id}
               type="button"
@@ -2353,7 +2416,8 @@ const AdminControlCenter = () => {
               </div>
               <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[#98a4b1]">{track.slug}</p>
             </button>
-          ))}
+            ))}
+          </PaginatedList>
         </div>
         <div className="mt-5 space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4">
           <div className="flex items-center justify-between">
@@ -2418,7 +2482,8 @@ const AdminControlCenter = () => {
       <SectionShell title="Question bank editor" description="Pick a track on the left, then create or modify the linked questions and structured payloads.">
         <div className="grid gap-4 lg:grid-cols-[minmax(320px,360px)_minmax(0,1fr)]">
           <div className="space-y-3">
-            {visibleQuestions.map((question) => (
+            <PaginatedList items={visibleQuestions}>
+              {(visibleQuestionPage) => visibleQuestionPage.map((question) => (
               <button
                 key={question.id}
                 type="button"
@@ -2450,7 +2515,8 @@ const AdminControlCenter = () => {
                 <p className="mt-2 font-black">{question.questionKey}</p>
                 <p className="mt-1 text-sm text-[#aab5c6]">{question.prompt}</p>
               </button>
-            ))}
+              ))}
+            </PaginatedList>
           {!visibleQuestions.length ? <p className="text-sm text-[#aab5c6]">Select a track and start creating questions.</p> : null}
           </div>
 
@@ -2532,7 +2598,9 @@ const AdminControlCenter = () => {
   const renderUsers = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Users" description="Review roles, account state, city/state, profile image and membership classification." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span>}>
-        <div className="overflow-x-auto">
+        <PaginatedList items={filteredUsers}>
+          {(visibleUsers) => (
+          <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead className="text-[#ffc400]">
               <tr>
@@ -2545,7 +2613,7 @@ const AdminControlCenter = () => {
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
-              {filteredUsers.map((entry) => (
+              {visibleUsers.map((entry) => (
                 <tr
                   key={entry.id}
                   className="cursor-pointer hover:bg-white/5"
@@ -2574,7 +2642,9 @@ const AdminControlCenter = () => {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+          )}
+        </PaginatedList>
       </SectionShell>
 
       <SectionShell title="Edit user" description="Update access, category access, profile details and account status directly from the admin panel.">
@@ -2752,7 +2822,8 @@ const AdminControlCenter = () => {
         actions={<span className="text-sm font-bold text-[#ffc400]">{filteredAdminAccounts.length} admins</span>}
       >
         <div className="space-y-3">
-          {filteredAdminAccounts.map((account) => (
+          <PaginatedList items={filteredAdminAccounts}>
+            {(visibleAdminAccounts) => visibleAdminAccounts.map((account) => (
             <article key={account.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -2770,7 +2841,8 @@ const AdminControlCenter = () => {
                 <p>Created: {account.created_at ? new Date(account.created_at).toLocaleString() : 'Unknown'}</p>
               </div>
             </article>
-          ))}
+            ))}
+          </PaginatedList>
           {!filteredAdminAccounts.length ? (
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <p className="text-sm font-bold text-white">No admin accounts found.</p>
@@ -2827,7 +2899,9 @@ const AdminControlCenter = () => {
   const renderChapters = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Chapter directory" description="Manage branch chapters, leaders and member counts from the admin panel." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredChapters.length} records</span>}>
-        <div className="overflow-x-auto">
+        <PaginatedList items={filteredChapters}>
+          {(visibleChapterPage) => (
+          <div className="overflow-x-auto">
           <table className="w-full min-w-[940px] text-left text-sm">
             <thead className="text-[#ffc400]">
               <tr>
@@ -2840,7 +2914,7 @@ const AdminControlCenter = () => {
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
-              {filteredChapters.map((chapter) => (
+              {visibleChapterPage.map((chapter) => (
                 <tr
                   key={chapter.id}
                   className="cursor-pointer hover:bg-white/5"
@@ -2871,7 +2945,9 @@ const AdminControlCenter = () => {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+          )}
+        </PaginatedList>
       </SectionShell>
 
       <SectionShell
@@ -2945,7 +3021,9 @@ const AdminControlCenter = () => {
   const renderPoints = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Points ledger" description="Manual adjustments and audit history for point balance changes." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPoints.length} records</span>}>
-        <div className="overflow-x-auto">
+        <PaginatedList items={filteredPoints}>
+          {(visiblePointPage) => (
+          <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead className="text-[#ffc400]">
               <tr>
@@ -2957,7 +3035,7 @@ const AdminControlCenter = () => {
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
-              {filteredPoints.map((tx) => (
+              {visiblePointPage.map((tx) => (
                 <tr key={tx.id}>
                   <td className="border-b border-white/10 py-3">{tx.full_name}</td>
                   <td className="border-b border-white/10 py-3">{tx.source_type}</td>
@@ -2968,7 +3046,9 @@ const AdminControlCenter = () => {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+          )}
+        </PaginatedList>
       </SectionShell>
 
       <SectionShell title="Manual points adjustment" description="Issue or subtract points with an audit note.">
@@ -2994,7 +3074,8 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Content upload review" description="Approve or reject user generated uploads and attach verified points." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUploads.length} records</span>}>
         <div className="space-y-3">
-          {filteredUploads.map((entry) => (
+          <PaginatedList items={filteredUploads}>
+            {(visibleUploads) => visibleUploads.map((entry) => (
             <button
               key={entry.id}
               type="button"
@@ -3012,7 +3093,8 @@ const AdminControlCenter = () => {
                 {entry.category} · {entry.full_name || 'Unknown user'} · {entry.email || 'No email'}
               </p>
             </button>
-          ))}
+            ))}
+          </PaginatedList>
         </div>
       </SectionShell>
 
@@ -3089,7 +3171,8 @@ const AdminControlCenter = () => {
                 <span className="text-right">Actions</span>
               </div>
               <div className="divide-y divide-white/10">
-              {filteredIndiaApplications.map((entry) => {
+               <PaginatedList items={filteredIndiaApplications}>
+                 {(visibleIndiaApplications) => visibleIndiaApplications.map((entry) => {
                 const active = selectedIndiaApplicationId === entry.id;
                 const applicantEmail = entry.user_email || entry.email;
                 const mailHref = `mailto:${applicantEmail}?subject=${encodeURIComponent(`K-CUBE India Pre-Selection update for ${entry.full_name}`)}&body=${encodeURIComponent(`Hello ${entry.full_name},\n\nThank you for your India Pre-Selection application.\n\nRegards,\nK-CUBE Admin`)}`;
@@ -3124,7 +3207,8 @@ const AdminControlCenter = () => {
                     </div>
                   </div>
                 );
-              })}
+                 })}
+               </PaginatedList>
               {!filteredIndiaApplications.length ? <p className="px-5 py-10 text-center text-sm text-[#aab5c6]">No applications match your search.</p> : null}
               </div>
             </div>
@@ -3303,7 +3387,8 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="K-Food claims" description="Audit purchase claims, coupon references and reward eligibility." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredClaims.length} records</span>}>
         <div className="space-y-3">
-          {filteredClaims.map((entry) => (
+          <PaginatedList items={filteredClaims}>
+            {(visibleClaims) => visibleClaims.map((entry) => (
             <button
               key={entry.id}
               type="button"
@@ -3321,7 +3406,8 @@ const AdminControlCenter = () => {
                 {entry.full_name} · {entry.email} · {entry.order_total}
               </p>
             </button>
-          ))}
+            ))}
+          </PaginatedList>
         </div>
       </SectionShell>
 
@@ -3453,7 +3539,9 @@ const AdminControlCenter = () => {
                       <span className={`justify-self-start rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] ${isIndia ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-white/10 bg-white/5 text-[#d4dbe7]'}`}>
                         {entry.status}
                       </span>
-                      <span className="hidden text-xs font-bold text-[#7d8a99] group-hover:text-[#ffc400] lg:inline">Open</span>
+                       <span className="hidden text-xs font-bold text-[#7d8a99] group-hover:text-[#ffc400] lg:inline">
+                         {entry.source_type === 'content_upload' ? 'Open / review' : 'Open'}
+                       </span>
                     </div>
                   </button>
                 );
@@ -3689,6 +3777,21 @@ const AdminControlCenter = () => {
                         <p className="mt-2 text-sm leading-7 text-[#aab5c6]">No review note yet.</p>
                       </div>
                     )}
+
+                    {selectedSubmission.source_type === 'content_upload' ? (
+                      <button
+                        type="button"
+                        onClick={() => openSubmissionReview(selectedSubmission)}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]"
+                      >
+                        <CheckCircle2 className="h-4 w-4" /> Open review controls
+                      </button>
+                    ) : selectedSubmission.source_type === 'event_rsvp' || selectedSubmission.source_type === 'learning_course' ? (
+                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <p className="text-sm font-black text-[#ffc400]">Informational submission</p>
+                        <p className="mt-2 text-sm leading-6 text-[#aab5c6]">This record is tracked for attendance or learning activity and does not require approval.</p>
+                      </div>
+                    ) : null}
 
                     <div className="rounded-2xl border border-[#ffc400]/20 bg-[#ffc400]/5 p-4">
                       <p className="text-sm font-black text-[#ffc400]">Priority review</p>
@@ -4206,7 +4309,8 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Event inventory" description="Create, edit and archive platform events from one place." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredEvents.length} records</span>}>
         <div className="space-y-3">
-          {filteredEvents.map((entry) => (
+          <PaginatedList items={filteredEvents}>
+            {(visibleEvents) => visibleEvents.map((entry) => (
             <button
               key={entry.id}
               type="button"
@@ -4236,7 +4340,8 @@ const AdminControlCenter = () => {
               </div>
               <p className="mt-2 text-sm text-[#aab5c6]">{entry.slug} · {entry.starts_at}</p>
             </button>
-          ))}
+            ))}
+          </PaginatedList>
         </div>
       </SectionShell>
 
@@ -4321,7 +4426,8 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Reward catalog" description="Add, update or disable rewards from the same control center." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredRewards.length} records</span>}>
         <div className="space-y-3">
-          {filteredRewards.map((entry) => (
+          <PaginatedList items={filteredRewards}>
+            {(visibleRewards) => visibleRewards.map((entry) => (
             <button
               key={entry.id}
               type="button"
@@ -4345,7 +4451,8 @@ const AdminControlCenter = () => {
               </div>
               <p className="mt-2 text-sm text-[#aab5c6]">{entry.tier} · {entry.cost_points} points</p>
             </button>
-          ))}
+            ))}
+          </PaginatedList>
         </div>
       </SectionShell>
 
@@ -4407,7 +4514,8 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Recent announcements" description="Broadcast urgent CMS notes, release updates or internal notices." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredAnnouncements.length} records</span>}>
         <div className="space-y-3">
-          {filteredAnnouncements.map((entry) => (
+          <PaginatedList items={filteredAnnouncements}>
+            {(visibleAnnouncements) => visibleAnnouncements.map((entry) => (
             <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="font-black">{entry.title}</h3>
@@ -4416,7 +4524,8 @@ const AdminControlCenter = () => {
               <p className="mt-2 text-sm text-[#aab5c6]">{entry.body}</p>
               <p className="mt-3 text-xs text-[#98a4b1]">{entry.creator_name || entry.creator_email || 'System'} · {new Date(entry.created_at).toLocaleString()}</p>
             </article>
-          ))}
+            ))}
+          </PaginatedList>
         </div>
       </SectionShell>
 
@@ -4455,7 +4564,8 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Calendar connections" description="See the configured Google Calendar integration and keep sync active.">
         <div className="space-y-3">
-          {calendarConnections.map((entry) => (
+          <PaginatedList items={calendarConnections}>
+            {(visibleConnections) => visibleConnections.map((entry) => (
             <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="font-black">{entry.calendar_name || entry.calendar_id}</h3>
@@ -4463,7 +4573,8 @@ const AdminControlCenter = () => {
               </div>
               <p className="mt-2 text-sm text-[#aab5c6]">{entry.provider} · {entry.sync_mode} · {entry.calendar_id}</p>
             </article>
-          ))}
+            ))}
+          </PaginatedList>
         </div>
       </SectionShell>
 
