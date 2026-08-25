@@ -927,6 +927,8 @@ const AdminControlCenter = () => {
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<number | null>(null);
   const [submissionDetailOpen, setSubmissionDetailOpen] = useState(false);
+  const [submissionPage, setSubmissionPage] = useState(1);
+  const submissionsPerPage = 20;
   const [selectedFulfillmentId, setSelectedFulfillmentId] = useState<number | null>(null);
   const [fulfillmentForm, setFulfillmentForm] = useState({
     payment_order_id: '',
@@ -1088,6 +1090,7 @@ const AdminControlCenter = () => {
   const filteredSubmissions = useMemo(
     () =>
       submissions.filter((entry) =>
+        entry.source_type !== 'kfood_purchase' &&
         matchesQuery(query, [
           entry.source_label,
           entry.source_type,
@@ -1106,12 +1109,15 @@ const AdminControlCenter = () => {
   const prioritizedSubmissions = useMemo(
     () =>
       [...filteredSubmissions].sort((left, right) => {
-        const leftPriority = left.source_type === 'india_pre_selection' ? 0 : 1;
-        const rightPriority = right.source_type === 'india_pre_selection' ? 0 : 1;
-        if (leftPriority !== rightPriority) return leftPriority - rightPriority;
         return new Date(String(right.submitted_at || right.reviewed_at || 0)).getTime() - new Date(String(left.submitted_at || left.reviewed_at || 0)).getTime();
       }),
     [filteredSubmissions],
+  );
+  const submissionPageCount = Math.max(1, Math.ceil(prioritizedSubmissions.length / submissionsPerPage));
+  const safeSubmissionPage = Math.min(submissionPage, submissionPageCount);
+  const paginatedSubmissions = useMemo(
+    () => prioritizedSubmissions.slice((safeSubmissionPage - 1) * submissionsPerPage, safeSubmissionPage * submissionsPerPage),
+    [prioritizedSubmissions, safeSubmissionPage],
   );
   const filteredClaims = useMemo(
     () => claims.filter((entry) => matchesQuery(query, [entry.order_id, entry.status, entry.full_name, entry.email, entry.order_total])),
@@ -3378,7 +3384,7 @@ const AdminControlCenter = () => {
             description="All participation, event, singing, dancing and form rows are normalized into a single queue."
             actions={<span className="text-sm font-bold text-[#ffc400]">{filteredSubmissions.length} records</span>}
           >
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#ffc400]/20 bg-[#ffc400]/5 px-4 py-3">
                 <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400]">
                   Priority source
@@ -3387,7 +3393,15 @@ const AdminControlCenter = () => {
                   India Pre-Selection submissions are highlighted first so the festival workflow is easy to scan.
                 </p>
               </div>
-              {prioritizedSubmissions.map((entry) => {
+              <div className="hidden grid-cols-[minmax(150px,1.1fr)_minmax(180px,1.2fr)_minmax(150px,1fr)_minmax(150px,.8fr)_auto_auto] gap-3 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#7d8a99] lg:grid">
+                <span>Submission</span>
+                <span>Applicant</span>
+                <span>Contact</span>
+                <span>Submitted</span>
+                <span>Status</span>
+                <span>Action</span>
+              </div>
+              {paginatedSubmissions.map((entry) => {
                 const active = selectedSubmissionId === entry.id;
                 const isIndia = entry.source_type === 'india_pre_selection';
                 return (
@@ -3398,7 +3412,7 @@ const AdminControlCenter = () => {
                       setSelectedSubmissionId(entry.id);
                       setSubmissionDetailOpen(true);
                     }}
-                    className={`group w-full overflow-hidden rounded-2xl border text-left transition ${
+                    className={`group w-full overflow-hidden rounded-lg border text-left transition ${
                       active
                         ? isIndia
                           ? 'border-[#ffc400] bg-gradient-to-br from-[#ffc400]/18 via-black/40 to-black/35 shadow-[0_0_0_1px_rgba(255,196,0,0.18)]'
@@ -3408,45 +3422,38 @@ const AdminControlCenter = () => {
                           : 'border-white/10 bg-black/20 hover:border-white/20'
                     }`}
                   >
-                    <div className={`grid gap-4 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] ${isIndia ? 'border-l-4 border-[#ffc400]' : 'border-l-4 border-transparent'}`}>
-                      <div className="min-w-0 space-y-3">
+                    <div className={`grid items-center gap-3 px-4 py-3 lg:grid-cols-[minmax(150px,1.1fr)_minmax(180px,1.2fr)_minmax(150px,1fr)_minmax(150px,.8fr)_auto_auto] ${isIndia ? 'border-l-4 border-[#ffc400]' : 'border-l-4 border-transparent'}`}>
+                      <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">{entry.source_label}</p>
-                          {isIndia ? (
-                            <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-[#ffc400]">
-                              Highlighted
-                            </span>
-                          ) : null}
-                          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-[#d4dbe7]">
-                            {entry.source_type.replace(/_/g, ' ')}
-                          </span>
+                          <p className="truncate text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400]">{entry.source_label}</p>
+                          {isIndia ? <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.16em] text-[#ffc400]">Priority</span> : null}
                         </div>
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <h3 className="truncate text-lg font-black text-white">{entry.title}</h3>
-                            <p className="mt-1 text-sm text-[#aab5c6]">{entry.submission_kind || 'General submission'}</p>
-                          </div>
-                          <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${isIndia ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]'}`}>
-                            {entry.status}
-                          </span>
-                        </div>
-                        <div className="grid gap-2 text-sm text-[#aab5c6] sm:grid-cols-2">
-                          <p className="truncate">{entry.applicant_name || 'Anonymous applicant'}</p>
-                          <p className="truncate">{entry.applicant_email || 'No email'}</p>
-                          <p className="truncate">{entry.applicant_phone || 'No phone'}</p>
-                          <p className="truncate">{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
-                        </div>
+                        <h3 className="mt-1 truncate text-sm font-black text-white">{entry.title}</h3>
+                        <p className="mt-0.5 truncate text-xs text-[#7d8a99]">{entry.submission_kind || 'General submission'}</p>
                       </div>
-                      <div className="flex min-w-[150px] flex-col items-start gap-2 sm:items-end">
-                        <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#d4dbe7]">
-                          Review queue
-                        </span>
-                        <span className="text-xs text-[#7d8a99] group-hover:text-[#d4dbe7]">Click to open details</span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-bold text-white">{entry.applicant_name || 'Anonymous applicant'}</p>
+                        <p className="mt-0.5 truncate text-xs text-[#aab5c6]">{entry.applicant_phone || 'No phone'}</p>
                       </div>
+                      <p className="truncate text-sm text-[#aab5c6]">{entry.applicant_email || 'No email'}</p>
+                      <p className="text-xs text-[#aab5c6]">{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
+                      <span className={`justify-self-start rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] ${isIndia ? 'border-[#ffc400]/40 bg-[#ffc400]/15 text-[#ffc400]' : 'border-white/10 bg-white/5 text-[#d4dbe7]'}`}>
+                        {entry.status}
+                      </span>
+                      <span className="hidden text-xs font-bold text-[#7d8a99] group-hover:text-[#ffc400] lg:inline">Open</span>
                     </div>
                   </button>
                 );
               })}
+              {prioritizedSubmissions.length > submissionsPerPage ? (
+                <div className="flex items-center justify-between border-t border-white/10 pt-3">
+                  <p className="text-xs text-[#7d8a99]">Page {safeSubmissionPage} of {submissionPageCount}</p>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setSubmissionPage((page) => Math.max(1, page - 1))} disabled={safeSubmissionPage === 1} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Previous</button>
+                    <button type="button" onClick={() => setSubmissionPage((page) => Math.min(submissionPageCount, page + 1))} disabled={safeSubmissionPage === submissionPageCount} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Next</button>
+                  </div>
+                </div>
+              ) : null}
               {!filteredSubmissions.length ? (
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                   <p className="text-sm font-bold text-white">No submissions match the current search.</p>
