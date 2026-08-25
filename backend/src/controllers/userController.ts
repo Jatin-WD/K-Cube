@@ -6,12 +6,12 @@ import { fail, ok } from '../lib/apiResponse';
 const profileFields = 'id, full_name, username, email, phone, profile_image, role, category_access, xp, points, level, badges, streak, korea_score, city, state, country, referral_code, referred_by, created_at, last_login, status';
 const adminListProfileFields = `
   u.id, u.full_name, u.username, u.email,
-  COALESCE(u.phone, application.phone) AS phone,
+  COALESCE(u.phone, india_application.phone) AS phone,
   u.profile_image, u.role, u.category_access, u.xp, u.points, u.level, u.badges,
   u.streak, u.korea_score,
-  COALESCE(u.city, application.current_city) AS city,
+  COALESCE(u.city, india_application.current_city) AS city,
   u.state,
-  COALESCE(u.country, application.nationality) AS country,
+  COALESCE(u.country, india_application.nationality) AS country,
   u.referral_code, u.referred_by, u.created_at, u.last_login, u.status
 `;
 
@@ -42,15 +42,15 @@ export const listUsers = async (req: Request, res: Response) => {
   const [rows] = await pool.query(
     `SELECT ${adminListProfileFields}
      FROM users u
-     LEFT JOIN (
-       SELECT latest.user_id, latest.phone, latest.current_city, latest.nationality
-       FROM (
-         SELECT a.user_id, a.phone, a.current_city, a.nationality,
-           ROW_NUMBER() OVER (PARTITION BY a.user_id ORDER BY a.updated_at DESC, a.id DESC) AS row_number
-         FROM india_pre_selection_applications a
-       ) latest
-       WHERE latest.row_number = 1
-     ) application ON application.user_id = u.id
+     LEFT JOIN india_pre_selection_applications india_application
+       ON india_application.user_id = u.id
+       AND india_application.id = (
+         SELECT latest_application.id
+         FROM india_pre_selection_applications latest_application
+         WHERE latest_application.user_id = u.id
+         ORDER BY latest_application.updated_at DESC, latest_application.id DESC
+         LIMIT 1
+       )
      ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
      ORDER BY u.created_at DESC LIMIT 300`,
     values,
