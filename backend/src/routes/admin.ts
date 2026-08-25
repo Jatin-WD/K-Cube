@@ -34,6 +34,7 @@ import {
   listKFoodFulfillments,
   upsertKFoodFulfillment,
   listAdminSubmissions,
+  reviewAdminSubmission,
   listRewards,
   upsertReward,
   retireReward,
@@ -95,6 +96,7 @@ router.patch('/kfood/fulfillments', upsertKFoodFulfillment);
 router.get('/india-pre-selection/applications', listIndiaPreSelectionApplications);
 router.patch('/india-pre-selection/applications/:id', reviewIndiaPreSelectionApplication);
 router.get('/submissions', listAdminSubmissions);
+router.patch('/submissions/:source/:id/review', reviewAdminSubmission);
 router.get('/rewards', listRewards);
 router.post('/rewards', upsertReward);
 router.patch('/rewards/:id', upsertReward);

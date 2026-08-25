@@ -487,6 +487,29 @@ export const listAdminSubmissions = async (_req: Request, res: Response) => {
   return ok(res, rows);
 };
 
+export const reviewAdminSubmission = async (req: any, res: Response) => {
+  const source = String(req.params.source || '');
+  const id = Number(req.params.id);
+  const decision = String(req.body?.status || '');
+  if (!Number.isInteger(id) || id <= 0 || !['approved', 'rejected'].includes(decision)) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'A valid submission and review decision are required');
+  }
+
+  if (source === 'event_rsvp') {
+    const status = decision === 'approved' ? 'registered' : 'cancelled';
+    const [result] = await pool.query('UPDATE platform_event_rsvps SET status = ?, updated_at = NOW() WHERE id = ?', [status, id]);
+    if (!(result as any).affectedRows) return fail(res, 404, 'NOT_FOUND', 'Event RSVP not found');
+  } else if (source === 'learning_course') {
+    const status = decision === 'approved' ? 'confirmed' : 'cancelled';
+    const [result] = await pool.query('UPDATE learning_course_orders SET status = ?, updated_at = NOW() WHERE id = ?', [status, id]);
+    if (!(result as any).affectedRows) return fail(res, 404, 'NOT_FOUND', 'Learning course submission not found');
+  } else {
+    return fail(res, 400, 'UNSUPPORTED_SOURCE', 'This submission source has its own review workflow');
+  }
+
+  return ok(res, { source, id, status: decision });
+};
+
 export const listRecentAdminActions = async (_req: Request, res: Response) => {
   const [rows] = await pool.query(`
     SELECT

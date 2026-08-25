@@ -930,6 +930,7 @@ const AdminControlCenter = () => {
   const user = useAppStore((state) => state.user);
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [notice, setNotice] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState('');
   const [adminQuery, setAdminQuery] = useState('');
   const sidebarOpen = true;
 
@@ -1806,6 +1807,7 @@ const AdminControlCenter = () => {
       review_note: uploadReview.review_note,
     });
     setNotice(`Upload ${status}.`);
+    setReviewSuccess(`Content upload ${status} review submitted successfully.`);
     setSelectedUploadId(null);
     setUploadReview({ status: 'approved', points_reward: 0, review_note: '' });
     await loadAdminData();
@@ -1832,6 +1834,7 @@ const AdminControlCenter = () => {
       review_note: indiaApplicationReview.review_note,
     });
     setNotice(`India pre-selection application ${indiaApplicationReview.status}.`);
+    setReviewSuccess(`India Pre-Selection ${indiaApplicationReview.status} review submitted successfully.`);
     await loadAdminData();
   };
 
@@ -1843,8 +1846,15 @@ const AdminControlCenter = () => {
       review_note: claimReview.review_note,
     });
     setNotice(`K-Food claim ${status}.`);
+    setReviewSuccess(`K-Food ${status} review submitted successfully.`);
     setSelectedClaimId(null);
     setClaimReview({ status: 'approved', points_reward: 0, review_note: '' });
+    await loadAdminData();
+  };
+
+  const reviewGenericSubmission = async (submission: SubmissionRow, status: 'approved' | 'rejected') => {
+    await api.patch(`/admin/submissions/${submission.source_type}/${submission.id}/review`, { status });
+    setReviewSuccess(`${submission.source_label} ${status} review submitted successfully.`);
     await loadAdminData();
   };
 
@@ -3785,9 +3795,13 @@ const AdminControlCenter = () => {
                         </div>
                       </div>
                     ) : selectedSubmission.source_type === 'event_rsvp' || selectedSubmission.source_type === 'learning_course' ? (
-                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                        <p className="text-sm font-black text-[#ffc400]">Informational submission</p>
-                        <p className="mt-2 text-sm leading-6 text-[#aab5c6]">This record is tracked for attendance or learning activity and does not require approval.</p>
+                      <div className="space-y-3 rounded-2xl border border-[#ffc400]/30 bg-[#ffc400]/5 p-4">
+                        <p className="text-sm font-black text-[#ffc400]">Review controls</p>
+                        <p className="text-xs leading-5 text-[#aab5c6]">Approve keeps this record active. Reject marks it cancelled.</p>
+                        <div className="flex flex-wrap gap-2">
+                          <button type="button" onClick={() => reviewGenericSubmission(selectedSubmission, 'approved')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]"><CheckCircle2 className="h-4 w-4" /> Approve</button>
+                          <button type="button" onClick={() => reviewGenericSubmission(selectedSubmission, 'rejected')} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300"><Trash2 className="h-4 w-4" /> Reject</button>
+                        </div>
                       </div>
                     ) : null}
 
@@ -4967,6 +4981,21 @@ const AdminControlCenter = () => {
           </div>
         </div>
       </div>
+      {reviewSuccess ? (
+        <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm" role="alertdialog" aria-modal="true">
+          <div className="w-full max-w-md rounded-3xl border border-emerald-400/30 bg-[#101014] p-6 text-white shadow-2xl">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-300"><CheckCircle2 className="h-5 w-5" /></span>
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Review submitted</p>
+                <h3 className="mt-2 text-xl font-black">Action saved successfully</h3>
+                <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{reviewSuccess}</p>
+              </div>
+            </div>
+            <button type="button" onClick={() => setReviewSuccess('')} className="mt-5 w-full rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Continue</button>
+          </div>
+        </div>
+      ) : null}
       </div>
     </main>
   );
