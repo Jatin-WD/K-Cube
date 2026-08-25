@@ -3510,11 +3510,10 @@ const AdminControlCenter = () => {
                        setSelectedSubmissionId(entry.id);
                        if (entry.source_type === 'india_pre_selection') {
                          setSelectedIndiaApplicationId(entry.id);
-                         setIndiaReviewModalOpen(true);
                        } else {
                          if (entry.source_type === 'content_upload') prepareUploadReview(entry);
-                         setSubmissionDetailOpen(true);
                        }
+                       setSubmissionDetailOpen(true);
                      }}
                     className={`group w-full overflow-hidden rounded-lg border text-left transition ${
                       active
@@ -3783,7 +3782,28 @@ const AdminControlCenter = () => {
                       </div>
                     )}
 
-                    {selectedSubmission.source_type === 'content_upload' ? (
+                    {selectedSubmission.source_type === 'india_pre_selection' && selectedIndiaApplication ? (
+                      <div className="space-y-3 rounded-2xl border border-[#ffc400]/30 bg-[#ffc400]/5 p-4">
+                        <p className="text-sm font-black text-[#ffc400]">Review controls</p>
+                        <label className="block">
+                          <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[#98a4b1]">Status</span>
+                          <select className={selectClass} value={indiaApplicationReview.status} onChange={(event) => setIndiaApplicationReview((state) => ({ ...state, status: event.target.value }))}>
+                            <option value="pending">pending</option>
+                            <option value="reviewing">reviewing</option>
+                            <option value="shortlisted">shortlisted</option>
+                            <option value="selected">selected (legacy)</option>
+                            <option value="approved">approved</option>
+                            <option value="rejected">rejected</option>
+                            <option value="withdrawn">withdrawn</option>
+                          </select>
+                        </label>
+                        <label className="block">
+                          <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[#98a4b1]">Review note</span>
+                          <textarea className={`${inputClass} min-h-24`} value={indiaApplicationReview.review_note} onChange={(event) => setIndiaApplicationReview((state) => ({ ...state, review_note: event.target.value }))} placeholder="Required when rejecting" />
+                        </label>
+                        <button type="button" onClick={reviewIndiaApplication} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]"><CheckCircle2 className="h-4 w-4" /> Save review</button>
+                      </div>
+                    ) : selectedSubmission.source_type === 'content_upload' ? (
                       <div className="space-y-3 rounded-2xl border border-[#ffc400]/30 bg-[#ffc400]/5 p-4">
                         <p className="text-sm font-black text-[#ffc400]">Review controls</p>
                         <label className="block">
