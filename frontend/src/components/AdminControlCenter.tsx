@@ -2187,7 +2187,7 @@ const AdminControlCenter = () => {
           </select>
         </div>
         <div className="overflow-hidden rounded-2xl border border-white/10">
-          <div className="hidden grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)] gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] lg:grid">
+          <div className="hidden grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)_70px] gap-3 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] lg:grid">
             <span>S.No.</span><span>Title</span><span>Type</span><span>Recipients</span><span>Sent</span><span>Status</span><span className="text-right">Action</span>
           </div>
           <div className="divide-y divide-white/10">
