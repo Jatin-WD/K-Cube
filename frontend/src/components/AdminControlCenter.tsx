@@ -900,7 +900,7 @@ const PaginatedList = <T,>({
 }: {
   items: T[];
   pageSize?: number;
-  children: (visibleItems: T[]) => ReactNode;
+  children: (visibleItems: T[], offset: number) => ReactNode;
 }) => {
   const [page, setPage] = useState(1);
   const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
@@ -912,7 +912,7 @@ const PaginatedList = <T,>({
 
   return (
     <>
-      {children(items.slice((safePage - 1) * pageSize, safePage * pageSize))}
+      {children(items.slice((safePage - 1) * pageSize, safePage * pageSize), (safePage - 1) * pageSize)}
       {items.length > pageSize ? (
         <div className="flex items-center justify-between border-t border-white/10 pt-3">
           <p className="text-xs text-[#7d8a99]">Page {safePage} of {pageCount}</p>
@@ -2631,12 +2631,13 @@ const AdminControlCenter = () => {
       <>
         <SectionShell title="Users" description="Manage account access, profile details and user actions from one compact list." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span>}>
           <div className="overflow-hidden rounded-xl border border-white/10">
-            <div className="hidden grid-cols-[minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] gap-3 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400] lg:grid">
-              <span>Name</span><span>Email</span><span>Role</span><span>Status</span><span>Points</span><span>Streak</span><span>Actions</span>
+            <div className="hidden grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] gap-3 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400] lg:grid">
+              <span>S.No.</span><span>Name</span><span>Email</span><span>Role</span><span>Status</span><span>Points</span><span>Streak</span><span>Actions</span>
             </div>
             <PaginatedList items={filteredUsers}>
-              {(visibleUsers) => visibleUsers.map((entry) => (
-                <div key={entry.id} className="grid gap-3 border-t border-white/10 bg-black/20 px-4 py-3 transition hover:bg-white/[0.04] lg:grid-cols-[minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] lg:items-center">
+              {(visibleUsers, userOffset) => visibleUsers.map((entry, index) => (
+                <div key={entry.id} className="grid gap-3 border-t border-white/10 bg-black/20 px-4 py-3 transition hover:bg-white/[0.04] lg:grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] lg:items-center">
+                  <p className="text-xs font-black text-[#7d8a99]">{userOffset + index + 1}</p>
                   <div><p className="font-bold text-white">{entry.full_name}</p><p className="mt-1 text-xs text-[#7d8a99]">#{entry.id}</p></div>
                   <p className="truncate text-sm text-[#aab5c6]">{entry.email}</p>
                   <p className="text-sm capitalize text-[#d4dbe7]">{entry.role}</p>
@@ -2658,6 +2659,7 @@ const AdminControlCenter = () => {
             <div className="max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-[#101014] p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
               <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4"><div><p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">User account</p><h2 className="mt-2 text-2xl font-black text-white">Edit user</h2></div><button type="button" onClick={() => setUserForm(emptyUserForm)} className="rounded-full border border-white/10 p-2 text-white"><X className="h-5 w-5" /></button></div>
               <div className="mt-5 space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2"><Field label="User ID"><input className={inputClass} value={userForm.id} readOnly /></Field><Field label="Account Email"><input className={inputClass} value={selectedUser?.email || ''} readOnly /></Field></div>
                 <Field label="Full Name"><input className={inputClass} value={userForm.full_name} onChange={(event) => setUserForm((state) => ({ ...state, full_name: event.target.value }))} /></Field>
                 <div className="grid gap-3 sm:grid-cols-2"><Field label="Role"><select className={selectClass} value={userForm.role} onChange={(event) => setUserForm((state) => ({ ...state, role: event.target.value }))}><option value="member">member</option><option value="manager">manager</option><option value="admin">admin</option><option value="guest">guest</option></select></Field><Field label="Status"><select className={selectClass} value={userForm.status} onChange={(event) => setUserForm((state) => ({ ...state, status: event.target.value }))}><option value="active">active</option><option value="pending">pending</option><option value="suspended">suspended</option><option value="deleted">deleted</option></select></Field></div>
                 <Field label="Category Access"><select className={selectClass} value={userForm.category_access} onChange={(event) => setUserForm((state) => ({ ...state, category_access: event.target.value }))}><option value="category_a">category_a</option><option value="category_b">category_b</option><option value="category_c">category_c</option></select></Field>
@@ -2669,7 +2671,7 @@ const AdminControlCenter = () => {
             </div>
           </div>
         ) : null}
-        {userDeleteConfirm ? <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"><div className="w-full max-w-md rounded-3xl border border-red-400/30 bg-[#101014] p-6 text-white shadow-2xl"><p className="text-xs font-black uppercase tracking-[0.22em] text-red-300">Confirm action</p><h3 className="mt-2 text-xl font-black">Delete this user account?</h3><p className="mt-2 text-sm leading-6 text-[#aab5c6]">This action will remove the account and its access from the admin panel.</p><div className="mt-5 flex gap-3"><button type="button" onClick={() => setUserDeleteConfirm(false)} className="flex-1 rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">Cancel</button><button type="button" onClick={() => { setUserDeleteConfirm(false); void deleteUser(); }} className="flex-1 rounded-xl bg-red-500 px-4 py-3 text-sm font-black text-white">Delete</button></div></div></div> : null}
+        {userDeleteConfirm ? <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"><div className="w-full max-w-md rounded-3xl border border-red-400/30 bg-[#101014] p-6 text-white shadow-2xl"><p className="text-xs font-black uppercase tracking-[0.22em] text-red-300">Confirm action</p><h3 className="mt-2 text-xl font-black">Delete this user account?</h3><p className="mt-2 text-sm leading-6 text-[#aab5c6]">This action will remove the account and its access from the admin panel.</p><div className="mt-5 flex gap-3"><button type="button" onClick={() => { setUserDeleteConfirm(false); setUserForm(emptyUserForm); }} className="flex-1 rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">Cancel</button><button type="button" onClick={() => { setUserDeleteConfirm(false); void deleteUser(); }} className="flex-1 rounded-xl bg-red-500 px-4 py-3 text-sm font-black text-white">Delete</button></div></div></div> : null}
         {userSuccess ? <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"><div className="w-full max-w-md rounded-3xl border border-emerald-400/30 bg-[#101014] p-6 text-white shadow-2xl"><div className="flex items-start gap-3"><CheckCircle2 className="mt-1 h-6 w-6 text-emerald-300" /><div><p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Action completed</p><h3 className="mt-2 text-xl font-black">User action successful</h3><p className="mt-2 text-sm text-[#aab5c6]">{userSuccess}</p></div></div><button type="button" onClick={closeUserSuccess} className="mt-5 w-full rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Continue</button></div></div> : null}
       </>
     );
@@ -2864,12 +2866,12 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Chapter directory" description="Manage branch chapters, leaders and member counts from the admin panel." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredChapters.length} records</span>}>
         <PaginatedList items={filteredChapters}>
-          {(visibleChapterPage) => (
+          {(visibleChapterPage, chapterOffset) => (
           <div className="overflow-x-auto">
           <table className="w-full min-w-[940px] text-left text-sm">
             <thead className="text-[#ffc400]">
               <tr>
-                <th className="border-b border-white/10 py-3">Name</th>
+                <th className="border-b border-white/10 py-3">S.No.</th><th className="border-b border-white/10 py-3">Name</th>
                 <th className="border-b border-white/10 py-3">Slug</th>
                 <th className="border-b border-white/10 py-3">City</th>
                 <th className="border-b border-white/10 py-3">Leader</th>
@@ -2878,7 +2880,7 @@ const AdminControlCenter = () => {
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
-              {visibleChapterPage.map((chapter) => (
+              {visibleChapterPage.map((chapter, index) => (
                 <tr
                   key={chapter.id}
                   className="cursor-pointer hover:bg-white/5"
@@ -2899,7 +2901,7 @@ const AdminControlCenter = () => {
                     })
                   }
                 >
-                  <td className="border-b border-white/10 py-3 font-bold">{chapter.name}</td>
+                  <td className="border-b border-white/10 py-3 text-xs text-[#7d8a99]">{chapterOffset + index + 1}</td><td className="border-b border-white/10 py-3 font-bold">{chapter.name}</td>
                   <td className="border-b border-white/10 py-3">{chapter.slug}</td>
                   <td className="border-b border-white/10 py-3">{chapter.city}, {chapter.state}</td>
                   <td className="border-b border-white/10 py-3">{chapter.leader_name || chapter.leader_email || '-'}</td>
@@ -2986,12 +2988,12 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Points ledger" description="Manual adjustments and audit history for point balance changes." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPoints.length} records</span>}>
         <PaginatedList items={filteredPoints}>
-          {(visiblePointPage) => (
+          {(visiblePointPage, pointOffset) => (
           <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead className="text-[#ffc400]">
               <tr>
-                <th className="border-b border-white/10 py-3">User</th>
+                <th className="border-b border-white/10 py-3">S.No.</th><th className="border-b border-white/10 py-3">User</th>
                 <th className="border-b border-white/10 py-3">Source</th>
                 <th className="border-b border-white/10 py-3">Delta</th>
                 <th className="border-b border-white/10 py-3">Balance</th>
@@ -2999,9 +3001,9 @@ const AdminControlCenter = () => {
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
-              {visiblePointPage.map((tx) => (
+              {visiblePointPage.map((tx, index) => (
                 <tr key={tx.id}>
-                  <td className="border-b border-white/10 py-3">{tx.full_name}</td>
+                  <td className="border-b border-white/10 py-3 text-xs text-[#7d8a99]">{pointOffset + index + 1}</td><td className="border-b border-white/10 py-3">{tx.full_name}</td>
                   <td className="border-b border-white/10 py-3">{tx.source_type}</td>
                   <td className="border-b border-white/10 py-3">{tx.points_delta}</td>
                   <td className="border-b border-white/10 py-3">{tx.balance_after}</td>
@@ -3456,15 +3458,15 @@ const AdminControlCenter = () => {
                   India Pre-Selection submissions are highlighted first so the festival workflow is easy to scan.
                 </p>
               </div>
-              <div className="hidden grid-cols-[minmax(150px,1.1fr)_minmax(180px,1.2fr)_minmax(150px,1fr)_minmax(150px,.8fr)_auto_auto] gap-3 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#7d8a99] lg:grid">
-                <span>Submission</span>
+              <div className="hidden grid-cols-[35px_minmax(150px,1.1fr)_minmax(180px,1.2fr)_minmax(150px,1fr)_minmax(150px,.8fr)_auto_auto] gap-3 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#7d8a99] lg:grid">
+                <span>S.No.</span><span>Submission</span>
                 <span>Applicant</span>
                 <span>Contact</span>
                 <span>Submitted</span>
                 <span>Status</span>
                 <span>Action</span>
               </div>
-              {paginatedSubmissions.map((entry) => {
+              {paginatedSubmissions.map((entry, index) => {
                 const active = selectedSubmissionId === entry.id;
                 const isIndia = entry.source_type === 'india_pre_selection';
                 return (
@@ -3490,7 +3492,8 @@ const AdminControlCenter = () => {
                           : 'border-white/10 bg-black/20 hover:border-white/20'
                     }`}
                   >
-                    <div className={`grid items-center gap-3 px-4 py-3 lg:grid-cols-[minmax(150px,1.1fr)_minmax(180px,1.2fr)_minmax(150px,1fr)_minmax(150px,.8fr)_auto_auto] ${isIndia ? 'border-l-4 border-[#ffc400]' : 'border-l-4 border-transparent'}`}>
+                    <div className={`grid items-center gap-3 px-4 py-3 lg:grid-cols-[35px_minmax(150px,1.1fr)_minmax(180px,1.2fr)_minmax(150px,1fr)_minmax(150px,.8fr)_auto_auto] ${isIndia ? 'border-l-4 border-[#ffc400]' : 'border-l-4 border-transparent'}`}>
+                      <span className="text-xs font-black text-[#7d8a99]">{(safeSubmissionPage - 1) * submissionsPerPage + index + 1}</span>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="truncate text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400]">{entry.source_label}</p>
