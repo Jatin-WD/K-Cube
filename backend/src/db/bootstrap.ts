@@ -79,6 +79,7 @@ export const bootstrapDatabase = async () => {
       delivery_mode ENUM('bulk','single') NOT NULL,
       recipient_count INT UNSIGNED NOT NULL DEFAULT 0,
       recipients_json JSON NOT NULL,
+      recipient_names_json JSON DEFAULT NULL,
       cc_addresses TEXT DEFAULT NULL,
       subject VARCHAR(255) NOT NULL,
       body MEDIUMTEXT NOT NULL,
@@ -91,6 +92,7 @@ export const bootstrapDatabase = async () => {
       INDEX idx_admin_sent_emails_status (status)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
+  await pool.query('ALTER TABLE admin_sent_emails ADD COLUMN recipient_names_json JSON DEFAULT NULL AFTER recipients_json').catch(() => undefined);
 };
 
 export default bootstrapDatabase;

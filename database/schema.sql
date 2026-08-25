@@ -701,6 +701,25 @@ CREATE TABLE IF NOT EXISTS admin_audit_logs (
   CONSTRAINT fk_audit_admin FOREIGN KEY (admin_user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS admin_sent_emails (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  created_by BIGINT UNSIGNED DEFAULT NULL,
+  delivery_mode ENUM('bulk','single') NOT NULL,
+  recipient_count INT UNSIGNED NOT NULL DEFAULT 0,
+  recipients_json JSON NOT NULL,
+  recipient_names_json JSON DEFAULT NULL,
+  cc_addresses TEXT DEFAULT NULL,
+  subject VARCHAR(255) NOT NULL,
+  body MEDIUMTEXT NOT NULL,
+  status ENUM('sent','failed') NOT NULL,
+  error_message TEXT DEFAULT NULL,
+  sent_at DATETIME DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_admin_sent_emails_created_at (created_at),
+  INDEX idx_admin_sent_emails_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 INSERT INTO lessons (title, slug, description, level, xp_reward, points_reward, content, active)
 VALUES
   ('Day 1: Hangul Vowels', 'day-1-hangul-vowels', 'Learn the core Korean vowels and complete a short recognition task.', 'beginner', 40, 40, JSON_ARRAY('ㅏ a', 'ㅓ eo', 'ㅗ o', 'ㅜ u', 'ㅡ eu', 'ㅣ i'), TRUE),

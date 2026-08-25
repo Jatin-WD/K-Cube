@@ -435,6 +435,7 @@ type SentEmailRow = {
   delivery_mode: 'bulk' | 'single';
   recipient_count: number;
   recipients_json: string | string[];
+  recipient_names_json: string | string[] | null;
   cc_addresses: string | null;
   subject: string;
   body: string;
@@ -750,6 +751,18 @@ const formFromKFoodProduct = (product: KFoodProductRow): KFoodProductForm => ({
 
 const normalize = (value: unknown) => String(value ?? '').toLowerCase();
 
+const parseEmailList = (value: unknown): string[] => {
+  if (Array.isArray(value)) return value.map((entry) => String(entry)).filter(Boolean);
+  if (typeof value !== 'string' || !value.trim()) return [];
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) return parsed.map((entry) => String(entry)).filter(Boolean);
+  } catch {
+    // Older history rows can contain a plain comma-separated value.
+  }
+  return value.split(/[;,\n]/).map((entry) => entry.trim()).filter(Boolean);
+};
+
 const matchesQuery = (query: string, values: Array<unknown>) => {
   if (!query) return true;
   return values.some((value) => normalize(value).includes(query));
@@ -980,6 +993,7 @@ const AdminControlCenter = () => {
   const [calendarConnections, setCalendarConnections] = useState<CalendarConnectionRow[]>([]);
   const [recentActions, setRecentActions] = useState<ActivityRow[]>([]);
   const [sentEmails, setSentEmails] = useState<SentEmailRow[]>([]);
+  const [emailRecipientCount, setEmailRecipientCount] = useState(0);
   const [adminProfile, setAdminProfile] = useState<AdminProfileRow | null>(null);
   const [adminAccounts, setAdminAccounts] = useState<AdminAccountRow[]>([]);
   const [kfoodProducts, setKfoodProducts] = useState<KFoodProductRow[]>([]);
@@ -1018,6 +1032,9 @@ const AdminControlCenter = () => {
   const [announcementForm, setAnnouncementForm] = useState(emptyAnnouncementForm);
   const [bulkEmailForm, setBulkEmailForm] = useState(emptyEmailForm);
   const [singleEmailForm, setSingleEmailForm] = useState(emptyEmailForm);
+  const [sentEmailQuery, setSentEmailQuery] = useState('');
+  const [sentEmailStatusFilter, setSentEmailStatusFilter] = useState('all');
+  const [selectedSentEmail, setSelectedSentEmail] = useState<SentEmailRow | null>(null);
   const [adminAccountForm, setAdminAccountForm] = useState(emptyAdminAccountForm);
   const [adminProfileForm, setAdminProfileForm] = useState(emptyProfileForm);
   const [adminPasswordForm, setAdminPasswordForm] = useState(emptyPasswordForm);
@@ -1147,6 +1164,16 @@ const AdminControlCenter = () => {
     () => indiaApplications.filter((entry) => matchesQuery(query, [entry.full_name, entry.email, entry.status, entry.performance_category, entry.nationality, entry.current_city, entry.review_note])),
     [indiaApplications, query],
   );
+  const filteredSentEmails = useMemo(
+    () => sentEmails.filter((entry) => {
+      const matchesStatus = sentEmailStatusFilter === 'all' || entry.status === sentEmailStatusFilter;
+      const names = parseEmailList(entry.recipient_names_json).join(' ');
+      const recipients = parseEmailList(entry.recipients_json).join(' ');
+      const haystack = [entry.subject, entry.body, entry.delivery_mode, entry.cc_addresses, names, recipients];
+      return matchesStatus && matchesQuery(sentEmailQuery.trim().toLowerCase(), haystack);
+    }),
+    [sentEmails, sentEmailQuery, sentEmailStatusFilter],
+  );
   const latestIndiaApplications = useMemo(() => indiaApplications.slice(0, 3), [indiaApplications]);
   const filteredRecentActions = useMemo(
     () => recentActions.filter((entry) => matchesQuery(query, [entry.action, entry.entity_type, entry.admin_name, entry.admin_email, entry.after_status, entry.before_status, entry.review_note])),
@@ -1223,6 +1250,7 @@ const AdminControlCenter = () => {
       api.get('/admin/google-calendar/connections'),
       api.get('/admin/recent-actions'),
       api.get('/admin/email/sent'),
+      api.get('/admin/email/recipients'),
     ]);
 
     const dashboardPayload = readPayload<Record<string, unknown>>(requests[0], {});
@@ -1249,6 +1277,7 @@ const AdminControlCenter = () => {
     const connectionRows = readPayload<CalendarConnectionRow[]>(requests[21], []);
     const activityRows = readPayload<ActivityRow[]>(requests[22], []);
     const sentEmailRows = readPayload<SentEmailRow[]>(requests[23], []);
+    const recipientCountPayload = readPayload<{ count: number }>(requests[24], { count: 0 });
 
     setDashboardMetrics((dashboardPayload.metrics as Record<string, number>) || {});
     setAnalytics(analyticsPayload);
@@ -1273,6 +1302,7 @@ const AdminControlCenter = () => {
     setCalendarConnections(connectionRows);
     setRecentActions(activityRows);
     setSentEmails(sentEmailRows);
+    setEmailRecipientCount(Number(recipientCountPayload.count || 0));
 
     if (profileRow) {
       setAdminProfileForm({
@@ -2095,7 +2125,7 @@ const AdminControlCenter = () => {
       <div className="grid gap-5 xl:grid-cols-2">
         <SectionShell
           title="All users"
-          description={`Send one promotional email to all ${users.length} non-deleted user accounts with an email address. Recipients are sent as BCC for privacy.`}
+          description={`Send one promotional email to all ${emailRecipientCount || users.length} non-deleted user accounts with an email address. The recipient list is fetched fresh at send time, and recipients are sent as BCC for privacy.`}
           actions={<span className="text-sm font-bold text-[#ffc400]">Bulk campaign</span>}
         >
           <div className="space-y-4">
@@ -2136,28 +2166,51 @@ const AdminControlCenter = () => {
         </SectionShell>
       </div>
 
-      <SectionShell title="Sent emails" description="Your recent bulk campaigns and individual emails are stored here for reference." actions={<span className="text-sm font-bold text-[#ffc400]">{sentEmails.length} records</span>}>
+      <SectionShell title="Sent emails" description="Search your email history, filter delivery status, and open any message for its full details." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredSentEmails.length} records</span>}>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+          <input className={`${inputClass} flex-1`} placeholder="Search title, recipient name, email, CC..." value={sentEmailQuery} onChange={(event) => setSentEmailQuery(event.target.value)} />
+          <select className={`${selectClass} sm:w-40`} value={sentEmailStatusFilter} onChange={(event) => setSentEmailStatusFilter(event.target.value)}>
+            <option value="all">All statuses</option>
+            <option value="sent">Sent</option>
+            <option value="failed">Failed</option>
+          </select>
+        </div>
         <div className="overflow-hidden rounded-2xl border border-white/10">
           <div className="hidden grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)] gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] lg:grid">
             <span>S.No.</span><span>Title</span><span>Type</span><span>Recipients</span><span>Sent</span><span>Status</span>
           </div>
           <div className="divide-y divide-white/10">
-            <PaginatedList items={sentEmails}>
+            <PaginatedList items={filteredSentEmails}>
               {(visibleEmails, emailOffset) => visibleEmails.map((email, index) => (
-                <div key={email.id} className="grid gap-3 px-5 py-4 lg:grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)] lg:items-center">
+                <button key={email.id} type="button" onClick={() => setSelectedSentEmail(email)} className="grid w-full gap-3 px-5 py-4 text-left transition hover:bg-white/[0.04] lg:grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)] lg:items-center">
                   <span className="text-sm font-bold text-[#7d8a99]">{emailOffset + index + 1}</span>
-                  <div className="min-w-0"><p className="truncate text-sm font-black text-white">{email.subject}</p><p className="mt-1 truncate text-xs text-[#aab5c6]">{email.body}</p></div>
+                  <div className="min-w-0"><p className="truncate text-sm font-black text-white">{email.subject}</p><p className="mt-1 truncate text-xs text-[#aab5c6]">{email.delivery_mode === 'bulk' ? 'All users' : (parseEmailList(email.recipient_names_json)[0] || parseEmailList(email.recipients_json)[0] || 'Recipient')}</p></div>
                   <span className="text-xs font-black uppercase tracking-[0.14em] text-[#aab5c6]">{email.delivery_mode}</span>
                   <span className="text-sm text-[#d4dbe7]">{email.recipient_count}</span>
                   <span className="text-sm text-[#aab5c6]">{email.sent_at ? new Date(email.sent_at).toLocaleString() : 'Not sent'}</span>
                   <div><span className={`rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${email.status === 'sent' ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300' : 'border-red-400/30 bg-red-400/10 text-red-300'}`}>{email.status}</span>{email.error_message ? <p className="mt-2 text-xs text-red-300">{email.error_message}</p> : null}</div>
-                </div>
+                </button>
               ))}
             </PaginatedList>
-            {!sentEmails.length ? <p className="px-5 py-10 text-center text-sm text-[#aab5c6]">No emails sent yet.</p> : null}
+            {!filteredSentEmails.length ? <p className="px-5 py-10 text-center text-sm text-[#aab5c6]">No matching emails found.</p> : null}
           </div>
         </div>
       </SectionShell>
+      {selectedSentEmail ? (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={() => setSelectedSentEmail(null)}>
+          <div className="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#101014] shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4 border-b border-white/10 p-6"><div><p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">Sent email details</p><h2 className="mt-2 text-2xl font-black text-white">{selectedSentEmail.subject}</h2></div><button type="button" onClick={() => setSelectedSentEmail(null)} className="rounded-full border border-white/10 p-2 text-white" aria-label="Close email details"><X className="h-5 w-5" /></button></div>
+            <div className="space-y-4 overflow-y-auto p-6">
+              <div className="grid gap-3 sm:grid-cols-3"><div className="rounded-xl border border-white/10 bg-black/20 p-3"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#98a4b1]">Type</p><p className="mt-2 font-bold text-white">{selectedSentEmail.delivery_mode}</p></div><div className="rounded-xl border border-white/10 bg-black/20 p-3"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#98a4b1]">Recipients</p><p className="mt-2 font-bold text-white">{selectedSentEmail.recipient_count}</p></div><div className="rounded-xl border border-white/10 bg-black/20 p-3"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#98a4b1]">Status</p><p className="mt-2 font-bold text-emerald-300">{selectedSentEmail.status}</p></div></div>
+              <div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Recipient names</p><p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[#d4dbe7]">{parseEmailList(selectedSentEmail.recipient_names_json).join(', ') || 'Names not available for this older email.'}</p></div>
+              <div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Email addresses</p><p className="mt-2 break-words text-sm leading-6 text-[#d4dbe7]">{parseEmailList(selectedSentEmail.recipients_json).join(', ')}</p></div>
+              {selectedSentEmail.cc_addresses ? <div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">CC</p><p className="mt-2 break-words text-sm text-[#d4dbe7]">{selectedSentEmail.cc_addresses}</p></div> : null}
+              <div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Message</p><p className="mt-2 whitespace-pre-wrap rounded-xl border border-white/10 bg-black/20 p-4 text-sm leading-6 text-[#d4dbe7]">{selectedSentEmail.body}</p></div>
+              <p className="text-xs text-[#98a4b1]">{selectedSentEmail.sent_at ? new Date(selectedSentEmail.sent_at).toLocaleString() : 'Not sent'}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 

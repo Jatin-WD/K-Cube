@@ -54,7 +54,7 @@ import {
   updateEvent,
   upsertCalendarConnection,
 } from '../controllers/eventController';
-import { listSentAdminEmails, sendAdminEmailMessage } from '../controllers/adminEmailController';
+import { getAdminEmailRecipientCount, listSentAdminEmails, sendAdminEmailMessage } from '../controllers/adminEmailController';
 
 const router = Router();
 
@@ -62,6 +62,7 @@ router.use(requireAuth(['admin']));
 router.get('/dashboard', getAdminDashboard);
 router.get('/recent-actions', listRecentAdminActions);
 router.get('/email/sent', listSentAdminEmails);
+router.get('/email/recipients', getAdminEmailRecipientCount);
 router.post('/email/send', sendAdminEmailMessage);
 router.get('/profile', getAdminProfile);
 router.patch('/profile', updateAdminProfile);
