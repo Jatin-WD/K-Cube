@@ -1,13 +1,11 @@
 import { Response } from 'express';
 import pool from '../db/pool';
 import { AuthRequest } from '../middleware/auth';
-import { awardPoints } from '../services/pointsService';
 import { created, fail, ok } from '../lib/apiResponse';
 import { syncIndiaPreSelectionApplicationToSheets } from '../services/googleSheetsService';
 import { sendIndiaPreSelectionSubmissionEmail } from '../services/mailer';
 
 const APPLICATION_POINTS = 200;
-const APPLICATION_SOURCE_SLUG = 'india-pre-selection-application';
 const PERFORMANCE_CATEGORIES = new Set([
   'Singer',
   'Musical artist',
@@ -179,7 +177,7 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
     await pool.query(
       `UPDATE india_pre_selection_applications
        SET full_name = ?, email = ?, phone = ?, nationality = ?, current_city = ?, date_of_birth = ?,
-           performance_category = ?, biography = ?, video_link = ?, message = ?, status = 'submitted', updated_at = NOW()
+           performance_category = ?, biography = ?, video_link = ?, message = ?, status = 'pending', updated_at = NOW()
        WHERE user_id = ?`,
       [...values.slice(1), req.user.id],
     );
@@ -187,7 +185,7 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
     const [result] = await pool.query(
       `INSERT INTO india_pre_selection_applications
         (user_id, full_name, email, phone, nationality, current_city, date_of_birth, performance_category, biography, video_link, message, status, points_awarded, submitted_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'submitted', ?, NOW(), NOW())`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, NOW(), NOW())`,
       [
         req.user.id,
         fullName,
@@ -200,7 +198,7 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
         biography,
         videoLink,
         message,
-        APPLICATION_POINTS,
+        0,
       ],
     );
     applicationId = (result as any).insertId;
@@ -217,32 +215,10 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
   let balance: number | null = null;
 
   if (isNewApplication) {
-    const award = await awardPoints({
-      userId: req.user.id,
-      sourceType: 'event',
-      sourceSlug: APPLICATION_SOURCE_SLUG,
-      points: APPLICATION_POINTS,
-      metadata: {
-        application_id: applicationId,
-        application_type: 'india_pre_selection',
-        performance_category: performanceCategory,
-      },
-      createdBy: req.user.id,
-      once: true,
-    });
-    awardedPoints = award.awarded ? APPLICATION_POINTS : 0;
-    balance = award.awarded ? (award.balance ?? null) : null;
-    if (awardedPoints > 0) {
-      await pool.query(
-        'UPDATE india_pre_selection_applications SET points_awarded = ? WHERE user_id = ?',
-        [APPLICATION_POINTS, req.user.id],
-      );
-    }
-
     if (application) {
       void syncIndiaPreSelectionApplicationToSheets({
         ...application,
-        points_awarded: awardedPoints > 0 ? APPLICATION_POINTS : Number(application.points_awarded || 0),
+        points_awarded: 0,
         submitted_at: application.submitted_at || new Date().toISOString(),
         updated_at: application.updated_at || new Date().toISOString(),
       }).catch((syncError: unknown) => {

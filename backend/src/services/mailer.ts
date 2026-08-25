@@ -155,3 +155,37 @@ export const sendIndiaPreSelectionSubmissionEmail = async (application: {
 
   return { skipped: false };
 };
+
+export const sendIndiaPreSelectionDecisionEmail = async (decision: {
+  to: string;
+  fullName: string;
+  status: 'approved' | 'rejected';
+  reviewNote?: string | null;
+  pointsAwarded?: number;
+}) => {
+  const mailer = getTransporter();
+  if (!mailer) {
+    console.warn('[email:india-pre-selection-decision] SMTP is not configured; notification skipped');
+    return { skipped: true };
+  }
+
+  const approved = decision.status === 'approved';
+  const reason = decision.reviewNote || (approved ? 'Your application met the current review requirements.' : 'The application did not meet the current review requirements.');
+  const subject = approved
+    ? 'K-CUBE India Pre-Selection application approved'
+    : 'K-CUBE India Pre-Selection application update';
+  const text = approved
+    ? `Hi ${decision.fullName},\n\nYour ITAEWON World Music Spirit 2026 India Pre-Selection application has been approved. ${decision.pointsAwarded || 200} points have been added to your K-CUBE account.\n\nReview note: ${reason}\n\nRegards,\nK-CUBE Admin`
+    : `Hi ${decision.fullName},\n\nThank you for applying for the ITAEWON World Music Spirit 2026 India Pre-Selection. We are sorry to inform you that your application was not approved at this stage.\n\nReason: ${reason}\n\nRegards,\nK-CUBE Admin`;
+
+  await mailer.sendMail({
+    from: getFromAddress(),
+    to: decision.to,
+    replyTo: SMTP_USER || getFromAddress(),
+    subject,
+    text,
+    html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827"><h2>${approved ? 'Application approved' : 'Application update'}</h2><p>Hi ${decision.fullName},</p><p>${approved ? `Your ITAEWON World Music Spirit 2026 India Pre-Selection application has been approved. <strong>${decision.pointsAwarded || 200} points</strong> have been added to your K-CUBE account.` : 'Thank you for applying for the ITAEWON World Music Spirit 2026 India Pre-Selection. We are sorry to inform you that your application was not approved at this stage.'}</p><p><strong>${approved ? 'Review note' : 'Reason'}:</strong> ${reason}</p><p>Regards,<br>K-CUBE Admin</p></div>`,
+  });
+
+  return { skipped: false };
+};

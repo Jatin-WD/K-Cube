@@ -250,8 +250,8 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
       setSubmittedApplication(nextApplication);
       setMessage(
         awarded > 0
-          ? `Application saved inside K-CUBE and ${awarded} points added.`
-          : 'Application submitted inside K-CUBE.',
+          ? `Application approved and ${awarded} points added.`
+          : 'Application submitted inside K-CUBE. Points will be added after admin approval.',
       );
       setSuccessVisible(true);
     } catch (requestError: unknown) {
@@ -444,14 +444,14 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
               <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Apply inside K-CUBE</h2>
             </div>
             <div className="flex flex-wrap gap-2">
-              <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">+200 points</span>
+              <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">Up to 200 points after approval</span>
               <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">Saved to your account</span>
               <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">{status || 'Not submitted yet'}</span>
             </div>
           </div>
 
           <p className="mt-3 max-w-4xl text-sm leading-7 text-[#565959]">
-            This form keeps the full application inside K-CUBE instead of sending it by email. Submit once, edit later if needed, and the first submission awards your points automatically.
+            This form keeps the full application inside K-CUBE instead of sending it by email. Submit once, edit later if needed, and points are added only after an admin approves your application.
           </p>
 
           {(status || reviewNote) ? (

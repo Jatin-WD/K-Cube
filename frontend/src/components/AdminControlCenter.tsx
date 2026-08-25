@@ -1776,6 +1776,10 @@ const AdminControlCenter = () => {
 
   const reviewIndiaApplication = async () => {
     if (!selectedIndiaApplication) return;
+    if (indiaApplicationReview.status === 'rejected' && !indiaApplicationReview.review_note.trim()) {
+      setNotice('Rejection reason is required before sending the decision.');
+      return;
+    }
     await api.patch(`/admin/india-pre-selection/applications/${selectedIndiaApplication.id}`, {
       status: indiaApplicationReview.status,
       review_note: indiaApplicationReview.review_note,
@@ -3044,6 +3048,7 @@ const AdminControlCenter = () => {
 
   const renderIndiaPreSelection = () => {
     const counts = {
+      pending: filteredIndiaApplications.filter((entry) => entry.status === 'pending').length,
       submitted: filteredIndiaApplications.filter((entry) => entry.status === 'submitted').length,
       reviewing: filteredIndiaApplications.filter((entry) => entry.status === 'reviewing').length,
       shortlisted: filteredIndiaApplications.filter((entry) => entry.status === 'shortlisted').length,
@@ -3053,8 +3058,9 @@ const AdminControlCenter = () => {
 
     return (
       <div className="space-y-5">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
           {[
+            { label: 'Pending', value: counts.pending },
             { label: 'Submitted', value: counts.submitted },
             { label: 'Reviewing', value: counts.reviewing },
             { label: 'Shortlisted', value: counts.shortlisted },
@@ -3125,7 +3131,7 @@ const AdminControlCenter = () => {
           </SectionShell>
 
           <div className={indiaReviewModalOpen && selectedIndiaApplication ? 'fixed inset-0 z-[90] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm' : 'hidden'} onClick={() => setIndiaReviewModalOpen(false)}>
-          <div className="max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-[28px] border border-white/10 bg-[#101014] p-5 shadow-[0_32px_100px_rgba(0,0,0,0.7)]" onClick={(event) => event.stopPropagation()}>
+          <div className="flex max-h-[calc(100dvh-2rem)] w-full max-w-6xl flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#101014] shadow-[0_32px_100px_rgba(0,0,0,0.7)]" onClick={(event) => event.stopPropagation()}>
           <div className="mb-5 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ffc400]">India Pre-Selection review</p>
@@ -3134,6 +3140,7 @@ const AdminControlCenter = () => {
             </div>
             <button type="button" onClick={() => setIndiaReviewModalOpen(false)} className="rounded-full border border-white/10 p-2 text-[#d4dbe7] hover:border-[#ffc400]/50 hover:text-white" aria-label="Close review"><X className="h-5 w-5" /></button>
           </div>
+          <div className="min-h-0 flex-1 overflow-y-auto p-5">
           <SectionShell
             title="Applicant profile + decision"
             description="Complete application information and moderation controls."
@@ -3224,10 +3231,12 @@ const AdminControlCenter = () => {
                           value={indiaApplicationReview.status}
                           onChange={(event) => setIndiaApplicationReview((state) => ({ ...state, status: event.target.value }))}
                         >
+                          <option value="pending">pending</option>
                           <option value="submitted">submitted</option>
                           <option value="reviewing">reviewing</option>
                           <option value="shortlisted">shortlisted</option>
-                          <option value="selected">selected</option>
+                          <option value="selected">selected (legacy)</option>
+                          <option value="approved">approved</option>
                           <option value="rejected">rejected</option>
                           <option value="withdrawn">withdrawn</option>
                         </select>
@@ -3255,7 +3264,7 @@ const AdminControlCenter = () => {
                     <div className="rounded-2xl border border-[#f3a847]/20 bg-[#fff8df] p-4">
                       <p className="text-sm font-black text-[#111827]">Decision policy</p>
                       <p className="mt-2 text-sm leading-7 text-[#565959]">
-                        The points award is locked at submission time. Review only adjusts moderation state and the audit trail.
+                        Submission par points nahi milte. Approval par 200 points add honge; rejection ke liye reason mandatory hai aur applicant ko email jayegi.
                       </p>
                     </div>
 
@@ -3267,8 +3276,11 @@ const AdminControlCenter = () => {
                       <button type="button" onClick={() => setIndiaApplicationReview((state) => ({ ...state, status: 'reviewing' }))} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">
                         Reviewing
                       </button>
-                      <button type="button" onClick={() => setIndiaApplicationReview((state) => ({ ...state, status: 'shortlisted' }))} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">
-                        Shortlist
+                      <button type="button" onClick={() => setIndiaApplicationReview((state) => ({ ...state, status: 'approved' }))} className="rounded-xl border border-[#ffc400]/40 px-4 py-3 text-sm font-bold text-[#ffc400]">
+                        Approve
+                      </button>
+                      <button type="button" onClick={() => setIndiaApplicationReview((state) => ({ ...state, status: 'rejected' }))} className="rounded-xl border border-red-500/40 px-4 py-3 text-sm font-bold text-red-300">
+                        Reject
                       </button>
                     </div>
                   </div>
@@ -3278,6 +3290,7 @@ const AdminControlCenter = () => {
               <p className="text-sm text-[#aab5c6]">Select an application to review it here.</p>
             )}
           </SectionShell>
+          </div>
         </div>
         </div>
         </div>
@@ -3470,7 +3483,7 @@ const AdminControlCenter = () => {
             onClick={() => setSubmissionDetailOpen(false)}
           >
             <div
-              className="max-h-[92vh] w-full max-w-7xl overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0d12] shadow-[0_32px_100px_rgba(0,0,0,0.65)]"
+              className="flex max-h-[calc(100dvh-2rem)] w-full max-w-7xl flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0d12] shadow-[0_32px_100px_rgba(0,0,0,0.65)]"
               onClick={(event) => event.stopPropagation()}
             >
               <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
@@ -3496,7 +3509,7 @@ const AdminControlCenter = () => {
                 </button>
               </div>
 
-              <div className="grid max-h-[calc(92vh-73px)] gap-0 overflow-y-auto xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,380px)]">
+              <div className="grid min-h-0 flex-1 overflow-y-auto gap-0 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,380px)]">
                 <div className="space-y-5 p-5">
                   <div className={`rounded-3xl border p-5 ${selectedSubmission.source_type === 'india_pre_selection' ? 'border-[#ffc400]/40 bg-gradient-to-br from-[#ffc400]/15 via-black/30 to-black/20' : 'border-white/10 bg-black/20'}`}>
                     <div className="flex flex-wrap items-start justify-between gap-3">

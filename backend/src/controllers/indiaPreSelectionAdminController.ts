@@ -2,12 +2,16 @@ import { Response } from 'express';
 import pool from '../db/pool';
 import { AuthRequest } from '../middleware/auth';
 import { fail, ok } from '../lib/apiResponse';
+import { awardPoints } from '../services/pointsService';
+import { sendIndiaPreSelectionDecisionEmail } from '../services/mailer';
 
 const allowedStatuses = new Set([
+  'pending',
   'submitted',
   'reviewing',
   'shortlisted',
   'selected',
+  'approved',
   'rejected',
   'withdrawn',
 ]);
@@ -132,6 +136,9 @@ export const reviewIndiaPreSelectionApplication = async (req: AuthRequest, res: 
   if (!allowedStatuses.has(status)) {
     return fail(res, 400, 'VALIDATION_ERROR', 'Invalid application status');
   }
+  if (status === 'rejected' && !reviewNote) {
+    return fail(res, 400, 'REVIEW_NOTE_REQUIRED', 'A rejection reason is required');
+  }
 
   const current = await fetchApplication(id);
   if (!current) {
@@ -149,6 +156,30 @@ export const reviewIndiaPreSelectionApplication = async (req: AuthRequest, res: 
     'UPDATE india_pre_selection_applications SET status = ?, updated_at = NOW() WHERE id = ?',
     [status, id],
   );
+
+  let pointsAwarded = Number(current.points_awarded || 0);
+  let pointsBalance: number | null = null;
+  if (['approved', 'selected'].includes(status) && pointsAwarded === 0) {
+    const award = await awardPoints({
+      userId: Number(current.user_id),
+      sourceType: 'event',
+      sourceSlug: `india-pre-selection-application-${id}`,
+      points: 200,
+      metadata: {
+        application_id: Number(id),
+        application_type: 'india_pre_selection',
+        performance_category: current.performance_category,
+        review_note: reviewNote || null,
+      },
+      createdBy: req.user.id,
+      once: true,
+    });
+    if (award.awarded) {
+      pointsAwarded = 200;
+      pointsBalance = award.balance ?? null;
+      await pool.query('UPDATE india_pre_selection_applications SET points_awarded = ? WHERE id = ?', [pointsAwarded, id]);
+    }
+  }
 
   await pool.query(
     `INSERT INTO admin_audit_logs
@@ -170,5 +201,17 @@ export const reviewIndiaPreSelectionApplication = async (req: AuthRequest, res: 
   );
 
   const updated = await fetchApplication(id);
-  return ok(res, { application: updated });
+  if (['approved', 'selected', 'rejected'].includes(status)) {
+    const decisionStatus: 'approved' | 'rejected' = status === 'rejected' ? 'rejected' : 'approved';
+    void sendIndiaPreSelectionDecisionEmail({
+      to: current.email || current.user_email,
+      fullName: current.full_name || current.user_full_name || 'Applicant',
+      status: decisionStatus,
+      reviewNote,
+      pointsAwarded,
+    }).catch((mailError: unknown) => {
+      console.error('Failed to send India pre-selection decision email', mailError);
+    });
+  }
+  return ok(res, { application: updated, points_awarded: pointsAwarded, points_balance: pointsBalance });
 };

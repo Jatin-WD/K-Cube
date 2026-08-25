@@ -381,7 +381,7 @@ CREATE TABLE IF NOT EXISTS india_pre_selection_applications (
   biography TEXT DEFAULT NULL,
   video_link VARCHAR(1024) DEFAULT NULL,
   message TEXT DEFAULT NULL,
-  status ENUM('submitted','reviewing','shortlisted','selected','rejected','withdrawn') NOT NULL DEFAULT 'submitted',
+  status ENUM('pending','submitted','reviewing','shortlisted','selected','approved','rejected','withdrawn') NOT NULL DEFAULT 'pending',
   points_awarded INT UNSIGNED NOT NULL DEFAULT 0,
   submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
