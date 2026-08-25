@@ -1256,21 +1256,6 @@ const AdminControlCenter = () => {
     if (!selectedTrackId && trackRows.length) {
       setSelectedTrackId(trackRows[0].id);
     }
-    if (!userForm.id && userRows.length) {
-      const first = userRows[0];
-      setUserForm({
-        id: String(first.id),
-        full_name: first.full_name,
-        phone: first.phone || '',
-        role: first.role,
-        category_access: first.category_access,
-        status: first.status,
-        city: first.city || '',
-        state: first.state || '',
-        country: first.country || '',
-        profile_image: first.profile_image || '',
-      });
-    }
     if (!rewardForm.id && rewardRows.length) {
       const first = rewardRows[0];
       setRewardForm({
