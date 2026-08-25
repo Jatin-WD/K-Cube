@@ -931,6 +931,8 @@ const AdminControlCenter = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
   const [notice, setNotice] = useState('');
   const [reviewSuccess, setReviewSuccess] = useState('');
+  const [userSuccess, setUserSuccess] = useState('');
+  const [userDeleteConfirm, setUserDeleteConfirm] = useState(false);
   const [adminQuery, setAdminQuery] = useState('');
   const sidebarOpen = true;
 
@@ -1685,15 +1687,24 @@ const AdminControlCenter = () => {
       profile_image: userForm.profile_image || null,
     });
     setNotice('User updated.');
+    setUserSuccess('User account updated successfully.');
     await loadAdminData();
   };
 
-  const deleteUser = async () => {
-    if (!userForm.id) return;
-    await api.delete(`/users/${userForm.id}`);
+  const deleteUser = async (idOverride?: string) => {
+    const targetId = idOverride || userForm.id;
+    if (!targetId) return;
+    await api.delete(`/users/${targetId}`);
     setNotice('User deleted.');
+    setUserSuccess('User account deleted successfully.');
     setUserForm(emptyUserForm);
     await loadAdminData();
+  };
+
+  const closeUserSuccess = () => {
+    setUserSuccess('');
+    setUserDeleteConfirm(false);
+    setUserForm(emptyUserForm);
   };
 
   const saveAdminProfile = async () => {
@@ -2602,121 +2613,67 @@ const AdminControlCenter = () => {
     </div>
   );
 
-  const renderUsers = () => (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
-      <SectionShell title="Users" description="Review roles, account state, city/state, profile image and membership classification." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span>}>
-        <PaginatedList items={filteredUsers}>
-          {(visibleUsers) => (
-          <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left text-sm">
-            <thead className="text-[#ffc400]">
-              <tr>
-                <th className="border-b border-white/10 py-3">Name</th>
-                <th className="border-b border-white/10 py-3">Email</th>
-                <th className="border-b border-white/10 py-3">Role</th>
-                <th className="border-b border-white/10 py-3">Status</th>
-                <th className="border-b border-white/10 py-3">Points</th>
-                <th className="border-b border-white/10 py-3">Streak</th>
-              </tr>
-            </thead>
-            <tbody className="text-[#d4dbe7]">
-              {visibleUsers.map((entry) => (
-                <tr
-                  key={entry.id}
-                  className="cursor-pointer hover:bg-white/5"
-                  onClick={() =>
-                    setUserForm({
-                      id: String(entry.id),
-                      full_name: entry.full_name,
-                      phone: entry.phone || '',
-                      role: entry.role,
-                      category_access: entry.category_access,
-                      status: entry.status,
-                      city: entry.city || '',
-                      state: entry.state || '',
-                      country: entry.country || '',
-                      profile_image: entry.profile_image || '',
-                    })
-                  }
-                >
-                  <td className="border-b border-white/10 py-3 font-bold">{entry.full_name}</td>
-                  <td className="border-b border-white/10 py-3">{entry.email}</td>
-                  <td className="border-b border-white/10 py-3 capitalize">{entry.role}</td>
-                  <td className="border-b border-white/10 py-3 capitalize">{entry.status}</td>
-                  <td className="border-b border-white/10 py-3">{entry.points}</td>
-                  <td className="border-b border-white/10 py-3">{entry.streak}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
-          )}
-        </PaginatedList>
-      </SectionShell>
+  const renderUsers = () => {
+    const selectUser = (entry: UserRow) => setUserForm({
+      id: String(entry.id),
+      full_name: entry.full_name,
+      phone: entry.phone || '',
+      role: entry.role,
+      category_access: entry.category_access,
+      status: entry.status,
+      city: entry.city || '',
+      state: entry.state || '',
+      country: entry.country || '',
+      profile_image: entry.profile_image || '',
+    });
 
-      <SectionShell title="Edit user" description="Update access, category access, profile details and account status directly from the admin panel.">
-        <div className="space-y-3">
-          <Field label="Full Name">
-            <input className={inputClass} value={userForm.full_name} onChange={(event) => setUserForm((state) => ({ ...state, full_name: event.target.value }))} />
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Role">
-              <select className={selectClass} value={userForm.role} onChange={(event) => setUserForm((state) => ({ ...state, role: event.target.value }))}>
-                <option value="member">member</option>
-                <option value="manager">manager</option>
-                <option value="admin">admin</option>
-                <option value="guest">guest</option>
-              </select>
-            </Field>
-            <Field label="Status">
-              <select className={selectClass} value={userForm.status} onChange={(event) => setUserForm((state) => ({ ...state, status: event.target.value }))}>
-                <option value="active">active</option>
-                <option value="pending">pending</option>
-                <option value="suspended">suspended</option>
-                <option value="deleted">deleted</option>
-              </select>
-            </Field>
+    return (
+      <>
+        <SectionShell title="Users" description="Manage account access, profile details and user actions from one compact list." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span>}>
+          <div className="overflow-hidden rounded-xl border border-white/10">
+            <div className="hidden grid-cols-[minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] gap-3 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400] lg:grid">
+              <span>Name</span><span>Email</span><span>Role</span><span>Status</span><span>Points</span><span>Streak</span><span>Actions</span>
+            </div>
+            <PaginatedList items={filteredUsers}>
+              {(visibleUsers) => visibleUsers.map((entry) => (
+                <div key={entry.id} className="grid gap-3 border-t border-white/10 bg-black/20 px-4 py-3 transition hover:bg-white/[0.04] lg:grid-cols-[minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] lg:items-center">
+                  <div><p className="font-bold text-white">{entry.full_name}</p><p className="mt-1 text-xs text-[#7d8a99]">#{entry.id}</p></div>
+                  <p className="truncate text-sm text-[#aab5c6]">{entry.email}</p>
+                  <p className="text-sm capitalize text-[#d4dbe7]">{entry.role}</p>
+                  <p className="text-sm capitalize text-[#d4dbe7]">{entry.status}</p>
+                  <p className="text-sm font-bold text-white">{entry.points}</p>
+                  <p className="text-sm text-[#aab5c6]">{entry.streak}</p>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => selectUser(entry)} className="rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]">Edit</button>
+                    <button type="button" onClick={() => { selectUser(entry); setUserDeleteConfirm(true); }} className="rounded-lg border border-red-500/40 px-3 py-2 text-xs font-black text-red-300">Delete</button>
+                  </div>
+                </div>
+              ))}
+            </PaginatedList>
           </div>
-          <Field label="Category Access">
-            <select className={selectClass} value={userForm.category_access} onChange={(event) => setUserForm((state) => ({ ...state, category_access: event.target.value }))}>
-              <option value="category_a">category_a</option>
-              <option value="category_b">category_b</option>
-              <option value="category_c">category_c</option>
-            </select>
-          </Field>
-          <Field label="Phone">
-            <input className={inputClass} value={userForm.phone} onChange={(event) => setUserForm((state) => ({ ...state, phone: event.target.value }))} />
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="City">
-              <input className={inputClass} value={userForm.city} onChange={(event) => setUserForm((state) => ({ ...state, city: event.target.value }))} />
-            </Field>
-            <Field label="State">
-              <input className={inputClass} value={userForm.state} onChange={(event) => setUserForm((state) => ({ ...state, state: event.target.value }))} />
-            </Field>
+        </SectionShell>
+
+        {userForm.id ? (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={() => setUserForm(emptyUserForm)}>
+            <div className="max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-[#101014] p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+              <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4"><div><p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">User account</p><h2 className="mt-2 text-2xl font-black text-white">Edit user</h2></div><button type="button" onClick={() => setUserForm(emptyUserForm)} className="rounded-full border border-white/10 p-2 text-white"><X className="h-5 w-5" /></button></div>
+              <div className="mt-5 space-y-3">
+                <Field label="Full Name"><input className={inputClass} value={userForm.full_name} onChange={(event) => setUserForm((state) => ({ ...state, full_name: event.target.value }))} /></Field>
+                <div className="grid gap-3 sm:grid-cols-2"><Field label="Role"><select className={selectClass} value={userForm.role} onChange={(event) => setUserForm((state) => ({ ...state, role: event.target.value }))}><option value="member">member</option><option value="manager">manager</option><option value="admin">admin</option><option value="guest">guest</option></select></Field><Field label="Status"><select className={selectClass} value={userForm.status} onChange={(event) => setUserForm((state) => ({ ...state, status: event.target.value }))}><option value="active">active</option><option value="pending">pending</option><option value="suspended">suspended</option><option value="deleted">deleted</option></select></Field></div>
+                <Field label="Category Access"><select className={selectClass} value={userForm.category_access} onChange={(event) => setUserForm((state) => ({ ...state, category_access: event.target.value }))}><option value="category_a">category_a</option><option value="category_b">category_b</option><option value="category_c">category_c</option></select></Field>
+                <Field label="Phone"><input className={inputClass} value={userForm.phone} onChange={(event) => setUserForm((state) => ({ ...state, phone: event.target.value }))} /></Field>
+                <div className="grid gap-3 sm:grid-cols-2"><Field label="City"><input className={inputClass} value={userForm.city} onChange={(event) => setUserForm((state) => ({ ...state, city: event.target.value }))} /></Field><Field label="State"><input className={inputClass} value={userForm.state} onChange={(event) => setUserForm((state) => ({ ...state, state: event.target.value }))} /></Field></div>
+                <div className="grid gap-3 sm:grid-cols-2"><Field label="Country"><input className={inputClass} value={userForm.country} onChange={(event) => setUserForm((state) => ({ ...state, country: event.target.value }))} /></Field><Field label="Profile Image"><input className={inputClass} value={userForm.profile_image} onChange={(event) => setUserForm((state) => ({ ...state, profile_image: event.target.value }))} /></Field></div>
+                <div className="flex flex-wrap gap-3 pt-2"><button type="button" onClick={saveUser} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]"><Save className="h-4 w-4" /> Save user</button><button type="button" onClick={() => setUserDeleteConfirm(true)} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300"><Trash2 className="h-4 w-4" /> Delete user</button></div>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Country">
-              <input className={inputClass} value={userForm.country} onChange={(event) => setUserForm((state) => ({ ...state, country: event.target.value }))} />
-            </Field>
-            <Field label="Profile Image">
-              <input className={inputClass} value={userForm.profile_image} onChange={(event) => setUserForm((state) => ({ ...state, profile_image: event.target.value }))} />
-            </Field>
-          </div>
-          <div className="flex gap-3">
-            <button type="button" onClick={saveUser} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
-              <Save className="h-4 w-4" /> Save user
-            </button>
-            {userForm.id ? (
-              <button type="button" onClick={deleteUser} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
-                <Trash2 className="h-4 w-4" /> Delete user
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </SectionShell>
-    </div>
-  );
+        ) : null}
+        {userDeleteConfirm ? <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"><div className="w-full max-w-md rounded-3xl border border-red-400/30 bg-[#101014] p-6 text-white shadow-2xl"><p className="text-xs font-black uppercase tracking-[0.22em] text-red-300">Confirm action</p><h3 className="mt-2 text-xl font-black">Delete this user account?</h3><p className="mt-2 text-sm leading-6 text-[#aab5c6]">This action will remove the account and its access from the admin panel.</p><div className="mt-5 flex gap-3"><button type="button" onClick={() => setUserDeleteConfirm(false)} className="flex-1 rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">Cancel</button><button type="button" onClick={() => { setUserDeleteConfirm(false); void deleteUser(); }} className="flex-1 rounded-xl bg-red-500 px-4 py-3 text-sm font-black text-white">Delete</button></div></div></div> : null}
+        {userSuccess ? <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"><div className="w-full max-w-md rounded-3xl border border-emerald-400/30 bg-[#101014] p-6 text-white shadow-2xl"><div className="flex items-start gap-3"><CheckCircle2 className="mt-1 h-6 w-6 text-emerald-300" /><div><p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Action completed</p><h3 className="mt-2 text-xl font-black">User action successful</h3><p className="mt-2 text-sm text-[#aab5c6]">{userSuccess}</p></div></div><button type="button" onClick={closeUserSuccess} className="mt-5 w-full rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Continue</button></div></div> : null}
+      </>
+    );
+  };
 
   const renderAdminProfile = () => {
     const profile = adminProfile || user;
