@@ -26,6 +26,8 @@ import {
   ExternalLink,
   FileText,
   LogOut,
+  Mail,
+  Send,
   PlayCircle,
   Trash2,
   X,
@@ -37,6 +39,7 @@ import { useAppStore } from '@/store/useAppStore';
 
 type AdminSection =
   | 'overview'
+  | 'sendEmail'
   | 'adminProfile'
   | 'adminAccounts'
   | 'submissions'
@@ -427,8 +430,23 @@ type KFoodOverviewRow = {
   fulfillments: KFoodFulfillmentRow[];
 };
 
+type SentEmailRow = {
+  id: number;
+  delivery_mode: 'bulk' | 'single';
+  recipient_count: number;
+  recipients_json: string | string[];
+  cc_addresses: string | null;
+  subject: string;
+  body: string;
+  status: 'sent' | 'failed';
+  error_message: string | null;
+  sent_at: string | null;
+  created_at: string;
+};
+
 const adminNav = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Live metrics and shortcuts.' },
+  { id: 'sendEmail', label: 'Send Email', icon: Mail, description: 'Bulk and individual email delivery.' },
   { id: 'adminProfile', label: 'Profile', icon: UserCog, description: 'Your admin identity and security.' },
   { id: 'adminAccounts', label: 'Admin Accounts', icon: ShieldCheck, description: 'Multiple admin users and roles.' },
   { id: 'submissions', label: 'Submissions', icon: FilePenLine, description: 'All participation and form submissions.' },
@@ -448,7 +466,7 @@ const adminNav = [
 ] as const;
 
 const adminSidebarGroups = [
-  { title: 'Core', ids: ['overview', 'submissions', 'indiaPreSelection', 'website', 'learning'] },
+  { title: 'Core', ids: ['overview', 'sendEmail', 'submissions', 'indiaPreSelection', 'website', 'learning'] },
   { title: 'Operations', ids: ['users', 'points', 'chapters', 'uploads', 'kfood', 'events', 'rewards'] },
   { title: 'System', ids: ['adminProfile', 'adminAccounts', 'announcements', 'calendar', 'analytics'] },
 ] as const;
@@ -549,6 +567,13 @@ const emptyAnnouncementForm = {
   title: '',
   body: '',
   created_by: '',
+};
+
+const emptyEmailForm = {
+  to: '',
+  cc: '',
+  subject: '',
+  body: '',
 };
 
 const emptyAdminAccountForm = {
@@ -932,6 +957,7 @@ const AdminControlCenter = () => {
   const [notice, setNotice] = useState('');
   const [reviewSuccess, setReviewSuccess] = useState('');
   const [userSuccess, setUserSuccess] = useState('');
+  const [emailSuccess, setEmailSuccess] = useState('');
   const [userDeleteConfirm, setUserDeleteConfirm] = useState(false);
   const [adminQuery, setAdminQuery] = useState('');
   const sidebarOpen = true;
@@ -953,6 +979,7 @@ const AdminControlCenter = () => {
   const [announcements, setAnnouncements] = useState<AnnouncementRow[]>([]);
   const [calendarConnections, setCalendarConnections] = useState<CalendarConnectionRow[]>([]);
   const [recentActions, setRecentActions] = useState<ActivityRow[]>([]);
+  const [sentEmails, setSentEmails] = useState<SentEmailRow[]>([]);
   const [adminProfile, setAdminProfile] = useState<AdminProfileRow | null>(null);
   const [adminAccounts, setAdminAccounts] = useState<AdminAccountRow[]>([]);
   const [kfoodProducts, setKfoodProducts] = useState<KFoodProductRow[]>([]);
@@ -989,6 +1016,8 @@ const AdminControlCenter = () => {
   const [userForm, setUserForm] = useState(emptyUserForm);
   const [pointsForm, setPointsForm] = useState(emptyPointsForm);
   const [announcementForm, setAnnouncementForm] = useState(emptyAnnouncementForm);
+  const [bulkEmailForm, setBulkEmailForm] = useState(emptyEmailForm);
+  const [singleEmailForm, setSingleEmailForm] = useState(emptyEmailForm);
   const [adminAccountForm, setAdminAccountForm] = useState(emptyAdminAccountForm);
   const [adminProfileForm, setAdminProfileForm] = useState(emptyProfileForm);
   const [adminPasswordForm, setAdminPasswordForm] = useState(emptyPasswordForm);
@@ -1193,6 +1222,7 @@ const AdminControlCenter = () => {
       api.get('/admin/announcements'),
       api.get('/admin/google-calendar/connections'),
       api.get('/admin/recent-actions'),
+      api.get('/admin/email/sent'),
     ]);
 
     const dashboardPayload = readPayload<Record<string, unknown>>(requests[0], {});
@@ -1218,6 +1248,7 @@ const AdminControlCenter = () => {
     const announcementRows = readPayload<AnnouncementRow[]>(requests[20], []);
     const connectionRows = readPayload<CalendarConnectionRow[]>(requests[21], []);
     const activityRows = readPayload<ActivityRow[]>(requests[22], []);
+    const sentEmailRows = readPayload<SentEmailRow[]>(requests[23], []);
 
     setDashboardMetrics((dashboardPayload.metrics as Record<string, number>) || {});
     setAnalytics(analyticsPayload);
@@ -1241,6 +1272,7 @@ const AdminControlCenter = () => {
     setAnnouncements(announcementRows);
     setCalendarConnections(connectionRows);
     setRecentActions(activityRows);
+    setSentEmails(sentEmailRows);
 
     if (profileRow) {
       setAdminProfileForm({
@@ -2038,6 +2070,96 @@ const AdminControlCenter = () => {
     setNotice('Calendar sync queued.');
     await loadAdminData();
   };
+
+  const sendEmailMessage = async (mode: 'bulk' | 'single') => {
+    const form = mode === 'bulk' ? bulkEmailForm : singleEmailForm;
+    if (mode === 'bulk' && typeof window !== 'undefined' && !window.confirm(`Send this email to all ${users.length} non-deleted users with email addresses?`)) return;
+
+    try {
+      const response = await api.post('/admin/email/send', { ...form, mode });
+      const count = Number(response.data?.data?.recipient_count || 0);
+      setEmailSuccess(`${mode === 'bulk' ? 'Promotional email' : 'Email'} sent successfully to ${count} recipient${count === 1 ? '' : 's'}.`);
+      if (mode === 'bulk') setBulkEmailForm(emptyEmailForm);
+      else setSingleEmailForm(emptyEmailForm);
+      await loadAdminData();
+    } catch (error: unknown) {
+      const response = (error as { response?: { data?: { error?: { message?: string } } } }).response;
+      setNotice(response?.data?.error?.message || 'Email could not be sent. Check the details and try again.');
+    }
+  };
+
+  const closeEmailSuccess = () => setEmailSuccess('');
+
+  const renderSendEmail = () => (
+    <div className="space-y-5">
+      <div className="grid gap-5 xl:grid-cols-2">
+        <SectionShell
+          title="All users"
+          description={`Send one promotional email to all ${users.length} non-deleted user accounts with an email address. Recipients are sent as BCC for privacy.`}
+          actions={<span className="text-sm font-bold text-[#ffc400]">Bulk campaign</span>}
+        >
+          <div className="space-y-4">
+            <Field label="Email title">
+              <input className={inputClass} maxLength={255} placeholder="A special update from K-CUBE" value={bulkEmailForm.subject} onChange={(event) => setBulkEmailForm((state) => ({ ...state, subject: event.target.value }))} />
+            </Field>
+            <Field label="Message">
+              <textarea className={`${inputClass} min-h-48`} placeholder="Write the promotional message..." value={bulkEmailForm.body} onChange={(event) => setBulkEmailForm((state) => ({ ...state, body: event.target.value }))} />
+            </Field>
+            <button type="button" onClick={() => void sendEmailMessage('bulk')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+              <Send className="h-4 w-4" /> Send to all users
+            </button>
+          </div>
+        </SectionShell>
+
+        <SectionShell
+          title="Single email"
+          description="Send a personal email to one address with optional CC recipients, just like Gmail. Separate CC addresses with commas."
+          actions={<span className="text-sm font-bold text-[#ffc400]">To + CC</span>}
+        >
+          <div className="space-y-4">
+            <Field label="To">
+              <input className={inputClass} type="email" placeholder="recipient@example.com" value={singleEmailForm.to} onChange={(event) => setSingleEmailForm((state) => ({ ...state, to: event.target.value }))} />
+            </Field>
+            <Field label="CC">
+              <input className={inputClass} placeholder="manager@example.com, team@example.com" value={singleEmailForm.cc} onChange={(event) => setSingleEmailForm((state) => ({ ...state, cc: event.target.value }))} />
+            </Field>
+            <Field label="Email title">
+              <input className={inputClass} maxLength={255} placeholder="Your K-CUBE update" value={singleEmailForm.subject} onChange={(event) => setSingleEmailForm((state) => ({ ...state, subject: event.target.value }))} />
+            </Field>
+            <Field label="Message">
+              <textarea className={`${inputClass} min-h-32`} placeholder="Write your message..." value={singleEmailForm.body} onChange={(event) => setSingleEmailForm((state) => ({ ...state, body: event.target.value }))} />
+            </Field>
+            <button type="button" onClick={() => void sendEmailMessage('single')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+              <Send className="h-4 w-4" /> Send email
+            </button>
+          </div>
+        </SectionShell>
+      </div>
+
+      <SectionShell title="Sent emails" description="Your recent bulk campaigns and individual emails are stored here for reference." actions={<span className="text-sm font-bold text-[#ffc400]">{sentEmails.length} records</span>}>
+        <div className="overflow-hidden rounded-2xl border border-white/10">
+          <div className="hidden grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)] gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] lg:grid">
+            <span>S.No.</span><span>Title</span><span>Type</span><span>Recipients</span><span>Sent</span><span>Status</span>
+          </div>
+          <div className="divide-y divide-white/10">
+            <PaginatedList items={sentEmails}>
+              {(visibleEmails, emailOffset) => visibleEmails.map((email, index) => (
+                <div key={email.id} className="grid gap-3 px-5 py-4 lg:grid-cols-[56px_minmax(180px,1fr)_120px_140px_170px_minmax(180px,1.3fr)] lg:items-center">
+                  <span className="text-sm font-bold text-[#7d8a99]">{emailOffset + index + 1}</span>
+                  <div className="min-w-0"><p className="truncate text-sm font-black text-white">{email.subject}</p><p className="mt-1 truncate text-xs text-[#aab5c6]">{email.body}</p></div>
+                  <span className="text-xs font-black uppercase tracking-[0.14em] text-[#aab5c6]">{email.delivery_mode}</span>
+                  <span className="text-sm text-[#d4dbe7]">{email.recipient_count}</span>
+                  <span className="text-sm text-[#aab5c6]">{email.sent_at ? new Date(email.sent_at).toLocaleString() : 'Not sent'}</span>
+                  <div><span className={`rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${email.status === 'sent' ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300' : 'border-red-400/30 bg-red-400/10 text-red-300'}`}>{email.status}</span>{email.error_message ? <p className="mt-2 text-xs text-red-300">{email.error_message}</p> : null}</div>
+                </div>
+              ))}
+            </PaginatedList>
+            {!sentEmails.length ? <p className="px-5 py-10 text-center text-sm text-[#aab5c6]">No emails sent yet.</p> : null}
+          </div>
+        </div>
+      </SectionShell>
+    </div>
+  );
 
   const renderOverview = () => (
     <div className="space-y-5">
@@ -4765,6 +4887,8 @@ const AdminControlCenter = () => {
 
   const sectionBody = () => {
     switch (activeSection) {
+      case 'sendEmail':
+        return renderSendEmail();
       case 'adminProfile':
         return renderAdminProfile();
       case 'adminAccounts':
@@ -4973,6 +5097,17 @@ const AdminControlCenter = () => {
               </div>
             </div>
             <button type="button" onClick={closeReviewSuccess} className="mt-5 w-full rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Continue</button>
+          </div>
+        </div>
+      ) : null}
+      {emailSuccess ? (
+        <div className="fixed inset-0 z-[145] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm" role="alertdialog" aria-modal="true">
+          <div className="w-full max-w-md rounded-3xl border border-emerald-400/30 bg-[#101014] p-6 text-white shadow-2xl">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-300"><CheckCircle2 className="h-5 w-5" /></span>
+              <div><p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Email sent</p><h3 className="mt-2 text-xl font-black">Message delivered successfully</h3><p className="mt-2 text-sm leading-6 text-[#aab5c6]">{emailSuccess}</p></div>
+            </div>
+            <button type="button" onClick={closeEmailSuccess} className="mt-5 w-full rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Continue</button>
           </div>
         </div>
       ) : null}

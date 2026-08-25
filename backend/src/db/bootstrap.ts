@@ -71,6 +71,26 @@ export const bootstrapDatabase = async () => {
       INDEX idx_kfood_fulfillment_payment_order (payment_order_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS admin_sent_emails (
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+      created_by BIGINT UNSIGNED DEFAULT NULL,
+      delivery_mode ENUM('bulk','single') NOT NULL,
+      recipient_count INT UNSIGNED NOT NULL DEFAULT 0,
+      recipients_json JSON NOT NULL,
+      cc_addresses TEXT DEFAULT NULL,
+      subject VARCHAR(255) NOT NULL,
+      body MEDIUMTEXT NOT NULL,
+      status ENUM('sent','failed') NOT NULL,
+      error_message TEXT DEFAULT NULL,
+      sent_at DATETIME DEFAULT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id),
+      INDEX idx_admin_sent_emails_created_at (created_at),
+      INDEX idx_admin_sent_emails_status (status)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
 };
 
 export default bootstrapDatabase;

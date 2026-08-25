@@ -27,6 +27,39 @@ const getTransporter = () => {
   return transporter;
 };
 
+const escapeHtml = (value: string) => value
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
+
+export const sendAdminEmail = async (message: {
+  to: string | string[];
+  cc?: string[];
+  bcc?: string[];
+  subject: string;
+  body: string;
+}) => {
+  const mailer = getTransporter();
+  if (!mailer) throw new Error('SMTP is not configured for admin email delivery');
+
+  const from = getFromAddress();
+  const body = String(message.body || '').trim();
+  await mailer.sendMail({
+    from,
+    replyTo: SMTP_USER || from,
+    to: message.to,
+    cc: message.cc?.length ? message.cc : undefined,
+    bcc: message.bcc?.length ? message.bcc : undefined,
+    subject: message.subject,
+    text: body,
+    html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;white-space:pre-wrap">${escapeHtml(body)}</div>`,
+  });
+
+  return { skipped: false };
+};
+
 export const buildVerificationUrl = (token: string) => {
   const url = new URL('/verify-email', APP_URL);
   url.searchParams.set('token', token);
