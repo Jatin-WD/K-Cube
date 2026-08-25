@@ -14,6 +14,18 @@ const parseEmails = (value: unknown) => String(value || '')
 const uniqueEmails = (emails: string[]) => [...new Set(emails)];
 const validateEmails = (emails: string[]) => emails.every((email) => emailPattern.test(email));
 
+const readStoredList = (value: unknown): string[] => {
+  if (Array.isArray(value)) return value.map((entry) => String(entry)).filter(Boolean);
+  try {
+    const parsed = JSON.parse(String(value || '[]'));
+    return Array.isArray(parsed) ? parsed.map((entry) => String(entry)).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+};
+
+const readStoredEmails = (value: unknown) => readStoredList(value).map((email) => email.toLowerCase());
+
 const recordEmail = async (payload: {
   createdBy: number | null;
   mode: 'bulk' | 'single';
@@ -56,7 +68,27 @@ export const listSentAdminEmails = async (_req: Request, res: Response) => {
     ORDER BY created_at DESC, id DESC
     LIMIT 300
   `);
-  return ok(res, rows);
+  const emailRows = rows as Array<Record<string, unknown>>;
+  const addresses = uniqueEmails(emailRows.flatMap((row) => readStoredEmails(row.recipients_json)));
+  const namesByEmail = new Map<string, string>();
+  if (addresses.length) {
+    const placeholders = addresses.map(() => '?').join(', ');
+    const [userRows] = await pool.query(`SELECT LOWER(email) AS email, full_name FROM users WHERE LOWER(email) IN (${placeholders})`, addresses);
+    for (const userRow of userRows as Array<{ email: string; full_name: string | null }>) {
+      if (userRow.full_name) namesByEmail.set(userRow.email, userRow.full_name);
+    }
+  }
+
+  return ok(res, emailRows.map((row) => {
+    const storedNames = readStoredList(row.recipient_names_json);
+    const recipientEmails = readStoredEmails(row.recipients_json);
+    return {
+      ...row,
+      recipient_names_json: storedNames.length
+        ? storedNames
+        : recipientEmails.map((email) => namesByEmail.get(email) || email),
+    };
+  }));
 };
 
 export const getAdminEmailRecipientCount = async (_req: Request, res: Response) => {
