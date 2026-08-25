@@ -364,7 +364,7 @@ export const listAdminSubmissions = async (_req: Request, res: Response) => {
           a.biography AS description,
           a.status,
           NULL AS review_note,
-          a.points_awarded,
+          a.points_awarded AS points_reward,
           a.submitted_at,
           a.updated_at AS reviewed_at,
           a.full_name AS applicant_name,

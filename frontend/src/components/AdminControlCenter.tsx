@@ -3508,8 +3508,13 @@ const AdminControlCenter = () => {
                     type="button"
                      onClick={() => {
                        setSelectedSubmissionId(entry.id);
-                       if (entry.source_type === 'content_upload') prepareUploadReview(entry);
-                       setSubmissionDetailOpen(true);
+                       if (entry.source_type === 'india_pre_selection') {
+                         setSelectedIndiaApplicationId(entry.id);
+                         setIndiaReviewModalOpen(true);
+                       } else {
+                         if (entry.source_type === 'content_upload') prepareUploadReview(entry);
+                         setSubmissionDetailOpen(true);
+                       }
                      }}
                     className={`group w-full overflow-hidden rounded-lg border text-left transition ${
                       active
