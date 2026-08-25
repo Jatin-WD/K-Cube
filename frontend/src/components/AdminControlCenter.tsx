@@ -10,6 +10,8 @@ import {
   BookOpen,
   CalendarDays,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   CircleDollarSign,
   Clapperboard,
   Coins,
@@ -750,6 +752,10 @@ const formFromKFoodProduct = (product: KFoodProductRow): KFoodProductForm => ({
 });
 
 const normalize = (value: unknown) => String(value ?? '').toLowerCase();
+const cleanAuditText = (value: unknown, fallback = '') => {
+  const text = String(value ?? '').trim();
+  return !text || text.toLowerCase() === 'null' ? fallback : text;
+};
 
 const parseEmailList = (value: unknown): string[] => {
   if (Array.isArray(value)) return value.map((entry) => String(entry)).filter(Boolean);
@@ -972,6 +978,8 @@ const AdminControlCenter = () => {
   const [userSuccess, setUserSuccess] = useState('');
   const [emailSuccess, setEmailSuccess] = useState('');
   const [emailSending, setEmailSending] = useState(false);
+  const [overviewWorkspacePage, setOverviewWorkspacePage] = useState(1);
+  const [overviewActivityPage, setOverviewActivityPage] = useState(1);
   const [userDeleteConfirm, setUserDeleteConfirm] = useState(false);
   const [adminQuery, setAdminQuery] = useState('');
   const sidebarOpen = true;
@@ -2226,7 +2234,25 @@ const AdminControlCenter = () => {
     </div>
   );
 
-  const renderOverview = () => (
+  const renderOverview = () => {
+    const workspaceItems = [
+      { id: 'submissions', label: 'Submissions', description: `${submissions.length} rows`, icon: FilePenLine },
+      { id: 'indiaPreSelection', label: 'India Pre-Selection', description: `${indiaApplications.length} submissions`, icon: Mic2 },
+      { id: 'uploads', label: 'Uploads', description: `${uploads.length} items`, icon: Clapperboard },
+      { id: 'kfood', label: 'K-Food', description: `${claims.length} claims`, icon: ShoppingBag },
+      { id: 'events', label: 'Events', description: `${events.length} events`, icon: CalendarDays },
+      { id: 'website', label: 'Website CMS', description: `${pages.length} pages`, icon: FilePenLine },
+      { id: 'analytics', label: 'Analytics', description: 'Usage summary', icon: BarChart3 },
+    ];
+    const workspacePageCount = Math.max(1, Math.ceil(workspaceItems.length / 6));
+    const safeWorkspacePage = Math.min(overviewWorkspacePage, workspacePageCount);
+    const visibleWorkspaceItems = workspaceItems.slice((safeWorkspacePage - 1) * 6, safeWorkspacePage * 6);
+    const activityPageSize = 3;
+    const activityPageCount = Math.max(1, Math.ceil(filteredRecentActions.length / activityPageSize));
+    const safeActivityPage = Math.min(overviewActivityPage, activityPageCount);
+    const visibleActivityItems = filteredRecentActions.slice((safeActivityPage - 1) * activityPageSize, safeActivityPage * activityPageSize);
+
+    return (
     <div className="space-y-5">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
@@ -2246,11 +2272,11 @@ const AdminControlCenter = () => {
         })}
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.06fr)_minmax(340px,0.94fr)]">
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.06fr)_minmax(340px,0.94fr)]">
         <SectionShell
           title="Priority workspaces"
           description="Jump straight into the sections that usually need attention first."
-          actions={<button type="button" onClick={() => setActiveSection('indiaPreSelection')} className="text-sm font-bold text-[#ffc400]">Open India queue</button>}
+          actions={<div className="flex items-center gap-2"><button type="button" onClick={() => setOverviewWorkspacePage((page) => Math.max(1, page - 1))} disabled={safeWorkspacePage === 1} className="rounded-lg border border-white/10 p-1.5 text-white disabled:opacity-30" aria-label="Previous workspaces"><ChevronLeft className="h-4 w-4" /></button><span className="text-xs text-[#98a4b1]">{safeWorkspacePage}/{workspacePageCount}</span><button type="button" onClick={() => setOverviewWorkspacePage((page) => Math.min(workspacePageCount, page + 1))} disabled={safeWorkspacePage === workspacePageCount} className="rounded-lg border border-white/10 p-1.5 text-white disabled:opacity-30" aria-label="Next workspaces"><ChevronRight className="h-4 w-4" /></button><button type="button" onClick={() => setActiveSection('indiaPreSelection')} className="ml-1 text-sm font-bold text-[#ffc400]">Open India queue</button></div>}
         >
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {[
@@ -2261,7 +2287,7 @@ const AdminControlCenter = () => {
               { id: 'events', label: 'Events', description: `${events.length} events`, icon: CalendarDays },
               { id: 'website', label: 'Website CMS', description: `${pages.length} pages`, icon: FilePenLine },
               { id: 'analytics', label: 'Analytics', description: 'Usage summary', icon: BarChart3 },
-            ].map((item) => {
+            ].slice((safeWorkspacePage - 1) * 6, safeWorkspacePage * 6).map((item) => {
               const Icon = item.icon;
               return (
                 <button
@@ -2287,11 +2313,11 @@ const AdminControlCenter = () => {
         <SectionShell
           title="Recent actions"
           description="The latest admin activity and moderation history pulled from the audit log."
-          actions={<span className="text-sm font-bold text-[#ffc400]">{filteredRecentActions.length} records</span>}
+          actions={<div className="flex items-center gap-2"><span className="text-sm font-bold text-[#ffc400]">{filteredRecentActions.length} records</span><button type="button" onClick={() => setOverviewActivityPage((page) => Math.max(1, page - 1))} disabled={safeActivityPage === 1} className="rounded-lg border border-white/10 p-1.5 text-white disabled:opacity-30" aria-label="Previous recent actions"><ChevronLeft className="h-4 w-4" /></button><span className="text-xs text-[#98a4b1]">{safeActivityPage}/{activityPageCount}</span><button type="button" onClick={() => setOverviewActivityPage((page) => Math.min(activityPageCount, page + 1))} disabled={safeActivityPage === activityPageCount} className="rounded-lg border border-white/10 p-1.5 text-white disabled:opacity-30" aria-label="Next recent actions"><ChevronRight className="h-4 w-4" /></button></div>}
         >
           <div className="space-y-3">
             {filteredRecentActions.length ? (
-              filteredRecentActions.slice(0, 6).map((entry) => (
+              visibleActivityItems.map((entry) => (
                 <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-sm font-black uppercase tracking-[0.16em] text-[#ffc400]">{entry.action.replace(/_/g, ' ')}</p>
@@ -2304,11 +2330,11 @@ const AdminControlCenter = () => {
                     {entry.entity_id ? ` #${entry.entity_id}` : ''}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-[#aab5c6]">
-                    {entry.before_status && entry.after_status ? `${entry.before_status} -> ${entry.after_status}` : entry.after_status || 'Status changed'}
+                    {cleanAuditText(entry.before_status) && cleanAuditText(entry.after_status) ? `${cleanAuditText(entry.before_status)} -> ${cleanAuditText(entry.after_status)}` : cleanAuditText(entry.after_status, 'Status changed')}
                   </p>
-                  {entry.review_note ? (
+                  {cleanAuditText(entry.review_note) ? (
                     <p className="mt-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm leading-6 text-[#d4dbe7]">
-                      {entry.review_note}
+                      {cleanAuditText(entry.review_note)}
                     </p>
                   ) : null}
                   <p className="mt-2 text-xs text-[#98a4b1]">
@@ -2372,7 +2398,8 @@ const AdminControlCenter = () => {
         </SectionShell>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderWebsite = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
