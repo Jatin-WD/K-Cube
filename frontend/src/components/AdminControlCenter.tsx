@@ -1796,6 +1796,10 @@ const AdminControlCenter = () => {
 
   const reviewUpload = async (status: 'approved' | 'rejected') => {
     if (!selectedUpload) return;
+    if (status === 'rejected' && !uploadReview.review_note.trim()) {
+      setNotice('Rejection reason is required before rejecting an upload.');
+      return;
+    }
     await api.patch(`/admin/uploads/${selectedUpload.id}/review`, {
       status,
       points_reward: Number(uploadReview.points_reward || 0),
@@ -1807,29 +1811,14 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
-  const openSubmissionReview = (submission: SubmissionRow) => {
-    setSubmissionDetailOpen(false);
-    if (submission.source_type === 'content_upload') {
-      const upload = uploads.find((entry) => entry.id === submission.id);
-      setSelectedUploadId(submission.id);
-      setUploadReview({
-        status: upload?.status === 'rejected' ? 'rejected' : 'approved',
-        points_reward: upload?.points_reward || submission.points_reward || 0,
-        review_note: upload?.review_note || submission.review_note || '',
-      });
-      setActiveSection('uploads');
-      return;
-    }
-    if (submission.source_type === 'kfood_purchase') {
-      const claim = claims.find((entry) => entry.id === submission.id);
-      setSelectedClaimId(submission.id);
-      setClaimReview({
-        status: claim?.status === 'rejected' ? 'rejected' : 'approved',
-        points_reward: claim?.points_reward || submission.points_reward || 0,
-        review_note: claim?.review_note || submission.review_note || '',
-      });
-      setActiveSection('kfood');
-    }
+  const prepareUploadReview = (submission: SubmissionRow) => {
+    const upload = uploads.find((entry) => entry.id === submission.id);
+    setSelectedUploadId(submission.id);
+    setUploadReview({
+      status: upload?.status === 'rejected' ? 'rejected' : 'approved',
+      points_reward: upload?.points_reward || submission.points_reward || 0,
+      review_note: upload?.review_note || submission.review_note || '',
+    });
   };
 
   const reviewIndiaApplication = async () => {
@@ -3507,10 +3496,11 @@ const AdminControlCenter = () => {
                   <button
                     key={`${entry.source_type}-${entry.id}`}
                     type="button"
-                    onClick={() => {
-                      setSelectedSubmissionId(entry.id);
-                      setSubmissionDetailOpen(true);
-                    }}
+                     onClick={() => {
+                       setSelectedSubmissionId(entry.id);
+                       if (entry.source_type === 'content_upload') prepareUploadReview(entry);
+                       setSubmissionDetailOpen(true);
+                     }}
                     className={`group w-full overflow-hidden rounded-lg border text-left transition ${
                       active
                         ? isIndia
@@ -3779,13 +3769,21 @@ const AdminControlCenter = () => {
                     )}
 
                     {selectedSubmission.source_type === 'content_upload' ? (
-                      <button
-                        type="button"
-                        onClick={() => openSubmissionReview(selectedSubmission)}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]"
-                      >
-                        <CheckCircle2 className="h-4 w-4" /> Open review controls
-                      </button>
+                      <div className="space-y-3 rounded-2xl border border-[#ffc400]/30 bg-[#ffc400]/5 p-4">
+                        <p className="text-sm font-black text-[#ffc400]">Review controls</p>
+                        <label className="block">
+                          <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[#98a4b1]">Points reward</span>
+                          <input className={inputClass} type="number" min="0" value={uploadReview.points_reward} onChange={(event) => setUploadReview((state) => ({ ...state, points_reward: Number(event.target.value) }))} />
+                        </label>
+                        <label className="block">
+                          <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[#98a4b1]">Review note</span>
+                          <textarea className={`${inputClass} min-h-24`} value={uploadReview.review_note} onChange={(event) => setUploadReview((state) => ({ ...state, review_note: event.target.value }))} placeholder="Required when rejecting" />
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          <button type="button" onClick={() => reviewUpload('approved')} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]"><CheckCircle2 className="h-4 w-4" /> Approve</button>
+                          <button type="button" onClick={() => reviewUpload('rejected')} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300"><Trash2 className="h-4 w-4" /> Reject</button>
+                        </div>
+                      </div>
                     ) : selectedSubmission.source_type === 'event_rsvp' || selectedSubmission.source_type === 'learning_course' ? (
                       <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                         <p className="text-sm font-black text-[#ffc400]">Informational submission</p>
