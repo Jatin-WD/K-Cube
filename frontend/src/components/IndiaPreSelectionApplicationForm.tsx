@@ -23,6 +23,8 @@ type IndiaPreSelectionApplicationFormProps = {
   compact?: boolean;
 };
 
+type ValidationErrors = Partial<Record<keyof ApplicationFormState, string>>;
+
 type SavedApplication = ApplicationFormState & {
   id?: number | null;
   status?: string | null;
@@ -57,18 +59,57 @@ const categoryOptions = [
   'Other',
 ];
 
+const publicVideoHosts = new Set([
+  'drive.google.com', 'docs.google.com', 'dropbox.com', 'www.dropbox.com',
+  'dropboxusercontent.com', 'vimeo.com', 'player.vimeo.com', 'dailymotion.com',
+  'www.dailymotion.com', 'streamable.com', 'loom.com', 'www.loom.com',
+  'wistia.com', 'fast.wistia.net', 'mux.com',
+]);
+
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(value.trim());
+const normalizePhone = (value: string) => value.trim().replace(/[\s().-]/g, '');
+const isValidPhone = (value: string) => /^\+[1-9]\d{7,14}$/.test(normalizePhone(value));
+
 const isValidVideoLink = (value: string) => {
   const text = value.trim();
   if (!text) return false;
   const candidate = /^https?:\/\//i.test(text) ? text : `https://${text}`;
   try {
     const url = new URL(candidate);
-    if (!['http:', 'https:'].includes(url.protocol)) return false;
-    if (!url.hostname) return false;
-    return true;
+    const hostname = url.hostname.toLowerCase().replace(/^www\./, '');
+    if (url.protocol !== 'https:' || url.username || url.password) return false;
+    if (hostname === 'youtube.com' || hostname.endsWith('.youtube.com') || hostname === 'youtu.be') return false;
+    if (publicVideoHosts.has(hostname) || publicVideoHosts.has(`www.${hostname}`)) {
+      if (hostname.includes('google.com')) return /\/(file|drive|open|uc)\b|\/folders?\//i.test(url.pathname);
+      return true;
+    }
+    return /\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(url.pathname);
   } catch {
     return false;
   }
+};
+
+const validateApplication = (form: ApplicationFormState, accountEmail?: string): ValidationErrors => {
+  const errors: ValidationErrors = {};
+  const name = form.full_name.trim();
+  const biography = form.biography.trim();
+  const email = form.email.trim().toLowerCase();
+  const phone = normalizePhone(form.phone);
+  const date = form.date_of_birth ? new Date(`${form.date_of_birth}T00:00:00`) : null;
+
+  if (!/^[\p{L}][\p{L}\s.'-]{1,99}$/u.test(name)) errors.full_name = 'Enter your real full name.';
+  if (!isValidEmail(email) || email !== accountEmail?.trim().toLowerCase()) errors.email = 'Use your verified K-CUBE account email.';
+  if (!isValidPhone(phone)) errors.phone = 'Use a valid phone number with country code, e.g. +919876543210.';
+  if (form.nationality.trim().length < 2) errors.nationality = 'Enter your nationality.';
+  if (form.current_city.trim().length < 2) errors.current_city = 'Enter your current city.';
+  if (!date || Number.isNaN(date.getTime()) || date > new Date()) errors.date_of_birth = 'Enter a valid date of birth.';
+  if (!categoryOptions.includes(form.performance_category)) errors.performance_category = 'Select a performance category.';
+  if (biography.length < 30 || biography.length > 2000 || !/[\p{L}]/u.test(biography)) {
+    errors.biography = 'Add at least 30 meaningful characters about your experience.';
+  }
+  if (!isValidVideoLink(form.video_link)) errors.video_link = 'Use a public Google Drive/video link. YouTube is not accepted.';
+  if (form.message.trim().length > 1000) errors.message = 'Message must be 1000 characters or fewer.';
+  return errors;
 };
 
 const normalizeVideoLink = (value: string) => {
@@ -83,6 +124,10 @@ const formatDateTime = (value?: string | null) => {
   if (Number.isNaN(parsed.getTime())) return '';
   return parsed.toLocaleString();
 };
+
+const FieldError = ({ message }: { message?: string }) => (
+  message ? <p className="text-xs font-semibold text-red-600">{message}</p> : null
+);
 
 const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelectionApplicationFormProps) => {
   const user = useAppStore((state) => state.user);
@@ -99,6 +144,8 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
   const [reviewedAt, setReviewedAt] = useState('');
   const [successVisible, setSuccessVisible] = useState(false);
   const [videoLinkTouched, setVideoLinkTouched] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [validationWarning, setValidationWarning] = useState('');
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -188,6 +235,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
 
   const updateField = (key: keyof ApplicationFormState, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
+    setValidationErrors((current) => ({ ...current, [key]: undefined }));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -195,14 +243,18 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
     setError('');
     setMessage('');
     setVideoLinkTouched(true);
+    const nextValidationErrors = validateApplication(form, user?.email);
+    setValidationErrors(nextValidationErrors);
 
     if (!user) {
       setError('Please sign in first to submit your application inside K-CUBE.');
       return;
     }
 
-    if (!isValidVideoLink(form.video_link)) {
-      setError('Please enter a valid YouTube, Google Drive, or public video URL.');
+    const firstError = Object.values(nextValidationErrors)[0];
+    if (firstError) {
+      setError(firstError);
+      setValidationWarning('Please enter proper details in all highlighted fields before submitting.');
       return;
     }
 
@@ -500,10 +552,13 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
               Full name
               <input
                 required
+                minLength={2}
+                maxLength={100}
                 value={form.full_name}
                 onChange={(event) => updateField('full_name', event.target.value)}
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
+              <FieldError message={validationErrors.full_name} />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827]">
               Email address
@@ -512,16 +567,24 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 type="email"
                 value={form.email}
                 onChange={(event) => updateField('email', event.target.value)}
+                readOnly
+                title="This must match your verified K-CUBE account email"
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
+              <FieldError message={validationErrors.email} />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827]">
               Phone or WhatsApp
               <input
+                required
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="+91 9876543210"
                 value={form.phone}
                 onChange={(event) => updateField('phone', event.target.value)}
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
+              <FieldError message={validationErrors.phone} />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827]">
               Nationality
@@ -530,6 +593,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 onChange={(event) => updateField('nationality', event.target.value)}
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
+              <FieldError message={validationErrors.nationality} />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827]">
               Current city
@@ -538,15 +602,18 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 onChange={(event) => updateField('current_city', event.target.value)}
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
+              <FieldError message={validationErrors.current_city} />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827]">
               Date of birth
               <input
                 type="date"
+                required
                 value={form.date_of_birth}
                 onChange={(event) => updateField('date_of_birth', event.target.value)}
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
+              <FieldError message={validationErrors.date_of_birth} />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
               Performance category
@@ -563,16 +630,21 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                   </option>
                 ))}
               </select>
+              <FieldError message={validationErrors.performance_category} />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
               Short biography
               <textarea
+                required
+                minLength={30}
+                maxLength={2000}
                 rows={4}
                 value={form.biography}
                 onChange={(event) => updateField('biography', event.target.value)}
                 placeholder="Tell us about your background, style, and stage experience."
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:border-[#f3a847] focus:bg-white"
               />
+              <FieldError message={validationErrors.biography} />
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
               Performance video link
@@ -584,14 +656,14 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                   updateField('video_link', event.target.value);
                 }}
                 onBlur={() => setVideoLinkTouched(true)}
-                placeholder="https://youtube.com, Google Drive, or public video URL"
+                placeholder="https://drive.google.com/... or public video URL"
                 aria-invalid={videoLinkTouched && !isValidVideoLink(form.video_link)}
                 className={`rounded-2xl border bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:bg-white ${videoLinkTouched && !isValidVideoLink(form.video_link) ? 'border-red-500 focus:border-red-500' : 'border-[#d5d9d9] focus:border-[#f3a847]'}`}
               />
               <p className={`text-xs font-medium leading-5 ${videoLinkTouched && !isValidVideoLink(form.video_link) ? 'text-red-600' : 'text-[#565959]'}`}>
                 {videoLinkTouched && !isValidVideoLink(form.video_link)
-                  ? 'Please enter a proper public video link, for example https://youtube.com/... or https://drive.google.com/....'
-                  : 'Paste a public video link. YouTube and Google Drive links are supported, and links without http:// or https:// will be normalized.'}
+                  ? validationErrors.video_link || 'Enter a proper public video link.'
+                  : 'Use a public Google Drive or video URL. YouTube links are not accepted.'}
               </p>
             </label>
             <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
@@ -603,6 +675,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 placeholder="Share any extra context, group size, or scheduling note."
                 className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:border-[#f3a847] focus:bg-white"
               />
+              <FieldError message={validationErrors.message} />
             </label>
           </div>
 
@@ -625,6 +698,23 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
               {submitting ? 'Submitting...' : 'Submit application'}
             </button>
           </div>
+
+          {validationWarning ? (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm" role="alertdialog" aria-modal="true">
+              <div className="w-full max-w-md rounded-[24px] border border-[#f3a847]/40 bg-white p-6 shadow-2xl">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b12704]">Check your details</p>
+                <h3 className="mt-2 text-2xl font-black text-[#111827]">Submission needs correction</h3>
+                <p className="mt-3 text-sm leading-6 text-[#565959]">{validationWarning}</p>
+                <button
+                  type="button"
+                  onClick={() => setValidationWarning('')}
+                  className="mt-5 inline-flex w-full items-center justify-center rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] hover:bg-[#f7ca00]"
+                >
+                  Fix highlighted fields
+                </button>
+              </div>
+            </div>
+          ) : null}
         </form>
       )}
     </div>

@@ -5,7 +5,16 @@ import { created, fail, ok } from '../lib/apiResponse';
 import { syncIndiaPreSelectionApplicationToSheets } from '../services/googleSheetsService';
 import { sendIndiaPreSelectionSubmissionEmail } from '../services/mailer';
 
-const APPLICATION_POINTS = 200;
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+  '10minutemail.com', 'guerrillamail.com', 'mailinator.com', 'tempmail.com',
+  'yopmail.com', 'sharklasers.com', 'getnada.com', 'fakeinbox.com',
+]);
+const PUBLIC_VIDEO_HOSTS = new Set([
+  'drive.google.com', 'docs.google.com', 'dropbox.com', 'www.dropbox.com',
+  'dropboxusercontent.com', 'vimeo.com', 'player.vimeo.com', 'dailymotion.com',
+  'www.dailymotion.com', 'streamable.com', 'loom.com', 'www.loom.com',
+  'wistia.com', 'fast.wistia.net', 'mux.com',
+]);
 const PERFORMANCE_CATEGORIES = new Set([
   'Singer',
   'Musical artist',
@@ -76,6 +85,35 @@ const cleanNullableText = (value: unknown) => {
 
 const cleanEmail = (value: unknown) => cleanText(value).toLowerCase();
 
+const isValidEmail = (value: string) => {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(value)) return false;
+  const domain = value.split('@').pop() || '';
+  return !DISPOSABLE_EMAIL_DOMAINS.has(domain);
+};
+
+const normalizePhone = (value: unknown) => cleanText(value).replace(/[\s().-]/g, '');
+
+const isValidPhone = (value: string) => /^\+[1-9]\d{7,14}$/.test(value);
+
+const isValidPersonName = (value: string) => /^[\p{L}][\p{L}\s.'-]{1,99}$/u.test(value);
+
+const isValidPublicVideoLink = (value: string) => {
+  const candidate = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  try {
+    const url = new URL(candidate);
+    const hostname = url.hostname.toLowerCase().replace(/^www\./, '');
+    if (url.protocol !== 'https:' || url.username || url.password) return false;
+    if (hostname === 'youtube.com' || hostname.endsWith('.youtube.com') || hostname === 'youtu.be') return false;
+    if (PUBLIC_VIDEO_HOSTS.has(hostname) || PUBLIC_VIDEO_HOSTS.has(`www.${hostname}`)) {
+      if (hostname.includes('google.com')) return /\/(file|drive|open|uc)\b|\/folders?\//i.test(url.pathname);
+      return true;
+    }
+    return /\.(mp4|webm|mov|m4v)(?:$|[?#])/i.test(url.pathname);
+  } catch {
+    return false;
+  }
+};
+
 const parseDate = (value: unknown) => {
   const text = cleanText(value);
   if (!text) return null;
@@ -103,7 +141,12 @@ const normalizeVideoLink = (value: unknown) => {
 
 const getCurrentUser = async (userId: number) => {
   const [rows] = await pool.query(
-    'SELECT id, full_name, email, phone FROM users WHERE id = ? LIMIT 1',
+    `SELECT u.id, u.full_name, u.email, u.phone,
+       EXISTS(
+         SELECT 1 FROM auth_identities ai
+         WHERE ai.user_id = u.id AND ai.email = u.email AND ai.verified = TRUE
+       ) AS email_verified
+     FROM users u WHERE u.id = ? LIMIT 1`,
     [userId],
   );
   return (rows as any[])[0] || null;
@@ -129,18 +172,29 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
 
   const fullName = cleanText(req.body.full_name || user.full_name);
   const email = cleanEmail(req.body.email || user.email);
-  const phone = cleanNullableText(req.body.phone || user.phone);
-  const nationality = cleanNullableText(req.body.nationality);
-  const currentCity = cleanNullableText(req.body.current_city);
+  const phone = normalizePhone(req.body.phone || user.phone);
+  const nationality = cleanText(req.body.nationality);
+  const currentCity = cleanText(req.body.current_city);
   const dateOfBirth = parseDate(req.body.date_of_birth);
   const performanceCategory = cleanText(req.body.performance_category);
-  const biography = cleanNullableText(req.body.biography);
+  const biography = cleanText(req.body.biography);
   const videoLink = normalizeVideoLink(req.body.video_link);
-  const message = cleanNullableText(req.body.message);
+  const message = cleanText(req.body.message);
 
-  if (!fullName || !email || !performanceCategory || !videoLink) {
-    return fail(res, 400, 'VALIDATION_ERROR', 'Full name, email, performance category and a valid video link are required');
+  if (!fullName || !email || !phone || !nationality || !currentCity || !dateOfBirth || !performanceCategory || !biography || !videoLink) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Please complete every required field with proper details');
   }
+
+  if (!isValidPersonName(fullName)) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid full name');
+  if (!user.email_verified) {
+    return fail(res, 400, 'EMAIL_NOT_VERIFIED', 'Verify your K-CUBE account email before submitting this application');
+  }
+  if (!isValidEmail(email) || email !== String(user.email || '').toLowerCase()) {
+    return fail(res, 400, 'EMAIL_NOT_VERIFIED', 'Use the verified email address linked to your K-CUBE account');
+  }
+  if (!isValidPhone(phone)) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid phone number with country code, for example +919876543210');
+  if (nationality.length < 2 || nationality.length > 80) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid nationality');
+  if (currentCity.length < 2 || currentCity.length > 100) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid current city');
 
   if (dateOfBirth === undefined) {
     return fail(res, 400, 'VALIDATION_ERROR', 'Date of birth must be a valid date');
@@ -148,6 +202,14 @@ export const submitIndiaPreSelectionApplication = async (req: AuthRequest, res: 
 
   if (!PERFORMANCE_CATEGORIES.has(performanceCategory)) {
     return fail(res, 400, 'VALIDATION_ERROR', 'Select a valid performance category');
+  }
+
+  if (biography.length < 30 || biography.length > 2000 || !/[\p{L}]/u.test(biography)) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Biography must contain at least 30 meaningful characters');
+  }
+  if (message.length > 1000) return fail(res, 400, 'VALIDATION_ERROR', 'Message must be 1000 characters or fewer');
+  if (!isValidPublicVideoLink(videoLink)) {
+    return fail(res, 400, 'INVALID_VIDEO_LINK', 'Use a public Google Drive or public video link. YouTube links are not accepted.');
   }
 
   const [existingRows] = await pool.query(
