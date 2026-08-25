@@ -2247,7 +2247,7 @@ const AdminControlCenter = () => {
     const workspacePageCount = Math.max(1, Math.ceil(workspaceItems.length / 6));
     const safeWorkspacePage = Math.min(overviewWorkspacePage, workspacePageCount);
     const visibleWorkspaceItems = workspaceItems.slice((safeWorkspacePage - 1) * 6, safeWorkspacePage * 6);
-    const activityPageSize = 3;
+    const activityPageSize = 2;
     const activityPageCount = Math.max(1, Math.ceil(filteredRecentActions.length / activityPageSize));
     const safeActivityPage = Math.min(overviewActivityPage, activityPageCount);
     const visibleActivityItems = filteredRecentActions.slice((safeActivityPage - 1) * activityPageSize, safeActivityPage * activityPageSize);
@@ -2318,7 +2318,7 @@ const AdminControlCenter = () => {
           <div className="space-y-3">
             {filteredRecentActions.length ? (
               visibleActivityItems.map((entry) => (
-                <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <article key={entry.id} className="rounded-2xl border border-white/10 bg-black/20 p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-sm font-black uppercase tracking-[0.16em] text-[#ffc400]">{entry.action.replace(/_/g, ' ')}</p>
                     <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#aab5c6]">
