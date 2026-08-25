@@ -908,12 +908,12 @@ const SectionShell = ({
   actions?: ReactNode;
 }) => (
   <section className="admin-section-shell min-w-0 rounded-xl border border-white/10 bg-[#101014] p-4">
-    <div className="flex flex-col gap-2 border-b border-white/10 pb-3 lg:flex-row lg:items-start lg:justify-between">
+    <div className="flex flex-col gap-2 border-b border-white/10 pb-3 lg:flex-row lg:items-center lg:justify-between">
       <div>
         <h2 className="text-xl font-black text-white">{title}</h2>
         {description ? <p className="mt-1 max-w-3xl text-sm leading-6 text-[#aab5c6]">{description}</p> : null}
       </div>
-      {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
+      {actions ? <div className="flex shrink-0 flex-nowrap items-center gap-2 whitespace-nowrap">{actions}</div> : null}
     </div>
     <div className="min-w-0 pt-4">{children}</div>
   </section>
