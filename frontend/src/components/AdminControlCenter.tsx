@@ -3114,7 +3114,8 @@ const AdminControlCenter = () => {
             actions={<span className="text-sm font-bold text-[#ffc400]">{filteredIndiaApplications.length} records</span>}
           >
             <div className="overflow-hidden rounded-2xl border border-white/10">
-              <div className="hidden grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_150px_170px_150px] gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] lg:grid">
+              <div className="hidden grid-cols-[56px_minmax(220px,1.4fr)_minmax(180px,1fr)_150px_170px_190px] gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1] lg:grid">
+                <span>S.No.</span>
                 <span>Applicant</span>
                 <span>Contact</span>
                 <span>Location</span>
@@ -3123,7 +3124,7 @@ const AdminControlCenter = () => {
               </div>
               <div className="divide-y divide-white/10">
                <PaginatedList items={filteredIndiaApplications}>
-                 {(visibleIndiaApplications) => visibleIndiaApplications.map((entry) => {
+                 {(visibleIndiaApplications, indiaOffset) => visibleIndiaApplications.map((entry, index) => {
                 const active = selectedIndiaApplicationId === entry.id;
                 const applicantEmail = entry.user_email || entry.email;
                 const mailHref = `mailto:${applicantEmail}?subject=${encodeURIComponent(`K-CUBE India Pre-Selection update for ${entry.full_name}`)}&body=${encodeURIComponent(`Hello ${entry.full_name},\n\nThank you for your India Pre-Selection application.\n\nRegards,\nK-CUBE Admin`)}`;
@@ -3134,14 +3135,15 @@ const AdminControlCenter = () => {
                     tabIndex={0}
                     onClick={() => { setSelectedIndiaApplicationId(entry.id); setIndiaReviewModalOpen(true); }}
                     onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedIndiaApplicationId(entry.id); setIndiaReviewModalOpen(true); } }}
-                    className={`grid cursor-pointer gap-4 px-5 py-5 text-left transition hover:bg-white/[0.04] lg:grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_150px_170px_150px] lg:items-center ${active ? 'bg-[#ffc400]/[0.06]' : 'bg-black/10'}`}
+                    className={`grid cursor-pointer gap-3 px-5 py-4 text-left transition hover:bg-white/[0.04] lg:grid-cols-[56px_minmax(220px,1.4fr)_minmax(180px,1fr)_150px_170px_190px] lg:items-center ${active ? 'bg-[#ffc400]/[0.06]' : 'bg-black/10'}`}
                   >
+                    <span className="text-sm font-bold text-[#7d8a99]">{indiaOffset + index + 1}</span>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate text-lg font-black text-white">{entry.full_name}</p>
+                        <p className="truncate text-base font-black text-white">{entry.full_name}</p>
                         <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#ffc400]">{entry.status}</span>
                       </div>
-                      <p className="mt-2 text-sm text-[#aab5c6]">{entry.performance_category || 'Application'} / {entry.points_awarded || 0} points awarded</p>
+                      <p className="mt-1 text-xs text-[#aab5c6]">{entry.performance_category || 'Application'} / {entry.points_awarded || 0} points</p>
                     </div>
                     <div className="min-w-0 text-sm text-[#aab5c6]">
                       <p className="truncate">{applicantEmail}</p>
@@ -3153,8 +3155,8 @@ const AdminControlCenter = () => {
                     </div>
                     <p className="text-sm text-[#aab5c6]">{entry.submitted_at ? new Date(entry.submitted_at).toLocaleString() : 'No timestamp'}</p>
                     <div className="flex flex-wrap gap-2 lg:justify-end" onClick={(event) => event.stopPropagation()}>
-                      <button type="button" onClick={() => { setSelectedIndiaApplicationId(entry.id); setIndiaReviewModalOpen(true); }} className="rounded-xl bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]">Open review</button>
-                      <a href={mailHref} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-bold text-white hover:border-[#ffc400]/50">Reply by email</a>
+                      <button type="button" onClick={() => { setSelectedIndiaApplicationId(entry.id); setIndiaReviewModalOpen(true); }} className="rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]">Review</button>
+                      <a href={mailHref} className="rounded-lg border border-white/15 px-3 py-2 text-xs font-bold text-white hover:border-[#ffc400]/50">Email</a>
                     </div>
                   </div>
                 );
