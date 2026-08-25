@@ -1813,6 +1813,14 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
+  const closeReviewSuccess = () => {
+    setReviewSuccess('');
+    setSubmissionDetailOpen(false);
+    setIndiaReviewModalOpen(false);
+    setSelectedSubmissionId(null);
+    setSelectedIndiaApplicationId(null);
+  };
+
   const prepareUploadReview = (submission: SubmissionRow) => {
     const upload = uploads.find((entry) => entry.id === submission.id);
     setSelectedUploadId(submission.id);
@@ -5017,7 +5025,7 @@ const AdminControlCenter = () => {
                 <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{reviewSuccess}</p>
               </div>
             </div>
-            <button type="button" onClick={() => setReviewSuccess('')} className="mt-5 w-full rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Continue</button>
+            <button type="button" onClick={closeReviewSuccess} className="mt-5 w-full rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Continue</button>
           </div>
         </div>
       ) : null}
