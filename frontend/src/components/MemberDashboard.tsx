@@ -193,9 +193,29 @@ const MemberDashboard = () => {
 
   return (
     <main className="min-h-screen bg-[#070708] text-white">
-      <section className="px-4 py-8 sm:px-5 sm:py-10 lg:px-10">
+      <div className="mx-auto flex max-w-[1760px] flex-col gap-5 px-3 py-5 sm:px-5 sm:py-7 lg:flex-row lg:gap-6 lg:px-8">
+        <aside className="w-full shrink-0 lg:w-64">
+          <div className="rounded-xl border border-white/10 bg-[#111113] p-3 lg:sticky lg:top-24">
+            <div className="hidden border-b border-white/10 px-3 pb-4 lg:block"><p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">Member area</p><p className="mt-2 text-lg font-black">K-CUBE workspace</p><p className="mt-1 text-xs leading-5 text-[#aab5c6]">Your points, learning and participation.</p></div>
+            <nav className="flex gap-2 overflow-x-auto lg:grid lg:gap-1.5 lg:overflow-visible lg:pt-3" aria-label="Member dashboard">
+              {[
+                ['overview', 'Overview'],
+                ['profile', 'My profile'],
+                ['actions', 'Earn points'],
+                ['learning', 'Learning progress'],
+                ['referrals', 'Referrals'],
+              ].map(([href, label]) => (
+                <a key={href} href={`#${href}`} className="flex shrink-0 items-center rounded-lg border border-transparent px-3 py-2.5 text-sm font-bold text-[#aab5c6] transition hover:border-white/10 hover:bg-white/[0.05] hover:text-white lg:w-full">{label}</a>
+              ))}
+              <Link href="/profile" className="flex shrink-0 items-center rounded-lg border border-[#ffc400]/25 bg-[#ffc400]/10 px-3 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]">Edit profile</Link>
+            </nav>
+          </div>
+        </aside>
+
+        <div className="min-w-0 flex-1">
+        <section id="overview" className="scroll-mt-24 px-0 py-0 sm:py-1">
         <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[1fr_360px]">
-          <div className="col-span-full flex flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div id="profile" className="col-span-full flex scroll-mt-24 flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#ffc400] text-lg font-black text-[#111]">{(user.fullName || 'K').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()}</div>
               <div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Your account</p><p className="truncate text-lg font-black">{user.fullName}</p><p className="truncate text-sm text-[#aab5c6]">{user.email || user.phone || 'Member account'}</p></div>
@@ -246,7 +266,7 @@ const MemberDashboard = () => {
               Visit K-CUBE Shop
             </button>
 
-            <div className="mt-6 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-5">
+            <div id="referrals" className="mt-6 scroll-mt-24 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-5">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Invite friends</p>
               <h3 className="mt-2 text-xl font-black text-white">Earn 30 points per join</h3>
               <p className="mt-2 text-sm leading-6 text-[#d4dbe7]">
@@ -266,9 +286,9 @@ const MemberDashboard = () => {
         </div>
       </section>
 
-      <section className="px-4 pb-12 sm:px-5 lg:px-10">
+      <section id="actions" className="scroll-mt-24 px-0 pb-12 sm:pb-5">
         <div className="mx-auto grid max-w-[1480px] gap-6 xl:grid-cols-3">
-          <form onSubmit={submitUpload} className="rounded-xl border border-white/10 bg-[#111113] p-6">
+          <form id="submissions" onSubmit={submitUpload} className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <Clapperboard className="h-7 w-7 text-[#ffc400]" />
             <h2 className="mt-4 text-2xl font-black">Submit Korean culture video</h2>
             <p className="mt-2 text-sm leading-6 text-[#aab5c6]">Dance, song, drama review or culture content submit karein. Admin approve karke points assign karega.</p>
@@ -286,7 +306,7 @@ const MemberDashboard = () => {
             </button>
           </form>
 
-          <section className="rounded-xl border border-white/10 bg-[#111113] p-6">
+          <section id="learning" className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <BookOpen className="h-7 w-7 text-[#ffc400]" />
             <h2 className="mt-4 text-2xl font-black">Daily Korean learning</h2>
             <p className="mt-2 text-sm leading-6 text-[#aab5c6]">First login se learning journey start hoti hai. Har completed chapter points ledger me save hota hai.</p>
@@ -308,7 +328,7 @@ const MemberDashboard = () => {
             </div>
           </section>
 
-          <form onSubmit={submitPurchaseClaim} className="rounded-xl border border-white/10 bg-[#111113] p-6">
+          <form id="kfood" onSubmit={submitPurchaseClaim} className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <Utensils className="h-7 w-7 text-[#ffc400]" />
             <h2 className="mt-4 text-2xl font-black">Claim K-Food purchase points</h2>
             <p className="mt-2 text-sm leading-6 text-[#aab5c6]">WordPress side theek hone tak order ID/coupon based manual review flow use kar sakte hain.</p>
@@ -323,7 +343,7 @@ const MemberDashboard = () => {
           </form>
         </div>
 
-        <div className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] p-6">
+        <div id="learning-history" className="mx-auto mt-6 max-w-[1480px] scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Saved learning progress</p>
@@ -403,6 +423,8 @@ const MemberDashboard = () => {
 
         {message ? <p className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{message}</p> : null}
       </section>
+        </div>
+      </div>
     </main>
   );
 };
