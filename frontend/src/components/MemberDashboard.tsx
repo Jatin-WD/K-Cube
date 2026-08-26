@@ -33,7 +33,24 @@ interface LearningSessionRow {
   completedAt: string;
 }
 
-type DashboardView = 'overview' | 'profile' | 'actions' | 'learning' | 'referrals';
+type DashboardView = 'overview' | 'profile' | 'actions' | 'learning' | 'referrals' | 'events';
+
+interface MemberEventRow {
+  id: number;
+  title: string;
+  slug: string;
+  description: string | null;
+  category: string;
+  starts_at: string;
+  ends_at: string;
+  timezone: string;
+  location_name: string | null;
+  location_address: string | null;
+  online_meeting_url: string | null;
+  capacity: number | null;
+  points_reward: number;
+  status: string;
+}
 
 const heroImages = [
   {
@@ -84,6 +101,9 @@ const MemberDashboard = () => {
   const [profileForm, setProfileForm] = useState({ full_name: '', phone: '', city: '', state: '', country: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState('');
+  const [events, setEvents] = useState<MemberEventRow[]>([]);
+  const [rsvpStatus, setRsvpStatus] = useState<Record<number, string>>({});
+  const [eventMessage, setEventMessage] = useState('');
 
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -189,6 +209,24 @@ const MemberDashboard = () => {
     }).catch(() => setProfileMessage('Profile load nahi ho paya.'));
   }, [activeView, user]);
 
+  useEffect(() => {
+    api.get('/events').then((response) => {
+      const data = response.data?.data ?? response.data;
+      setEvents(Array.isArray(data) ? data : []);
+    }).catch(() => setEvents([]));
+  }, []);
+
+  const rsvpToEvent = async (eventId: number) => {
+    setEventMessage('');
+    try {
+      await api.post(`/events/${eventId}/rsvp`);
+      setRsvpStatus((current) => ({ ...current, [eventId]: 'registered' }));
+      setEventMessage('RSVP confirmed. Event participation will be verified for points.');
+    } catch {
+      setEventMessage('RSVP complete nahi ho paya. Event full ya temporarily unavailable ho sakta hai.');
+    }
+  };
+
   const saveDashboardProfile = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setProfileSaving(true);
@@ -233,6 +271,7 @@ const MemberDashboard = () => {
                 ['profile', 'My profile'],
                 ['actions', 'Earn points'],
                 ['learning', 'Learning progress'],
+                ['events', 'Events'],
                 ['referrals', 'Referrals'],
               ].map(([href, label]) => (
                 <button key={href} type="button" onClick={() => setActiveView(href as DashboardView)} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-bold transition lg:w-full ${activeView === href ? 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]' : 'border-transparent text-[#aab5c6] hover:border-white/10 hover:bg-white/[0.05] hover:text-white'}`}>{label}</button>
@@ -258,6 +297,27 @@ const MemberDashboard = () => {
             <div className="sm:col-span-2 flex flex-wrap gap-3"><button disabled={profileSaving} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60">{profileSaving ? 'Saving...' : 'Save changes'}</button><Link href="/profile" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">Open full profile page</Link></div>
           </form>
         </section> : null}
+        {activeView === 'events' ? <section className="space-y-5">
+          <div className="rounded-xl border border-[#ffc400]/20 bg-[linear-gradient(110deg,rgba(255,196,0,0.12),rgba(17,17,19,1)_62%)] p-6 sm:p-8">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">Member events</p>
+            <h1 className="mt-2 text-3xl font-black sm:text-4xl">Events and participation</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#aab5c6]">See upcoming K-CUBE events, understand the participation requirements, RSVP directly and track the points available for verified attendance.</p>
+          </div>
+          <article className="rounded-xl border border-[#ffc400]/30 bg-[#111113] p-6 sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Featured event</p><h2 className="mt-2 text-2xl font-black">Itaewon World Music Spirit Festival 2026</h2><p className="mt-2 text-sm leading-7 text-[#aab5c6]">Official India pre-selection and festival submission hub for the Itaewon World Music Spirit Festival.</p></div><span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black text-[#ffc400]">India pre-selection</span></div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3"><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Festival dates</p><p className="mt-2 font-black">October 4-6, 2026</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Location</p><p className="mt-2 font-black">Itaewon, Seoul, Korea</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Main performance</p><p className="mt-2 font-black">October 6 · 7:00-9:30 PM</p></div></div>
+            <div className="mt-5 flex flex-wrap gap-3"><Link href="/india-pre-selection" className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">View event details</Link><Link href="/india-pre-selection/apply" className="rounded-lg border border-[#ffc400]/40 px-5 py-3 text-sm font-black text-[#ffc400]">Apply for pre-selection</Link></div>
+          </article>
+          <div className="grid gap-5 md:grid-cols-2">{events.length ? events.map((event) => (
+            <article key={event.id} className="rounded-xl border border-white/10 bg-[#111113] p-6">
+              <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">{event.category.replace(/_/g, ' ')}</p><h2 className="mt-2 text-xl font-black">{event.title}</h2></div>{event.points_reward ? <span className="rounded-full bg-[#ffc400]/10 px-3 py-1 text-xs font-black text-[#ffc400]">+{event.points_reward} pts</span> : null}</div>
+              <p className="mt-3 text-sm leading-6 text-[#aab5c6]">{event.description || 'Join this K-CUBE community event and participate in a verified experience.'}</p>
+              <div className="mt-4 space-y-2 text-sm text-[#d4dbe7]"><p><span className="font-bold text-[#98a4b1]">When:</span> {new Date(event.starts_at).toLocaleString()} - {new Date(event.ends_at).toLocaleString()}</p><p><span className="font-bold text-[#98a4b1]">Where:</span> {event.location_name || event.online_meeting_url || 'Details to be announced'}{event.location_address ? `, ${event.location_address}` : ''}</p>{event.capacity ? <p><span className="font-bold text-[#98a4b1]">Capacity:</span> {event.capacity} participants</p> : null}</div>
+              <button type="button" onClick={() => rsvpToEvent(event.id)} disabled={rsvpStatus[event.id] === 'registered'} className="mt-5 w-full rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909] disabled:cursor-not-allowed disabled:bg-[#4b431f] disabled:text-[#d4be55]">{rsvpStatus[event.id] === 'registered' ? 'RSVP confirmed' : 'RSVP to this event'}</button>
+            </article>
+          )) : <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-6 text-sm leading-7 text-[#aab5c6] md:col-span-2">No additional published events are available right now. Check back here when the admin publishes the next event.</div>}</div>
+          {eventMessage ? <p className="rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{eventMessage}</p> : null}
+        </section> : null}
         {activeView === 'overview' ? <section id="overview" className="px-0 py-0 sm:py-1">
         <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[1fr_360px]">
           <div id="profile" className="col-span-full flex scroll-mt-24 flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
@@ -265,7 +325,7 @@ const MemberDashboard = () => {
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#ffc400] text-lg font-black text-[#111]">{(user.fullName || 'K').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()}</div>
               <div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Your account</p><p className="truncate text-lg font-black">{user.fullName}</p><p className="truncate text-sm text-[#aab5c6]">{user.email || user.phone || 'Member account'}</p></div>
             </div>
-            <div className="flex flex-wrap items-center gap-3"><span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-[#d4dbe7]">{user.referralCode ? `Referral: ${user.referralCode}` : 'Complete your profile'}</span><Link href="/profile" className="inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/40 px-4 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]"><UserRound className="h-4 w-4" /> View / edit profile</Link></div>
+            <div className="flex flex-wrap items-center gap-3"><span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-[#d4dbe7]">{user.referralCode ? `Referral: ${user.referralCode}` : 'Complete your profile'}</span><button type="button" onClick={() => setActiveView('profile')} className="inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/40 px-4 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]"><UserRound className="h-4 w-4" /> View / edit profile</button></div>
           </div>
           <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111113]">
             <div className="grid min-h-[420px] gap-0 lg:grid-cols-[1fr_0.9fr]">
