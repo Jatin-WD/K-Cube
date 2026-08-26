@@ -409,6 +409,7 @@ export const listCmsPages = async (_req: Request, res: Response) => {
       seoDescription: row.seo_description,
       status: row.status,
       publishedAt: row.published_at,
+      updatedAt: row.updated_at,
     })),
   );
 };

@@ -31,6 +31,7 @@ import {
   Mail,
   Send,
   PlayCircle,
+  Plus,
   Trash2,
   X,
   Users,
@@ -109,6 +110,7 @@ type CmsPageRow = {
   seoDescription: string | null;
   status: string;
   publishedAt: string | null;
+  updatedAt: string | null;
 };
 
 type ChapterRow = {
@@ -1069,6 +1071,8 @@ const AdminControlCenter = () => {
   const [claimReview, setClaimReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
   const [selectedPageId, setSelectedPageId] = useState<number | null>(null);
   const [cmsPageDetailOpen, setCmsPageDetailOpen] = useState(false);
+  const [cmsPageSearch, setCmsPageSearch] = useState('');
+  const [cmsPageStatusFilter, setCmsPageStatusFilter] = useState('all');
 
   const query = adminQuery.trim().toLowerCase();
   const adminInitials = (user?.fullName || 'K-CUBE Admin')
@@ -1155,10 +1159,14 @@ const AdminControlCenter = () => {
     () => chapters.filter((entry) => matchesQuery(query, [entry.name, entry.slug, entry.city, entry.state, entry.country, entry.status, entry.leader_name, entry.leader_email])),
     [chapters, query],
   );
-  const filteredPages = useMemo(
-    () => pages.filter((entry) => matchesQuery(query, [entry.slug, entry.pageType, entry.titleEn, entry.titleKo, entry.titleHi, entry.status])),
-    [pages, query],
-  );
+  const cmsPageList = useMemo(() => {
+    const search = cmsPageSearch.trim().toLowerCase();
+    return pages.filter((page) => {
+      const matchesStatus = cmsPageStatusFilter === 'all' || page.status === cmsPageStatusFilter;
+      const matchesSearch = !search || [page.titleEn, page.slug, page.pageType, page.status].some((value) => normalize(value).includes(search));
+      return matchesStatus && matchesSearch;
+    });
+  }, [cmsPageSearch, cmsPageStatusFilter, pages]);
   const filteredBlocks = useMemo(
     () => visibleBlocks.filter((entry) => matchesQuery(query, [entry.block_key, entry.block_type, entry.status, entry.page_title, entry.page_slug])),
     [query, visibleBlocks],
@@ -2443,7 +2451,7 @@ const AdminControlCenter = () => {
   };
 
   const renderWebsite = () => (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+    <div className="space-y-5">
       <SectionShell
         title="Site content catalog"
         description="These are the existing live detail pages. Sync only missing entries into CMS so current content stays safe."
@@ -2475,30 +2483,52 @@ const AdminControlCenter = () => {
         </div>
       </SectionShell>
 
-      <SectionShell title="CMS pages" description="Pick a page first, then edit its metadata and attached CMS blocks." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPages.length} pages</span>}>
-        <div className="space-y-2">
-          <PaginatedList items={filteredPages}>
-            {(visiblePages) => visiblePages.map((page) => (
-            <button
-              key={page.id}
-              type="button"
-              onClick={() => openCmsPage(page)}
-              className={`flex w-full items-center justify-between gap-4 rounded-xl border px-4 py-3 text-left transition ${
-                selectedPageId === page.id ? 'border-[#ffc400] bg-black/40' : 'border-white/10 bg-black/20 hover:border-white/20'
-              }`}
-            >
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#ffc400]">{page.pageType}</p>
-                  <span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.16em] text-[#aab5c6]">{page.status}</span>
-                </div>
-                <p className="mt-1 truncate font-black text-white">{page.titleEn}</p>
-                <p className="mt-0.5 truncate text-xs text-[#aab5c6]">/{page.slug}</p>
-              </div>
-              <span className="shrink-0 text-xs font-black text-[#ffc400]">Open</span>
-            </button>
+      <SectionShell
+        title="Pages"
+        description="Manage published pages, drafts, SEO metadata and attached content blocks from one WordPress-style list."
+        actions={<button type="button" onClick={() => { setPageForm(emptyPageForm); setSelectedPageId(null); setCmsPageDetailOpen(false); }} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]"><Plus className="h-3.5 w-3.5" /> Add new page</button>}
+      >
+        <div className="flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap items-center gap-3 text-sm font-bold">
+            {[
+              { key: 'all', label: 'All', count: pages.length },
+              { key: 'published', label: 'Published', count: pages.filter((page) => page.status === 'published').length },
+              { key: 'draft', label: 'Draft', count: pages.filter((page) => page.status === 'draft').length },
+              { key: 'archived', label: 'Archived', count: pages.filter((page) => page.status === 'archived').length },
+            ].map((filter) => (
+              <button key={filter.key} type="button" onClick={() => setCmsPageStatusFilter(filter.key)} className={cmsPageStatusFilter === filter.key ? 'text-[#ffc400]' : 'text-[#aab5c6] hover:text-white'}>
+                {filter.label} <span className="text-xs">({filter.count})</span>
+              </button>
             ))}
-          </PaginatedList>
+          </div>
+          <div className="flex items-center gap-2">
+            <input value={cmsPageSearch} onChange={(event) => setCmsPageSearch(event.target.value)} placeholder="Search pages..." className={`${inputClass} min-w-0 lg:w-72`} />
+            <span className="shrink-0 text-xs font-bold text-[#aab5c6]">{cmsPageList.length} items</span>
+          </div>
+        </div>
+        <div className="mt-4 overflow-x-auto rounded-2xl border border-white/10">
+          <div className="min-w-[860px]">
+            <div className="grid grid-cols-[minmax(260px,1.6fr)_130px_minmax(180px,1fr)_120px_100px_150px_70px] gap-4 border-b border-white/10 bg-white/[0.03] px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#98a4b1]">
+              <span>Title</span><span>Type</span><span>Slug</span><span>Status</span><span>Blocks</span><span>Last updated</span><span>Action</span>
+            </div>
+            <PaginatedList items={cmsPageList}>
+              {(visiblePages) => visiblePages.map((page) => {
+                const pageBlockCount = blocks.filter((block) => block.page_id === page.id).length;
+                return (
+                  <button key={page.id} type="button" onClick={() => openCmsPage(page)} className={`grid w-full grid-cols-[minmax(260px,1.6fr)_130px_minmax(180px,1fr)_120px_100px_150px_70px] gap-4 border-b border-white/10 px-4 py-4 text-left transition last:border-b-0 ${selectedPageId === page.id ? 'bg-[#ffc400]/[0.08]' : 'bg-black/10 hover:bg-white/[0.04]'}`}>
+                    <span className="min-w-0"><span className="block truncate font-black text-white">{page.titleEn}</span><span className="mt-1 block truncate text-xs text-[#aab5c6]">{page.titleKo || page.titleHi || 'No translated title'}</span></span>
+                    <span className="self-center text-xs font-black uppercase tracking-[0.14em] text-[#ffc400]">{page.pageType}</span>
+                    <span className="self-center truncate text-sm text-[#d4dbe7]">/{page.slug}</span>
+                    <span className="self-center"><span className="rounded-full border border-white/10 px-2 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-[#d4dbe7]">{page.status}</span></span>
+                    <span className="self-center text-sm text-[#aab5c6]">{pageBlockCount}</span>
+                    <span className="self-center text-xs text-[#aab5c6]">{page.updatedAt ? new Date(page.updatedAt).toLocaleDateString() : 'Unknown'}</span>
+                    <span className="self-center text-xs font-black text-[#ffc400]">Open</span>
+                  </button>
+                );
+              })}
+            </PaginatedList>
+            {!cmsPageList.length ? <p className="px-4 py-10 text-center text-sm text-[#aab5c6]">No pages match this filter.</p> : null}
+          </div>
         </div>
       </SectionShell>
 
