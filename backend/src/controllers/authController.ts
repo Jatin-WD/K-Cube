@@ -171,10 +171,10 @@ const verifyGoogleCredential = async (body: any) => {
   return claims;
 };
 
-const publicUserSelect = 'id, email, username, full_name, role, category_access, points, xp, level, profile_image, referral_code, referred_by';
+const publicUserSelect = 'id, email, username, full_name, role, category_access, admin_scope, points, xp, level, profile_image, referral_code, referred_by';
 
 const issueTokens = (user: any) => ({
-  token: signToken({ id: user.id, role: user.role, category_access: user.category_access }, jwtSecret, '1h'),
+  token: signToken({ id: user.id, role: user.role, category_access: user.category_access, admin_scope: user.admin_scope || null }, jwtSecret, '1h'),
   refreshToken: signToken({ id: user.id }, refreshSecret, '30d'),
 });
 const awardWelcomePoints = async (userId: number) => {
@@ -297,7 +297,7 @@ export const login = async (req: Request, res: Response) => {
   if (!isValid) {
     return fail(res, 401, 'INVALID_CREDENTIALS', 'Invalid credentials');
   }
-  const token = signToken({ id: user.id, role: user.role, category_access: user.category_access }, jwtSecret, '1h');
+  const token = signToken({ id: user.id, role: user.role, category_access: user.category_access, admin_scope: user.admin_scope || null }, jwtSecret, '1h');
   const refreshToken = signToken({ id: user.id }, refreshSecret, '30d');
   await pool.query('INSERT INTO session_logs (user_id, ip_address, device, created_at) VALUES (?, ?, ?, NOW())', [user.id, req.ip, req.headers['user-agent'] || 'unknown']);
   return ok(res, {
@@ -308,6 +308,7 @@ export const login = async (req: Request, res: Response) => {
       full_name: user.full_name,
       role: user.role,
       category_access: user.category_access,
+      admin_scope: user.admin_scope || null,
       referral_code: user.referral_code,
       points: Number(user.points ?? 0),
     },
@@ -476,7 +477,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
 
   const [userRows] = await pool.query('SELECT id, email, username, full_name, role, category_access, points, referral_code, referred_by FROM users WHERE id = ? LIMIT 1', [userId]);
   const user = (userRows as any[])[0];
-  const token = signToken({ id: user.id, role: user.role, category_access: user.category_access }, jwtSecret, '1h');
+  const token = signToken({ id: user.id, role: user.role, category_access: user.category_access, admin_scope: user.admin_scope || null }, jwtSecret, '1h');
   const refreshToken = signToken({ id: user.id }, refreshSecret, '30d');
 
   await pool.query(
@@ -582,10 +583,10 @@ export const refreshToken = async (req: Request, res: Response) => {
   if (!token) return fail(res, 400, 'VALIDATION_ERROR', 'Missing refresh token');
   try {
     const payload = jwt.verify(token, refreshSecret) as { id: number };
-    const [rows] = await pool.query('SELECT id, role, category_access, email, username, full_name FROM users WHERE id = ? LIMIT 1', [payload.id]);
+    const [rows] = await pool.query('SELECT id, role, category_access, admin_scope, email, username, full_name FROM users WHERE id = ? LIMIT 1', [payload.id]);
     const user = (rows as any[])[0];
     if (!user) return fail(res, 404, 'NOT_FOUND', 'User not found');
-    const newToken = signToken({ id: user.id, role: user.role, category_access: user.category_access }, jwtSecret, '1h');
+    const newToken = signToken({ id: user.id, role: user.role, category_access: user.category_access, admin_scope: user.admin_scope || null }, jwtSecret, '1h');
     return ok(res, { token: newToken });
   } catch (error) {
     return fail(res, 401, 'INVALID_REFRESH_TOKEN', 'Refresh token invalid');

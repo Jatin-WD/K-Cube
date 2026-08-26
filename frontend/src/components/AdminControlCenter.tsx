@@ -59,6 +59,8 @@ type AdminSection =
   | 'calendar'
   | 'analytics';
 
+type AdminScope = 'super_admin' | 'user_management' | 'submissions' | 'india_pre_selection' | 'content' | 'commerce' | 'events' | 'analytics';
+
 type LearningTrackRow = {
   id: number;
   slug: string;
@@ -152,6 +154,7 @@ type UserRow = {
   phone: string | null;
   role: string;
   category_access: string;
+  admin_scope: string | null;
   xp: number;
   points: number;
   level: number;
@@ -448,24 +451,24 @@ type SentEmailRow = {
 };
 
 const adminNav = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Live metrics and shortcuts.' },
-  { id: 'sendEmail', label: 'Send Email', icon: Mail, description: 'Bulk and individual email delivery.' },
-  { id: 'adminProfile', label: 'Profile', icon: UserCog, description: 'Your admin identity and security.' },
-  { id: 'adminAccounts', label: 'Admin Accounts', icon: ShieldCheck, description: 'Multiple admin users and roles.' },
-  { id: 'submissions', label: 'Submissions', icon: FilePenLine, description: 'All participation and form submissions.' },
-  { id: 'indiaPreSelection', label: 'India Pre-Selection', icon: Mic2, description: 'Festival applications and review.' },
-  { id: 'website', label: 'Website CMS', icon: FilePenLine, description: 'Pages, inventory, copy blocks.' },
-  { id: 'learning', label: 'Learning', icon: BookOpen, description: 'Tracks and question bank.' },
-  { id: 'users', label: 'Users', icon: Users, description: 'Profiles, roles and access.' },
-  { id: 'points', label: 'Points', icon: Coins, description: 'Ledger and manual adjustments.' },
-  { id: 'chapters', label: 'Chapters', icon: Users, description: 'Community chapters and leaders.' },
-  { id: 'uploads', label: 'Uploads', icon: Clapperboard, description: 'Content moderation.' },
-  { id: 'kfood', label: 'K-Food', icon: ShoppingBag, description: 'Purchase claims and review.' },
-  { id: 'events', label: 'Events', icon: CalendarDays, description: 'Event builder and archive.' },
-  { id: 'rewards', label: 'Rewards', icon: Gift, description: 'Reward catalog control.' },
-  { id: 'announcements', label: 'Announcements', icon: Bell, description: 'CMS notices and broadcasts.' },
-  { id: 'calendar', label: 'Calendar', icon: Settings2, description: 'Google Calendar sync.' },
-  { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'Usage and activity summary.' },
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Live metrics and shortcuts.', scope: 'analytics' },
+  { id: 'sendEmail', label: 'Send Email', icon: Mail, description: 'Bulk and individual email delivery.', scope: 'analytics' },
+  { id: 'adminProfile', label: 'Profile', icon: UserCog, description: 'Your admin identity and security.', scope: null },
+  { id: 'adminAccounts', label: 'Admin Accounts', icon: ShieldCheck, description: 'Team accounts and access categories.', scope: 'super_admin' },
+  { id: 'submissions', label: 'Submissions', icon: FilePenLine, description: 'All participation and form submissions.', scope: 'submissions' },
+  { id: 'indiaPreSelection', label: 'India Pre-Selection', icon: Mic2, description: 'Festival applications and review.', scope: 'india_pre_selection' },
+  { id: 'website', label: 'Website CMS', icon: FilePenLine, description: 'Pages, inventory, copy blocks.', scope: 'content' },
+  { id: 'learning', label: 'Learning', icon: BookOpen, description: 'Tracks and question bank.', scope: 'content' },
+  { id: 'users', label: 'Users', icon: Users, description: 'Profiles, roles and access.', scope: 'user_management' },
+  { id: 'points', label: 'Points', icon: Coins, description: 'Ledger and manual adjustments.', scope: 'commerce' },
+  { id: 'chapters', label: 'Chapters', icon: Users, description: 'Community chapters and leaders.', scope: 'events' },
+  { id: 'uploads', label: 'Uploads', icon: Clapperboard, description: 'Content moderation.', scope: 'content' },
+  { id: 'kfood', label: 'K-Food', icon: ShoppingBag, description: 'Purchase claims and review.', scope: 'commerce' },
+  { id: 'events', label: 'Events', icon: CalendarDays, description: 'Event builder and archive.', scope: 'events' },
+  { id: 'rewards', label: 'Rewards', icon: Gift, description: 'Reward catalog control.', scope: 'commerce' },
+  { id: 'announcements', label: 'Announcements', icon: Bell, description: 'CMS notices and broadcasts.', scope: 'content' },
+  { id: 'calendar', label: 'Calendar', icon: Settings2, description: 'Google Calendar sync.', scope: 'events' },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'Usage and activity summary.', scope: 'analytics' },
 ] as const;
 
 const adminSidebarGroups = [
@@ -587,6 +590,7 @@ const emptyAdminAccountForm = {
   password: '',
   status: 'active',
   category_access: 'category_c',
+  admin_scope: 'submissions' as AdminScope,
 };
 
 const emptyProfileForm = {
@@ -983,6 +987,9 @@ const AdminControlCenter = () => {
   const [userDeleteConfirm, setUserDeleteConfirm] = useState(false);
   const [adminQuery, setAdminQuery] = useState('');
   const sidebarOpen = true;
+  const adminScope = (user?.adminScope || 'super_admin') as AdminScope;
+  const canAccess = (scope: AdminScope | null) => !scope || adminScope === 'super_admin' || adminScope === scope;
+  const visibleAdminNav = adminNav.filter((item) => canAccess(item.scope));
 
   const [dashboardMetrics, setDashboardMetrics] = useState<Record<string, number>>({});
   const [analytics, setAnalytics] = useState<Record<string, number>>({});
@@ -1405,6 +1412,12 @@ const AdminControlCenter = () => {
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (!canAccess(adminNav.find((item) => item.id === activeSection)?.scope || null)) {
+      setActiveSection((visibleAdminNav[0]?.id || 'adminProfile') as AdminSection);
+    }
+  }, [activeSection, adminScope]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     if (!selectedKFoodProductSlug && kfoodProducts.length) {
       setSelectedKFoodProductSlug(kfoodProducts[0].slug);
       setKFoodProductForm(formFromKFoodProduct(kfoodProducts[0]));
@@ -1811,6 +1824,7 @@ const AdminControlCenter = () => {
       password: adminAccountForm.password,
       status: adminAccountForm.status,
       category_access: adminAccountForm.category_access,
+      admin_scope: adminAccountForm.admin_scope,
     });
     setNotice('Admin account created.');
     setAdminAccountForm(emptyAdminAccountForm);
@@ -2983,7 +2997,7 @@ const AdminControlCenter = () => {
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
       <SectionShell
         title="Admin accounts"
-        description="Create full administrator accounts here. Manager access is assigned from Users; event-only access is not yet available as a separate permission scope."
+        description="Create team accounts and assign one focused admin access category. Only Super admin can manage this area."
         actions={<span className="text-sm font-bold text-[#ffc400]">{filteredAdminAccounts.length} admins</span>}
       >
         <div className="space-y-3">
@@ -3003,6 +3017,7 @@ const AdminControlCenter = () => {
                 <p>Username: {account.username}</p>
                 <p>Phone: {account.phone || 'Not set'}</p>
                 <p>Role: {account.role}</p>
+                <p>Access: {account.admin_scope === 'super_admin' ? 'Super admin' : humanizeKey(account.admin_scope || 'Not assigned')}</p>
                 <p>Created: {account.created_at ? new Date(account.created_at).toLocaleString() : 'Unknown'}</p>
               </div>
             </article>
@@ -3050,6 +3065,18 @@ const AdminControlCenter = () => {
               <option value="category_a">category_a</option>
               <option value="category_b">category_b</option>
               <option value="category_c">category_c</option>
+            </select>
+          </Field>
+          <Field label="Admin access category">
+            <select className={selectClass} value={adminAccountForm.admin_scope} onChange={(event) => setAdminAccountForm((state) => ({ ...state, admin_scope: event.target.value as AdminScope }))}>
+              <option value="submissions">Submissions</option>
+              <option value="india_pre_selection">India Pre-Selection</option>
+              <option value="user_management">User management</option>
+              <option value="content">Content & learning</option>
+              <option value="commerce">Commerce & points</option>
+              <option value="events">Events & community</option>
+              <option value="analytics">Analytics & email</option>
+              <option value="super_admin">Super admin</option>
             </select>
           </Field>
           <button type="button" onClick={createAdminAccount} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
@@ -5099,6 +5126,7 @@ const AdminControlCenter = () => {
                         {group.ids.map((id) => {
                           const item = adminNav.find((entry) => entry.id === id);
                           if (!item) return null;
+                          if (!canAccess(item.scope)) return null;
                           const Icon = item.icon;
                           const active = activeSection === item.id;
                           return (

@@ -81,9 +81,9 @@ const run = async () => {
 
     const [result] = await pool.query(
       `INSERT INTO users
-        (full_name, username, email, phone, password_hash, role, category_access, referral_code, created_at, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)` ,
-      [ADMIN_FULL_NAME, username, email, null, passwordHash, 'admin', 'category_c', referralCode, 'active'],
+        (full_name, username, email, phone, password_hash, role, category_access, admin_scope, referral_code, created_at, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)` ,
+      [ADMIN_FULL_NAME, username, email, null, passwordHash, 'admin', 'category_c', 'super_admin', referralCode, 'active'],
     );
 
     const userId = result.insertId;

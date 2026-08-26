@@ -7,7 +7,7 @@ const profileFields = 'id, full_name, username, email, phone, profile_image, rol
 const adminListProfileFields = `
   u.id, u.full_name, u.username, u.email,
   COALESCE(u.phone, india_application.phone) AS phone,
-  u.profile_image, u.role, u.category_access, u.xp, u.points, u.level, u.badges,
+  u.profile_image, u.role, u.category_access, u.admin_scope, u.xp, u.points, u.level, u.badges,
   u.streak, u.korea_score,
   COALESCE(u.city, india_application.current_city) AS city,
   u.state,

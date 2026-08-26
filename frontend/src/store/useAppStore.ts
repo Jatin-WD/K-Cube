@@ -12,6 +12,7 @@ export interface KCubeUser {
   referralCode?: string;
   points?: number;
   role?: 'admin' | 'member' | 'manager' | 'guest';
+  adminScope?: string | null;
   method: AuthMethod;
 }
 

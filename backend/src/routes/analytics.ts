@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth';
+import { requireAdminScope, requireAuth } from '../middleware/auth';
 import { getAnalyticsSummary } from '../controllers/analyticsController';
 
 const router = Router();
 
-router.get('/summary', requireAuth(['admin', 'manager']), getAnalyticsSummary);
+router.get('/summary', requireAuth(['admin', 'manager']), requireAdminScope(['analytics']), getAnalyticsSummary);
 
 export default router;

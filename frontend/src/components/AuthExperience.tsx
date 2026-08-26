@@ -114,6 +114,9 @@ const normalizeUser = (payload: unknown, method: AuthMethod) => {
       ? String(record.referral_code ?? record.referralCode ?? nestedUser.referral_code ?? nestedUser.referralCode)
       : undefined,
     role: (record.role ?? nestedUser.role ?? 'member') as 'admin' | 'member' | 'manager' | 'guest',
+    adminScope: typeof (record.admin_scope ?? nestedUser.admin_scope) === 'string'
+      ? String(record.admin_scope ?? nestedUser.admin_scope)
+      : null,
     method,
   };
 };

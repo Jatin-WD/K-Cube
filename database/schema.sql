@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
   google_id VARCHAR(255) DEFAULT NULL,
   role ENUM('admin','manager','member','guest') NOT NULL DEFAULT 'member',
   category_access ENUM('category_a','category_b','category_c') NOT NULL DEFAULT 'category_c',
+  admin_scope VARCHAR(64) DEFAULT NULL,
   profile_image VARCHAR(512) DEFAULT NULL,
   xp INT UNSIGNED NOT NULL DEFAULT 0,
   points INT UNSIGNED NOT NULL DEFAULT 0,
@@ -61,6 +62,7 @@ INSERT IGNORE INTO users (
   password_hash,
   role,
   category_access,
+  admin_scope,
   referral_code,
   created_at,
   status
@@ -72,6 +74,7 @@ INSERT IGNORE INTO users (
   '$2b$12$6iCqRAiIiov6zndYDe3cfeEsC4RweWIvpHEt1z0jCQ2LCzfXX8yCu',
   'admin',
   'category_c',
+  'super_admin',
   'KCUBEADMIN',
   NOW(),
   'active'

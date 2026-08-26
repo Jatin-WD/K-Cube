@@ -7,7 +7,7 @@ import { AuthRequest } from '../middleware/auth';
 import { createShopProduct, deleteShopProduct, listShopProducts, updateShopProduct } from '../services/shopCatalogService';
 export { syncWooCommerceProducts } from './shopController';
 
-const profileFields = 'id, full_name, username, email, phone, role, category_access, profile_image, city, state, country, status, created_at, last_login';
+const profileFields = 'id, full_name, username, email, phone, role, category_access, admin_scope, profile_image, city, state, country, status, created_at, last_login';
 
 const normalizeEmail = (value?: string) => String(value || '').trim().toLowerCase();
 const normalizeUsername = (value?: string) => String(value || '').trim();
@@ -98,6 +98,11 @@ export const createAdminAccount = async (req: AuthRequest, res: Response) => {
   const phone = String(req.body?.phone || '').trim() || null;
   const password = String(req.body?.password || '').trim();
   const categoryAccess = req.body?.category_access || 'category_c';
+  const adminScope = String(req.body?.admin_scope || 'submissions');
+  const allowedScopes = new Set(['user_management', 'submissions', 'india_pre_selection', 'content', 'commerce', 'events', 'analytics']);
+  if (!allowedScopes.has(adminScope) && adminScope !== 'super_admin') {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Invalid admin access category');
+  }
   const status = req.body?.status || 'active';
 
   if (!fullName || !username || !email || !password) {
@@ -112,9 +117,9 @@ export const createAdminAccount = async (req: AuthRequest, res: Response) => {
   const referralCode = await ensureUniqueReferralCode(username);
   const passwordHash = await bcrypt.hash(password, 12);
   const [result] = await pool.query(
-    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, created_at, status)
-     VALUES (?, ?, ?, ?, ?, 'admin', ?, ?, NOW(), ?)`,
-    [fullName, username, email, phone, passwordHash, categoryAccess, referralCode, status],
+    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, admin_scope, referral_code, created_at, status)
+     VALUES (?, ?, ?, ?, ?, 'admin', ?, ?, ?, NOW(), ?)`,
+    [fullName, username, email, phone, passwordHash, categoryAccess, adminScope, referralCode, status],
   );
   const userId = (result as any).insertId;
   await pool.query(
@@ -534,7 +539,7 @@ export const listRecentAdminActions = async (_req: Request, res: Response) => {
 
 export const manageUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const allowed = ['full_name', 'phone', 'role', 'category_access', 'status', 'city', 'state', 'country', 'profile_image'];
+  const allowed = ['full_name', 'phone', 'role', 'category_access', 'admin_scope', 'status', 'city', 'state', 'country', 'profile_image'];
   const entries = Object.entries(req.body).filter(([key]) => allowed.includes(key));
   const fields = entries.map(([key]) => `${key} = ?`).join(', ');
   if (!fields) return fail(res, 400, 'VALIDATION_ERROR', 'No valid changes provided');

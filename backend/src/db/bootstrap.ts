@@ -1,6 +1,8 @@
 import pool from './pool';
 
 export const bootstrapDatabase = async () => {
+  await pool.query("ALTER TABLE users ADD COLUMN admin_scope VARCHAR(64) DEFAULT NULL AFTER category_access").catch(() => undefined);
+  await pool.query("UPDATE users SET admin_scope = 'super_admin' WHERE role = 'admin' AND (admin_scope IS NULL OR admin_scope = '')").catch(() => undefined);
   await pool.query(`
     ALTER TABLE india_pre_selection_applications
     MODIFY COLUMN status ENUM('pending','submitted','reviewing','shortlisted','selected','approved','rejected','withdrawn') NOT NULL DEFAULT 'pending'
