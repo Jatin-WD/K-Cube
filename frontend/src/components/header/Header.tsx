@@ -19,6 +19,8 @@ const Header = () => {
   const [activeMenuKey, setActiveMenuKey] = useState<string | null>(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
+  const openMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
   const user = useAppStore((state) => state.user);
@@ -28,7 +30,20 @@ const Header = () => {
   const t = copy[language];
   const activeMenu = navItems.find((item) => item.label.en === activeMenuKey && item.dropdown?.length) ?? null;
 
+  const clearMenuTimers = () => {
+    if (openMenuTimerRef.current) {
+      clearTimeout(openMenuTimerRef.current);
+      openMenuTimerRef.current = null;
+    }
+
+    if (closeMenuTimerRef.current) {
+      clearTimeout(closeMenuTimerRef.current);
+      closeMenuTimerRef.current = null;
+    }
+  };
+
   const closeAllMenus = () => {
+    clearMenuTimers();
     setActiveMenuKey(null);
     setLanguageMenuOpen(false);
   };
@@ -54,6 +69,7 @@ const Header = () => {
       document.addEventListener('keydown', handleKeyDown);
 
       return () => {
+        clearMenuTimers();
         document.removeEventListener('pointerdown', handlePointerDown);
         document.removeEventListener('keydown', handleKeyDown);
       };
@@ -62,7 +78,24 @@ const Header = () => {
   );
 
   const openMenu = (key: string) => {
+    clearMenuTimers();
     setActiveMenuKey(key);
+  };
+
+  const scheduleOpenMenu = (key: string) => {
+    clearMenuTimers();
+    openMenuTimerRef.current = setTimeout(() => {
+      setActiveMenuKey(key);
+      openMenuTimerRef.current = null;
+    }, 90);
+  };
+
+  const scheduleCloseMenus = () => {
+    clearMenuTimers();
+    closeMenuTimerRef.current = setTimeout(() => {
+      setActiveMenuKey(null);
+      closeMenuTimerRef.current = null;
+    }, 140);
   };
 
   if (isAdminRoute) {
@@ -331,7 +364,8 @@ const Header = () => {
       <nav
         aria-label="Primary navigation"
         className="group/nav relative hidden border-b border-[#232f3e] bg-[#232f3e] md:block"
-        onMouseLeave={closeAllMenus}
+        onMouseEnter={clearMenuTimers}
+        onMouseLeave={scheduleCloseMenus}
       >
         <div className="mx-auto flex max-w-[1760px] items-center gap-2 px-3 sm:px-4 lg:px-10">
           <div className="flex min-h-[34px] flex-1 items-center gap-0.5 overflow-visible px-0 lg:min-h-[40px]">
@@ -344,7 +378,8 @@ const Header = () => {
                     type="button"
                     aria-haspopup="menu"
                     aria-expanded={isActive}
-                    onMouseEnter={() => openMenu(item.label.en)}
+                    onMouseEnter={() => scheduleOpenMenu(item.label.en)}
+                    onMouseLeave={scheduleCloseMenus}
                     onFocus={() => openMenu(item.label.en)}
                     onClick={() => {
                       if (isActive) {
@@ -395,6 +430,7 @@ const Header = () => {
             <div
               className="absolute inset-x-0 top-full z-[130] pt-0"
               onMouseEnter={() => openMenu(activeMenu.label.en)}
+              onMouseLeave={scheduleCloseMenus}
             >
               <MegaMenu
                 key={`${activeMenu.label.en}-${activeMenu.dropdown.length}`}
