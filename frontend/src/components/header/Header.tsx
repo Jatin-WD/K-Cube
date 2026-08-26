@@ -211,7 +211,7 @@ const Header = () => {
             </Link>
             {user ? (
               <div className="group/account relative">
-                <button className="flex shrink-0 items-center gap-2 text-[11px] leading-tight xl:text-xs">
+                <button type="button" aria-haspopup="menu" className="flex shrink-0 items-center gap-2 text-[11px] leading-tight xl:text-xs">
                   <User className="h-[18px] w-[18px] text-[#c8d2e1]" />
                   <span>
                     <span className="block text-[#b9c5d6]">{t.hello}</span>
@@ -220,16 +220,18 @@ const Header = () => {
                     </span>
                   </span>
                 </button>
-                <div className="invisible absolute right-0 top-full z-20 mt-2 w-44 rounded-sm border border-[#d5d9d9] bg-white p-2 opacity-0 shadow-2xl transition group-hover/account:visible group-hover/account:opacity-100 group-focus-within/account:visible group-focus-within/account:opacity-100">
-                  <Link href="/rewards" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
-                    {t.pointsWallet}
-                  </Link>
-                  <Link href="/dashboard" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
-                    Dashboard
-                  </Link>
-                  <button onClick={signOut} className="block w-full rounded-sm px-3 py-2 text-left text-sm font-bold text-[#b12704] hover:bg-[#f7fafa]">
-                    {t.signOut}
-                  </button>
+                <div className="invisible absolute right-0 top-full z-20 w-44 pt-2 opacity-0 transition group-hover/account:visible group-hover/account:opacity-100 group-focus-within/account:visible group-focus-within/account:opacity-100">
+                  <div className="rounded-sm border border-[#d5d9d9] bg-white p-2 shadow-2xl">
+                    <Link href="/rewards" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
+                      {t.pointsWallet}
+                    </Link>
+                    <Link href="/dashboard" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
+                      Dashboard
+                    </Link>
+                    <button type="button" onClick={signOut} className="block w-full rounded-sm px-3 py-2 text-left text-sm font-bold text-[#b12704] hover:bg-[#f7fafa]">
+                      {t.signOut}
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
