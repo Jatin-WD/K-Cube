@@ -33,6 +33,8 @@ interface LearningSessionRow {
   completedAt: string;
 }
 
+type DashboardView = 'overview' | 'profile' | 'actions' | 'learning' | 'referrals';
+
 const heroImages = [
   {
     title: 'Culture uploads',
@@ -65,6 +67,7 @@ const MemberDashboard = () => {
   const router = useRouter();
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
+  const [activeView, setActiveView] = useState<DashboardView>('overview');
   const [message, setMessage] = useState('');
   const [upload, setUpload] = useState({
     category: 'k_dance',
@@ -78,6 +81,9 @@ const MemberDashboard = () => {
   const [learningSessions, setLearningSessions] = useState<LearningSessionRow[]>([]);
   const [learningLoading, setLearningLoading] = useState(false);
   const [referralMessage, setReferralMessage] = useState('');
+  const [profileForm, setProfileForm] = useState({ full_name: '', phone: '', city: '', state: '', country: '' });
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileMessage, setProfileMessage] = useState('');
 
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -175,6 +181,30 @@ const MemberDashboard = () => {
     };
   }, [user]);
 
+  useEffect(() => {
+    if (!user || activeView !== 'profile') return;
+    api.get('/users/profile').then((response) => {
+      const data = response.data?.data ?? response.data;
+      setProfileForm({ full_name: data.full_name || user.fullName, phone: data.phone || '', city: data.city || '', state: data.state || '', country: data.country || '' });
+    }).catch(() => setProfileMessage('Profile load nahi ho paya.'));
+  }, [activeView, user]);
+
+  const saveDashboardProfile = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setProfileSaving(true);
+    setProfileMessage('');
+    try {
+      const response = await api.patch('/users/profile', profileForm);
+      const data = response.data?.data ?? response.data;
+      useAppStore.getState().updateUser({ fullName: data.full_name, phone: data.phone || undefined, city: data.city, state: data.state, country: data.country });
+      setProfileMessage('Profile updated successfully.');
+    } catch {
+      setProfileMessage('Profile save nahi ho paya. Details check karein.');
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   if (!user) {
     return (
       <main className="min-h-screen bg-[#070708] px-5 py-16 text-white lg:px-10">
@@ -205,15 +235,30 @@ const MemberDashboard = () => {
                 ['learning', 'Learning progress'],
                 ['referrals', 'Referrals'],
               ].map(([href, label]) => (
-                <a key={href} href={`#${href}`} className="flex shrink-0 items-center rounded-lg border border-transparent px-3 py-2.5 text-sm font-bold text-[#aab5c6] transition hover:border-white/10 hover:bg-white/[0.05] hover:text-white lg:w-full">{label}</a>
+                <button key={href} type="button" onClick={() => setActiveView(href as DashboardView)} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-bold transition lg:w-full ${activeView === href ? 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]' : 'border-transparent text-[#aab5c6] hover:border-white/10 hover:bg-white/[0.05] hover:text-white'}`}>{label}</button>
               ))}
-              <Link href="/profile" className="flex shrink-0 items-center rounded-lg border border-[#ffc400]/25 bg-[#ffc400]/10 px-3 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]">Edit profile</Link>
+              <button type="button" onClick={() => setActiveView('profile')} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-black transition lg:w-full ${activeView === 'profile' ? 'border-[#ffc400]/40 bg-[#ffc400] text-[#111]' : 'border-[#ffc400]/25 bg-[#ffc400]/10 text-[#ffc400] hover:bg-[#ffc400] hover:text-[#111]'}`}>Edit profile</button>
             </nav>
           </div>
         </aside>
 
         <div className="min-w-0 flex-1">
-        <section id="overview" className="scroll-mt-24 px-0 py-0 sm:py-1">
+        {activeView === 'profile' ? <section className="rounded-xl border border-white/10 bg-[#111113] p-6 sm:p-8">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">My profile</p>
+          <h1 className="mt-2 text-3xl font-black">Account details</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#aab5c6]">Update your personal information here. Email, username, points and account access stay protected.</p>
+          <form onSubmit={saveDashboardProfile} className="mt-8 grid gap-4 sm:grid-cols-2">
+            <label className="sm:col-span-2"><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Full name</span><input required value={profileForm.full_name} onChange={(event) => setProfileForm((current) => ({ ...current, full_name: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
+            <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Phone</span><input value={profileForm.phone} onChange={(event) => setProfileForm((current) => ({ ...current, phone: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
+            <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Country</span><input value={profileForm.country} onChange={(event) => setProfileForm((current) => ({ ...current, country: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
+            <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">City</span><input value={profileForm.city} onChange={(event) => setProfileForm((current) => ({ ...current, city: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
+            <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">State</span><input value={profileForm.state} onChange={(event) => setProfileForm((current) => ({ ...current, state: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
+            <div className="sm:col-span-2 grid gap-4 sm:grid-cols-2"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#98a4b1]">Email</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#aab5c6]">{user.email || user.phone}</p></div><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#98a4b1]">Referral code</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-black text-[#aab5c6]">{user.referralCode || 'Not available'}</p></div></div>
+            {profileMessage ? <p className="sm:col-span-2 text-sm font-bold text-[#9be7c2]">{profileMessage}</p> : null}
+            <div className="sm:col-span-2 flex flex-wrap gap-3"><button disabled={profileSaving} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60">{profileSaving ? 'Saving...' : 'Save changes'}</button><Link href="/profile" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">Open full profile page</Link></div>
+          </form>
+        </section> : null}
+        {activeView === 'overview' ? <section id="overview" className="px-0 py-0 sm:py-1">
         <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[1fr_360px]">
           <div id="profile" className="col-span-full flex scroll-mt-24 flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
@@ -284,9 +329,9 @@ const MemberDashboard = () => {
             </div>
           </aside>
         </div>
-      </section>
+      </section> : null}
 
-      <section id="actions" className="scroll-mt-24 px-0 pb-12 sm:pb-5">
+      {activeView === 'actions' ? <section id="actions" className="px-0 pb-12 sm:pb-5">
         <div className="mx-auto grid max-w-[1480px] gap-6 xl:grid-cols-3">
           <form id="submissions" onSubmit={submitUpload} className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <Clapperboard className="h-7 w-7 text-[#ffc400]" />
@@ -342,8 +387,10 @@ const MemberDashboard = () => {
             </button>
           </form>
         </div>
+      </section> : null}
 
-        <div id="learning-history" className="mx-auto mt-6 max-w-[1480px] scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
+      {activeView === 'learning' ? <section id="learning-history" className="px-0 pb-12 sm:pb-5">
+        <div className="mx-auto max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Saved learning progress</p>
@@ -421,8 +468,20 @@ const MemberDashboard = () => {
           </div>
         </div>
 
-        {message ? <p className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{message}</p> : null}
-      </section>
+      </section> : null}
+
+      {activeView === 'referrals' ? <section className="px-0 pb-12 sm:pb-5">
+        <div className="mx-auto max-w-3xl rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-6 sm:p-8">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Invite friends</p>
+          <h2 className="mt-3 text-3xl font-black">Earn 30 points per join</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d4dbe7]">Share your referral link. When a new user joins with your code and completes signup, the referral reward is credited automatically.</p>
+          <div className="mt-6 rounded-lg border border-white/10 bg-[#070708] px-4 py-4"><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">Your referral code</p><p className="mt-2 text-2xl font-black tracking-[0.12em]">{user.referralCode ?? 'Loading...'}</p></div>
+          <button type="button" onClick={copyReferralLink} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]"><Copy className="h-4 w-4" /> Copy invite link</button>
+          {referralMessage ? <p className="mt-3 text-sm font-bold text-[#d4dbe7]">{referralMessage}</p> : null}
+        </div>
+      </section> : null}
+
+      {message ? <p className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{message}</p> : null}
         </div>
       </div>
     </main>
