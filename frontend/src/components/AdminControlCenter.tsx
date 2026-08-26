@@ -956,6 +956,145 @@ const inputClass =
 const selectClass =
   'w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none transition focus:border-[#ffc400]';
 
+type CmsEditorLocale = 'en' | 'ko' | 'hi';
+type EditableCmsContent = Record<string, any>;
+
+const parseEditableCmsContent = (value: string): EditableCmsContent => {
+  try {
+    let parsed = JSON.parse(value || '{}');
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const localizedValue = (value: unknown, locale: CmsEditorLocale) => {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    return String(record[locale] ?? record.en ?? '');
+  }
+  return '';
+};
+
+const setLocalizedValue = (value: unknown, locale: CmsEditorLocale, nextValue: string) => {
+  const current: Record<string, unknown> = value && typeof value === 'object' && !Array.isArray(value)
+    ? { ...(value as Record<string, unknown>) }
+    : { en: typeof value === 'string' ? value : '' };
+  current[locale] = nextValue;
+  return current;
+};
+
+const updateCmsContent = (value: string, update: (content: EditableCmsContent) => void) => {
+  const content = parseEditableCmsContent(value);
+  update(content);
+  return JSON.stringify(content, null, 2);
+};
+
+const CmsContentEditor = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) => {
+  const [locale, setLocale] = useState<CmsEditorLocale>('en');
+  const content = parseEditableCmsContent(value);
+  const localeLabel = { en: 'English', ko: 'Korean', hi: 'Hindi' }[locale];
+  const bullets = Array.isArray(content.bullets) ? content.bullets : [];
+  const sections = Array.isArray(content.sections) ? content.sections : [];
+  const update = (callback: (next: EditableCmsContent) => void) => onChange(updateCmsContent(value, callback));
+  const textField = (key: string) => localizedValue(content[key], locale);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/[0.05] p-3">
+        <div>
+          <p className="text-sm font-black text-white">Page content editor</p>
+          <p className="mt-1 text-xs text-[#aab5c6]">Edit normal fields. No coding or JSON knowledge required.</p>
+        </div>
+        <div className="flex rounded-lg border border-white/10 bg-black/30 p-1">
+          {(['en', 'ko', 'hi'] as CmsEditorLocale[]).map((item) => (
+            <button key={item} type="button" onClick={() => setLocale(item)} className={`rounded-md px-3 py-2 text-xs font-black ${locale === item ? 'bg-[#ffc400] text-[#111]' : 'text-[#aab5c6] hover:text-white'}`}>
+              {item.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <p className="text-xs font-bold text-[#aab5c6]">Editing: <span className="text-white">{localeLabel}</span></p>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Small label / eyebrow">
+          <input className={inputClass} value={textField('eyebrow')} onChange={(event) => update((next) => { next.eyebrow = setLocalizedValue(next.eyebrow, locale, event.target.value); })} placeholder="Activities" />
+        </Field>
+        <Field label="Points">
+          <input className={inputClass} type="number" value={content.points ?? ''} onChange={(event) => update((next) => { next.points = event.target.value ? Number(event.target.value) : undefined; })} placeholder="80" />
+        </Field>
+      </div>
+      <Field label="Page title">
+        <input className={inputClass} value={textField('title')} onChange={(event) => update((next) => { next.title = setLocalizedValue(next.title, locale, event.target.value); })} placeholder="K-Pop Missions" />
+      </Field>
+      <Field label="Short introduction">
+        <textarea className={`${inputClass} min-h-24`} value={textField('summary')} onChange={(event) => update((next) => { next.summary = setLocalizedValue(next.summary, locale, event.target.value); })} placeholder="Explain this page in one or two sentences." />
+      </Field>
+      <Field label="SEO title">
+        <input className={inputClass} value={String(content.seo ?? '')} onChange={(event) => update((next) => { next.seo = event.target.value; })} placeholder="Search-friendly page title" />
+      </Field>
+
+      <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div><p className="text-sm font-black text-white">Highlights</p><p className="mt-1 text-xs text-[#aab5c6]">Short points shown near the top of the page.</p></div>
+          <button type="button" onClick={() => update((next) => { next.bullets = [...(Array.isArray(next.bullets) ? next.bullets : []), { en: '', ko: '', hi: '' }]; })} className="rounded-lg border border-[#ffc400]/40 px-3 py-2 text-xs font-black text-[#ffc400]">+ Add highlight</button>
+        </div>
+        <div className="mt-3 space-y-3">
+          {bullets.map((bullet: unknown, index: number) => (
+            <div key={`bullet-${index}`} className="flex items-start gap-2">
+              <textarea className={`${inputClass} min-h-16`} value={localizedValue(bullet, locale)} onChange={(event) => update((next) => { const nextBullets = [...(Array.isArray(next.bullets) ? next.bullets : [])]; nextBullets[index] = setLocalizedValue(nextBullets[index], locale, event.target.value); next.bullets = nextBullets; })} placeholder="Write one useful highlight" />
+              <button type="button" onClick={() => update((next) => { next.bullets = (Array.isArray(next.bullets) ? next.bullets : []).filter((_: unknown, itemIndex: number) => itemIndex !== index); })} className="rounded-lg border border-red-500/30 p-2 text-red-300" aria-label="Remove highlight"><Trash2 className="h-4 w-4" /></button>
+            </div>
+          ))}
+          {!bullets.length ? <p className="text-sm text-[#aab5c6]">No highlights added yet.</p> : null}
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div><p className="text-sm font-black text-white">Content sections</p><p className="mt-1 text-xs text-[#aab5c6]">Add detailed sections with a heading and paragraphs.</p></div>
+          <button type="button" onClick={() => update((next) => { next.sections = [...(Array.isArray(next.sections) ? next.sections : []), { title: { en: '', ko: '', hi: '' }, content: [{ en: '', ko: '', hi: '' }] }]; })} className="rounded-lg border border-[#ffc400]/40 px-3 py-2 text-xs font-black text-[#ffc400]">+ Add section</button>
+        </div>
+        <div className="mt-4 space-y-4">
+          {sections.map((section: any, sectionIndex: number) => (
+            <div key={`section-${sectionIndex}`} className="rounded-xl border border-white/10 p-4">
+              <div className="flex items-start gap-2">
+                <Field label={`Section ${sectionIndex + 1} heading`}>
+                  <input className={inputClass} value={localizedValue(section.title, locale)} onChange={(event) => update((next) => { const nextSections = [...(Array.isArray(next.sections) ? next.sections : [])]; nextSections[sectionIndex] = { ...nextSections[sectionIndex], title: setLocalizedValue(nextSections[sectionIndex].title, locale, event.target.value) }; next.sections = nextSections; })} placeholder="Section heading" />
+                </Field>
+                <button type="button" onClick={() => update((next) => { next.sections = (Array.isArray(next.sections) ? next.sections : []).filter((_: unknown, itemIndex: number) => itemIndex !== sectionIndex); })} className="mt-6 rounded-lg border border-red-500/30 p-2 text-red-300" aria-label="Remove section"><Trash2 className="h-4 w-4" /></button>
+              </div>
+              <div className="mt-3 space-y-3">
+                {(Array.isArray(section.content) ? section.content : []).map((paragraph: unknown, paragraphIndex: number) => (
+                  <div key={`paragraph-${sectionIndex}-${paragraphIndex}`} className="flex items-start gap-2">
+                    <textarea className={`${inputClass} min-h-20`} value={localizedValue(paragraph, locale)} onChange={(event) => update((next) => { const nextSections = [...(Array.isArray(next.sections) ? next.sections : [])]; const nextContent = [...(Array.isArray(nextSections[sectionIndex].content) ? nextSections[sectionIndex].content : [])]; nextContent[paragraphIndex] = setLocalizedValue(nextContent[paragraphIndex], locale, event.target.value); nextSections[sectionIndex] = { ...nextSections[sectionIndex], content: nextContent }; next.sections = nextSections; })} placeholder="Write a paragraph" />
+                    <button type="button" onClick={() => update((next) => { const nextSections = [...(Array.isArray(next.sections) ? next.sections : [])]; nextSections[sectionIndex] = { ...nextSections[sectionIndex], content: nextSections[sectionIndex].content.filter((_: unknown, itemIndex: number) => itemIndex !== paragraphIndex) }; next.sections = nextSections; })} className="rounded-lg border border-red-500/30 p-2 text-red-300" aria-label="Remove paragraph"><Trash2 className="h-4 w-4" /></button>
+                  </div>
+                ))}
+                <button type="button" onClick={() => update((next) => { const nextSections = [...(Array.isArray(next.sections) ? next.sections : [])]; nextSections[sectionIndex] = { ...nextSections[sectionIndex], content: [...(Array.isArray(nextSections[sectionIndex].content) ? nextSections[sectionIndex].content : []), { en: '', ko: '', hi: '' }] }; next.sections = nextSections; })} className="text-xs font-black text-[#ffc400]">+ Add paragraph</button>
+              </div>
+            </div>
+          ))}
+          {!sections.length ? <p className="text-sm text-[#aab5c6]">No sections added yet.</p> : null}
+        </div>
+      </div>
+
+      <details className="rounded-xl border border-white/10 p-3">
+        <summary className="cursor-pointer text-xs font-bold text-[#aab5c6]">Advanced JSON (optional)</summary>
+        <pre className="mt-3 max-h-48 overflow-auto rounded-lg bg-black/30 p-3 text-xs leading-5 text-[#d4dbe7]">{JSON.stringify(content, null, 2)}</pre>
+      </details>
+    </div>
+  );
+};
+
 const PaginatedList = <T,>({
   items,
   pageSize = 20,
@@ -2615,11 +2754,10 @@ const AdminControlCenter = () => {
                 <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-5">
                   <div>
                     <p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">Full page content</p>
-                    <p className="mt-1 text-sm text-[#aab5c6]">Edit the page content JSON used by the public detail page.</p>
+                    <p className="mt-1 text-sm text-[#aab5c6]">Update the page using simple fields. The website will format and publish the content for you.</p>
                   </div>
-                  <Field label="Content EN JSON"><textarea className={`${inputClass} min-h-48 font-mono text-xs`} value={blockForm.content_en} onChange={(event) => setBlockForm((state) => ({ ...state, content_en: event.target.value }))} /></Field>
-                  <Field label="Content KO JSON"><textarea className={`${inputClass} min-h-32 font-mono text-xs`} value={blockForm.content_ko} onChange={(event) => setBlockForm((state) => ({ ...state, content_ko: event.target.value }))} /></Field>
-                  <Field label="Content HI JSON"><textarea className={`${inputClass} min-h-32 font-mono text-xs`} value={blockForm.content_hi} onChange={(event) => setBlockForm((state) => ({ ...state, content_hi: event.target.value }))} /></Field>
+                  <CmsContentEditor value={blockForm.content_en} onChange={(value) => setBlockForm((state) => ({ ...state, content_en: value }))} />
+                  <p className="text-xs leading-5 text-[#7f8b9b]">Korean and Hindi values can be edited from the language switcher above. Existing content is preserved until you save.</p>
                   <div className="flex justify-end"><button type="button" onClick={saveBlock} className="inline-flex items-center gap-2 rounded-xl border border-[#ffc400]/40 px-4 py-3 text-sm font-black text-[#ffc400]"><Save className="h-4 w-4" /> Save page content</button></div>
                 </div>
               ) : null}
