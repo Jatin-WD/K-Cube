@@ -681,10 +681,21 @@ const safeJson = (value: string, fallback: unknown[]) => {
 
 const safeJsonObject = (value: string, fallback: Record<string, unknown> = {}) => {
   try {
-    const parsed = JSON.parse(value);
+    let parsed = JSON.parse(value);
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
     return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : fallback;
   } catch {
     return fallback;
+  }
+};
+
+const formatStoredJson = (value: unknown) => {
+  try {
+    let parsed = typeof value === 'string' ? JSON.parse(value) : value;
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+    return JSON.stringify(parsed, null, 2);
+  } catch {
+    return JSON.stringify(value ?? {}, null, 2);
   }
 };
 
@@ -1739,9 +1750,9 @@ const AdminControlCenter = () => {
       block_key: pageBlock.block_key,
       block_type: pageBlock.block_type,
       sort_order: pageBlock.sort_order,
-      content_en: JSON.stringify(pageBlock.content_en, null, 2),
-      content_ko: JSON.stringify(pageBlock.content_ko, null, 2),
-      content_hi: JSON.stringify(pageBlock.content_hi, null, 2),
+      content_en: formatStoredJson(pageBlock.content_en),
+      content_ko: formatStoredJson(pageBlock.content_ko),
+      content_hi: formatStoredJson(pageBlock.content_hi),
       status: pageBlock.status,
     } : { ...emptyBlockForm, page_id: String(page.id) });
     setCmsPageDetailOpen(true);
@@ -2627,7 +2638,7 @@ const AdminControlCenter = () => {
                       <p className="mt-1 text-xs text-[#aab5c6]">{block.block_type} · order {block.sort_order}</p>
                       <details className="mt-3">
                         <summary className="cursor-pointer text-xs font-bold text-[#aab5c6]">View content JSON</summary>
-                        <pre className="mt-2 max-h-56 overflow-auto rounded-xl border border-white/10 bg-black/30 p-3 text-xs leading-5 text-[#d4dbe7]">{JSON.stringify(block.content_en, null, 2)}</pre>
+                        <pre className="mt-2 max-h-56 overflow-auto rounded-xl border border-white/10 bg-black/30 p-3 text-xs leading-5 text-[#d4dbe7]">{formatStoredJson(block.content_en)}</pre>
                       </details>
                     </div>
                   ))}
@@ -2726,9 +2737,9 @@ const AdminControlCenter = () => {
                   block_key: block.block_key,
                   block_type: block.block_type,
                   sort_order: block.sort_order,
-                  content_en: JSON.stringify(block.content_en, null, 2),
-                  content_ko: JSON.stringify(block.content_ko, null, 2),
-                  content_hi: JSON.stringify(block.content_hi, null, 2),
+                  content_en: formatStoredJson(block.content_en),
+                  content_ko: formatStoredJson(block.content_ko),
+                  content_hi: formatStoredJson(block.content_hi),
                   status: block.status,
                 })
               }

@@ -30,6 +30,23 @@ const parseJson = <T,>(value: unknown, fallback: T): T => {
   return value as T;
 };
 
+const parseJsonColumn = (value: unknown) => {
+  if (typeof value !== 'string') return value;
+  try {
+    const parsed = JSON.parse(value);
+    if (typeof parsed === 'string') {
+      try {
+        return JSON.parse(parsed);
+      } catch {
+        return parsed;
+      }
+    }
+    return parsed;
+  } catch {
+    return value;
+  }
+};
+
 const mapQuestion = (row: any) => ({
   id: Number(row.id),
   questionKey: row.question_key,
@@ -445,9 +462,9 @@ export const getPublicCmsPage = async (req: Request, res: Response) => {
     blocks: (blockRows as any[]).map((block) => ({
       blockKey: block.block_key,
       blockType: block.block_type,
-      contentEn: block.content_en,
-      contentKo: block.content_ko,
-      contentHi: block.content_hi,
+      contentEn: parseJsonColumn(block.content_en),
+      contentKo: parseJsonColumn(block.content_ko),
+      contentHi: parseJsonColumn(block.content_hi),
     })),
   });
 };

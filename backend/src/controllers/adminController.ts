@@ -12,6 +12,22 @@ const profileFields = 'id, full_name, username, email, phone, role, category_acc
 const normalizeEmail = (value?: string) => String(value || '').trim().toLowerCase();
 const normalizeUsername = (value?: string) => String(value || '').trim();
 const normalizeName = (value?: string) => String(value || '').trim();
+const parseJsonColumn = (value: unknown) => {
+  if (typeof value !== 'string') return value;
+  try {
+    const parsed = JSON.parse(value);
+    if (typeof parsed === 'string') {
+      try {
+        return JSON.parse(parsed);
+      } catch {
+        return parsed;
+      }
+    }
+    return parsed;
+  } catch {
+    return value;
+  }
+};
 const buildReferralCode = (username: string) => {
   const base = normalizeUsername(username).replace(/[^a-z0-9]+/gi, '').slice(0, 10).toUpperCase() || 'ADMIN';
   return `${base}${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
@@ -633,7 +649,12 @@ export const listCmsBlocks = async (_req: Request, res: Response) => {
     ORDER BY b.sort_order ASC, b.id DESC
     LIMIT 500
   `);
-  return ok(res, rows);
+  return ok(res, (rows as any[]).map((row) => ({
+    ...row,
+    content_en: parseJsonColumn(row.content_en),
+    content_ko: parseJsonColumn(row.content_ko),
+    content_hi: parseJsonColumn(row.content_hi),
+  })));
 };
 
 export const upsertCmsBlock = async (req: Request, res: Response) => {
