@@ -1707,6 +1707,13 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
+  const syncStaticCmsContent = async () => {
+    const response = await api.post('/admin/cms/sync-static', { items: detailItems });
+    const result = response.data?.data || response.data || {};
+    setNotice(`CMS sync complete: ${result.pagesCreated || 0} pages and ${result.blocksCreated || 0} blocks added. Existing content was preserved.`);
+    await loadAdminData();
+  };
+
   const saveBlock = async () => {
     if (!blockForm.page_id) {
       setNotice('Pick a page first.');
@@ -2419,7 +2426,11 @@ const AdminControlCenter = () => {
 
   const renderWebsite = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-      <SectionShell title="CMS content inventory" description="Every key page in the product is tracked here. Edit page metadata, SEO and publish state from the panel.">
+      <SectionShell
+        title="Site content catalog"
+        description="These are the existing live detail pages. Sync only missing entries into CMS so current content stays safe."
+        actions={<button type="button" onClick={syncStaticCmsContent} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]"><Save className="h-3.5 w-3.5" /> Sync missing pages</button>}
+      >
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-left text-sm">
             <thead className="text-[#ffc400]">
@@ -2538,8 +2549,11 @@ const AdminControlCenter = () => {
       >
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Page ID">
-              <input className={inputClass} value={blockForm.page_id} onChange={(event) => setBlockForm((state) => ({ ...state, page_id: event.target.value }))} />
+            <Field label="Page">
+              <select className={selectClass} value={blockForm.page_id} onChange={(event) => setBlockForm((state) => ({ ...state, page_id: event.target.value }))}>
+                <option value="">Select page</option>
+                {pages.map((page) => <option key={page.id} value={page.id}>{page.titleEn} ({page.slug})</option>)}
+              </select>
             </Field>
             <Field label="Block Key">
               <input className={inputClass} value={blockForm.block_key} onChange={(event) => setBlockForm((state) => ({ ...state, block_key: event.target.value }))} />

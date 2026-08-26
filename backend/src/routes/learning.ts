@@ -12,6 +12,7 @@ import {
   listCmsPages,
   listMyLearningProgress,
   upsertCmsPage,
+  getPublicCmsPage,
 } from '../controllers/learningController';
 
 const router = Router();
@@ -19,6 +20,7 @@ const router = Router();
 router.get('/tracks', listLearningTracks);
 router.get('/tracks/:slug', getLearningTrack);
 router.get('/me/progress', requireAuth(), listMyLearningProgress);
+router.get('/cms/public/:slug', getPublicCmsPage);
 
 router.get('/cms/pages', requireAuth(['admin']), requireAdminScope(['content']), listCmsPages);
 router.post('/cms/pages', requireAuth(['admin']), requireAdminScope(['content']), upsertCmsPage);

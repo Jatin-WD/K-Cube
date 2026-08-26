@@ -677,6 +677,67 @@ export const deleteCmsBlock = async (req: Request, res: Response) => {
   return ok(res, { id: Number(req.params.id) });
 };
 
+export const syncStaticCmsContent = async (req: AuthRequest, res: Response) => {
+  const items = Array.isArray(req.body?.items) ? req.body.items : [];
+  const pageTypeByCategory: Record<string, string> = {
+    activities: 'activity',
+    learning: 'learning',
+    kfood: 'kfood',
+    rewards: 'reward',
+    events: 'event',
+  };
+  let pagesCreated = 0;
+  let blocksCreated = 0;
+
+  for (const item of items) {
+    const slug = String(item?.slug || '').trim();
+    const category = String(item?.category || '').trim();
+    const titleEn = String(item?.title?.en || '').trim();
+    const pageType = pageTypeByCategory[category];
+    if (!slug || !titleEn || !pageType) continue;
+
+    const [pageRows] = await pool.query('SELECT id FROM cms_pages WHERE slug = ? LIMIT 1', [slug]);
+    let pageId = Number((pageRows as any[])[0]?.id || 0);
+    if (!pageId) {
+      const [result] = await pool.query(
+        `INSERT INTO cms_pages
+          (slug, page_type, title_en, title_ko, title_hi, seo_title, seo_description, status, created_by, updated_by, published_at, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'published', ?, ?, NOW(), NOW(), NOW())`,
+        [
+          slug,
+          pageType,
+          titleEn,
+          item?.title?.ko || null,
+          item?.title?.hi || null,
+          item?.seo || titleEn,
+          item?.summary?.en || null,
+          req.user?.id || null,
+          req.user?.id || null,
+        ],
+      );
+      pageId = Number((result as any).insertId);
+      pagesCreated += 1;
+    }
+
+    const [blockRows] = await pool.query(
+      "SELECT id FROM cms_blocks WHERE page_id = ? AND block_key = 'static_detail_content' LIMIT 1",
+      [pageId],
+    );
+    if (!(blockRows as any[]).length) {
+      const content = JSON.stringify(item);
+      await pool.query(
+        `INSERT INTO cms_blocks
+          (page_id, block_key, block_type, sort_order, content_en, content_ko, content_hi, status, created_at, updated_at)
+         VALUES (?, 'static_detail_content', 'rich_text', 0, ?, ?, ?, 'published', NOW(), NOW())`,
+        [pageId, content, content, content],
+      );
+      blocksCreated += 1;
+    }
+  }
+
+  return ok(res, { pagesCreated, blocksCreated, skippedExisting: items.length - pagesCreated });
+};
+
 export const getSystemAnalytics = async (_req: Request, res: Response) => {
   const [results] = await pool.query(`
     SELECT

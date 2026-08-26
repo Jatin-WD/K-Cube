@@ -413,6 +413,44 @@ export const listCmsPages = async (_req: Request, res: Response) => {
   );
 };
 
+export const getPublicCmsPage = async (req: Request, res: Response) => {
+  const [rows] = await pool.query(
+    `SELECT id, slug, page_type, title_en, title_ko, title_hi, seo_title, seo_description, status
+     FROM cms_pages
+     WHERE slug = ? AND status = 'published'
+     LIMIT 1`,
+    [req.params.slug],
+  );
+  const page = (rows as any[])[0];
+  if (!page) return fail(res, 404, 'NOT_FOUND', 'Published CMS page not found');
+
+  const [blockRows] = await pool.query(
+    `SELECT block_key, block_type, content_en, content_ko, content_hi
+     FROM cms_blocks
+     WHERE page_id = ? AND status = 'published'
+     ORDER BY sort_order ASC, id ASC`,
+    [page.id],
+  );
+  return ok(res, {
+    id: Number(page.id),
+    slug: page.slug,
+    pageType: page.page_type,
+    titleEn: page.title_en,
+    titleKo: page.title_ko,
+    titleHi: page.title_hi,
+    seoTitle: page.seo_title,
+    seoDescription: page.seo_description,
+    status: page.status,
+    blocks: (blockRows as any[]).map((block) => ({
+      blockKey: block.block_key,
+      blockType: block.block_type,
+      contentEn: block.content_en,
+      contentKo: block.content_ko,
+      contentHi: block.content_hi,
+    })),
+  });
+};
+
 export const upsertCmsPage = async (req: AuthRequest, res: Response) => {
   const { id, slug, pageType, titleEn, titleKo = null, titleHi = null, seoTitle = null, seoDescription = null, status = 'draft' } = req.body;
   if (!slug || !pageType || !titleEn) {
