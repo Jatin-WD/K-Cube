@@ -268,7 +268,6 @@ const MemberDashboard = () => {
             <nav className="flex gap-2 overflow-x-auto lg:grid lg:gap-1.5 lg:overflow-visible lg:pt-3" aria-label="Member dashboard">
               {[
                 ['overview', 'Overview'],
-                ['profile', 'My profile'],
                 ['actions', 'Earn points'],
                 ['learning', 'Learning progress'],
                 ['events', 'Events'],
@@ -276,7 +275,7 @@ const MemberDashboard = () => {
               ].map(([href, label]) => (
                 <button key={href} type="button" onClick={() => setActiveView(href as DashboardView)} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-bold transition lg:w-full ${activeView === href ? 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]' : 'border-transparent text-[#aab5c6] hover:border-white/10 hover:bg-white/[0.05] hover:text-white'}`}>{label}</button>
               ))}
-              <button type="button" onClick={() => setActiveView('profile')} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-black transition lg:w-full ${activeView === 'profile' ? 'border-[#ffc400]/40 bg-[#ffc400] text-[#111]' : 'border-[#ffc400]/25 bg-[#ffc400]/10 text-[#ffc400] hover:bg-[#ffc400] hover:text-[#111]'}`}>Edit profile</button>
+              <button type="button" onClick={() => setActiveView('profile')} className="flex shrink-0 items-center rounded-lg border border-transparent px-3 py-2.5 text-left text-sm font-black text-[#aab5c6] transition hover:border-white/10 hover:bg-white/[0.05] hover:text-white lg:w-full">Edit profile</button>
             </nav>
           </div>
         </aside>
