@@ -778,6 +778,8 @@ const matchesQuery = (query: string, values: Array<unknown>) => {
   return values.some((value) => normalize(value).includes(query));
 };
 
+const submissionKey = (submission: Pick<SubmissionRow, 'source_type' | 'id'>) => `${submission.source_type}:${submission.id}`;
+
 const readPayload = <T,>(result: PromiseSettledResult<unknown>, fallback: T): T => {
   if (result.status !== 'fulfilled') return fallback;
   const value = result.value as {
@@ -1018,7 +1020,7 @@ const AdminControlCenter = () => {
   const [kfoodProductForm, setKFoodProductForm] = useState<KFoodProductForm>(emptyKFoodProductForm);
   const [kfoodImportUrls, setKFoodImportUrls] = useState('');
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
-  const [selectedSubmissionId, setSelectedSubmissionId] = useState<number | null>(null);
+  const [selectedSubmissionKey, setSelectedSubmissionKey] = useState<string | null>(null);
   const [submissionDetailOpen, setSubmissionDetailOpen] = useState(false);
   const [submissionPage, setSubmissionPage] = useState(1);
   const submissionsPerPage = 20;
@@ -1117,8 +1119,8 @@ const AdminControlCenter = () => {
     [claims, selectedClaimId],
   );
   const selectedSubmission = useMemo(
-    () => submissions.find((entry) => entry.id === selectedSubmissionId) || null,
-    [selectedSubmissionId, submissions],
+    () => submissions.find((entry) => submissionKey(entry) === selectedSubmissionKey) || null,
+    [selectedSubmissionKey, submissions],
   );
   const selectedFulfillment = useMemo(
     () => kfoodOverview?.fulfillments.find((entry) => entry.id === selectedFulfillmentId) || kfoodOverview?.fulfillments[0] || null,
@@ -1377,9 +1379,9 @@ const AdminControlCenter = () => {
     if (!selectedIndiaApplicationId && indiaRows.length) {
       setSelectedIndiaApplicationId(indiaRows[0].id);
     }
-    if (!selectedSubmissionId && submissionRows.length) {
+    if (!selectedSubmissionKey && submissionRows.length) {
       const prioritySubmission = submissionRows.find((entry) => entry.source_type === 'india_pre_selection') || submissionRows[0];
-      setSelectedSubmissionId(prioritySubmission.id);
+      setSelectedSubmissionKey(submissionKey(prioritySubmission));
     }
     if (!selectedFulfillmentId && fulfillmentRows.length) {
       setSelectedFulfillmentId(fulfillmentRows[0].id);
@@ -1898,7 +1900,7 @@ const AdminControlCenter = () => {
     setReviewSuccess('');
     setSubmissionDetailOpen(false);
     setIndiaReviewModalOpen(false);
-    setSelectedSubmissionId(null);
+    setSelectedSubmissionKey(null);
     setSelectedIndiaApplicationId(null);
   };
 
@@ -3695,14 +3697,14 @@ const AdminControlCenter = () => {
                 <span>Action</span>
               </div>
               {paginatedSubmissions.map((entry, index) => {
-                const active = selectedSubmissionId === entry.id;
+                const active = selectedSubmissionKey === submissionKey(entry);
                 const isIndia = entry.source_type === 'india_pre_selection';
                 return (
                   <button
                     key={`${entry.source_type}-${entry.id}`}
                     type="button"
                      onClick={() => {
-                       setSelectedSubmissionId(entry.id);
+                       setSelectedSubmissionKey(submissionKey(entry));
                        if (entry.source_type === 'india_pre_selection') {
                          setSelectedIndiaApplicationId(entry.id);
                        } else {
