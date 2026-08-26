@@ -1692,7 +1692,7 @@ const AdminControlCenter = () => {
     await loadAdminData();
   };
 
-  const savePage = async () => {
+  const savePage = async (keepEditorOpen = false) => {
     const payload = {
       id: pageForm.id ? Number(pageForm.id) : undefined,
       slug: pageForm.slug,
@@ -1712,7 +1712,10 @@ const AdminControlCenter = () => {
     }
 
     setNotice('CMS page saved.');
-    setPageForm(emptyPageForm);
+    if (!keepEditorOpen) {
+      setPageForm(emptyPageForm);
+      setCmsPageDetailOpen(false);
+    }
     await loadAdminData();
   };
 
@@ -1729,7 +1732,18 @@ const AdminControlCenter = () => {
       seoDescription: page.seoDescription || '',
       status: page.status,
     });
-    setBlockForm((state) => ({ ...state, page_id: String(page.id) }));
+    const pageBlock = blocks.find((block) => block.page_id === page.id);
+    setBlockForm(pageBlock ? {
+      id: String(pageBlock.id),
+      page_id: String(pageBlock.page_id),
+      block_key: pageBlock.block_key,
+      block_type: pageBlock.block_type,
+      sort_order: pageBlock.sort_order,
+      content_en: JSON.stringify(pageBlock.content_en, null, 2),
+      content_ko: JSON.stringify(pageBlock.content_ko, null, 2),
+      content_hi: JSON.stringify(pageBlock.content_hi, null, 2),
+      status: pageBlock.status,
+    } : { ...emptyBlockForm, page_id: String(page.id) });
     setCmsPageDetailOpen(true);
   };
 
@@ -2563,6 +2577,41 @@ const AdminControlCenter = () => {
                 <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1]">SEO description</p>
                 <p className="mt-2 text-sm leading-6 text-[#d4dbe7]">{selectedCmsPage.seoDescription || 'Not set'}</p>
               </div>
+              <div className="space-y-4 rounded-2xl border border-[#ffc400]/25 bg-[#ffc400]/[0.04] p-5">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">Edit page</p>
+                  <p className="mt-1 text-sm text-[#aab5c6]">Update the complete page metadata here. Nothing is changed until you save.</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Slug"><input className={inputClass} value={pageForm.slug} onChange={(event) => setPageForm((state) => ({ ...state, slug: event.target.value }))} /></Field>
+                  <Field label="Page type"><input className={inputClass} value={pageForm.pageType} onChange={(event) => setPageForm((state) => ({ ...state, pageType: event.target.value }))} /></Field>
+                </div>
+                <Field label="Title EN"><input className={inputClass} value={pageForm.titleEn} onChange={(event) => setPageForm((state) => ({ ...state, titleEn: event.target.value }))} /></Field>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Title KO"><input className={inputClass} value={pageForm.titleKo} onChange={(event) => setPageForm((state) => ({ ...state, titleKo: event.target.value }))} /></Field>
+                  <Field label="Title HI"><input className={inputClass} value={pageForm.titleHi} onChange={(event) => setPageForm((state) => ({ ...state, titleHi: event.target.value }))} /></Field>
+                </div>
+                <Field label="SEO title"><input className={inputClass} value={pageForm.seoTitle} onChange={(event) => setPageForm((state) => ({ ...state, seoTitle: event.target.value }))} /></Field>
+                <Field label="SEO description"><textarea className={`${inputClass} min-h-24`} value={pageForm.seoDescription} onChange={(event) => setPageForm((state) => ({ ...state, seoDescription: event.target.value }))} /></Field>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <select className={`${selectClass} sm:max-w-xs`} value={pageForm.status} onChange={(event) => setPageForm((state) => ({ ...state, status: event.target.value }))}>
+                    <option value="draft">draft</option><option value="published">published</option><option value="archived">archived</option>
+                  </select>
+                  <button type="button" onClick={() => savePage(true)} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]"><Save className="h-4 w-4" /> Save page</button>
+                </div>
+              </div>
+              {blockForm.id ? (
+                <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-5">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">Full page content</p>
+                    <p className="mt-1 text-sm text-[#aab5c6]">Edit the page content JSON used by the public detail page.</p>
+                  </div>
+                  <Field label="Content EN JSON"><textarea className={`${inputClass} min-h-48 font-mono text-xs`} value={blockForm.content_en} onChange={(event) => setBlockForm((state) => ({ ...state, content_en: event.target.value }))} /></Field>
+                  <Field label="Content KO JSON"><textarea className={`${inputClass} min-h-32 font-mono text-xs`} value={blockForm.content_ko} onChange={(event) => setBlockForm((state) => ({ ...state, content_ko: event.target.value }))} /></Field>
+                  <Field label="Content HI JSON"><textarea className={`${inputClass} min-h-32 font-mono text-xs`} value={blockForm.content_hi} onChange={(event) => setBlockForm((state) => ({ ...state, content_hi: event.target.value }))} /></Field>
+                  <div className="flex justify-end"><button type="button" onClick={saveBlock} className="inline-flex items-center gap-2 rounded-xl border border-[#ffc400]/40 px-4 py-3 text-sm font-black text-[#ffc400]"><Save className="h-4 w-4" /> Save page content</button></div>
+                </div>
+              ) : null}
               <div>
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">Attached blocks</p>
@@ -2587,58 +2636,12 @@ const AdminControlCenter = () => {
               </div>
               <div className="flex flex-wrap justify-end gap-3 border-t border-white/10 pt-5">
                 <button type="button" onClick={() => setCmsPageDetailOpen(false)} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">Close</button>
-                <button type="button" onClick={() => setCmsPageDetailOpen(false)} className="rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Edit page below</button>
+                <button type="button" onClick={() => setCmsPageDetailOpen(false)} className="rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Done</button>
               </div>
             </div>
           </div>
         </div>
       ) : null}
-
-      <SectionShell
-        title={pageForm.id ? 'Edit page' : 'Create page'}
-        description="Use this for SEO pages, landing pages and any content block that needs to be published or archived."
-        actions={pageForm.id ? (
-          <button type="button" onClick={() => setPageForm(emptyPageForm)} className="text-sm font-bold text-[#ffc400]">
-            Reset
-          </button>
-        ) : null}
-      >
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Slug">
-              <input className={inputClass} value={pageForm.slug} onChange={(event) => setPageForm((state) => ({ ...state, slug: event.target.value }))} />
-            </Field>
-            <Field label="Page Type">
-              <input className={inputClass} value={pageForm.pageType} onChange={(event) => setPageForm((state) => ({ ...state, pageType: event.target.value }))} />
-            </Field>
-          </div>
-          <Field label="Title EN">
-            <input className={inputClass} value={pageForm.titleEn} onChange={(event) => setPageForm((state) => ({ ...state, titleEn: event.target.value }))} />
-          </Field>
-          <Field label="Title KO">
-            <input className={inputClass} value={pageForm.titleKo} onChange={(event) => setPageForm((state) => ({ ...state, titleKo: event.target.value }))} />
-          </Field>
-          <Field label="Title HI">
-            <input className={inputClass} value={pageForm.titleHi} onChange={(event) => setPageForm((state) => ({ ...state, titleHi: event.target.value }))} />
-          </Field>
-          <Field label="SEO Title">
-            <input className={inputClass} value={pageForm.seoTitle} onChange={(event) => setPageForm((state) => ({ ...state, seoTitle: event.target.value }))} />
-          </Field>
-          <Field label="SEO Description">
-            <textarea className={`${inputClass} min-h-24`} value={pageForm.seoDescription} onChange={(event) => setPageForm((state) => ({ ...state, seoDescription: event.target.value }))} />
-          </Field>
-          <div className="flex items-center justify-between gap-3">
-            <select className={selectClass} value={pageForm.status} onChange={(event) => setPageForm((state) => ({ ...state, status: event.target.value }))}>
-              <option value="draft">draft</option>
-              <option value="published">published</option>
-              <option value="archived">archived</option>
-            </select>
-            <button type="button" onClick={savePage} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
-              <Save className="h-4 w-4" /> Save page
-            </button>
-          </div>
-        </div>
-      </SectionShell>
 
       <SectionShell
         title={blockForm.id ? 'Edit CMS block' : 'Create CMS block'}
