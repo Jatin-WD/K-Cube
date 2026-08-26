@@ -1068,6 +1068,7 @@ const AdminControlCenter = () => {
   const [selectedClaimId, setSelectedClaimId] = useState<number | null>(null);
   const [claimReview, setClaimReview] = useState({ status: 'approved', points_reward: 0, review_note: '' });
   const [selectedPageId, setSelectedPageId] = useState<number | null>(null);
+  const [cmsPageDetailOpen, setCmsPageDetailOpen] = useState(false);
 
   const query = adminQuery.trim().toLowerCase();
   const adminInitials = (user?.fullName || 'K-CUBE Admin')
@@ -1705,6 +1706,23 @@ const AdminControlCenter = () => {
     setNotice('CMS page saved.');
     setPageForm(emptyPageForm);
     await loadAdminData();
+  };
+
+  const openCmsPage = (page: CmsPageRow) => {
+    setSelectedPageId(page.id);
+    setPageForm({
+      id: String(page.id),
+      slug: page.slug,
+      pageType: page.pageType,
+      titleEn: page.titleEn,
+      titleKo: page.titleKo || '',
+      titleHi: page.titleHi || '',
+      seoTitle: page.seoTitle || '',
+      seoDescription: page.seoDescription || '',
+      status: page.status,
+    });
+    setBlockForm((state) => ({ ...state, page_id: String(page.id) }));
+    setCmsPageDetailOpen(true);
   };
 
   const syncStaticCmsContent = async () => {
@@ -2458,39 +2476,93 @@ const AdminControlCenter = () => {
       </SectionShell>
 
       <SectionShell title="CMS pages" description="Pick a page first, then edit its metadata and attached CMS blocks." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPages.length} pages</span>}>
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="space-y-2">
           <PaginatedList items={filteredPages}>
             {(visiblePages) => visiblePages.map((page) => (
             <button
               key={page.id}
               type="button"
-              onClick={() => {
-                setSelectedPageId(page.id);
-                setPageForm({
-                  id: String(page.id),
-                  slug: page.slug,
-                  pageType: page.pageType,
-                  titleEn: page.titleEn,
-                  titleKo: page.titleKo || '',
-                  titleHi: page.titleHi || '',
-                  seoTitle: page.seoTitle || '',
-                  seoDescription: page.seoDescription || '',
-                  status: page.status,
-                });
-                setBlockForm((state) => ({ ...state, page_id: String(page.id) }));
-              }}
-              className={`rounded-2xl border px-4 py-4 text-left transition ${
-                selectedPageId === page.id ? 'border-[#ffc400] bg-black/40' : 'border-white/10 bg-black/20'
+              onClick={() => openCmsPage(page)}
+              className={`flex w-full items-center justify-between gap-4 rounded-xl border px-4 py-3 text-left transition ${
+                selectedPageId === page.id ? 'border-[#ffc400] bg-black/40' : 'border-white/10 bg-black/20 hover:border-white/20'
               }`}
             >
-              <p className="text-xs uppercase tracking-[0.22em] text-[#98a4b1]">{page.pageType}</p>
-              <p className="mt-2 font-black">{page.titleEn}</p>
-              <p className="mt-1 text-sm text-[#aab5c6]">{page.slug}</p>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#ffc400]">{page.pageType}</p>
+                  <span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.16em] text-[#aab5c6]">{page.status}</span>
+                </div>
+                <p className="mt-1 truncate font-black text-white">{page.titleEn}</p>
+                <p className="mt-0.5 truncate text-xs text-[#aab5c6]">/{page.slug}</p>
+              </div>
+              <span className="shrink-0 text-xs font-black text-[#ffc400]">Open</span>
             </button>
             ))}
           </PaginatedList>
         </div>
       </SectionShell>
+
+      {cmsPageDetailOpen && selectedCmsPage ? (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={() => setCmsPageDetailOpen(false)}>
+          <div className="flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#101014] shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4 border-b border-white/10 p-6">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">{selectedCmsPage.pageType} page</p>
+                <h2 className="mt-2 text-2xl font-black text-white">{selectedCmsPage.titleEn}</h2>
+                <p className="mt-1 text-sm text-[#aab5c6]">/{selectedCmsPage.slug}</p>
+              </div>
+              <button type="button" onClick={() => setCmsPageDetailOpen(false)} className="rounded-full border border-white/10 p-2 text-white" aria-label="Close page details"><X className="h-5 w-5" /></button>
+            </div>
+            <div className="space-y-5 overflow-y-auto p-6">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  { label: 'Status', value: selectedCmsPage.status },
+                  { label: 'Published', value: selectedCmsPage.publishedAt ? new Date(selectedCmsPage.publishedAt).toLocaleString() : 'Not published' },
+                  { label: 'Title KO', value: selectedCmsPage.titleKo || 'Not set' },
+                  { label: 'Title HI', value: selectedCmsPage.titleHi || 'Not set' },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1]">{item.label}</p>
+                    <p className="mt-2 break-words text-sm font-bold text-white">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1]">SEO title</p>
+                <p className="mt-2 text-sm font-bold text-white">{selectedCmsPage.seoTitle || 'Not set'}</p>
+                <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-[#98a4b1]">SEO description</p>
+                <p className="mt-2 text-sm leading-6 text-[#d4dbe7]">{selectedCmsPage.seoDescription || 'Not set'}</p>
+              </div>
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">Attached blocks</p>
+                  <span className="text-xs font-bold text-[#aab5c6]">{blocks.filter((block) => block.page_id === selectedCmsPage.id).length}</span>
+                </div>
+                <div className="mt-3 space-y-2">
+                  {blocks.filter((block) => block.page_id === selectedCmsPage.id).map((block) => (
+                    <div key={block.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="font-black text-white">{block.block_key}</p>
+                        <span className="text-xs font-black uppercase tracking-[0.16em] text-[#ffc400]">{block.status}</span>
+                      </div>
+                      <p className="mt-1 text-xs text-[#aab5c6]">{block.block_type} · order {block.sort_order}</p>
+                      <details className="mt-3">
+                        <summary className="cursor-pointer text-xs font-bold text-[#aab5c6]">View content JSON</summary>
+                        <pre className="mt-2 max-h-56 overflow-auto rounded-xl border border-white/10 bg-black/30 p-3 text-xs leading-5 text-[#d4dbe7]">{JSON.stringify(block.content_en, null, 2)}</pre>
+                      </details>
+                    </div>
+                  ))}
+                  {!blocks.some((block) => block.page_id === selectedCmsPage.id) ? <p className="rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-[#aab5c6]">No blocks attached to this page.</p> : null}
+                </div>
+              </div>
+              <div className="flex flex-wrap justify-end gap-3 border-t border-white/10 pt-5">
+                <button type="button" onClick={() => setCmsPageDetailOpen(false)} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white">Close</button>
+                <button type="button" onClick={() => setCmsPageDetailOpen(false)} className="rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">Edit page below</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <SectionShell
         title={pageForm.id ? 'Edit page' : 'Create page'}
