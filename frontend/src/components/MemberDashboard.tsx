@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, Plane, Trophy, UploadCloud, Utensils } from 'lucide-react';
+import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, Plane, Trophy, UploadCloud, UserRound, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -195,6 +195,13 @@ const MemberDashboard = () => {
     <main className="min-h-screen bg-[#070708] text-white">
       <section className="px-4 py-8 sm:px-5 sm:py-10 lg:px-10">
         <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[1fr_360px]">
+          <div className="col-span-full flex flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#ffc400] text-lg font-black text-[#111]">{(user.fullName || 'K').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()}</div>
+              <div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Your account</p><p className="truncate text-lg font-black">{user.fullName}</p><p className="truncate text-sm text-[#aab5c6]">{user.email || user.phone || 'Member account'}</p></div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3"><span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-[#d4dbe7]">{user.referralCode ? `Referral: ${user.referralCode}` : 'Complete your profile'}</span><Link href="/profile" className="inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/40 px-4 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]"><UserRound className="h-4 w-4" /> View / edit profile</Link></div>
+          </div>
           <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111113]">
             <div className="grid min-h-[420px] gap-0 lg:grid-cols-[1fr_0.9fr]">
               <div className="p-8 lg:p-10">

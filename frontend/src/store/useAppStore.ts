@@ -9,6 +9,11 @@ export interface KCubeUser {
   fullName: string;
   email?: string;
   phone?: string;
+  username?: string;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  profileImage?: string | null;
   referralCode?: string;
   points?: number;
   role?: 'admin' | 'member' | 'manager' | 'guest';
@@ -53,6 +58,7 @@ interface AppState {
   setLanguage: (language: Language) => void;
   toggleLanguage: () => void;
   signIn: (user: KCubeUser, token?: string | null, refreshToken?: string | null, points?: number) => void;
+  updateUser: (user: Partial<KCubeUser>) => void;
   signOut: () => void;
   awardPoints: (actionId: string, points: number) => void;
   addToCart: (productId: string, quantity?: number) => void;
@@ -105,6 +111,9 @@ export const useAppStore = create<AppState>()(
               : [...state.completedActions, 'welcome-bonus'],
           };
         }),
+      updateUser: (user) => set((state) => ({
+        user: state.user ? { ...state.user, ...user } : state.user,
+      })),
       signOut: () => set({ user: null, token: null, refreshToken: null, sessionSeed: null, points: 0, completedActions: [], shopCart: [], shopOrders: [] }),
       awardPoints: (actionId, points) =>
         set((state) => {

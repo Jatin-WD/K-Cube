@@ -228,6 +228,9 @@ const Header = () => {
                     <Link href="/dashboard" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
                       Dashboard
                     </Link>
+                    <Link href="/profile" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
+                      My profile
+                    </Link>
                     <button type="button" onClick={signOut} className="block w-full rounded-sm px-3 py-2 text-left text-sm font-bold text-[#b12704] hover:bg-[#f7fafa]">
                       {t.signOut}
                     </button>

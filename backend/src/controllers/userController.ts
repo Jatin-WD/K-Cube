@@ -23,6 +23,27 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
   return ok(res, user);
 };
 
+export const updateOwnProfile = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
+
+  const allowed = ['full_name', 'phone', 'city', 'state', 'country', 'profile_image'];
+  const entries = Object.entries(req.body || {})
+    .filter(([key]) => allowed.includes(key))
+    .map(([key, value]) => [key, typeof value === 'string' ? value.trim() || null : value] as const);
+  if (!entries.length) return fail(res, 400, 'VALIDATION_ERROR', 'No valid profile changes provided');
+  if (entries.some(([key, value]) => key === 'full_name' && (!value || String(value).length < 2))) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Full name must contain at least 2 characters');
+  }
+
+  await pool.query(
+    `UPDATE users SET ${entries.map(([key]) => `${key} = ?`).join(', ')} WHERE id = ?`,
+    [...entries.map(([, value]) => value), userId],
+  );
+  const [rows] = await pool.query(`SELECT ${profileFields} FROM users WHERE id = ? LIMIT 1`, [userId]);
+  return ok(res, (rows as any[])[0] || { id: userId });
+};
+
 export const listUsers = async (req: Request, res: Response) => {
   const { role, status, q } = req.query;
   const where: string[] = [];

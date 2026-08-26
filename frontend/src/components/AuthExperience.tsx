@@ -109,6 +109,13 @@ const normalizeUser = (payload: unknown, method: AuthMethod) => {
     fullName: String(record.full_name ?? record.fullName ?? nestedUser.full_name ?? record.username ?? 'K-CUBE Member'),
     email: typeof (record.email ?? nestedUser.email) === 'string' ? String(record.email ?? nestedUser.email) : undefined,
     phone: typeof (record.phone ?? nestedUser.phone) === 'string' ? String(record.phone ?? nestedUser.phone) : undefined,
+    username: typeof (record.username ?? nestedUser.username) === 'string' ? String(record.username ?? nestedUser.username) : undefined,
+    city: typeof (record.city ?? nestedUser.city) === 'string' ? String(record.city ?? nestedUser.city) : null,
+    state: typeof (record.state ?? nestedUser.state) === 'string' ? String(record.state ?? nestedUser.state) : null,
+    country: typeof (record.country ?? nestedUser.country) === 'string' ? String(record.country ?? nestedUser.country) : null,
+    profileImage: typeof (record.profile_image ?? record.profileImage ?? nestedUser.profile_image ?? nestedUser.profileImage) === 'string'
+      ? String(record.profile_image ?? record.profileImage ?? nestedUser.profile_image ?? nestedUser.profileImage)
+      : null,
     points: readPoints(record.points ?? nestedUser.points),
     referralCode: typeof (record.referral_code ?? record.referralCode ?? nestedUser.referral_code ?? nestedUser.referralCode) === 'string'
       ? String(record.referral_code ?? record.referralCode ?? nestedUser.referral_code ?? nestedUser.referralCode)
