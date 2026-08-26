@@ -10,6 +10,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/.env.example ./
 RUN npm install --production
 EXPOSE 4000
