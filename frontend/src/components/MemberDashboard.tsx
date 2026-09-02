@@ -33,7 +33,7 @@ interface LearningSessionRow {
   completedAt: string;
 }
 
-type DashboardView = 'overview' | 'profile' | 'actions' | 'learning' | 'referrals' | 'events';
+type DashboardView = 'overview' | 'profile' | 'actions' | 'submissions' | 'learning' | 'referrals' | 'events';
 
 interface MemberEventRow {
   id: number;
@@ -224,6 +224,7 @@ const MemberDashboard = () => {
   }, [activeView, user]);
 
   useEffect(() => {
+    if (!user) return;
     api.get('/events').then((response) => {
       const data = response.data?.data ?? response.data;
       setEvents(Array.isArray(data) ? data : []);
@@ -283,7 +284,7 @@ const MemberDashboard = () => {
   }
 
   return (
-    <main className="min-h-screen bg-[#070708] text-white">
+    <main className="member-area-shell min-h-screen bg-[#eef4f8] text-[#102a43]">
       <div className="mx-auto flex max-w-[1760px] flex-col gap-5 px-3 py-5 sm:px-5 sm:py-7 lg:flex-row lg:gap-6 lg:px-8">
         <aside className="w-full shrink-0 lg:w-64">
           <div className="rounded-xl border border-white/10 bg-[#111113] p-3 lg:sticky lg:top-24">
@@ -292,13 +293,14 @@ const MemberDashboard = () => {
               {[
                 ['overview', 'Overview'],
                 ['actions', 'Earn points'],
+                ['submissions', 'New submission'],
                 ['learning', 'Learning progress'],
                 ['events', 'Events'],
                 ['referrals', 'Referrals'],
               ].map(([href, label]) => (
-                <button key={href} type="button" onClick={() => setActiveView(href as DashboardView)} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-bold transition lg:w-full ${activeView === href ? 'border-[#ffc400]/30 bg-[#ffc400]/10 text-[#ffc400]' : 'border-transparent text-[#aab5c6] hover:border-white/10 hover:bg-white/[0.05] hover:text-white'}`}>{label}</button>
+                <button key={href} type="button" onClick={() => setActiveView(href as DashboardView)} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-bold transition lg:w-full ${activeView === href ? 'border-[#0b4eae]/25 bg-[#eaf3ff] text-[#0b4eae]' : 'border-transparent text-[#486581] hover:border-[#d8e4f0] hover:bg-[#f5f9fe] hover:text-[#102a43]'}`}>{label}</button>
               ))}
-              <button type="button" onClick={() => setActiveView('profile')} className="flex shrink-0 items-center rounded-lg border border-transparent px-3 py-2.5 text-left text-sm font-black text-[#aab5c6] transition hover:border-white/10 hover:bg-white/[0.05] hover:text-white lg:w-full">Edit profile</button>
+              <button type="button" onClick={() => setActiveView('profile')} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-black transition lg:w-full ${activeView === 'profile' ? 'border-[#0b4eae]/25 bg-[#eaf3ff] text-[#0b4eae]' : 'border-transparent text-[#486581] hover:border-[#d8e4f0] hover:bg-[#f5f9fe] hover:text-[#102a43]'}`}>Edit profile</button>
             </nav>
           </div>
         </aside>
@@ -317,6 +319,24 @@ const MemberDashboard = () => {
             <div className="sm:col-span-2 grid gap-4 sm:grid-cols-2"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#98a4b1]">Email</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#aab5c6]">{user.email || user.phone}</p></div><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#98a4b1]">Referral code</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-black text-[#aab5c6]">{user.referralCode || 'Not available'}</p></div></div>
             {profileMessage ? <p className="sm:col-span-2 text-sm font-bold text-[#9be7c2]">{profileMessage}</p> : null}
             <div className="sm:col-span-2 flex flex-wrap gap-3"><button disabled={profileSaving} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60">{profileSaving ? 'Saving...' : 'Save changes'}</button><Link href="/profile" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">Open full profile page</Link></div>
+          </form>
+        </section> : null}
+        {activeView === 'submissions' ? <section className="mx-auto max-w-3xl space-y-5">
+          <div className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">New submission</p>
+            <h1 className="mt-2 text-3xl font-black text-[#102a43]">Submit your Korean culture content</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#486581]">Dance, song, drama review ya K-Food story submit karein. Admin review ke baad approved content par points assign honge.</p>
+          </div>
+          <form onSubmit={submitUpload} className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
+            <div className="flex items-center gap-3"><div className="rounded-lg bg-[#eaf3ff] p-3"><Clapperboard className="h-6 w-6 text-[#0b4eae]" /></div><div><h2 className="text-xl font-black text-[#102a43]">Submission details</h2><p className="text-sm text-[#486581]">All fields can be reviewed by the K-CUBE team.</p></div></div>
+            <div className="mt-6 grid gap-4">
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Content category<select value={upload.category} onChange={(event) => setUpload((current) => ({ ...current, category: event.target.value }))} className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none focus:border-[#0b4eae]">{uploadCategories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}</select></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Video title<input required value={upload.title} onChange={(event) => setUpload((current) => ({ ...current, title: event.target.value }))} placeholder="Give your submission a clear title" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Video URL<input required type="url" value={upload.video_url} onChange={(event) => setUpload((current) => ({ ...current, video_url: event.target.value }))} placeholder="YouTube / Drive video URL" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Thumbnail image URL<input type="url" value={upload.thumbnail_url} onChange={(event) => setUpload((current) => ({ ...current, thumbnail_url: event.target.value }))} placeholder="Optional thumbnail image URL" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Short description<textarea required value={upload.description} onChange={(event) => setUpload((current) => ({ ...current, description: event.target.value }))} placeholder="Tell us briefly about your content" className="min-h-32 rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+            </div>
+            <button className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-[#0b4eae] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#073a82]"><UploadCloud className="h-4 w-4" /> Submit for review</button>
           </form>
         </section> : null}
         {activeView === 'events' ? <section className="space-y-5">

@@ -13,6 +13,7 @@ const frontendDir = path.join(__dirname, 'frontend');
 const nextApp = next({ dev: false, dir: frontendDir });
 const handle = nextApp.getRequestHandler();
 const port = Number(process.env.PORT || 4000);
+let httpServer;
 
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled Rejection:', reason);
@@ -38,7 +39,12 @@ nextApp.prepare().then(() => {
 
   app.all(/.*/, (req, res) => handle(req, res));
 
-  app.listen(port, () => {
+  httpServer = app.listen(port, () => {
+    // Bound connection lifetimes prevent stalled clients from consuming the
+    // hosting process pool indefinitely.
+    httpServer.requestTimeout = 30000;
+    httpServer.headersTimeout = 35000;
+    httpServer.keepAliveTimeout = 5000;
     console.log(`K-CUBE single-domain app running on port ${port}`);
     console.log(`Frontend: /`);
     console.log(`API: ${process.env.API_PREFIX}`);
@@ -47,3 +53,17 @@ nextApp.prepare().then(() => {
   console.error('Failed to start K-CUBE app:', error);
   process.exit(1);
 });
+
+const shutdown = () => {
+  if (!httpServer) {
+    nextApp.close().finally(() => process.exit(0));
+    return;
+  }
+
+  httpServer.close(() => {
+    nextApp.close().finally(() => process.exit(0));
+  });
+};
+
+process.once('SIGTERM', shutdown);
+process.once('SIGINT', shutdown);
