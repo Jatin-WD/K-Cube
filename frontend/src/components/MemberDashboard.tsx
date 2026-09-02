@@ -372,10 +372,9 @@ const MemberDashboard = () => {
             <div className="flex flex-wrap items-center gap-3"><span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-[#d4dbe7]">{user.referralCode ? `Referral: ${user.referralCode}` : 'Complete your profile'}</span><button type="button" onClick={() => setActiveView('profile')} className="inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/40 px-4 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]"><UserRound className="h-4 w-4" /> View / edit profile</button></div>
           </div>
           <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111113]">
-            <div className="grid min-h-[420px] gap-0 lg:grid-cols-[1fr_0.9fr]">
-              <div className="p-8 lg:p-10">
+            <div className="p-6 sm:p-8 lg:p-10">
                 <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Member command center</p>
-                <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl lg:text-6xl">Earn points from culture, learning, food and purchases.</h1>
+                <h1 className="mt-4 max-w-4xl text-3xl font-black leading-[1.08] sm:text-4xl lg:text-5xl">Earn points from culture, learning, food and purchases.</h1>
                 <p className="mt-5 max-w-2xl text-sm leading-7 text-[#aab5c6]">K-CUBE tracks every meaningful action toward the Korea trip leaderboard. Upload your Korean culture content, complete daily learning, refer friends, and claim K-Food purchases.</p>
                 <div className="mt-8 grid gap-3 sm:grid-cols-3">
                   <div className="rounded-lg border border-[#ffc400]/25 bg-[#ffc400]/10 p-4">
@@ -394,14 +393,13 @@ const MemberDashboard = () => {
                     <p className="mt-2 text-xs leading-5 text-[#aab5c6]">Welcome points are credited automatically after successful account creation.</p>
                   </div>
                 </div>
-              </div>
-              <div className="grid grid-rows-3">
+            </div>
+            <div className="grid gap-2 border-t border-white/10 p-2 sm:grid-cols-3 sm:gap-3 sm:p-3">
                 {heroImages.map((image) => (
-                  <div key={image.title} className="relative min-h-[140px] bg-cover bg-center" style={{ backgroundImage: `linear-gradient(90deg, rgba(7,7,8,0.08), rgba(7,7,8,0.52)), url(${image.src})` }}>
-                    <p className="absolute bottom-4 left-4 rounded-full bg-black/45 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-white">{image.title}</p>
+                  <div key={image.title} className="relative min-h-[150px] overflow-hidden rounded-lg bg-cover bg-center sm:min-h-[180px]" style={{ backgroundImage: `linear-gradient(90deg, rgba(7,7,8,0.08), rgba(7,7,8,0.52)), url(${image.src})` }}>
+                    <p className="absolute bottom-3 left-3 rounded-full bg-black/55 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-white">{image.title}</p>
                   </div>
                 ))}
-              </div>
             </div>
           </div>
 
