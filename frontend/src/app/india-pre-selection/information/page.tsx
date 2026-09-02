@@ -31,10 +31,54 @@ const bottomLinks = [
   },
 ];
 
+const pointsJourney = [
+  {
+    points: '100 points',
+    title: 'Register with K-CUBE',
+    description: 'Earn your first 100 points when you create your K-CUBE account.',
+  },
+  {
+    points: '+200 points',
+    title: 'Submit a preliminary video',
+    description: 'Submit your video for the India pre-selection preliminary round.',
+  },
+  {
+    points: '+300 points',
+    title: 'Pass the preliminary round',
+    description: 'Earn another 300 points when you are selected among about five people.',
+  },
+  {
+    points: '+1,000 points',
+    title: 'Pass the final selection',
+    description: 'Earn 1,000 points for passing the final selection in September.',
+  },
+];
+
 export default function InformationPage() {
   return (
     <main className="kc-india-page min-h-screen bg-[#eef4f8] text-[#102a43]">
       <IndiaPreSelectionInformationHero />
+
+      <section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
+        <div className="mx-auto max-w-[1320px] rounded-xl border border-[#dce6f0] bg-white px-5 py-5 shadow-[0_4px_18px_rgba(15,55,95,0.05)] sm:px-6 sm:py-6 lg:px-8 lg:py-7">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">Points journey</p>
+              <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Earn points as you move through the selection</h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-[#565959]">Your points build with each completed stage of the K-CUBE India pre-selection journey.</p>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {pointsJourney.map((item, index) => (
+              <article key={item.title} className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-4">
+                <div className="flex items-center justify-between gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#eaf3ff] text-xs font-black text-[#2457d6]">0{index + 1}</span><span className="text-sm font-black text-[#b77900]">{item.points}</span></div>
+                <h3 className="mt-4 text-base font-black text-[#0f172a]">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#475569]">{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
         <div className="mx-auto max-w-[1320px] rounded-xl border border-[#dce6f0] bg-white px-5 py-5 shadow-[0_4px_18px_rgba(15,55,95,0.05)] sm:px-6 sm:py-6 lg:px-8 lg:py-7">

@@ -100,23 +100,13 @@ export default function IndiaPreSelectionInformationHero() {
             aria-hidden="true"
             style={{
               backgroundImage:
-                "linear-gradient(90deg, rgba(7,16,27,0.98) 0%, rgba(7,16,27,0.94) 28%, rgba(7,16,27,0.8) 54%, rgba(7,16,27,0.32) 100%), linear-gradient(180deg, rgba(7,16,27,0.52) 0%, rgba(7,16,27,0.82) 100%), url('/assets/k-cube-banner.png')",
+                "linear-gradient(90deg, rgb(0 45 99 / 98%) 0%, rgb(0 49 108 / 94%) 28%, rgb(0 52 115 / 80%) 54%, rgb(7 16 27 / 0%) 100%), linear-gradient(rgb(7 16 27 / 0%) 0%, rgb(7 16 27 / 0%) 100%), url('/assets/k-cube-banner.png')",
               backgroundPosition: 'center right',
               backgroundRepeat: 'no-repeat',
               backgroundSize: 'cover',
               transform: 'translate3d(0, 0, 0) scale(1.045)',
             }}
           />
-          <div
-            className="pointer-events-none absolute inset-0"
-            aria-hidden="true"
-            style={{
-              background:
-                'radial-gradient(circle at 78% 40%, rgba(255,255,255,0.06), transparent 18%), radial-gradient(circle at 72% 78%, rgba(243,168,71,0.08), transparent 24%), linear-gradient(90deg, rgba(7,16,27,0.18) 0%, rgba(7,16,27,0.42) 54%, rgba(7,16,27,0.68) 100%)',
-            }}
-          />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.05),_transparent_18%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.08),_transparent_22%)] opacity-90" />
-
           <div className="relative z-10">
             <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-[#f3a847]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.26em] text-[#f3a847]">
               <Sparkles className="h-4 w-4" />
