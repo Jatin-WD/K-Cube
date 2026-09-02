@@ -83,6 +83,24 @@ const marketplaceTiles = [
   { title: 'Shop Korean Products', value: 'Earn purchase rewards', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=700&q=80' },
 ];
 
+const marketplaceTileLabels = {
+  en: ['Welcome bonus', 'Refer friends', 'Upload videos', 'Shop Korean Products'],
+  ko: ['웰컴 보너스', '친구 추천', '영상 업로드', '한국 상품 쇼핑'],
+  hi: ['वेलकम बोनस', 'दोस्तों को रेफर करें', 'वीडियो अपलोड करें', 'Korean Products Shop'],
+} as const;
+
+const marketplaceTileValues = {
+  en: ['+100 points', '+150 / +100', 'Admin reviewed', 'Earn purchase rewards'],
+  ko: ['+100 포인트', '+150 / +100', '관리자 검토', '구매 보상 적립'],
+  hi: ['+100 पॉइंट्स', '+150 / +100', 'एडमिन रिव्यू', 'खरीदारी rewards कमाएँ'],
+} as const;
+
+const homeSectionCopy = {
+  en: { next: 'Next event', explore: 'Explore by category', curated: 'Curated for India', spotlight: 'Shop spotlight', featured: 'Featured products on the homepage', openShop: 'Open shop', viewShop: 'View in shop', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food purchase claims and referrals feed into the backend points ledger.', allActions: 'View All Point Actions', dashboard: 'Member dashboard', welcome: '100 welcome points' },
+  ko: { next: '다음 이벤트', explore: '카테고리 둘러보기', curated: '인도를 위한 큐레이션', spotlight: '쇼핑 추천', featured: '홈페이지 추천 상품', openShop: '쇼핑몰 열기', viewShop: '쇼핑몰에서 보기', actions: 'K-CUBE 포인트 활동', actionsDesc: '인증된 활동, 학습 진행, K-Food 구매 신청 및 추천이 포인트 장부에 반영됩니다.', allActions: '모든 포인트 활동 보기', dashboard: '회원 대시보드', welcome: '웰컴 포인트 100점' },
+  hi: { next: 'अगला इवेंट', explore: 'कैटेगरी देखें', curated: 'India के लिए curated', spotlight: 'Shop spotlight', featured: 'Homepage के featured products', openShop: 'Shop खोलें', viewShop: 'Shop में देखें', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food claims और referrals points ledger में जुड़ते हैं।', allActions: 'सभी point actions देखें', dashboard: 'Member dashboard', welcome: '100 welcome points' },
+} as const;
+
 const tileAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8'];
 const cardAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8', '#1d67c9', '#12a66a'];
 
@@ -102,6 +120,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const awardPoints = useAppStore((state) => state.awardPoints);
   const page = pages[pageKey];
   const t = copy[language];
+  const homeText = homeSectionCopy[language];
   const visual = pageVisuals[pageKey];
 
   return (
@@ -109,10 +128,10 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
       <section className="border-b border-[#d8e1ee] bg-white px-3 py-2 text-xs text-[#0f172a] sm:px-4 sm:py-3 sm:text-sm lg:px-10">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
-          <span className="rounded-full px-3 py-1 font-black text-white shadow-[0_10px_20px_rgba(15,23,42,0.14)]" style={{ backgroundColor: visual.accentHex }}>{visual.accent}</span>
+          <span className="rounded-full px-3 py-1 font-black text-white shadow-[0_10px_20px_rgba(15,23,42,0.14)]" style={{ backgroundColor: visual.accentHex }}>{pageKey === 'home' ? homeText.next : visual.accent}</span>
           <span className="font-semibold leading-5 text-[#475569]">{visual.strip}</span>
           <Link href="/dashboard" className="hidden items-center gap-2 rounded-full border border-[#d8e1ee] px-3 py-1 font-bold text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6] sm:ml-auto sm:inline-flex">
-            Member dashboard <ArrowRight className="h-4 w-4" />
+            {homeText.dashboard} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
@@ -244,7 +263,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   <div className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-4">
                     <div className="flex items-center gap-3">
                       <Gift className="h-5 w-5 text-[#2457d6]" />
-                      <p className="text-sm font-bold text-[#0f172a]">100 welcome points</p>
+                    <p className="text-sm font-bold text-[#0f172a]">{homeText.welcome}</p>
                     </div>
                     <p className="mt-2 text-sm leading-6 text-[#64748b]">
                       {user ? `${copy[language].hello}, ${user.fullName}` : t.welcomeBonus}
@@ -275,9 +294,9 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
             <article key={tile.title} className="overflow-hidden rounded-[24px] border border-[#d8e1ee] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
               <div className="h-1" style={{ backgroundColor: tileAccents[index] }} />
               <div className="p-4">
-              <h2 className="text-lg font-black text-[#0f172a] sm:text-xl">{tile.title}</h2>
+              <h2 className="text-lg font-black text-[#0f172a] sm:text-xl">{marketplaceTileLabels[language][index]}</h2>
               <div className="mt-3 h-28 rounded-[16px] bg-cover bg-center sm:h-36" style={{ backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.2)), url(${tile.image})` }} />
-              <p className="mt-3 text-sm font-bold" style={{ color: tileAccents[index] }}>{tile.value}</p>
+              <p className="mt-3 text-sm font-bold" style={{ color: tileAccents[index] }}>{marketplaceTileValues[language][index]}</p>
               </div>
             </article>
           ))}
@@ -288,11 +307,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
         <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[#d5d9d9] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em]" style={{ color: visual.accentHex }}>{visual.accent}</p>
-              <h2 className="text-xl font-black text-[#111827] sm:text-2xl">Explore by category</h2>
+                <p className="text-xs font-black uppercase tracking-[0.18em]" style={{ color: visual.accentHex }}>{pageKey === 'home' ? homeText.next : visual.accent}</p>
+              <h2 className="text-xl font-black text-[#111827] sm:text-2xl">{homeText.explore}</h2>
             </div>
             <span className="hidden items-center gap-1 text-sm font-bold text-[#007185] sm:inline-flex">
-              <Star className="h-4 w-4 fill-[#ffa41c] text-[#ffa41c]" /> Curated for India
+              <Star className="h-4 w-4 fill-[#ffa41c] text-[#ffa41c]" /> {homeText.curated}
             </span>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
@@ -304,11 +323,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                     style={{ backgroundImage: `linear-gradient(180deg, rgba(36,87,214,0.02), rgba(8,35,94,0.62)), url(${cardImages[index % cardImages.length]})` }}
                   >
                     <span className="absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white shadow-lg" style={{ backgroundColor: cardAccents[index % cardAccents.length] }}>
-                      {visual.accent}
+                      {pageKey === 'home' ? homeText.next : visual.accent}
                     </span>
                   </div>
                   <div className="p-5 sm:p-6">
-                    <p className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: visual.accentHex }}>{visual.accent}</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: visual.accentHex }}>{pageKey === 'home' ? homeText.next : visual.accent}</p>
                     <h3 className="mt-3 text-xl font-black text-[#111827] sm:text-2xl">{card.title[language]}</h3>
                     <p className="mt-2 text-sm leading-7 text-[#565959]">{card.description[language]}</p>
                     {isExternal(card.href) ? (
@@ -332,11 +351,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
         <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[#d8e1ee] bg-white p-4 text-[#0f172a] shadow-[0_6px_20px_rgba(15,55,95,0.07)] sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f08a24]">Shop spotlight</p>
-              <h2 className="text-xl font-black sm:text-2xl">Featured products on the homepage</h2>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f08a24]">{homeText.spotlight}</p>
+              <h2 className="text-xl font-black sm:text-2xl">{homeText.featured}</h2>
             </div>
             <Link href="/shop" className="inline-flex items-center gap-2 text-sm font-bold text-[#f3a847]">
-              Open shop <ArrowRight className="h-4 w-4" />
+              {homeText.openShop} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
@@ -345,18 +364,18 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                 <div className="h-44 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(180deg, rgba(36,87,214,0.02), rgba(8,35,94,0.5)), url(${product.image})` }} />
                 <div className="p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2457d6]">{product.category.en}</p>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2457d6]">{product.category[language]}</p>
                     <span className="rounded-full bg-[#fff0d9] px-3 py-1 text-xs font-black text-[#c45f08]">+{product.rewardPoints} pts</span>
                   </div>
-                  <h3 className="mt-3 text-lg font-black text-[#0f172a]">{product.title.en}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#64748b]">{product.subtitle.en}</p>
+                  <h3 className="mt-3 text-lg font-black text-[#0f172a]">{product.title[language]}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#64748b]">{product.subtitle[language]}</p>
                   <div className="mt-4 flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-bold text-[#f3a847]">₹{product.price}</p>
                       {product.compareAtPrice ? <p className="text-xs text-[#9ca3af] line-through">₹{product.compareAtPrice}</p> : null}
                     </div>
                     <Link href="/shop" className="inline-flex items-center gap-2 rounded-full bg-[#2457d6] px-4 py-2 text-sm font-black text-white">
-                      View in shop <ShoppingBag className="h-4 w-4" />
+                      {homeText.viewShop} <ShoppingBag className="h-4 w-4" />
                     </Link>
                   </div>
                 </div>
@@ -408,10 +427,10 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
             <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704] sm:text-sm sm:tracking-[0.24em]">{t.earnPoints}</p>
-                <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">K-CUBE point actions</h2>
+                <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">{homeText.actions}</h2>
               </div>
               <p className="max-w-2xl text-sm leading-6 text-[#565959]">
-                Verified activities, learning progress, K-Food purchase claims and referrals feed into the backend points ledger.
+                {homeText.actionsDesc}
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -450,7 +469,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
             </div>
             <div className="mt-6 flex justify-center">
               <Link href="/rewards#point-actions" className="inline-flex items-center gap-2 rounded-sm border border-[#d5d9d9] bg-white px-5 py-3 text-sm font-black text-[#111827] transition hover:border-[#f3a847] hover:text-[#b12704]">
-                View All Point Actions
+                {homeText.allActions}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
