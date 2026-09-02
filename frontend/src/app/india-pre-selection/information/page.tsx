@@ -5,12 +5,12 @@ import {
   CheckCircle2,
   ExternalLink,
   Camera,
-  PlayCircle,
   Sparkles,
   Video,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import IndiaPreSelectionInformationHero from '@/components/home/IndiaPreSelectionInformationHero';
+import FestivalVideoPlayer from '@/components/home/FestivalVideoPlayer';
 
 export const metadata = {
   title: 'ITAEWON World Music Festival | India Participation & Festival Highlights | K-CUBE',
@@ -113,10 +113,10 @@ export default function InformationPage() {
               <div className="relative"><Video className="h-8 w-8 text-[#e5b441]" /><p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-[#bed7ff]">2025 festival archive</p><h3 id="media-heading" className="mt-3 max-w-lg text-2xl font-black sm:text-3xl">Real festival media, added with permission</h3><p className="mt-3 max-w-xl text-sm leading-7 text-[#d5e5fb]">Verified 2025 photos and videos will appear here once approved by the festival organizer. We are not filling this archive with unrelated stock or unverified event media.</p></div>
               <a href={mediaSources[0].url} target="_blank" rel="noreferrer" className="relative mt-8 inline-flex w-fit items-center gap-2 rounded-full border border-white/40 bg-white/10 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/20">Open official festival source<ExternalLink className="h-4 w-4" /></a>
             </div>
-            <div className="rounded-[20px] border border-[#d8e1ee] bg-white p-5 text-[#102a43] sm:p-6">
-              <div className="flex items-center gap-3"><PlayCircle className="h-7 w-7 text-[#2457d6]" /><h3 className="text-xl font-black">Watch the festival</h3></div>
-              <p className="mt-4 text-sm leading-7 text-[#526f8f]">Only authentic, permission-safe videos will be embedded. When an official 2025 video is confirmed, this area will show a responsive player without autoplay.</p>
-              <div className="mt-6 rounded-[16px] border border-dashed border-[#cbd9ea] bg-[#f8fbff] p-4 text-sm leading-6 text-[#526f8f]">Archive media pending organizer approval.<br /><span className="font-bold text-[#2457d6]">Source: ITAEWONNEWS • 2025 • official archive</span></div>
+            <div className="overflow-hidden rounded-[20px] border border-[#d8e1ee] bg-white text-[#102a43]">
+              <div className="flex items-center gap-3 p-5 pb-4 sm:p-6 sm:pb-4"><Video className="h-7 w-7 text-[#2457d6]" /><h3 className="text-xl font-black">Watch the festival</h3></div>
+              <FestivalVideoPlayer />
+              <p className="p-5 text-sm leading-7 text-[#526f8f] sm:p-6">2025 festival archive video from Seoul. Hover or focus the video to reveal the pause control.</p>
             </div>
           </div>
         </div>
