@@ -91,7 +91,7 @@ const homeSelectionSupportPoints = [
   { value: '100 pts', label: 'K-CUBE Registration' },
   { value: '+200 pts', label: 'Preliminary Round Video Submission' },
   { value: '+300 pts', label: 'Passing the Preliminary Round' },
-  { value: '+1,000 pts', label: 'Passing the Final Selection' },
+  { value: '+1,000 pts', label: 'Passing the Final Selection', supporting: 'Earn points for the final round' },
 ] as const;
 
 const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
@@ -164,6 +164,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                       <div key={item.label} className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-3">
                         <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#2457d6]">{item.value}</p>
                         <p className="mt-2 text-sm font-semibold leading-6 text-[#0f172a]">{item.label}</p>
+                        {'supporting' in item ? <p className="mt-1 text-xs leading-5 text-[#486581]">{item.supporting}</p> : null}
                       </div>
                     ))}
                   </div>
