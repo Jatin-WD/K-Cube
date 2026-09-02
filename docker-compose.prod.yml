@@ -43,6 +43,9 @@ services:
         NEXT_PUBLIC_API_URL: /api/v1
     container_name: kcube-frontend
     restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      __NEXT_PRIVATE_ORIGIN: https://k-cube.store
     depends_on:
       - backend
 

@@ -926,11 +926,11 @@ const SectionShell = ({
   children: ReactNode;
   actions?: ReactNode;
 }) => (
-  <section className="admin-section-shell min-w-0 rounded-xl border border-white/10 bg-[#101014] p-4">
-    <div className="flex flex-col gap-2 border-b border-white/10 pb-3 lg:flex-row lg:items-center lg:justify-between">
+  <section className="admin-section-shell min-w-0 rounded-[10px] border border-[#dce6f0] bg-white p-5 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
+    <div className="flex flex-col gap-2 border-b border-[#e8eef5] pb-3 lg:flex-row lg:items-center lg:justify-between">
       <div>
-        <h2 className="text-xl font-black text-white">{title}</h2>
-        {description ? <p className="mt-1 max-w-3xl text-sm leading-6 text-[#aab5c6]">{description}</p> : null}
+        <h2 className="text-xl font-black text-[#102a43]">{title}</h2>
+        {description ? <p className="mt-1 max-w-3xl text-sm leading-6 text-[#486581]">{description}</p> : null}
       </div>
       {actions ? <div className="flex shrink-0 flex-nowrap items-center gap-2 whitespace-nowrap">{actions}</div> : null}
     </div>
@@ -946,15 +946,15 @@ const Field = ({
   children: React.ReactNode;
 }) => (
   <label className="block">
-    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[#ffc400]">{label}</span>
+    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[#0b4eae]">{label}</span>
     {children}
   </label>
 );
 
 const inputClass =
-  'w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#627085] focus:border-[#ffc400]';
+  'w-full rounded-[8px] border border-[#ccd9e6] bg-white px-3 py-2 text-sm text-[#102a43] outline-none transition placeholder:text-[#6b7c93] focus:border-[#0b4eae] focus:ring-2 focus:ring-[#0b4eae]/10';
 const selectClass =
-  'w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none transition focus:border-[#ffc400]';
+  'w-full rounded-[8px] border border-[#ccd9e6] bg-white px-3 py-2 text-sm text-[#102a43] outline-none transition focus:border-[#0b4eae] focus:ring-2 focus:ring-[#0b4eae]/10';
 
 type CmsEditorLocale = 'en' | 'ko' | 'hi';
 type EditableCmsContent = Record<string, any>;
@@ -1752,14 +1752,14 @@ const AdminControlCenter = () => {
 
   if (!user || user.role !== 'admin') {
     return (
-      <main className="min-h-screen bg-[#070708] px-5 py-16 text-white lg:px-10">
-        <section className="mx-auto max-w-[760px] rounded-2xl border border-white/10 bg-[#111113] p-8 text-center">
-          <ShieldCheck className="mx-auto h-12 w-12 text-[#ffc400]" />
+      <main className="min-h-screen bg-[#eef4f8] px-5 py-16 text-[#102a43] lg:px-10">
+        <section className="mx-auto max-w-[760px] rounded-[12px] border border-[#dce6f0] bg-white p-8 text-center shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
+          <ShieldCheck className="mx-auto h-12 w-12 text-[#0b4eae]" />
           <h1 className="mt-5 text-3xl font-black">Admin access required</h1>
-          <p className="mt-3 text-sm leading-7 text-[#aab5c6]">
+          <p className="mt-3 text-sm leading-7 text-[#486581]">
             Please sign in with an admin account to manage K-CUBE content, users, points, events and rewards.
           </p>
-          <Link href="/admin/login" className="mt-6 inline-flex rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">
+          <Link href="/admin/login" className="mt-6 inline-flex rounded-[8px] bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white hover:bg-[#073a82]">
             Admin login
           </Link>
         </section>
@@ -5317,18 +5317,18 @@ const AdminControlCenter = () => {
   };
 
   return (
-    <main className="admin-control-center min-h-screen overflow-x-hidden bg-[#070708] text-white">
+    <main className="admin-control-center min-h-screen overflow-x-hidden bg-[#eef4f8] text-[#102a43]">
       <div className="flex min-h-screen flex-col">
-        <header className="fixed inset-x-0 top-0 z-40 flex h-[64px] items-center border-b border-[#2c3338] bg-[#1d2327] px-4">
+        <header className="fixed inset-x-0 top-0 z-40 flex h-[72px] items-center border-b border-[#dce6f0] bg-white px-4 shadow-[0_2px_8px_rgba(15,55,95,0.04)]">
           <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffb900] text-lg font-black text-[#111111]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-[#0b4eae] text-lg font-black text-white">
                 K
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-[0.42em] text-[#ffb900]">Admin Panel</p>
-                <h1 className="truncate text-lg font-black leading-tight text-[#f0f0f1]">K-CUBE control center</h1>
-                <p className="mt-0.5 text-xs text-[#b4b9be]">Compact workspace for content, users, rewards, events, and commerce.</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.42em] text-[#0b4eae]">Admin Panel</p>
+                <h1 className="truncate text-lg font-black leading-tight text-[#102a43]">K-CUBE control center</h1>
+                <p className="mt-0.5 text-xs text-[#486581]">Compact workspace for content, users, rewards, events, and commerce.</p>
               </div>
             </div>
 
@@ -5380,9 +5380,9 @@ const AdminControlCenter = () => {
           </div>
         </header>
 
-        <div className="grid min-h-0 flex-1 overflow-x-hidden pt-[64px] lg:grid-cols-[220px_minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 overflow-x-hidden pt-[72px] lg:grid-cols-[240px_minmax(0,1fr)]">
           <aside
-            className={`border-b border-[#2c3338] bg-[#1d2327] lg:fixed lg:left-0 lg:top-[64px] lg:z-30 lg:block lg:h-[calc(100vh-64px)] lg:w-[220px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
+            className={`border-b border-[#dce6f0] bg-white lg:fixed lg:left-0 lg:top-[72px] lg:z-30 lg:block lg:h-[calc(100vh-72px)] lg:w-[240px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
               sidebarOpen ? 'w-full' : 'w-full'
             }`}
           >
@@ -5442,12 +5442,12 @@ const AdminControlCenter = () => {
 
           <div className="min-w-0 px-5 py-6 lg:col-start-2 lg:px-8 lg:py-8">
             <div className="mx-auto min-w-0 max-w-[1600px] space-y-4">
-            <section className="admin-hero-panel min-w-0 rounded-xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,196,0,0.18),_transparent_34%),linear-gradient(180deg,_rgba(17,17,19,0.96),_rgba(10,10,12,0.98))] p-4">
+            <section className="admin-hero-panel min-w-0 rounded-[12px] border border-[#cfe0f1] bg-[linear-gradient(120deg,#eaf3ff,#ffffff)] p-5 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <p className="text-sm font-black uppercase tracking-[0.26em] text-[#ffc400]">Admin Dashboard</p>
-                  <h2 className="mt-1 text-2xl font-black">Full website control, all in one place.</h2>
-                  <p className="mt-1 max-w-none text-sm leading-5 text-[#aab5c6] lg:whitespace-nowrap">
+                  <p className="text-sm font-black uppercase tracking-[0.26em] text-[#0b4eae]">Admin Dashboard</p>
+                  <h2 className="mt-1 text-2xl font-black text-[#102a43]">Full website control, all in one place.</h2>
+                  <p className="mt-1 max-w-none text-sm leading-5 text-[#486581] lg:whitespace-nowrap">
                     Edit pages, learning content, users, points, rewards, events, announcements and integrations from a single admin workspace.
                   </p>
                   {notice ? <p className="mt-4 text-sm font-bold text-[#ffcf86]">{notice}</p> : null}
