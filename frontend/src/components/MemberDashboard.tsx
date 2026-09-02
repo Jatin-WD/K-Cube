@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, Plane, Trophy, UploadCloud, UserRound, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
+import { memberCopy } from '@/lib/memberContent';
 
 interface LearningProgressRow {
   trackSlug: string;
@@ -96,6 +97,8 @@ const MemberDashboard = () => {
   const router = useRouter();
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
+  const language = useAppStore((state) => state.language);
+  const t = memberCopy[language];
   const [activeView, setActiveView] = useState<DashboardView>('overview');
   const [message, setMessage] = useState('');
   const [upload, setUpload] = useState({
@@ -288,19 +291,19 @@ const MemberDashboard = () => {
       <div className="mx-auto flex max-w-[1760px] flex-col gap-5 px-3 py-5 sm:px-5 sm:py-7 lg:flex-row lg:gap-6 lg:px-8">
         <aside className="w-full shrink-0 lg:w-64">
           <div className="rounded-xl border border-white/10 bg-[#111113] p-3 lg:sticky lg:top-24">
-            <div className="hidden border-b border-white/10 px-3 pb-4 lg:block"><p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">Member area</p><p className="mt-2 text-lg font-black">K-CUBE workspace</p><p className="mt-1 text-xs leading-5 text-[#aab5c6]">Your points, learning and participation.</p></div>
+            <div className="hidden border-b border-white/10 px-3 pb-4 lg:block"><p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.memberArea}</p><p className="mt-2 text-lg font-black">{t.workspace}</p><p className="mt-1 text-xs leading-5 text-[#aab5c6]">{t.workspaceDesc}</p></div>
             <nav className="flex gap-2 overflow-x-auto lg:grid lg:gap-1.5 lg:overflow-visible lg:pt-3" aria-label="Member dashboard">
               {[
-                ['overview', 'Overview'],
-                ['actions', 'Earn points'],
-                ['submissions', 'New submission'],
-                ['learning', 'Learning progress'],
-                ['events', 'Events'],
-                ['referrals', 'Referrals'],
+                ['overview', t.overview],
+                ['actions', t.earnPoints],
+                ['submissions', t.newSubmission],
+                ['learning', t.learningProgress],
+                ['events', t.events],
+                ['referrals', t.referrals],
               ].map(([href, label]) => (
                 <button key={href} type="button" onClick={() => setActiveView(href as DashboardView)} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-bold transition lg:w-full ${activeView === href ? 'border-[#0b4eae]/25 bg-[#eaf3ff] text-[#0b4eae]' : 'border-transparent text-[#486581] hover:border-[#d8e4f0] hover:bg-[#f5f9fe] hover:text-[#102a43]'}`}>{label}</button>
               ))}
-              <button type="button" onClick={() => setActiveView('profile')} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-black transition lg:w-full ${activeView === 'profile' ? 'border-[#0b4eae]/25 bg-[#eaf3ff] text-[#0b4eae]' : 'border-transparent text-[#486581] hover:border-[#d8e4f0] hover:bg-[#f5f9fe] hover:text-[#102a43]'}`}>Edit profile</button>
+              <button type="button" onClick={() => setActiveView('profile')} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-black transition lg:w-full ${activeView === 'profile' ? 'border-[#0b4eae]/25 bg-[#eaf3ff] text-[#0b4eae]' : 'border-transparent text-[#486581] hover:border-[#d8e4f0] hover:bg-[#f5f9fe] hover:text-[#102a43]'}`}>{t.editProfile}</button>
             </nav>
           </div>
         </aside>
@@ -367,30 +370,30 @@ const MemberDashboard = () => {
           <div id="profile" className="col-span-full flex scroll-mt-24 flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#ffc400] text-lg font-black text-[#111]">{(user.fullName || 'K').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()}</div>
-              <div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Your account</p><p className="truncate text-lg font-black">{user.fullName}</p><p className="truncate text-sm text-[#aab5c6]">{user.email || user.phone || 'Member account'}</p></div>
+              <div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">{t.account}</p><p className="truncate text-lg font-black">{user.fullName}</p><p className="truncate text-sm text-[#aab5c6]">{user.email || user.phone || t.workspace}</p></div>
             </div>
-            <div className="flex flex-wrap items-center gap-3"><span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-[#d4dbe7]">{user.referralCode ? `Referral: ${user.referralCode}` : 'Complete your profile'}</span><button type="button" onClick={() => setActiveView('profile')} className="inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/40 px-4 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]"><UserRound className="h-4 w-4" /> View / edit profile</button></div>
+            <div className="flex flex-wrap items-center gap-3"><span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-[#d4dbe7]">{user.referralCode ? `${t.referral}: ${user.referralCode}` : t.locationPrompt}</span><button type="button" onClick={() => setActiveView('profile')} className="inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/40 px-4 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]"><UserRound className="h-4 w-4" /> {t.viewEditProfile}</button></div>
           </div>
           <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111113]">
             <div className="p-6 sm:p-8 lg:p-10">
                 <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Member command center</p>
-                <h1 className="mt-4 max-w-4xl text-3xl font-black leading-[1.08] sm:text-4xl lg:text-5xl">Earn points from culture, learning, food and purchases.</h1>
+                <h1 className="mt-4 max-w-4xl text-3xl font-black leading-[1.08] sm:text-4xl lg:text-5xl">{language === 'en' ? 'Earn points from culture, learning, food and purchases.' : language === 'ko' ? '문화, 학습, 음식과 쇼핑으로 포인트를 적립하세요.' : 'Culture, learning, food और purchases से पॉइंट्स कमाएँ।'}</h1>
                 <p className="mt-5 max-w-2xl text-sm leading-7 text-[#aab5c6]">K-CUBE tracks every meaningful action toward the Korea trip leaderboard. Upload your Korean culture content, complete daily learning, refer friends, and claim K-Food purchases.</p>
                 <div className="mt-8 grid gap-3 sm:grid-cols-3">
                   <div className="rounded-lg border border-[#ffc400]/25 bg-[#ffc400]/10 p-4">
                     <Trophy className="h-5 w-5 text-[#ffc400]" />
                     <p className="mt-3 text-3xl font-black text-[#ffc400]">{points}</p>
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#d4dbe7]">Total points</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#d4dbe7]">{t.totalPoints}</p>
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                     <Plane className="h-5 w-5 text-[#ffc400]" />
                     <p className="mt-3 text-3xl font-black">{Math.min(Math.round(points / 20), 100)}%</p>
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">Trip meter</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">{t.tripMeter}</p>
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                     <Gift className="h-5 w-5 text-[#ffc400]" />
-                    <p className="mt-3 text-sm font-black text-[#ffc400]">Signup rewards only</p>
-                    <p className="mt-2 text-xs leading-5 text-[#aab5c6]">Welcome points are credited automatically after successful account creation.</p>
+                    <p className="mt-3 text-sm font-black text-[#ffc400]">{t.signupRewards}</p>
+                    <p className="mt-2 text-xs leading-5 text-[#aab5c6]">{t.welcomePoints}</p>
                   </div>
                 </div>
             </div>

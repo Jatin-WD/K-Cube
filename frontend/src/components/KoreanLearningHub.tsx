@@ -6,10 +6,13 @@ import { ArrowRight, BookOpen, Lock, Sparkles, Trophy, Zap } from 'lucide-react'
 import { learningTracks } from '@/lib/koreanLearningBank';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
+import { memberCopy } from '@/lib/memberContent';
 
 const KoreanLearningHub = () => {
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
+  const language = useAppStore((state) => state.language);
+  const t = memberCopy[language];
   const [remoteTracks, setRemoteTracks] = useState(learningTracks);
 
   useEffect(() => {
@@ -66,11 +69,11 @@ const KoreanLearningHub = () => {
       <section className="border-b border-white/10 px-4 py-4 sm:px-6 lg:px-10">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="kc-eyebrow">Learning Gateway</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Korean learning, points, and login-gated progress</h1>
+            <p className="kc-eyebrow">{language === 'en' ? 'Learning Gateway' : language === 'ko' ? '학습 게이트웨이' : 'लर्निंग गेटवे'}</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{language === 'en' ? 'Korean learning, points, and login-gated progress' : language === 'ko' ? '한국어 학습, 포인트 및 로그인 기반 진행' : 'Korean learning, पॉइंट्स और लॉगिन आधारित प्रोग्रेस'}</h1>
           </div>
           <div className="rounded-md border border-[#dce6f0] bg-white px-4 py-2 text-sm font-semibold text-[#486581]">
-            {user ? `Wallet: ${points} points` : 'Preview only until sign in'}
+            {user ? `${t.points}: ${points}` : `${t.signIn} ${language === 'ko' ? '전 미리보기' : language === 'hi' ? 'से पहले प्रीव्यू' : 'to preview'}`}
           </div>
         </div>
       </section>
@@ -83,9 +86,9 @@ const KoreanLearningHub = () => {
                 <div className="inline-flex items-center gap-2 rounded-md border border-[#0b4eae]/20 bg-[#eaf3ff] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#0b4eae]">
                   <Sparkles className="h-4 w-4" /> Adaptive Korean academy
                 </div>
-                <h2 className="mt-5 text-3xl font-bold leading-tight text-[#102a43] sm:text-4xl">Beginner to class-content learning, all inside a protected points system.</h2>
+                  <h2 className="mt-5 text-3xl font-bold leading-tight text-[#102a43] sm:text-4xl">{language === 'en' ? 'Beginner to class-content learning, all inside a protected points system.' : language === 'ko' ? '초급부터 수업 콘텐츠까지, 안전한 포인트 시스템 안에서 학습하세요.' : 'शुरुआत से class-content learning तक, सुरक्षित पॉइंट्स सिस्टम में।'}</h2>
                 <p className="mt-4 max-w-3xl text-base leading-7 text-[#486581] sm:text-lg">
-                  Guests can read the overview, but the actual practice flow is locked until login. Once signed in, the app shuffles a fresh learning set from 100+ questions in each track.
+                  {language === 'en' ? 'Guests can read the overview, but the actual practice flow is locked until login. Once signed in, the app shuffles a fresh learning set from 100+ questions in each track.' : language === 'ko' ? '게스트는 개요를 볼 수 있지만 실제 학습은 로그인 후 이용할 수 있습니다. 로그인하면 각 트랙의 100개 이상의 문제에서 새로운 세트가 제공됩니다.' : 'Guest overview देख सकते हैं, लेकिन असली practice login के बाद खुलती है। Login करने पर हर track के 100+ questions में से नया set मिलता है।'}
                 </p>
               </div>
               <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] px-5 py-4 text-right">
