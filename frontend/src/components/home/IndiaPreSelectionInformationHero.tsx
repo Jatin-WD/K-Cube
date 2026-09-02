@@ -22,7 +22,7 @@ const journeyCards = [
   },
   {
     title: 'Process overview',
-    body: 'Learn first, check notices next, and open Apply when you are ready to submit.',
+    body: 'The completed India stage is preserved; check official updates for what comes next.',
     icon: FileText,
   },
 ] as const;
@@ -133,16 +133,16 @@ export default function IndiaPreSelectionInformationHero() {
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 href="/india-pre-selection/announcement"
-                className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:-translate-y-px hover:bg-[#f7ca00] sm:w-auto"
+                className="kc-button kc-button-primary w-full whitespace-nowrap sm:w-auto"
               >
                 View announcement
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/india-pre-selection/apply"
-                className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-sm border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-px hover:border-[#ffd814] hover:text-[#ffd814] sm:w-auto"
+                href="/india-pre-selection/announcement"
+                className="kc-button kc-button-secondary w-full whitespace-nowrap sm:w-auto"
               >
-                Apply now
+                View official updates
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -153,13 +153,13 @@ export default function IndiaPreSelectionInformationHero() {
                 return (
                   <article
                     key={card.title}
-                    className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:bg-white/[0.04]"
+                    className="rounded-[20px] border border-[#d8e1ee] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:bg-[#f8fbff]"
                   >
-                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#f3a847]">
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#f08a24]">
                       <Icon className="h-4 w-4" />
                       {card.title}
                     </p>
-                    <p className="mt-2.5 text-sm leading-6 text-[#f8fafc]">{card.body}</p>
+                    <p className="mt-2.5 text-sm leading-6 text-[#475569]">{card.body}</p>
                   </article>
                 );
               })}
@@ -195,15 +195,15 @@ export default function IndiaPreSelectionInformationHero() {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-[#d5d9d9] bg-[linear-gradient(180deg,#111827_0%,#0b1220_100%)] p-3 text-white shadow-sm sm:p-4">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f3a847]">Journey at a glance</p>
+          <div className="rounded-[24px] border border-[#d8e1ee] bg-[#f8fbff] p-3 text-[#0f172a] shadow-sm sm:p-4">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">Journey at a glance</p>
             <div className="mt-2.5 space-y-2">
               {[
                 '1. Understand the event story and the reason it exists.',
                 '2. Read Announcement for the latest dates, notices and status.',
                 '3. Move to Apply when you are ready to submit.',
               ].map((step) => (
-                <div key={step} className="rounded-[18px] border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm leading-5 text-[#e5e7eb] sm:px-4 sm:py-3 sm:leading-6">
+                <div key={step} className="rounded-[18px] border border-[#d8e1ee] bg-white px-3 py-2.5 text-sm leading-5 text-[#475569] sm:px-4 sm:py-3 sm:leading-6">
                   {step}
                 </div>
               ))}

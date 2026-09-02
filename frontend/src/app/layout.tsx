@@ -27,10 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full bg-transparent text-white">
+      <body className="min-h-full bg-transparent text-[#111827]">
         <Providers>
           <Header />
-          <main>{children}</main>
+          <main className="min-h-[calc(100vh-1px)]">{children}</main>
           <InternalFooter />
         </Providers>
       </body>

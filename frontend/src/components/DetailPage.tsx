@@ -44,26 +44,26 @@ const DetailPage = ({ item }: DetailPageProps) => {
   const toAnchor = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
   return (
-    <main className="min-h-screen bg-[#e7e7e7] text-[#111827]">
-      <section className="border-b border-[#d5d9d9] bg-[#131921] px-4 py-3 text-sm text-white lg:px-10">
-        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-3">
-          <span className="rounded-sm bg-[#f3a847] px-3 py-1 font-black text-[#111827]">K-CUBE Detail</span>
+    <main className="min-h-screen bg-[#eef4f8] text-[#102a43]">
+      <section className="border-b border-[#dce6f0] bg-[#073a82] px-4 py-3 text-sm text-white lg:px-8">
+        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
+          <span className="rounded-md bg-[#0b4eae] px-3 py-1 font-bold text-white">K-CUBE Detail</span>
           <span className="font-semibold">{activeItem.eyebrow[language]}</span>
         </div>
       </section>
 
       <section className="px-4 py-6 sm:py-8 lg:px-10">
-        <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[minmax(420px,0.92fr)_1fr_350px]">
-          <div className="overflow-hidden rounded-sm border border-[#d5d9d9] bg-white p-4 shadow-sm">
+        <div className="mx-auto grid max-w-[1320px] gap-5 lg:grid-cols-[minmax(360px,0.92fr)_1fr_320px]">
+          <div className="overflow-hidden rounded-[10px] border border-[#dce6f0] bg-white p-3 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
             <div className="h-64 bg-cover bg-center sm:h-[420px]" style={{ backgroundImage: `url(${image})` }} />
           </div>
 
-          <div className="rounded-sm border border-[#d5d9d9] bg-white p-6 shadow-sm">
-          <p className="inline-flex rounded-sm border border-[#f3a847]/60 bg-[#fff4cc] px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#b12704]">
+          <div className="rounded-[10px] border border-[#dce6f0] bg-white p-6 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
+          <p className="inline-flex rounded-md border border-[#0b4eae]/20 bg-[#eaf3ff] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0b4eae]">
             {activeItem.eyebrow[language]}
           </p>
           <h1 className="mt-5 text-3xl font-black leading-tight text-[#111827] sm:text-4xl lg:text-5xl">{activeItem.title[language]}</h1>
-          <p className="mt-5 max-w-4xl text-base leading-7 text-[#565959] sm:text-lg sm:leading-8">{activeItem.summary[language]}</p>
+          <p className="mt-5 max-w-4xl text-base leading-7 text-[#486581] sm:text-lg sm:leading-8">{activeItem.summary[language]}</p>
           <div className="mt-5 flex items-center gap-1 text-[#ffa41c]">
             {Array.from({ length: 5 }).map((_, index) => <span key={index}>★</span>)}
             <span className="ml-2 text-sm font-bold text-[#007185]">Verified point activity</span>
@@ -74,7 +74,7 @@ const DetailPage = ({ item }: DetailPageProps) => {
               SEO: {activeItem.seo}
             </span>
             {activeItem.points ? (
-              <span className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/50 bg-[#fff4cc] px-4 py-2 font-black text-[#b12704]">
+              <span className="inline-flex items-center gap-2 rounded-md border border-[#f59e0b]/35 bg-[#fff7e6] px-4 py-2 font-bold text-[#9a6700]">
                 <Coins className="h-4 w-4" />
                 +{activeItem.points}
               </span>
@@ -82,7 +82,7 @@ const DetailPage = ({ item }: DetailPageProps) => {
           </div>
           </div>
 
-          <aside className="rounded-sm border border-[#d5d9d9] bg-white p-6 shadow-sm">
+          <aside className="rounded-[10px] border border-[#dce6f0] bg-white p-6 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
             <h2 className="text-2xl font-black text-[#111827]">{t.earnPoints}</h2>
             <p className="mt-3 text-sm leading-6 text-[#565959]">
               {activeItem.protectedAction ? t.loginRequired : t.tripLine}
@@ -97,13 +97,13 @@ const DetailPage = ({ item }: DetailPageProps) => {
                   type="button"
                   disabled={completed}
                   onClick={() => awardPoints(actionId, activeItem.points ?? 0)}
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-4 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00] disabled:cursor-not-allowed disabled:bg-[#d5d9d9] disabled:text-[#565959]"
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#073a82] disabled:cursor-not-allowed disabled:bg-[#eaf3ff] disabled:text-[#0b4eae]"
                 >
                   {completed ? <Check className="h-4 w-4" /> : <Coins className="h-4 w-4" />}
                   {completed ? t.completed : `${t.applyNow} (+${activeItem.points})`}
                 </button>
               ) : (
-                <Link href="/signin" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-4 text-sm font-black text-[#111827]">
+                <Link href="/signin" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#073a82]">
                   <Lock className="h-4 w-4" />
                   {t.signIn}
                 </Link>
@@ -114,8 +114,8 @@ const DetailPage = ({ item }: DetailPageProps) => {
       </section>
 
       <section className="px-4 pb-12 lg:px-10">
-        <div className="mx-auto max-w-[1760px]">
-          <article className="rounded-sm border border-[#d5d9d9] bg-white p-6 shadow-sm">
+        <div className="mx-auto max-w-[1320px]">
+          <article className="rounded-[10px] border border-[#dce6f0] bg-white p-6 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
             <h2 className="text-2xl font-black text-[#111827]">Detailed content</h2>
             <div className="mt-5 grid gap-4">
               {activeItem.bullets.map((bullet) => (

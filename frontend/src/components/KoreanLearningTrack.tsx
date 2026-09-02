@@ -64,43 +64,43 @@ const visualIcons: Record<string, string> = {
 const formatTitle = (question: QuizRound) => `${question.tag} · ${question.points} pts`;
 
 const LearningPreview = ({ title, intro, accent, overview, loginCopy, bankSize, rewardPoints, slug }: LearningTrackConfig) => (
-  <article className="overflow-hidden rounded-[28px] border border-white/10 bg-white/5 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.22)]">
+  <article className="overflow-hidden rounded-xl border border-[#dce6f0] bg-white p-6 shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
     <p className="text-xs font-black uppercase tracking-[0.3em]" style={{ color: accent }}>{title}</p>
-    <h2 className="mt-3 text-3xl font-black">{title}</h2>
-    <p className="mt-4 max-w-3xl text-sm leading-7 text-[#c9d7de]">{intro}</p>
+    <h2 className="mt-3 text-2xl font-bold text-[#102a43]">{title}</h2>
+    <p className="mt-4 max-w-3xl text-sm leading-7 text-[#486581]">{intro}</p>
     <div className="mt-6 flex flex-wrap gap-3">
       {overview.map((item) => (
-        <span key={item} className="rounded-full border border-white/10 bg-black/20 px-4 py-2 text-sm font-bold text-[#d8e5eb]">
+        <span key={item} className="rounded-md border border-[#dce6f0] bg-[#f7fafd] px-4 py-2 text-sm font-semibold text-[#486581]">
           {item}
         </span>
       ))}
     </div>
     <div className="mt-6 grid gap-4 sm:grid-cols-3">
-      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+      <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">Question bank</p>
-        <p className="mt-2 text-2xl font-black text-white">{bankSize}</p>
+        <p className="mt-2 text-2xl font-bold text-[#0b4eae]">{bankSize}</p>
       </div>
-      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+      <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">Session size</p>
-        <p className="mt-2 text-2xl font-black text-white">10 questions</p>
+        <p className="mt-2 text-2xl font-bold text-[#0b4eae]">10 questions</p>
       </div>
-      <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+      <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">Reward</p>
-        <p className="mt-2 text-2xl font-black text-[#ffcf86]">+{rewardPoints} pts</p>
+        <p className="mt-2 text-2xl font-bold text-[#b77900]">+{rewardPoints} pts</p>
       </div>
     </div>
     <div className="mt-6 grid gap-3 md:grid-cols-2">
       {loginCopy.map((line) => (
-        <div key={line} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-7 text-[#d2dde3]">
+        <div key={line} className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4 text-sm leading-7 text-[#486581]">
           {line}
         </div>
       ))}
     </div>
     <div className="mt-7 flex flex-wrap gap-3">
-      <Link href={`/signin?returnTo=/learning/${slug}`} className="inline-flex items-center gap-2 rounded-full bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827]">
+      <Link href={`/signin?returnTo=/learning/${slug}`} className="kc-button kc-button-primary">
         <Lock className="h-4 w-4" /> Sign in to learn
       </Link>
-      <Link href={`/signup?returnTo=/learning/${slug}`} className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-white">
+      <Link href={`/signup?returnTo=/learning/${slug}`} className="kc-button kc-button-secondary">
         Create account
       </Link>
     </div>
@@ -500,7 +500,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
 
   if (!signedIn) {
     return (
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#15262f_0%,_#091015_55%,_#04080b_100%)] text-white">
+      <main className="kc-learning-surface min-h-screen bg-[#eef4f8] text-[#102a43]">
         <section className="border-b border-white/10 px-4 py-4 sm:px-6 lg:px-10">
           <div className="mx-auto flex max-w-[1500px] items-center justify-between">
             <Link href="/learning" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-[#d8e5eb]">
@@ -523,7 +523,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   if (!question) return null;
 
   return (
-    <main className="min-h-screen bg-[#f5f7fa] text-[#111827]">
+    <main className="kc-learning-surface min-h-screen bg-[#eef4f8] text-[#102a43]">
       <section className="bg-[#101f24] px-4 py-5 text-white sm:px-6 lg:px-10">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-3">
           <Link href="/learning" className="inline-flex items-center gap-2 rounded-xl border border-[#35505d] px-3 py-2 text-sm font-black text-[#9fb2bd] hover:text-white">

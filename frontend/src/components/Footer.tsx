@@ -23,40 +23,40 @@ const footerCopy: Record<Language, Record<string, string>> = {
     trip: 'Trip to Korea',
   },
   ko: {
-    line: '포인트 중심의 한국 문화, 학습, K-Food, 이벤트, 리워드 생태계.',
-    platform: '플랫폼',
-    support: '지원',
-    commerce: '커머스',
-    rights: 'K-CUBE.store와 내부 K-CUBE shop을 위해 설계되었습니다.',
-    activities: '활동',
-    learning: '한국어 학습',
-    kfood: 'K-푸드',
-    rewards: '리워드',
-    events: '이벤트',
-    about: '소개',
-    contact: '문의',
-    manpower: '인력 지원',
-    signIn: '로그인',
-    signUp: '회원가입',
-    trip: '한국 여행',
+    line: 'í¬ì¸íŠ¸ ì¤‘ì‹¬ì˜ í•œêµ­ ë¬¸í™”, í•™ìŠµ, K-Food, ì´ë²¤íŠ¸, ë¦¬ì›Œë“œ ìƒíƒœê³„.',
+    platform: 'í”Œëž«í¼',
+    support: 'ì§€ì›',
+    commerce: 'ì»¤ë¨¸ìŠ¤',
+    rights: 'K-CUBE.storeì™€ ë‚´ë¶ K-CUBE shopì„ ìœ„í•´ ì„¤ê³„ë˜ì—ˆìŠµë‹ˆë‹¤.',
+    activities: 'í™œë™',
+    learning: 'í•œêµ­ì–´ í•™ìŠµ',
+    kfood: 'K-í‘¸ë“œ',
+    rewards: 'ë¦¬ì›Œë“œ',
+    events: 'ì´ë²¤íŠ¸',
+    about: 'ì†Œê°œ',
+    contact: 'ë¬¸ì˜',
+    manpower: 'ì¸ë ¥ ì§€ì›',
+    signIn: 'ë¡œê·¸ì¸',
+    signUp: 'íšŒì›ê°€ìž…',
+    trip: 'í•œêµ­ ì—¬í–‰',
   },
   hi: {
-    line: 'पॉइंट्स-केंद्रित कोरियाई संस्कृति, सीखने, के-फूड, इवेंट्स और पुरस्कारों का इकोसिस्टम।',
-    platform: 'प्लेटफ़ॉर्म',
-    support: 'सहायता',
-    commerce: 'कॉमर्स',
-    rights: 'K-CUBE.store और internal K-CUBE shop के लिए डिज़ाइन किया गया।',
-    activities: 'गतिविधियाँ',
-    learning: 'कोरियाई भाषा सीखना',
-    kfood: 'के-फूड',
-    rewards: 'पुरस्कार',
-    events: 'इवेंट्स',
-    about: 'हमारे बारे में',
-    contact: 'संपर्क',
-    manpower: 'मैनपावर',
-    signIn: 'साइन इन',
-    signUp: 'साइन अप',
-    trip: 'कोरिया यात्रा',
+    line: 'à¤ªà¥‰à¤‡à¤‚à¤Ÿà¥à¤¸-à¤•à¥‡à¤‚à¤¦à¥à¤°à¤¿à¤¤ à¤•à¥‹à¤°à¤¿à¤¯à¤¾à¤ˆ à¤¸à¤‚à¤¸à¥à¤•à¥ƒà¤¤à¤¿, à¤¸à¥€à¤–à¤¨à¥‡, à¤•à¥‡-à¤«à¥‚à¤¡, à¤‡à¤µà¥‡à¤‚à¤Ÿà¥à¤¸ à¤”à¤° à¤ªà¥à¤°à¤¸à¥à¤•à¤¾à¤°à¥‹à¤‚ à¤•à¤¾ à¤‡à¤•à¥‹à¤¸à¤¿à¤¸à¥à¤Ÿà¤®à¥¤',
+    platform: 'à¤ªà¥à¤²à¥‡à¤Ÿà¤«à¤¼à¥‰à¤°à¥à¤®',
+    support: 'à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾',
+    commerce: 'à¤•à¥‰à¤®à¤°à¥à¤¸',
+    rights: 'K-CUBE.store à¤”à¤° internal K-CUBE shop à¤•à¥‡ à¤²à¤¿à¤ à¤¡à¤¿à¤œà¤¼à¤¾à¤‡à¤¨ à¤•à¤¿à¤¯à¤¾ à¤—à¤¯à¤¾à¥¤',
+    activities: 'à¤—à¤¤à¤¿à¤µà¤¿à¤§à¤¿à¤¯à¤¾à¤',
+    learning: 'à¤•à¥‹à¤°à¤¿à¤¯à¤¾à¤ˆ à¤­à¤¾à¤·à¤¾ à¤¸à¥€à¤–à¤¨à¤¾',
+    kfood: 'à¤•à¥‡-à¤«à¥‚à¤¡',
+    rewards: 'à¤ªà¥à¤°à¤¸à¥à¤•à¤¾à¤°',
+    events: 'à¤‡à¤µà¥‡à¤‚à¤Ÿà¥à¤¸',
+    about: 'à¤¹à¤®à¤¾à¤°à¥‡ à¤¬à¤¾à¤°à¥‡ à¤®à¥‡à¤‚',
+    contact: 'à¤¸à¤‚à¤ªà¤°à¥à¤•',
+    manpower: 'à¤®à¥ˆà¤¨à¤ªà¤¾à¤µà¤°',
+    signIn: 'à¤¸à¤¾à¤‡à¤¨ à¤‡à¤¨',
+    signUp: 'à¤¸à¤¾à¤‡à¤¨ à¤…à¤ª',
+    trip: 'à¤•à¥‹à¤°à¤¿à¤¯à¤¾ à¤¯à¤¾à¤¤à¥à¤°à¤¾',
   },
 };
 
@@ -65,35 +65,35 @@ const Footer = () => {
   const t = footerCopy[language];
 
   return (
-    <footer className="border-t border-white/10 bg-[#09090a] px-5 py-12 text-[#aab5c6] lg:px-10">
+    <footer className="border-t border-[#d8e1ee] bg-white/90 px-5 py-12 text-[#5b6b7f] lg:px-10">
       <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <p className="text-2xl font-black text-white">K-CUBE</p>
+          <p className="text-2xl font-black tracking-tight text-[#0f172a]">K-CUBE</p>
           <p className="mt-3 max-w-sm text-sm leading-7">{t.line}</p>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.platform}</p>
-          <Link href="/activities" className="block text-sm hover:text-white">{t.activities}</Link>
-          <Link href="/learning" className="block text-sm hover:text-white">{t.learning}</Link>
-          <Link href="/kfood" className="block text-sm hover:text-white">{t.kfood}</Link>
-          <Link href="/rewards" className="block text-sm hover:text-white">{t.rewards}</Link>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#2457d6]">{t.platform}</p>
+          <Link href="/activities" className="block text-sm hover:text-[#2457d6]">{t.activities}</Link>
+          <Link href="/learning" className="block text-sm hover:text-[#2457d6]">{t.learning}</Link>
+          <Link href="/kfood" className="block text-sm hover:text-[#2457d6]">{t.kfood}</Link>
+          <Link href="/rewards" className="block text-sm hover:text-[#2457d6]">{t.rewards}</Link>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.support}</p>
-          <Link href="/events" className="block text-sm hover:text-white">{t.events}</Link>
-          <Link href="/about" className="block text-sm hover:text-white">{t.about}</Link>
-          <Link href="/about#contact" className="block text-sm hover:text-white">{t.contact}</Link>
-          <Link href="/apply-for-manpower" className="block text-sm hover:text-white">{t.manpower}</Link>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#2457d6]">{t.support}</p>
+          <Link href="/events" className="block text-sm hover:text-[#2457d6]">{t.events}</Link>
+          <Link href="/about" className="block text-sm hover:text-[#2457d6]">{t.about}</Link>
+          <Link href="/about#contact" className="block text-sm hover:text-[#2457d6]">{t.contact}</Link>
+          <Link href="/apply-for-manpower" className="block text-sm hover:text-[#2457d6]">{t.manpower}</Link>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.commerce}</p>
-          <Link href="/shop" className="block text-sm hover:text-white">K-CUBE Shop</Link>
-          <Link href="/signin" className="block text-sm hover:text-white">{t.signIn}</Link>
-          <Link href="/signup" className="block text-sm hover:text-white">{t.signUp}</Link>
-          <Link href="/trip-to-korea" className="block text-sm hover:text-white">{t.trip}</Link>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#2457d6]">{t.commerce}</p>
+          <Link href="/shop" className="block text-sm hover:text-[#2457d6]">K-CUBE Shop</Link>
+          <Link href="/signin" className="block text-sm hover:text-[#2457d6]">{t.signIn}</Link>
+          <Link href="/signup" className="block text-sm hover:text-[#2457d6]">{t.signUp}</Link>
+          <Link href="/trip-to-korea" className="block text-sm hover:text-[#2457d6]">{t.trip}</Link>
         </div>
       </div>
-      <div className="mx-auto mt-10 max-w-[1480px] border-t border-white/10 pt-6 text-sm text-[#778295]">
+      <div className="mx-auto mt-10 max-w-[1480px] border-t border-[#e6edf6] pt-6 text-sm text-[#7a8797]">
         © 2026 K-CUBE. {t.rights}
       </div>
     </footer>

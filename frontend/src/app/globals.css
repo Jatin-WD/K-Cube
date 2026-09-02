@@ -1,18 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
-  --surface: rgba(15, 23, 42, 0.78);
-  --surface-strong: rgba(15, 23, 42, 0.92);
-  --radius: 2rem;
+  --kc-blue-900: #062b63;
+  --kc-blue-800: #073a82;
+  --kc-blue-700: #0b4eae;
+  --kc-blue-600: #1d67c9;
+  --kc-blue-500: #2979e8;
+  --kc-bg: #eef4f8;
+  --kc-surface: #ffffff;
+  --kc-surface-soft: #f5f9fe;
+  --kc-border: #d8e4f0;
+  --kc-border-soft: #e5edf5;
+  --kc-text: #102a43;
+  --kc-text-secondary: #486581;
+  --kc-text-muted: #6b7c93;
+  --kc-green: #12a66a;
+  --kc-orange: #f59e0b;
+  --kc-purple: #7356d8;
+  --kc-red: #dc3545;
+  --kc-radius-sm: 6px;
+  --kc-radius-md: 10px;
+  --kc-radius-lg: 14px;
+  --kc-shadow-sm: 0 2px 8px rgba(15, 55, 95, 0.04);
+  --kc-shadow-md: 0 6px 20px rgba(15, 55, 95, 0.07);
+  --background: var(--kc-bg);
+  --foreground: var(--kc-text);
+  --surface: var(--kc-surface);
+  --surface-strong: var(--kc-surface);
+  --radius: var(--kc-radius-md);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: Inter, Pretendard, "Noto Sans KR", "Noto Sans", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 html {
@@ -30,13 +52,84 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background: radial-gradient(circle at top left, rgba(255, 211, 96, 0.08), transparent 20%),
-    radial-gradient(circle at top right, rgba(27, 145, 255, 0.12), transparent 24%),
-    radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.1), transparent 28%),
-    linear-gradient(180deg, #03050d 0%, #070915 100%);
+  background: var(--kc-bg);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: Inter, Pretendard, "Noto Sans KR", "Noto Sans", Arial, sans-serif;
   overflow-x: clip;
+}
+
+.kc-eyebrow {
+  color: var(--kc-blue-700);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.kc-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--kc-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.kc-button-primary {
+  background: var(--kc-blue-700);
+  color: #fff;
+}
+
+.kc-button-primary:hover {
+  background: var(--kc-blue-800);
+}
+
+.kc-button-secondary {
+  border: 1px solid var(--kc-blue-700);
+  background: #fff;
+  color: var(--kc-blue-700);
+}
+
+.kc-button-secondary:hover {
+  background: var(--kc-surface-blue);
+}
+
+.kc-link {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.4rem;
+  color: var(--kc-blue-700);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+/* The India page previously used dark hero utility classes. Once those
+   surfaces are moved to the canonical light layout, keep the old light text
+   utilities readable instead of allowing them to wash out on white cards. */
+.kc-india-page [class*="text-[#d5d9d9]"],
+.kc-india-page [class*="text-[#e5e7eb]"],
+.kc-india-page [class*="text-[#f8fafc]"],
+.kc-india-page [class*="text-[#d4dbe7]"],
+.kc-india-page [class*="text-[#aab5c6]"] {
+  color: var(--kc-text-secondary) !important;
+}
+
+.kc-india-page [class*="text-[#ffd814]"],
+.kc-india-page [class*="text-[#f3a847]"],
+.kc-india-page [class*="text-[#b12704]"] {
+  color: var(--kc-blue-700) !important;
+}
+
+.kc-india-page [class*="bg-[#fff8df]"],
+.kc-india-page [class*="bg-[#f7fafa]"],
+.kc-india-page [class*="bg-white/[0.03]"],
+.kc-india-page [class*="bg-white/[0.04]"] {
+  background-color: var(--kc-surface-soft) !important;
 }
 
 * {
@@ -74,8 +167,8 @@ select {
 }
 
 ::selection {
-  background: rgba(56, 189, 248, 0.3);
-  color: #ffffff;
+  background: rgba(37, 99, 235, 0.18);
+  color: #0f172a;
 }
 
 body.learning-game-mode {
@@ -131,6 +224,378 @@ body.learning-game-mode > div > footer {
 
 .admin-control-center .admin-section-shell > div:last-child {
   min-height: 0;
+}
+
+/* Public pages share a light canvas, including older feature surfaces that
+   still carry the original dark utility classes. Admin and game screens keep
+   their intentionally dark workspaces. */
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#131921]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#070708]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#111113]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#0b1220]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-slate-950/90"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-slate-900/80"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-slate-900/90"] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #d8e1ee !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-black/20"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-white/5"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-white/[0.04]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-white/[0.03]"] {
+  background-color: #f8fbff !important;
+  border-color: #d8e1ee !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#131921]"] [class~="text-white"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#070708]"] [class~="text-white"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#111113]"] [class~="text-white"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#0b1220]"] [class~="text-white"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-slate-950/90"] [class~="text-white"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-slate-900/80"] [class~="text-white"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-slate-900/90"] [class~="text-white"] {
+  color: #0f172a !important;
+}
+
+/* Keep every public route on the same K-CUBE light visual language as home. */
+body:not(:has(.admin-control-center)):not(.learning-game-mode) main {
+  color: #0f172a;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#111827]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#151d2d]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#101826]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#0f1d22]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#101f24]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[linear-gradient(180deg,#111827"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[linear-gradient(180deg,#191f2c"] {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #d8e1ee !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-white/[0.03]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-white/[0.04]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-white/5"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-black/20"] {
+  background: #f8fbff !important;
+  border-color: #d8e1ee !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="border-white/10"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="border-white/20"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="border-white/15"] {
+  border-color: #d8e1ee !important;
+}
+
+/* Final public palette pass: older feature components still use the warm
+   storefront palette. Keep those routes aligned with the K-CUBE blue system. */
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#f3a847]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#b12704]"] {
+  color: #2457d6 !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="border-[#f3a847]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="border-[#b12704]"] {
+  border-color: rgba(36, 87, 214, 0.34) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#f3a847]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#b12704]"] {
+  background-color: #2457d6 !important;
+  color: #ffffff !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#fff4cc]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#fff8df]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#fff8e1]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#fff8e8]"] {
+  background-color: #eef4ff !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#e8f0ff]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#f7fafa]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#f8fbff]"] {
+  background-color: #f4f7fb !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[linear-gradient(180deg,#111827"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[linear-gradient(110deg,rgba(255,196,0"] {
+  background: linear-gradient(145deg, #ffffff 0%, #eef4ff 100%) !important;
+  color: #0f172a !important;
+  border-color: #d8e1ee !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[linear-gradient(180deg,#111827"] [class~="text-white"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[linear-gradient(110deg,rgba(255,196,0"] [class~="text-white"] {
+  color: #0f172a !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#aab5c6]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#d4dbe7]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#98a4b1]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#f8e4a2]"] {
+  color: #64748b !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#ffd814]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#ffc400]"] {
+  color: #b77900 !important;
+}
+
+/* Compatibility aliases for the original K-CUBE blue utilities. */
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#2457d6]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#1f4bb8]"] {
+  background-color: var(--kc-blue-700) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[#2457d6]/"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[#1f4bb8]/"] {
+  background-color: rgba(11, 78, 174, 0.1) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#2457d6]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#1f4bb8]"] {
+  color: var(--kc-blue-700) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="border-[#2457d6]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="border-[#1f4bb8]"] {
+  border-color: var(--kc-blue-700) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#ffd814]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#ffc400]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-amber-400"] {
+  background-color: var(--kc-blue-700) !important;
+  color: #ffffff !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[#ffd814]/"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-[#ffc400]/"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="bg-amber-400/"] {
+  background-color: var(--kc-surface-blue) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-amber-300"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-amber-400"] {
+  color: var(--kc-blue-700) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#0a0a0b]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#0b0d12]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#0c1215]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#0b1418]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#060b0d]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#091015]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#04080b]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#101820]"] {
+  background-color: var(--kc-surface-soft) !important;
+  color: var(--kc-text) !important;
+  border-color: var(--kc-border) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#0f172a]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#111827]"] {
+  color: var(--kc-text) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#64748b]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#475569]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="text-[#565959]"] {
+  color: var(--kc-text-secondary) !important;
+}
+
+/* Shared portal proportions for public surfaces. These selectors intentionally
+   leave rounded-full controls and the admin workspace unchanged. */
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="rounded-[2"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="rounded-[3"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="rounded-[28px"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="rounded-[30px"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="rounded-[32px"] {
+  border-radius: var(--kc-radius-lg) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="shadow-2xl"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="shadow-xl"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="shadow-[0_12px"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="shadow-[0_14px"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="shadow-[0_18px"] {
+  box-shadow: var(--kc-shadow-md) !important;
+}
+
+/* Bring older catalog/detail shells onto the same grid as the preferred
+   India and Study Abroad pages without changing their data or interactions. */
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#f4f0e8]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#f4f1ea]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#ece8dc]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class~="bg-[#e7e7e7]"] {
+  background-color: var(--kc-bg) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="max-w-[1760px]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="max-w-[1540px]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="max-w-[1480px]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) [class*="max-w-[1400px]"] {
+  max-width: 1320px !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) input,
+body:not(:has(.admin-control-center)):not(.learning-game-mode) textarea,
+body:not(:has(.admin-control-center)):not(.learning-game-mode) select {
+  border-radius: var(--kc-radius-sm);
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) input:focus,
+body:not(:has(.admin-control-center)):not(.learning-game-mode) textarea:focus,
+body:not(:has(.admin-control-center)):not(.learning-game-mode) select:focus {
+  border-color: var(--kc-blue-700) !important;
+  box-shadow: 0 0 0 3px rgba(11, 78, 174, 0.12) !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) button:focus-visible,
+body:not(:has(.admin-control-center)):not(.learning-game-mode) a:focus-visible {
+  outline: 3px solid rgba(41, 121, 232, 0.32);
+  outline-offset: 2px;
+}
+
+/* Keep disabled action buttons readable. Some legacy utilities combine a
+   blue background with a muted disabled text color, which fails contrast. */
+body:not(:has(.admin-control-center)):not(.learning-game-mode) button:disabled[class*="bg-[#2457d6]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) button:disabled[class*="bg-[#1f4bb8]"] {
+  background-color: var(--kc-surface-soft) !important;
+  border: 1px solid var(--kc-border) !important;
+  color: var(--kc-blue-700) !important;
+  opacity: 1 !important;
+}
+
+body:not(:has(.admin-control-center)):not(.learning-game-mode) button:disabled[class*="bg-[#2457d6]"] [class*="text-[#64748b]"],
+body:not(:has(.admin-control-center)):not(.learning-game-mode) button:disabled[class*="bg-[#1f4bb8]"] [class*="text-[#64748b]"] {
+  color: var(--kc-blue-700) !important;
+}
+
+/* The CMS uses a separate markup tree, but shares the same institutional
+   surfaces so member and admin workspaces feel like one product. */
+.admin-control-center {
+  background: var(--kc-bg) !important;
+  color: var(--kc-text) !important;
+}
+
+.admin-control-center [class~="bg-[#1d2327]"],
+.admin-control-center [class~="bg-[#23282d]"],
+.admin-control-center [class~="bg-[#2c3338]"],
+.admin-control-center [class~="bg-[#111113]"],
+.admin-control-center [class~="bg-[#101014]"],
+.admin-control-center [class~="bg-[#070708]"],
+.admin-control-center [class~="bg-[#0d0d10]"] {
+  background-color: var(--kc-surface) !important;
+  color: var(--kc-text) !important;
+  border-color: var(--kc-border) !important;
+}
+
+.admin-control-center [class~="bg-[#131921]"],
+.admin-control-center [class~="bg-[#0b1220]"],
+.admin-control-center [class~="bg-[#101826]"],
+.admin-control-center [class~="bg-[#151d2d]"],
+.admin-control-center [class~="bg-black/20"],
+.admin-control-center [class~="bg-black/30"],
+.admin-control-center [class~="bg-black/40"],
+.admin-control-center [class~="bg-white/5"],
+.admin-control-center [class~="bg-white/[0.04]"] {
+  background-color: var(--kc-surface-soft) !important;
+  color: var(--kc-text) !important;
+  border-color: var(--kc-border) !important;
+}
+
+.admin-control-center [class*="bg-gradient-to"] {
+  background: var(--kc-surface) !important;
+}
+
+.admin-control-center [class~="bg-[#ffb900]"],
+.admin-control-center [class~="bg-[#ffc400]"] {
+  background-color: var(--kc-blue-700) !important;
+  color: #ffffff !important;
+}
+
+.admin-control-center [class*="text-[#ffc400]"],
+.admin-control-center [class*="text-[#ffb900]"] {
+  color: var(--kc-blue-700) !important;
+}
+
+.admin-control-center [class~="text-white"] {
+  color: var(--kc-text) !important;
+}
+
+.admin-control-center [class*="text-[#aab5c6]"],
+.admin-control-center [class*="text-[#d4dbe7]"],
+.admin-control-center [class*="text-[#98a4b1]"],
+.admin-control-center [class*="text-[#7d8a99]"],
+.admin-control-center [class*="text-[#b4b9be]"] {
+  color: var(--kc-text-secondary) !important;
+}
+
+.admin-control-center [class~="border-white/10"],
+.admin-control-center [class~="border-white/15"],
+.admin-control-center [class~="border-white/20"] {
+  border-color: var(--kc-border) !important;
+}
+
+/* Learning surfaces are data-dense, so they use the same quiet white cards as
+   the portal instead of the former charcoal application theme. */
+.kc-learning-surface [class*="bg-[radial-gradient"],
+.kc-learning-surface [class*="bg-gradient-to"],
+.kc-learning-surface [class*="bg-gradient-to-br"] {
+  background: var(--kc-surface) !important;
+}
+
+.kc-learning-surface [class~="bg-black/20"],
+.kc-learning-surface [class~="bg-white/5"],
+.kc-learning-surface [class~="bg-white/6"],
+.kc-learning-surface [class~="bg-white/8"],
+.kc-learning-surface [class~="bg-[#0f1d22]"],
+.kc-learning-surface [class~="bg-[#101f24]"],
+.kc-learning-surface [class~="bg-[#12232a]"],
+.kc-learning-surface [class~="bg-[#142f36]"],
+.kc-learning-surface [class~="bg-[#1b2b30]"],
+.kc-learning-surface [class~="bg-[#123c31]"] {
+  background-color: var(--kc-surface-soft) !important;
+  border-color: var(--kc-border) !important;
+  color: var(--kc-text) !important;
+}
+
+.kc-learning-surface [class~="border-white/10"],
+.kc-learning-surface [class~="border-white/15"],
+.kc-learning-surface [class*="border-[#2c4049"],
+.kc-learning-surface [class*="border-[#35505d"] {
+  border-color: var(--kc-border) !important;
+}
+
+.kc-learning-surface [class*="text-[#c9d7de]"],
+.kc-learning-surface [class*="text-[#d2dde3]"],
+.kc-learning-surface [class*="text-[#d8e5eb]"],
+.kc-learning-surface [class*="text-[#9fb2bd]"],
+.kc-learning-surface [class*="text-[#708995]"] {
+  color: var(--kc-text-secondary) !important;
+}
+
+.kc-learning-surface [class*="text-[#ffb54a]"],
+.kc-learning-surface [class*="text-[#ffcf86]"],
+.kc-learning-surface [class*="text-[#ff9600]"] {
+  color: var(--kc-blue-700) !important;
+}
+
+.kc-learning-surface [class~="bg-[#ffd814]"],
+.kc-learning-surface [class~="bg-[#ffcf86]"] {
+  background-color: var(--kc-blue-700) !important;
+  color: #ffffff !important;
+}
+
+.kc-learning-surface [class*="border-[#ffb54a]"],
+.kc-learning-surface [class*="border-[#ffcf86]"],
+.kc-learning-surface [class*="border-[#19c37d]"] {
+  border-color: rgba(11, 78, 174, 0.34) !important;
 }
 
 @media (min-width: 1024px) {

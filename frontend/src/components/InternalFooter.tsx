@@ -74,14 +74,20 @@ const InternalFooter = () => {
   }
 
   return (
-    <footer className="border-t border-white/10 bg-[#09090a] px-5 py-12 text-[#aab5c6] lg:px-10">
-      <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+    <footer className="border-t border-[#1d67c9] bg-[#062b63] px-5 py-10 text-[#d8e7f9] lg:px-10">
+      <div className="mx-auto grid max-w-[1320px] gap-8 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div>
-          <p className="text-2xl font-black text-white">K-CUBE</p>
-          <p className="mt-3 max-w-sm text-sm leading-7">{t.line}</p>
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-lg font-black text-[#0b4eae]">K</span>
+            <div>
+              <p className="text-xl font-black tracking-tight text-white">K-CUBE</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#9fc4ef]">Korean Culture Ecosystem</p>
+            </div>
+          </div>
+          <p className="mt-4 max-w-sm text-sm leading-6 text-[#c4d8ee]">{t.line}</p>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.platform}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9fc4ef]">{t.platform}</p>
           <Link href="/activities" className="block text-sm hover:text-white">{t.activities}</Link>
           <Link href="/learning" className="block text-sm hover:text-white">{t.learning}</Link>
           <Link href="/kfood" className="block text-sm hover:text-white">{t.kfood}</Link>
@@ -89,21 +95,21 @@ const InternalFooter = () => {
           <Link href="/rewards" className="block text-sm hover:text-white">{t.rewards}</Link>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.support}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9fc4ef]">{t.support}</p>
           <Link href="/events" className="block text-sm hover:text-white">{t.events}</Link>
           <Link href="/about" className="block text-sm hover:text-white">{t.about}</Link>
           <Link href="/about#contact" className="block text-sm hover:text-white">{t.contact}</Link>
           <Link href="/apply-for-manpower" className="block text-sm hover:text-white">{t.manpower}</Link>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.commerce}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9fc4ef]">{t.commerce}</p>
           <Link href="/shop" className="block text-sm hover:text-white">{t.shop}</Link>
           <Link href="/signin" className="block text-sm hover:text-white">{t.signIn}</Link>
           <Link href="/signup" className="block text-sm hover:text-white">{t.signUp}</Link>
           <Link href="/trip-to-korea" className="block text-sm hover:text-white">{t.trip}</Link>
         </div>
       </div>
-      <div className="mx-auto mt-10 max-w-[1480px] border-t border-white/10 pt-6 text-sm text-[#778295]">
+      <div className="mx-auto mt-8 max-w-[1320px] border-t border-white/15 pt-5 text-xs text-[#9fc4ef]">
         © 2026 K-CUBE. {t.rights}
       </div>
     </footer>

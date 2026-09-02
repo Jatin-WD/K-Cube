@@ -161,39 +161,39 @@ const ShopCatalogPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-[#f4f0e8] text-[#111827]">
-      <section className="border-b border-[#d5d9d9] bg-[#131921] px-4 py-4 text-white lg:px-10">
-        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-3">
-          <span className="rounded-sm bg-[#f3a847] px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-[#111827]">
+    <main className="min-h-screen bg-[#eef4f8] text-[#102a43]">
+      <section className="border-b border-[#dce6f0] bg-white px-4 py-3 lg:px-10">
+        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
+          <span className="rounded-md bg-[#eaf3ff] px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#0b4eae]">
             {t.badge}
           </span>
-          <p className="text-sm font-semibold text-[#d5d9d9]">{t.rewardsLine}</p>
-          <div className="ml-auto flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm">
-            <Coins className="h-4 w-4 text-[#ffd814]" />
+          <p className="text-sm font-semibold text-[#486581]">{t.rewardsLine}</p>
+          <div className="ml-auto flex items-center gap-3 rounded-md border border-[#dce6f0] bg-[#f7fafd] px-4 py-2 text-sm text-[#486581]">
+            <Coins className="h-4 w-4 text-[#b77900]" />
             <span>{points} pts</span>
           </div>
         </div>
       </section>
 
       <section className="px-4 py-8 lg:px-10 lg:py-10">
-        <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="mx-auto grid max-w-[1320px] gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div className="space-y-6">
-            <div className="overflow-hidden rounded-[2rem] border border-[#d5d9d9] bg-white shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+            <div className="overflow-hidden rounded-xl border border-[#dce6f0] bg-white shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
               <div className="grid gap-6 p-6 sm:p-8 xl:grid-cols-[1.2fr_0.8fr]">
                 <div>
                   <p className="text-sm font-semibold text-[#7a838f]">{t.breadcrumb}</p>
-                  <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#fff4cc] px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-[#b12704]">
+                  <p className="mt-4 inline-flex items-center gap-2 rounded-md bg-[#eaf3ff] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#0b4eae]">
                     <Sparkles className="h-4 w-4" />
                     {t.shopCategory}
                   </p>
-                  <h1 className="mt-5 max-w-4xl text-3xl font-black leading-tight sm:text-5xl">{t.title}</h1>
-                  <p className="mt-4 max-w-3xl text-base leading-8 text-[#5d646d]">{t.subtitle}</p>
+                  <h1 className="mt-5 max-w-4xl text-3xl font-bold leading-tight text-[#102a43] sm:text-4xl">{t.title}</h1>
+                  <p className="mt-4 max-w-3xl text-base leading-7 text-[#486581]">{t.subtitle}</p>
                   {!user ? (
                     <div className="mt-6 flex flex-wrap gap-3">
-                      <Link href="/signup?returnTo=/shop" className="inline-flex items-center gap-2 rounded-full bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827]">
+                      <Link href="/signup?returnTo=/shop" className="kc-button kc-button-primary">
                         {t.accountPrompt}
                       </Link>
-                      <Link href="/signin?returnTo=/shop" className="inline-flex items-center gap-2 rounded-full border border-[#d5d9d9] px-5 py-3 text-sm font-bold text-[#111827]">
+                      <Link href="/signin?returnTo=/shop" className="kc-button kc-button-secondary">
                         <Lock className="h-4 w-4" />
                         {t.signInToBuy}
                       </Link>
@@ -201,43 +201,43 @@ const ShopCatalogPage = () => {
                   ) : null}
                 </div>
 
-                <div className="rounded-[1.75rem] bg-[#131921] p-6 text-white">
-                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f3a847]">{t.featured}</p>
-                  <p className="mt-3 text-sm font-semibold text-[#d5d9d9]">{t.featuredLine}</p>
-                  <h2 className="mt-6 text-3xl font-black text-white">{selectedCategory.label[language]}</h2>
-                  <p className="mt-3 text-sm leading-7 text-[#d5d9d9]">{selectedCategory.description[language]}</p>
+                <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-6">
+                  <p className="kc-eyebrow">{t.featured}</p>
+                  <p className="mt-3 text-sm font-semibold text-[#486581]">{t.featuredLine}</p>
+                  <h2 className="mt-6 text-2xl font-bold text-[#102a43]">{selectedCategory.label[language]}</h2>
+                  <p className="mt-3 text-sm leading-7 text-[#486581]">{selectedCategory.description[language]}</p>
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f3a847]">{t.allProducts}</p>
-                      <p className="mt-2 text-3xl font-black">{filteredProducts.length}</p>
+                    <div className="rounded-lg border border-[#dce6f0] bg-white p-4">
+                      <p className="kc-eyebrow">{t.allProducts}</p>
+                      <p className="mt-2 text-3xl font-bold text-[#0b4eae]">{filteredProducts.length}</p>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f3a847]">{t.protectedCheckout}</p>
-                      <p className="mt-2 text-sm leading-6 text-[#d5d9d9]">{t.loginGate}</p>
+                    <div className="rounded-lg border border-[#dce6f0] bg-white p-4">
+                      <p className="kc-eyebrow">{t.protectedCheckout}</p>
+                      <p className="mt-2 text-sm leading-6 text-[#486581]">{t.loginGate}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {message ? <p className="rounded-2xl border border-[#f3a847]/40 bg-[#fff8e1] px-5 py-4 text-sm font-bold text-[#7a3b00]">{message}</p> : null}
+            {message ? <p className="rounded-lg border border-[#f59e0b]/30 bg-[#fff8e7] px-5 py-4 text-sm font-bold text-[#a16207]">{message}</p> : null}
 
-            <div className="rounded-[2rem] border border-[#d5d9d9] bg-white p-5 shadow-[0_16px_30px_rgba(0,0,0,0.06)]">
+            <div className="rounded-xl border border-[#dce6f0] bg-white p-5 shadow-[0_4px_18px_rgba(15,55,95,0.05)]">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">{t.catalogTitle}</p>
-                  <h2 className="mt-2 text-3xl font-black">{selectedCategory.label[language]}</h2>
-                  <p className="mt-2 text-sm text-[#68707a]">
+                  <p className="kc-eyebrow">{t.catalogTitle}</p>
+                  <h2 className="mt-2 text-2xl font-bold text-[#102a43]">{selectedCategory.label[language]}</h2>
+                  <p className="mt-2 text-sm text-[#486581]">
                     {filteredProducts.length} {t.results}
                   </p>
                 </div>
                 <div className="flex flex-col gap-4 lg:min-w-[320px]">
-                  <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em] text-[#7a838f]">
+                  <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-[#486581]">
                     <SlidersHorizontal className="h-4 w-4" />
                     {t.filters}
                   </div>
                   <label className="flex-1">
-                    <span className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-[#7a838f]">{t.sortBy}</span>
+                    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.16em] text-[#486581]">{t.sortBy}</span>
                     <select
                       value={sortMode}
                       onChange={(event) => handleSortChange(event.target.value as SortMode)}
@@ -252,7 +252,7 @@ const ShopCatalogPage = () => {
                 </div>
               </div>
 
-              <div className="mt-5 flex flex-wrap gap-3">
+              <div className="mt-5 flex flex-wrap gap-2">
                 {shopCategories.map((category) => (
                   <button
                     key={category.key}
@@ -260,8 +260,8 @@ const ShopCatalogPage = () => {
                     onClick={() => handleCategoryChange(category.key)}
                     className={`rounded-full px-4 py-2 text-sm font-black transition ${
                       activeCategory === category.key
-                        ? 'bg-[#131921] text-white'
-                        : 'border border-[#d5d9d9] bg-[#f7fafa] text-[#384250]'
+                        ? 'bg-[#0b4eae] text-white'
+                        : 'border border-[#dce6f0] bg-[#f7fafd] text-[#486581]'
                     }`}
                   >
                     {category.label[language]}
@@ -272,7 +272,7 @@ const ShopCatalogPage = () => {
 
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {visibleProducts.map((product) => (
-                <article key={product.id} className="overflow-hidden rounded-[2rem] border border-[#d5d9d9] bg-white shadow-[0_18px_40px_rgba(0,0,0,0.08)]">
+                <article key={product.id} className="overflow-hidden rounded-xl border border-[#dce6f0] bg-white shadow-[0_4px_18px_rgba(15,55,95,0.05)] transition hover:-translate-y-0.5 hover:border-[#0b4eae]/40">
                   <div className="relative h-64 bg-cover bg-center" style={{ backgroundImage: `url(${product.image})` }}>
                     {!product.inStock ? (
                       <div className="absolute inset-x-4 bottom-4 rounded-xl bg-white/90 px-4 py-2 text-center text-sm font-black uppercase tracking-[0.12em] text-[#111827]">
@@ -288,31 +288,31 @@ const ShopCatalogPage = () => {
                         </span>
                       ))}
                     </div>
-                    <p className="mt-4 text-xs font-black uppercase tracking-[0.2em] text-[#b12704]">{product.category[language]}</p>
-                    <h2 className="mt-2 text-2xl font-black text-[#111827]">{product.title[language]}</h2>
-                    <p className="mt-3 min-h-[72px] text-sm leading-6 text-[#5d646d]">{product.subtitle[language]}</p>
+                    <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#0b4eae]">{product.category[language]}</p>
+                    <h2 className="mt-2 text-xl font-bold text-[#102a43]">{product.title[language]}</h2>
+                    <p className="mt-3 min-h-[72px] text-sm leading-6 text-[#486581]">{product.subtitle[language]}</p>
                     <div className="mt-5 flex items-end justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="text-2xl font-black text-[#111827]">{formatCurrency(product.price)}</p>
                           {product.compareAtPrice ? <span className="text-sm font-bold text-[#7a838f] line-through">{formatCurrency(product.compareAtPrice)}</span> : null}
                         </div>
-                        <p className="mt-1 text-sm font-bold text-[#b12704]">+{product.rewardPoints} pts</p>
+                        <p className="mt-1 text-sm font-bold text-[#b77900]">+{product.rewardPoints} pts</p>
                       </div>
-                      <span className="rounded-full bg-[#fff4cc] px-3 py-1 text-xs font-black text-[#7a3b00]">{product.stockLabel[language]}</span>
+                      <span className="rounded-md bg-[#fff8e7] px-3 py-1 text-xs font-bold text-[#a16207]">{product.stockLabel[language]}</span>
                     </div>
                     <div className="mt-5 flex flex-col gap-3">
                       <div className="flex gap-3">
                         <button
                           type="button"
                           onClick={() => handleBuyIntent(product.id, product.inStock)}
-                          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] disabled:cursor-not-allowed disabled:bg-[#e5e7eb] disabled:text-[#8b94a1]"
+                          className="kc-button kc-button-primary flex-1 disabled:cursor-not-allowed disabled:bg-[#f7fafd] disabled:text-[#6b7c93]"
                           disabled={!product.inStock}
                         >
                           <ShoppingBag className="h-4 w-4" />
                           {user ? t.addToCart : t.signInToBuy}
                         </button>
-                        <Link href={`/shop/${product.slug}`} className="inline-flex items-center justify-center rounded-full border border-[#d5d9d9] px-4 py-3 text-sm font-bold text-[#111827]">
+                        <Link href={`/shop/${product.slug}`} className="kc-button kc-button-secondary px-4">
                           {t.viewDetails}
                         </Link>
                       </div>
@@ -320,7 +320,7 @@ const ShopCatalogPage = () => {
                         type="button"
                         onClick={() => handleBuyIntent(product.id, product.inStock)}
                         disabled={!product.inStock}
-                        className="inline-flex items-center justify-center gap-2 rounded-full border border-[#131921] bg-[#131921] px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:border-[#4b5563] disabled:bg-[#4b5563]"
+                        className="kc-button kc-button-secondary w-full"
                       >
                         {t.buyNow}
                         <ArrowRight className="h-4 w-4" />
@@ -345,8 +345,8 @@ const ShopCatalogPage = () => {
                   key={pageNumber}
                   type="button"
                   onClick={() => setPage(pageNumber)}
-                  className={`h-11 w-11 rounded-xl text-sm font-black ${
-                    page === pageNumber ? 'bg-[#131921] text-white' : 'border border-[#d5d9d9] bg-white text-[#111827]'
+                    className={`h-10 w-10 rounded-md text-sm font-bold ${
+                    page === pageNumber ? 'bg-[#0b4eae] text-white' : 'border border-[#dce6f0] bg-white text-[#102a43]'
                   }`}
                 >
                   {pageNumber}
@@ -363,62 +363,62 @@ const ShopCatalogPage = () => {
             </div>
           </div>
 
-          <aside className="rounded-[2rem] border border-[#d5d9d9] bg-[#131921] p-5 text-white shadow-[0_18px_40px_rgba(0,0,0,0.16)] lg:sticky lg:top-28 lg:h-fit">
+          <aside className="rounded-xl border border-[#dce6f0] bg-white p-5 text-[#102a43] shadow-[0_4px_18px_rgba(15,55,95,0.05)] lg:sticky lg:top-28 lg:h-fit">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f3a847]">{t.cart}</p>
-                <h2 className="mt-2 text-2xl font-black">{cartItems.length} items</h2>
+                <p className="kc-eyebrow">{t.cart}</p>
+                <h2 className="mt-2 text-2xl font-bold text-[#102a43]">{cartItems.length} items</h2>
               </div>
-              <ShoppingBag className="h-7 w-7 text-[#ffd814]" />
+              <ShoppingBag className="h-6 w-6 text-[#0b4eae]" />
             </div>
 
             <div className="mt-6 space-y-4">
               {cartItems.length ? (
                 cartItems.map(({ product, quantity }) => (
-                  <div key={product.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div key={product.id} className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-black text-white">{product.title[language]}</p>
-                        <p className="mt-1 text-sm text-[#d5d9d9]">{formatCurrency(product.price)} each</p>
+                        <p className="font-bold text-[#102a43]">{product.title[language]}</p>
+                        <p className="mt-1 text-sm text-[#486581]">{formatCurrency(product.price)} each</p>
                       </div>
                       <button type="button" onClick={() => removeFromCart(product.id)} className="text-[#f3a847]">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                     <div className="mt-4 flex items-center justify-between">
-                      <div className="inline-flex items-center gap-2 rounded-full border border-white/10 px-2 py-1">
-                        <button type="button" onClick={() => updateCartQuantity(product.id, quantity - 1)} className="p-1 text-white">
+                      <div className="inline-flex items-center gap-2 rounded-md border border-[#dce6f0] bg-white px-2 py-1">
+                        <button type="button" onClick={() => updateCartQuantity(product.id, quantity - 1)} className="p-1 text-[#0b4eae]">
                           <Minus className="h-4 w-4" />
                         </button>
                         <span className="min-w-8 text-center text-sm font-black">{quantity}</span>
-                        <button type="button" onClick={() => updateCartQuantity(product.id, quantity + 1)} className="p-1 text-white">
+                        <button type="button" onClick={() => updateCartQuantity(product.id, quantity + 1)} className="p-1 text-[#0b4eae]">
                           <Plus className="h-4 w-4" />
                         </button>
                       </div>
-                      <p className="text-sm font-black text-[#ffd814]">+{product.rewardPoints * quantity} pts</p>
+                      <p className="text-sm font-bold text-[#b77900]">+{product.rewardPoints * quantity} pts</p>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-7 text-[#d5d9d9]">{t.empty}</div>
+                <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4 text-sm leading-7 text-[#486581]">{t.empty}</div>
               )}
             </div>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="mt-6 rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#d5d9d9]">Subtotal</span>
-                <span className="font-black text-white">{formatCurrency(subtotal)}</span>
+                <span className="text-[#486581]">Subtotal</span>
+                <span className="font-bold text-[#102a43]">{formatCurrency(subtotal)}</span>
               </div>
               <div className="mt-3 flex items-center justify-between text-sm">
-                <span className="text-[#d5d9d9]">{t.orderRewards}</span>
-                <span className="font-black text-[#ffd814]">+{rewardTotal} pts</span>
+                <span className="text-[#486581]">{t.orderRewards}</span>
+                <span className="font-bold text-[#b77900]">+{rewardTotal} pts</span>
               </div>
             </div>
 
             {!user ? (
               <div className="mt-6 space-y-3">
-                <p className="rounded-2xl border border-[#f3a847]/30 bg-[#fff4cc]/10 px-4 py-4 text-sm leading-6 text-[#f8e4a2]">{t.loginGate}</p>
-                <Link href="/signin?returnTo=/shop" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#ffd814] px-5 py-4 text-sm font-black text-[#111827]">
+                <p className="rounded-lg border border-[#0b4eae]/20 bg-[#eaf3ff] px-4 py-4 text-sm leading-6 text-[#486581]">{t.loginGate}</p>
+                <Link href="/signin?returnTo=/shop" className="kc-button kc-button-primary w-full">
                   <Lock className="h-4 w-4" />
                   {t.signInToBuy}
                 </Link>
@@ -428,7 +428,7 @@ const ShopCatalogPage = () => {
                 type="button"
                 disabled={!cartItems.length || isCheckingOut}
                 onClick={handleCheckout}
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#ffd814] px-5 py-4 text-sm font-black text-[#111827] disabled:cursor-not-allowed disabled:bg-[#55606f] disabled:text-[#d5d9d9]"
+                className="kc-button kc-button-primary mt-6 w-full disabled:cursor-not-allowed disabled:bg-[#f7fafd] disabled:text-[#6b7c93]"
               >
                 {isCheckingOut ? 'Redirecting to Razorpay...' : t.checkout}
                 <ArrowRight className="h-4 w-4" />
@@ -436,10 +436,10 @@ const ShopCatalogPage = () => {
             )}
 
             {orders.length ? (
-              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#f3a847]">{t.recentOrder}</p>
-                <p className="mt-2 font-black text-white">{orders[0].items[0]?.title}</p>
-                <p className="mt-1 text-sm text-[#d5d9d9]">{formatCurrency(orders[0].total)} +{orders[0].rewardPoints} pts</p>
+              <div className="mt-6 rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
+                <p className="kc-eyebrow">{t.recentOrder}</p>
+                <p className="mt-2 font-bold text-[#102a43]">{orders[0].items[0]?.title}</p>
+                <p className="mt-1 text-sm text-[#486581]">{formatCurrency(orders[0].total)} +{orders[0].rewardPoints} pts</p>
               </div>
             ) : null}
           </aside>

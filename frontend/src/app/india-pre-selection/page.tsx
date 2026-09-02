@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Globe2, Mic2, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import { festival2026 } from '@/lib/festival2026';
 
 export const metadata = {
   title: 'K-CUBE India Pre-Selection | ITAEWON World Music Spirit Festival 2026',
@@ -61,7 +62,7 @@ const expectations = [
 
 export default function IndiaPreSelectionPage() {
   return (
-    <main className="min-h-screen bg-[#e7e7e7] text-[#111827]">
+    <main className="kc-india-page min-h-screen bg-[#eef4f8] text-[#102a43]">
       <section className="border-b border-[#d5d9d9] bg-[linear-gradient(180deg,#111827_0%,#0b1220_100%)] px-3 py-6 text-white sm:px-4 sm:py-8 lg:px-10 lg:py-12">
         <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <div className="rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,#111827_0%,#0b1220_100%)] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.25)] sm:p-7 lg:p-10">
@@ -81,19 +82,19 @@ export default function IndiaPreSelectionPage() {
             <div className="mt-6 rounded-[24px] border border-[#f3a847]/50 bg-[#f3a847]/10 p-4 sm:p-5">
               <p className="text-[10px] font-black uppercase tracking-[0.26em] text-[#f3a847]">Main announcement</p>
               <p className="mt-3 text-sm leading-7 text-[#f8fafc] sm:text-base">
-                On <span className="font-black text-[#ffd814]">30 August 2026</span>, K-CUBE will conduct the <span className="font-black text-[#ffd814]">1st audition</span> through this website on behalf of the Indian organiser of the ITAEWON World Music Spirit Festival 2026. We have been specifically asked to select participants from India for this Music Spirit journey.
+                The <span className="font-black text-[#0b4eae]">India Pre-Selection</span> stage took place on <span className="font-black text-[#0b4eae]">{festival2026.indiaPreSelection.date}</span> and is now complete. This page remains available as the official overview and historical reference for the ITAEWON World Music Spirit Festival 2026.
               </p>
               <p className="mt-3 text-sm leading-7 text-[#d5d9d9]">
-                All applications for this page are submitted through the internal Apply page inside K-CUBE. No email submission is needed.
+                New applications for this completed stage are closed. Check the announcement page for the next official round.
               </p>
             </div>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
-                href="/india-pre-selection/apply"
+                href="/india-pre-selection/announcement"
                 className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
               >
-                Open apply form
+                View official updates
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -126,7 +127,7 @@ export default function IndiaPreSelectionPage() {
               <div className="rounded-[24px] border border-[#f3a847]/30 bg-[#f3a847]/10 p-4 sm:p-5">
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-[#f3a847]">Submission note</p>
                 <p className="mt-3 text-sm leading-7 text-[#f8fafc]">
-                  Applications are submitted through the Apply page inside K-CUBE, and points are added after the first successful submission.
+                Historical applications were submitted through the Apply page inside K-CUBE. The completed stage is now closed to new submissions.
                 </p>
               </div>
             </div>
@@ -260,21 +261,15 @@ export default function IndiaPreSelectionPage() {
             </div>
           </article>
 
-          <article className="rounded-[28px] border border-[#d5d9d9] bg-[#111827] p-5 text-white shadow-sm sm:p-6 lg:p-8">
+          <article className="rounded-[28px] border border-[#d8e1ee] bg-white p-5 text-[#0f172a] shadow-sm sm:p-6 lg:p-8">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f3a847]">Timeline</p>
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">Application and festival schedule</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#d5d9d9]">
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#64748b]">
               The event path is shown in one sequence: India pre-selection, the official rounds, and the October festival in Seoul.
             </p>
 
             <div className="mt-6 space-y-4">
               {[
-                {
-                  title: 'India pre-selection deadline',
-                  date: 'August 30, 2026',
-                  note: 'Submit your application and performance video by this date.',
-                  accent: true,
-                },
                 {
                   title: 'Official second round',
                   date: 'September 30, 2026',
@@ -288,11 +283,11 @@ export default function IndiaPreSelectionPage() {
               ].map((item) => (
                 <div
                   key={item.title}
-                  className={`rounded-[22px] border p-5 ${item.accent ? 'border-[#f3a847]/60 bg-[#151d2d]' : 'border-white/10 bg-white/[0.03]'}`}
+                  className="rounded-[22px] border border-[#d8e1ee] bg-[#f8fbff] p-5"
                 >
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#f3a847]">{item.title}</p>
-                  <p className="mt-3 text-2xl font-black leading-tight text-white">{item.date}</p>
-                  <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">{item.note}</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#2457d6]">{item.title}</p>
+                  <p className="mt-3 text-2xl font-black leading-tight text-[#0f172a]">{item.date}</p>
+                  <p className="mt-2 text-sm leading-7 text-[#64748b]">{item.note}</p>
                 </div>
               ))}
             </div>
@@ -308,7 +303,7 @@ export default function IndiaPreSelectionPage() {
               <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">What to send</h2>
             </div>
             <p className="max-w-3xl text-sm leading-7 text-[#565959]">
-              Submit your application through the Apply page. The festival team requests one singing video plus the information below.
+              The completed stage requested one singing video plus the information below. This section remains as a historical reference for applicants and the festival workflow.
             </p>
           </div>
 
@@ -387,7 +382,7 @@ export default function IndiaPreSelectionPage() {
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">Need help</p>
             <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Contact and next steps</h2>
             <p className="mt-4 text-sm leading-7 text-[#565959]">
-              If you are ready to participate, submit your application through the Apply page and keep your performance video ready. For additional K-CUBE India coordination, the team can follow up from the saved record below.
+                The application window for this stage is closed. For additional K-CUBE India coordination, the team can follow up from the saved record below.
             </p>
 
             <div className="mt-5 grid gap-3">

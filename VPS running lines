@@ -10,7 +10,7 @@ docker compose -f docker-compose.prod.yml up -d --build frontend backend nginx
 verify:
 
 docker compose -f docker-compose.prod.yml ps
-curl -k https://k-cube.store+
+curl -k https://k-cube.store
 
 
 
@@ -19,3 +19,11 @@ OR
 Use this one-liner on the server :
 
 cd /opt/K-Cube/K-Cube && git pull origin main && docker compose -f docker-compose.prod.yml up -d --build frontend backend nginx && curl -k https://k-cube.store
+
+
+cd /opt/K-Cube/K-Cube && git pull origin main && docker compose -f docker-compose.prod.yml up -d --build frontend backend nginx && curl -k -I https://k-cube.store
+
+
+everytime check
+
+nano ./backend/.env

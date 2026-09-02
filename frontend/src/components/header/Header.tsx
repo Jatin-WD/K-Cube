@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BriefcaseBusiness, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
+import { BriefcaseBusiness, Camera, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import { copy, navItems } from '@/lib/kcubeContent';
 import { useAppStore, type Language } from '@/store/useAppStore';
@@ -46,36 +46,35 @@ const Header = () => {
     clearMenuTimers();
     setActiveMenuKey(null);
     setLanguageMenuOpen(false);
+    setMobileMenuOpen(false);
   };
 
-  useEffect(
-    () => {
-      const handlePointerDown = (event: MouseEvent | PointerEvent) => {
-        if (!headerRef.current) return;
-        if (!headerRef.current.contains(event.target as Node)) {
-          setActiveMenuKey(null);
-          setLanguageMenuOpen(false);
-        }
-      };
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent | PointerEvent) => {
+      if (!headerRef.current) return;
+      if (!headerRef.current.contains(event.target as Node)) {
+        setActiveMenuKey(null);
+        setLanguageMenuOpen(false);
+      }
+    };
 
-      const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-          setActiveMenuKey(null);
-          setLanguageMenuOpen(false);
-        }
-      };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveMenuKey(null);
+        setLanguageMenuOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
 
-      document.addEventListener('pointerdown', handlePointerDown);
-      document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
 
-      return () => {
-        clearMenuTimers();
-        document.removeEventListener('pointerdown', handlePointerDown);
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-    },
-    [],
-  );
+    return () => {
+      clearMenuTimers();
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const openMenu = (key: string) => {
     clearMenuTimers();
@@ -103,36 +102,36 @@ const Header = () => {
   }
 
   return (
-    <header ref={headerRef} className="relative z-50 border-b border-[#232f3e] bg-[#131921] text-white shadow-[0_10px_24px_rgba(0,0,0,0.24)] md:sticky md:top-0">
-      <div className="hidden border-b border-[#232f3e] bg-[#131921] sm:block">
-        <div className="mx-auto flex max-w-[1760px] items-center gap-4 overflow-x-auto px-4 py-1.5 text-[11px] text-[#d5d9d9] sm:justify-end sm:text-xs lg:px-10">
-          <Link href="/apply-for-manpower" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[#f3a847]">
+    <header ref={headerRef} className="relative z-50 border-b border-[#d8e1ee] bg-white/90 text-[#0f172a] shadow-[0_14px_40px_rgba(15,23,42,0.08)] backdrop-blur md:sticky md:top-0">
+      <div className="hidden border-b border-[#e6edf6] bg-[#f4f7fb] sm:block">
+        <div className="mx-auto flex max-w-[1320px] items-center gap-4 overflow-x-auto px-4 py-1.5 text-[11px] text-[#5b6b7f] sm:justify-end sm:text-xs lg:px-8">
+          <Link href="/apply-for-manpower" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[#2457d6]">
             <BriefcaseBusiness className="h-4 w-4" />
             {t.manpower}
           </Link>
-          <Link href="/about#contact" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[#f3a847]">
+          <Link href="/about#contact" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[#2457d6]">
             <Phone className="h-4 w-4" />
             {t.contact}
           </Link>
-          <Link href="/admin" className="shrink-0 font-bold text-[#f3a847] transition hover:text-white">
+          <Link href="/admin" className="shrink-0 font-bold text-[#2457d6] transition hover:text-[#0f172a]">
             {t.admin}
           </Link>
         </div>
       </div>
 
-      <div className="border-b border-[#232f3e] bg-[#131921]">
-        <div className="mx-auto grid max-w-[1760px] grid-cols-[1fr_auto] gap-2.5 px-3 py-2.5 sm:px-4 md:grid-cols-[210px_minmax(260px,1fr)] xl:grid-cols-[250px_minmax(360px,1fr)_auto] xl:items-center xl:px-10">
+      <div className="border-b border-[#e6edf6] bg-white/95">
+        <div className="mx-auto grid max-w-[1320px] grid-cols-[1fr_auto] gap-2.5 px-3 py-2.5 sm:px-4 md:grid-cols-[210px_minmax(260px,1fr)] xl:grid-cols-[250px_minmax(360px,1fr)_auto] xl:items-center xl:px-8">
           <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#f3a847] text-[15px] font-black text-[#111827] sm:h-9 sm:w-9">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2457d6] text-[15px] font-black text-white shadow-[0_10px_20px_rgba(36,87,214,0.22)] sm:h-9 sm:w-9">
               K
             </span>
             <span className="min-w-0">
-              <span className="block text-[17px] font-black leading-none tracking-tight text-white sm:text-[20px]">K-CUBE</span>
-              <span className="block text-[8px] font-bold uppercase tracking-[0.18em] text-[#f3a847] sm:text-[10px] sm:tracking-[0.3em]">Korean Ecosystem</span>
+              <span className="block text-[17px] font-black leading-none tracking-tight text-[#0f172a] sm:text-[20px]">K-CUBE</span>
+              <span className="block text-[8px] font-bold uppercase tracking-[0.18em] text-[#2457d6] sm:text-[10px] sm:tracking-[0.3em]">Korean Ecosystem</span>
             </span>
           </Link>
 
-          <form className="order-3 col-span-full flex min-h-[38px] overflow-hidden rounded-sm border-2 border-transparent bg-white text-[#101012] shadow-[0_8px_18px_rgba(0,0,0,0.2)] focus-within:border-[#f3a847] md:order-none md:col-span-1 md:min-h-[40px]">
+          <form className="order-3 col-span-full flex min-h-[38px] overflow-hidden rounded-full border border-[#d6dfeb] bg-[#f8fbff] text-[#101012] shadow-[0_8px_18px_rgba(15,23,42,0.06)] focus-within:border-[#2457d6] md:order-none md:col-span-1 md:min-h-[40px]">
             <label className="sr-only" htmlFor="header-search">
               Search K-CUBE
             </label>
@@ -144,7 +143,7 @@ const Header = () => {
             <button
               type="submit"
               aria-label="Search"
-              className="flex w-11 items-center justify-center bg-[#f3a847] text-[#111827] transition hover:bg-[#ffa41c] sm:w-12"
+              className="flex w-11 items-center justify-center bg-[#2457d6] text-white transition hover:bg-[#1f4bb8] sm:w-12"
             >
               <Search className="h-5 w-5" />
             </button>
@@ -156,7 +155,7 @@ const Header = () => {
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[#232f3e] text-white transition hover:bg-[#37475a] md:hidden"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef3f9] text-[#0f172a] transition hover:bg-[#dbe7f5] md:hidden"
             >
               {mobileMenuOpen ? <X className="h-[18px] w-[18px]" /> : <Menu className="h-[18px] w-[18px]" />}
             </button>
@@ -170,7 +169,7 @@ const Header = () => {
                 aria-haspopup="menu"
                 aria-expanded={languageMenuOpen}
                 onClick={() => setLanguageMenuOpen((open) => !open)}
-                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm border border-[#f3a847]/50 bg-[#232f3e] px-2.5 text-[11px] font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:h-9 xl:text-xs"
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-[#d6dfeb] bg-white px-2.5 text-[11px] font-black text-[#2457d6] transition hover:border-[#2457d6] hover:bg-[#f4f7fb] xl:h-9 xl:text-xs"
               >
                 <Languages className="h-3.5 w-3.5" />
                 {languageLabels[language]}
@@ -181,30 +180,30 @@ const Header = () => {
                   languageMenuOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
                 }`}
               >
-                <div className="rounded-sm border border-[#d5d9d9] bg-white p-2 shadow-2xl">
-                {(['en', 'ko', 'hi'] as Language[]).map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => {
-                      setLanguage(option);
-                      setLanguageMenuOpen(false);
-                    }}
-                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-bold transition ${
-                      language === option ? 'bg-[#ffd814] text-[#111827]' : 'text-[#111827] hover:bg-[#f7fafa]'
-                    }`}
-                  >
-                    <Globe2 className="h-4 w-4" />
-                    {languageLabels[option]}
-                  </button>
-                ))}
+                <div className="rounded-2xl border border-[#d6dfeb] bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
+                  {(['en', 'ko', 'hi'] as Language[]).map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => {
+                        setLanguage(option);
+                        setLanguageMenuOpen(false);
+                      }}
+                      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-bold transition ${
+                        language === option ? 'bg-[#2457d6] text-white' : 'text-[#111827] hover:bg-[#f4f7fb]'
+                      }`}
+                    >
+                      <Globe2 className="h-4 w-4" />
+                      {languageLabels[option]}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
             <Link
               href="/trip-to-korea"
-              className="hidden h-8 shrink-0 items-center gap-2 rounded-sm bg-[#ffd814] px-3 text-[11px] font-black text-[#111827] transition hover:bg-[#f7ca00] sm:inline-flex xl:h-9 xl:px-3.5 xl:text-xs"
+              className="hidden h-8 shrink-0 items-center gap-2 rounded-full bg-[#2457d6] px-3 text-[11px] font-black text-white transition hover:bg-[#1f4bb8] sm:inline-flex xl:h-9 xl:px-3.5 xl:text-xs"
             >
               <Plane className="h-3.5 w-3.5" />
               {t.koreaTrip}
@@ -212,26 +211,26 @@ const Header = () => {
             {user ? (
               <div className="group/account relative">
                 <button type="button" aria-haspopup="menu" className="flex shrink-0 items-center gap-2 text-[11px] leading-tight xl:text-xs">
-                  <User className="h-[18px] w-[18px] text-[#c8d2e1]" />
+                  <User className="h-[18px] w-[18px] text-[#2457d6]" />
                   <span>
-                    <span className="block text-[#b9c5d6]">{t.hello}</span>
-                    <span className="block text-sm font-bold text-white xl:text-[15px]">
+                    <span className="block text-[#5b6b7f]">{t.hello}</span>
+                    <span className="block text-sm font-bold text-[#0f172a] xl:text-[15px]">
                       {user.fullName} <ChevronDown className="inline h-3.5 w-3.5" />
                     </span>
                   </span>
                 </button>
                 <div className="invisible absolute right-0 top-full z-20 w-44 pt-2 opacity-0 transition group-hover/account:visible group-hover/account:opacity-100 group-focus-within/account:visible group-focus-within/account:opacity-100">
-                  <div className="rounded-sm border border-[#d5d9d9] bg-white p-2 shadow-2xl">
-                    <Link href="/rewards" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
+                  <div className="rounded-2xl border border-[#d6dfeb] bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
+                    <Link href="/rewards" className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
                       {t.pointsWallet}
                     </Link>
-                    <Link href="/dashboard" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
+                    <Link href="/dashboard" className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
                       Dashboard
                     </Link>
-                    <Link href="/profile" className="block rounded-sm px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f7fafa]">
+                    <Link href="/profile" className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
                       My profile
                     </Link>
-                    <button type="button" onClick={signOut} className="block w-full rounded-sm px-3 py-2 text-left text-sm font-bold text-[#b12704] hover:bg-[#f7fafa]">
+                    <button type="button" onClick={signOut} className="block w-full rounded-lg px-3 py-2 text-left text-sm font-bold text-[#b12704] hover:bg-[#f4f7fb]">
                       {t.signOut}
                     </button>
                   </div>
@@ -239,10 +238,10 @@ const Header = () => {
               </div>
             ) : (
               <div className="hidden items-center gap-2 sm:flex">
-                <Link href="/signin" className="shrink-0 rounded-sm border border-white/30 px-3 py-1.5 text-xs font-bold text-white hover:border-[#f3a847] hover:text-[#f3a847] xl:text-[13px]">
+                <Link href="/signin" className="shrink-0 rounded-full border border-[#d6dfeb] px-3 py-1.5 text-xs font-bold text-[#0f172a] hover:border-[#2457d6] hover:text-[#2457d6] xl:text-[13px]">
                   {t.signIn}
                 </Link>
-                <Link href="/signup" className="shrink-0 rounded-sm bg-[#ffd814] px-3 py-1.5 text-xs font-black text-[#111827] hover:bg-[#f7ca00] xl:text-[13px]">
+                <Link href="/signup" className="shrink-0 rounded-full bg-[#2457d6] px-3 py-1.5 text-xs font-black text-white hover:bg-[#1f4bb8] xl:text-[13px]">
                   {t.signUp}
                 </Link>
               </div>
@@ -252,20 +251,20 @@ const Header = () => {
       </div>
 
       {mobileMenuOpen ? (
-        <div className="border-b border-[#232f3e] bg-[#232f3e] px-3 py-3 md:hidden">
+        <div className="border-b border-[#d8e1ee] bg-white px-3 py-3 md:hidden">
           <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-2">
               <Link
                 href="/signin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center rounded-sm border border-white/20 px-3 py-2 text-sm font-bold text-white"
+                className="inline-flex items-center justify-center rounded-full border border-[#d6dfeb] px-3 py-2 text-sm font-bold text-[#0f172a]"
               >
                 {t.signIn}
               </Link>
               <Link
                 href="/signup"
                 onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center rounded-sm bg-[#ffd814] px-3 py-2 text-sm font-black text-[#111827]"
+                className="inline-flex items-center justify-center rounded-full bg-[#2457d6] px-3 py-2 text-sm font-black text-white"
               >
                 {t.signUp}
               </Link>
@@ -273,7 +272,7 @@ const Header = () => {
             <Link
               href="/trip-to-korea"
               onClick={() => setMobileMenuOpen(false)}
-              className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-3 py-3 text-sm font-black text-[#111827]"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2457d6] px-3 py-3 text-sm font-black text-white"
             >
               <Plane className="h-4 w-4" />
               {t.koreaTrip}
@@ -282,34 +281,34 @@ const Header = () => {
               <Link
                 href="/study-abroad"
                 onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center rounded-sm border border-[#ffd814] bg-[#ffd814] px-3 py-2 text-sm font-black text-[#111827] shadow-sm transition hover:bg-[#f7ca00]"
+                className="inline-flex items-center justify-center rounded-full border border-[#d6dfeb] bg-[#f8fbff] px-3 py-2 text-sm font-black text-[#0f172a] shadow-sm transition hover:border-[#2457d6] hover:text-[#2457d6]"
               >
                 Study Abroad
               </Link>
               <Link
                 href="/india-pre-selection"
                 onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center rounded-sm border border-[#f3a847]/70 bg-[#f3a847]/12 px-3 py-2 text-sm font-black text-[#f3a847]"
+                className="inline-flex items-center justify-center rounded-full border border-[#2457d6]/20 bg-[#2457d6]/8 px-3 py-2 text-sm font-black text-[#2457d6]"
               >
                 India Pre-Selection
               </Link>
             </div>
-            <div className="grid gap-1 rounded-sm border border-white/10 bg-[#131921] p-2">
+            <div className="grid gap-1 rounded-2xl border border-[#d6dfeb] bg-[#f8fbff] p-2">
               {navItems.map((item) => (
-                <div key={item.label.en} className="border-b border-white/10 last:border-b-0">
+                <div key={item.label.en} className="border-b border-[#e6edf6] last:border-b-0">
                   <Link
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between px-2 py-3 text-sm font-black text-white"
+                    className="flex items-center justify-between px-2 py-3 text-sm font-black text-[#0f172a]"
                   >
                     {item.label[language]}
-                    {item.dropdown ? <ChevronDown className="h-4 w-4 text-[#8792a3]" /> : null}
+                    {item.dropdown ? <ChevronDown className="h-4 w-4 text-[#7a8797]" /> : null}
                   </Link>
                   {item.dropdown ? (
                     <div className="grid gap-3 px-2 pb-2">
                       {item.dropdown.map((section) => (
-                        <div key={section.title.en} className="grid gap-2 rounded-sm border border-white/10 bg-white/[0.03] p-2">
-                          <p className="px-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#f3a847]">
+                        <div key={section.title.en} className="grid gap-2 rounded-2xl border border-[#e6edf6] bg-white p-2">
+                          <p className="px-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#2457d6]">
                             {section.title[language]}
                           </p>
                           {section.links.slice(0, 3).map((link) => (
@@ -317,7 +316,7 @@ const Header = () => {
                               <Link
                                 href={link.href}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="rounded-sm bg-white/[0.04] px-3 py-2 text-xs font-semibold text-[#d5d9d9]"
+                                className="rounded-lg bg-[#f8fbff] px-3 py-2 text-xs font-semibold text-[#4b5563]"
                               >
                                 {link.label[language]}
                               </Link>
@@ -328,7 +327,7 @@ const Header = () => {
                                       key={`${section.title.en}-${link.label.en}-${child.label.en}`}
                                       href={child.href}
                                       onClick={() => setMobileMenuOpen(false)}
-                                      className="rounded-sm border border-white/10 bg-white/[0.02] px-3 py-2 text-[11px] font-medium text-[#b9c5d6]"
+                                      className="rounded-lg border border-[#e6edf6] bg-white px-3 py-2 text-[11px] font-medium text-[#617085]"
                                     >
                                       {child.label[language]}
                                     </Link>
@@ -348,7 +347,7 @@ const Header = () => {
               <Link
                 href="/apply-for-manpower"
                 onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/10 bg-[#131921] px-3 py-2 text-xs font-bold text-[#d5d9d9]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d6dfeb] bg-white px-3 py-2 text-xs font-bold text-[#4b5563]"
               >
                 <BriefcaseBusiness className="h-4 w-4" />
                 {t.manpower}
@@ -356,7 +355,7 @@ const Header = () => {
               <Link
                 href="/about#contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/10 bg-[#131921] px-3 py-2 text-xs font-bold text-[#d5d9d9]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d6dfeb] bg-white px-3 py-2 text-xs font-bold text-[#4b5563]"
               >
                 <Phone className="h-4 w-4" />
                 {t.contact}
@@ -368,11 +367,11 @@ const Header = () => {
 
       <nav
         aria-label="Primary navigation"
-        className="group/nav relative hidden border-b border-[#232f3e] bg-[#232f3e] md:block"
+        className="group/nav relative hidden border-b border-[#e6edf6] bg-[#f8fbff] md:block"
         onMouseEnter={clearMenuTimers}
         onMouseLeave={scheduleCloseMenus}
       >
-        <div className="mx-auto flex max-w-[1760px] items-center gap-2 px-3 sm:px-4 lg:px-10">
+        <div className="mx-auto flex max-w-[1320px] items-center gap-2 px-3 sm:px-4 lg:px-8">
           <div className="flex min-h-[34px] flex-1 items-center gap-0.5 overflow-visible px-0 lg:min-h-[40px]">
             {navItems.map((item) => {
               const isActive = activeMenuKey === item.label.en;
@@ -395,12 +394,12 @@ const Header = () => {
                     }}
                     className={`flex h-[34px] items-center gap-1 whitespace-nowrap px-2 text-[11px] font-bold transition focus-visible:outline-none sm:h-[38px] sm:px-2.5 sm:text-xs lg:h-[40px] lg:px-3 lg:text-sm ${
                       isActive
-                        ? 'bg-white/5 text-[#f3a847] outline outline-1 outline-white/30'
-                        : 'text-white hover:outline hover:outline-1 hover:outline-white'
+                        ? 'relative bg-white text-[#2457d6] outline outline-1 outline-[#2457d6]/25 after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:bg-[#0b4eae]'
+                        : 'text-[#0f172a] hover:bg-white hover:text-[#2457d6] hover:outline hover:outline-1 hover:outline-[#d6dfeb]'
                     }`}
                   >
                     {item.label[language]}
-                    <ChevronDown className={`h-3.5 w-3.5 transition ${isActive ? 'text-[#f3a847]' : 'text-[#8792a3]'}`} />
+                    <ChevronDown className={`h-3.5 w-3.5 transition ${isActive ? 'text-[#2457d6]' : 'text-[#7a8797]'}`} />
                   </button>
                 );
               }
@@ -410,7 +409,7 @@ const Header = () => {
                   key={item.label.en}
                   href={item.href}
                   onClick={closeAllMenus}
-                  className="flex h-[34px] items-center gap-1 whitespace-nowrap px-2 text-[11px] font-bold text-white transition hover:outline hover:outline-1 hover:outline-white focus-visible:text-[#f3a847] focus-visible:outline-none sm:h-[38px] sm:px-2.5 sm:text-xs lg:h-[40px] lg:px-3 lg:text-sm"
+                  className="flex h-[34px] items-center gap-1 whitespace-nowrap px-2 text-[11px] font-bold text-[#0f172a] transition hover:bg-white hover:outline hover:outline-1 hover:outline-[#d6dfeb] focus-visible:text-[#2457d6] focus-visible:outline-none sm:h-[38px] sm:px-2.5 sm:text-xs lg:h-[40px] lg:px-3 lg:text-sm"
                 >
                   {item.label[language]}
                 </Link>
@@ -420,17 +419,21 @@ const Header = () => {
           <Link
             href="/study-abroad"
             onClick={closeAllMenus}
-            className="hidden shrink-0 items-center gap-1.5 rounded-sm border border-[#ffd814] bg-[#ffd814] px-2.5 py-1 text-[11px] font-black text-[#111827] shadow-sm transition hover:bg-[#f7ca00] xl:inline-flex xl:px-3 xl:text-xs"
+            className="hidden shrink-0 items-center gap-1.5 rounded-full border border-[#d6dfeb] bg-white px-2.5 py-1 text-[11px] font-black text-[#0f172a] shadow-sm transition hover:border-[#2457d6] hover:text-[#2457d6] xl:inline-flex xl:px-3 xl:text-xs"
           >
             Study Abroad
           </Link>
-          <Link
-            href="/india-pre-selection"
+          <a
+            href="https://www.instagram.com/k_cube_store/"
+            target="_blank"
+            rel="noreferrer"
             onClick={closeAllMenus}
-            className="hidden shrink-0 items-center gap-1.5 rounded-sm border border-[#f3a847]/60 bg-[#f3a847]/12 px-2.5 py-1 text-[11px] font-black text-[#f3a847] transition hover:bg-[#f3a847] hover:text-[#111827] xl:inline-flex xl:px-3 xl:text-xs"
+            aria-label="K-CUBE on Instagram"
+            className="hidden shrink-0 items-center gap-1.5 rounded-full border border-[#dd2a7b]/35 bg-[linear-gradient(135deg,#f58529,#dd2a7b_45%,#8134af_75%,#515bd4)] px-2.5 py-1 text-[11px] font-black text-white shadow-sm transition hover:brightness-105 xl:inline-flex xl:px-3 xl:text-xs"
           >
-            India Pre-Selection
-          </Link>
+            <Camera className="h-3.5 w-3.5" />
+            Instagram
+          </a>
           {activeMenu?.dropdown ? (
             <div
               className="absolute inset-x-0 top-full z-[130] pt-0"

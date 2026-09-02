@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight, BellRing, Info, ShieldAlert } from 'lucide-react';
+import { festival2026 } from '@/lib/festival2026';
 
 export const metadata = {
   title: 'Announcement | ITAEWON World Music Spirit Festival 2026',
@@ -8,20 +9,20 @@ export const metadata = {
 
 const noticeCards = [
   {
-    title: 'Application deadline',
-    tag: 'Deadline',
-    text: 'India pre-selection closes August 30, 2026.',
+    title: 'Application status',
+    tag: 'Status',
+    text: 'The India pre-selection application window is closed. Check this page for official updates.',
     accent: true,
   },
   {
-    title: 'Application status',
-    tag: 'Status',
-    text: 'Applications are currently open.',
+    title: 'Next official stage',
+    tag: 'Upcoming',
+    text: `The ${festival2026.officialSecondRound.title} is scheduled for ${festival2026.officialSecondRound.date}.`,
   },
   {
     title: 'Process note',
     tag: 'Action item',
-    text: 'Applicants should sign in to Apply and complete the submission inside K-CUBE.',
+    text: 'The India Pre-Selection application window is closed. Existing submission records remain preserved for review.',
   },
   {
     title: 'Notice board purpose',
@@ -32,25 +33,20 @@ const noticeCards = [
 
 const dateRows = [
   {
-    label: 'Current',
-    value: 'K-CUBE India Pre-Selection',
-    note: 'India pre-selection application deadline.',
+    label: 'Completed',
+    value: festival2026.indiaPreSelection.title,
+    note: festival2026.indiaPreSelection.date,
     accent: true,
   },
   {
-    label: 'Next',
-    value: 'August 30, 2026',
-    note: 'KR Official 1st Round.',
-  },
-  {
     label: 'Upcoming',
-    value: 'September 30, 2026',
-    note: 'KR Official 2nd Round.',
+    value: festival2026.officialSecondRound.date,
+    note: festival2026.officialSecondRound.title,
   },
   {
     label: 'Festival',
-    value: 'October 4-6, 2026',
-    note: 'Itaewon World Music Spirit Festival. Seoul, South Korea.',
+    value: festival2026.mainFestival.date,
+    note: `${festival2026.mainFestival.title}. ${festival2026.mainFestival.location}.`,
   },
 ];
 
@@ -59,7 +55,7 @@ export default function AnnouncementPage() {
     <main className="min-h-screen bg-[#f4f1ea] text-[#111827]">
       <section className="px-3 py-7 sm:px-4 sm:py-9 lg:px-10 lg:py-11">
         <div className="mx-auto grid max-w-[1760px] gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-          <article className="overflow-hidden rounded-[32px] border border-[#d5d9d9] bg-[linear-gradient(180deg,#191f2c_0%,#0b1120_100%)] p-6 text-white shadow-[0_30px_80px_rgba(0,0,0,0.24)] sm:p-7 lg:p-8">
+          <article className="overflow-hidden rounded-[32px] border border-[#d8e1ee] bg-white p-6 text-[#0f172a] shadow-[0_24px_60px_rgba(15,23,42,0.12)] sm:p-7 lg:p-8">
             <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-[#f3a847]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.26em] text-[#f3a847]">
               <BellRing className="h-4 w-4" />
               Live notice board
@@ -68,21 +64,21 @@ export default function AnnouncementPage() {
             <h1 className="mt-5 max-w-3xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               ITAEWON World Music Spirit 2026 - Announcement
             </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#d5d9d9] sm:text-base sm:leading-8">
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#64748b] sm:text-base sm:leading-8">
               Check the latest official notices, deadlines, process updates, and applicant instructions.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
-                href="/india-pre-selection/apply"
+                href="/india-pre-selection/information"
                 className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
               >
-                Apply now
+                View festival information
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/india-pre-selection/information"
-                className="inline-flex items-center justify-center gap-2 rounded-sm border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-bold text-white transition hover:border-[#ffd814] hover:text-[#ffd814]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d8e1ee] bg-[#f8fbff] px-5 py-3 text-sm font-bold text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6]"
               >
                 Back to information
                 <ArrowRight className="h-4 w-4" />
@@ -90,16 +86,16 @@ export default function AnnouncementPage() {
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2 md:items-stretch">
-              <article className="flex h-full flex-col rounded-[24px] border border-[#f3a847]/60 bg-[linear-gradient(180deg,#151d2d_0%,#101826_100%)] p-5 shadow-[0_18px_45px_rgba(0,0,0,0.18)]">
+              <article className="flex h-full flex-col rounded-[24px] border border-[#f3a847]/60 bg-[#fff8df] p-5 shadow-sm">
                 <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#ffd814]">Application deadline</p>
-                <p className="mt-3 text-lg font-black text-white">K-CUBE India Pre-Selection</p>
-                <p className="mt-2 text-[2rem] font-black leading-none tracking-tight text-[#ffd814] sm:text-[2.25rem]">August 30, 2026</p>
+                <p className="mt-3 text-lg font-black text-[#0f172a]">K-CUBE India Pre-Selection</p>
+                <p className="mt-2 text-[2rem] font-black leading-none tracking-tight text-[#ffd814] sm:text-[2.25rem]">Applications closed</p>
               </article>
-              <article className="flex h-full flex-col rounded-[24px] border border-white/10 bg-white/[0.04] p-5">
+              <article className="flex h-full flex-col rounded-[24px] border border-[#d8e1ee] bg-[#f8fbff] p-5">
                 <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f3a847]">Current status</p>
-                <p className="mt-3 text-lg font-black text-white">Application open</p>
-                <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">
-                  Sign in on Apply to unlock the form and keep the submission inside your K-CUBE account.
+                <p className="mt-3 text-lg font-black text-[#0f172a]">Application status</p>
+                <p className="mt-2 text-sm leading-7 text-[#64748b]">
+                  New applications are closed for the completed India Pre-Selection stage. Follow this board for the next official update.
                 </p>
               </article>
             </div>
@@ -169,9 +165,9 @@ export default function AnnouncementPage() {
 
           <div className="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
             <div className="space-y-4">
-              {noticeCards.map((notice) => (
+              {noticeCards.map((notice, index) => (
                 <article
-                  key={notice.title}
+                    key={`${notice.title}-${notice.tag}-${index}`}
                   className={`rounded-[24px] border p-5 ${notice.accent ? 'border-[#f3a847]/60 bg-[#fff8df]' : 'border-[#d5d9d9] bg-[#f7fafa]'}`}
                 >
                   <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#b12704]">{notice.tag}</p>
@@ -199,17 +195,17 @@ export default function AnnouncementPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="rounded-[24px] border border-[#d5d9d9] bg-[#111827] p-5 text-white">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f3a847]">Important dates</p>
+              <div className="rounded-[24px] border border-[#d8e1ee] bg-white p-5 text-[#0f172a]">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">Important dates</p>
                 <div className="mt-4 space-y-3">
                   {dateRows.map((row) => (
                     <div
                       key={row.label}
-                      className={`rounded-[20px] border p-4 ${row.accent ? 'border-[#f3a847]/60 bg-[#151d2d]' : 'border-white/10 bg-white/[0.03]'}`}
+                      className={`rounded-[20px] border p-4 ${row.accent ? 'border-[#2457d6]/30 bg-[#e8f0ff]' : 'border-[#d8e1ee] bg-[#f8fbff]'}`}
                     >
-                      <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">{row.label}</p>
-                      <p className="mt-2 text-2xl font-black leading-tight text-white">{row.value}</p>
-                      <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">{row.note}</p>
+                      <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#2457d6]">{row.label}</p>
+                      <p className="mt-2 text-2xl font-black leading-tight text-[#0f172a]">{row.value}</p>
+                      <p className="mt-2 text-sm leading-7 text-[#64748b]">{row.note}</p>
                     </div>
                   ))}
                 </div>

@@ -259,32 +259,32 @@ const AuthExperience = ({
   const title = mode === 'admin' ? t.adminTitle : mode === 'signup' ? t.signupTitle : t.signinTitle;
 
   return (
-    <main className="min-h-screen bg-[#070708] px-4 py-10 text-white sm:px-5 sm:py-14 lg:px-10 lg:py-20">
+    <main className="min-h-screen bg-[#eef3f9] px-4 py-10 text-[#0f172a] sm:px-5 sm:py-14 lg:px-10 lg:py-20">
       <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
         <section>
-          <p className="inline-flex rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#ffc400]">
+          <p className="inline-flex rounded-full border border-[#2457d6]/20 bg-[#e8f0ff] px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#2457d6]">
             {mode === 'admin' ? global.admin : mode === 'signup' ? global.signUp : global.signIn}
           </p>
-          <h1 className="mt-6 text-3xl font-black leading-tight text-white sm:text-4xl lg:text-6xl">{title}</h1>
-          <p className="mt-5 text-base leading-7 text-[#d4dbe7] sm:text-lg sm:leading-8">{t.subtitle}</p>
+          <h1 className="mt-6 text-3xl font-black leading-tight text-[#0f172a] sm:text-4xl lg:text-6xl">{title}</h1>
+          <p className="mt-5 text-base leading-7 text-[#64748b] sm:text-lg sm:leading-8">{t.subtitle}</p>
         </section>
 
-        <section className="rounded-xl border border-white/10 bg-[#111113] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[24px] border border-[#d8e1ee] bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
           {false ? (
             <div>
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#ffc400] text-[#090909]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#2457d6] text-white">
                 <Check className="h-7 w-7" />
               </div>
-              <h2 className="mt-5 text-3xl font-black text-white">{t.signedIn}</h2>
+                  <h2 className="mt-5 text-3xl font-black text-[#0f172a]">{t.signedIn}</h2>
               <p className="mt-2 text-[#aab5c6]">
                 {user!.fullName} · {user!.email ?? user!.phone} · {user!.role ?? 'member'}
               </p>
-              <div className="mt-6 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-5">
+              <div className="mt-6 rounded-xl border border-[#2457d6]/20 bg-[#e8f0ff] p-5">
                 <p className="text-sm text-[#d4dbe7]">{global.pointsWallet}</p>
-                <p className="mt-1 text-4xl font-black text-[#ffc400]">{points}</p>
+                <p className="mt-1 text-4xl font-black text-[#2457d6]">{points}</p>
               </div>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href={mode === 'admin' ? '/admin' : safeReturnTo || '/dashboard'} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">
+                <Link href={mode === 'admin' ? '/admin' : safeReturnTo || '/dashboard'} className="rounded-full bg-[#2457d6] px-5 py-3 text-sm font-black text-white">
                   {mode === 'admin' ? 'Open CMS' : 'Continue'}
                 </Link>
                 <button type="button" onClick={signOut} className="rounded-lg border border-white/15 px-5 py-3 text-sm font-bold text-white">
@@ -296,44 +296,44 @@ const AuthExperience = ({
             <form onSubmit={submit}>
               <div className="mt-6 grid gap-4">
                 {mode === 'signup' ? (
-                  <label className="grid gap-2 text-sm font-bold text-white">
+                    <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
                     {t.name}
-                    <input value={form.fullName} onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                    <input value={form.fullName} onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
                   </label>
                 ) : null}
 
                 {mode === 'signup' ? (
-                  <label className="grid gap-2 text-sm font-bold text-white">
+                    <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
                     {t.username}
-                    <input value={form.username} onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                    <input value={form.username} onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
                   </label>
                 ) : null}
 
                 {mode === 'signup' ? (
-                  <label className="grid gap-2 text-sm font-bold text-white">
+                    <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
                     Referral code
                     <input
                       value={form.referralCode}
                       onChange={(event) => setForm((current) => ({ ...current, referralCode: event.target.value.toUpperCase() }))}
-                      className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]"
+                      className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]"
                       placeholder="Optional referral code"
                     />
                     <span className="text-xs font-medium text-[#aab5c6]">Optional. If a friend invited you, enter their code here.</span>
                   </label>
                 ) : null}
 
-                <label className="grid gap-2 text-sm font-bold text-white">
+                <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
                   {t.email}
-                  <input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+                  <input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
                 </label>
-                <label className="grid gap-2 text-sm font-bold text-white">
+                <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
                   {t.password}
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={form.password}
                       onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-                      className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 pr-12 text-white outline-none focus:border-[#ffc400]"
+                      className="w-full rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 pr-12 text-[#0f172a] outline-none focus:border-[#2457d6]"
                     />
                     <button
                       type="button"
@@ -348,31 +348,31 @@ const AuthExperience = ({
               </div>
 
               {message ? (
-                <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-[#d4dbe7]">
+                <div className="mt-4 rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-sm text-[#475569]">
                   <p>{message}</p>
                   {signupReferralCode ? (
-                    <p className="mt-3 rounded-md border border-[#ffc400]/20 bg-[#ffc400]/10 px-3 py-2 text-sm font-bold text-[#ffc400]">
+                    <p className="mt-3 rounded-md border border-[#2457d6]/20 bg-[#e8f0ff] px-3 py-2 text-sm font-bold text-[#2457d6]">
                       Your referral code: {signupReferralCode}
                     </p>
                   ) : null}
                   {verificationLink ? (
-                    <a href={verificationLink} className="mt-3 inline-flex font-bold text-[#ffc400]" target="_blank" rel="noreferrer">
+                    <a href={verificationLink} className="mt-3 inline-flex font-bold text-[#2457d6]" target="_blank" rel="noreferrer">
                       Open verification link
                     </a>
                   ) : null}
                 </div>
               ) : null}
 
-              <button type="submit" disabled={isSubmitting} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-5 py-4 text-sm font-black text-[#090909] transition hover:bg-[#ffd84a] disabled:cursor-not-allowed disabled:opacity-70">
+              <button type="submit" disabled={isSubmitting} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[#2457d6] px-5 py-4 text-sm font-black text-white transition hover:bg-[#1f4bb8] disabled:cursor-not-allowed disabled:opacity-70">
                 <Lock className="h-4 w-4" />
                 {isSubmitting ? 'Please wait...' : mode === 'admin' ? t.submitAdmin : mode === 'signup' ? t.submitSignup : t.submitSignin}
               </button>
 
-              <div className="mt-5 text-center text-sm text-[#aab5c6]">
+              <div className="mt-5 text-center text-sm text-[#64748b]">
                 {mode === 'signin' ? (
-                  <Link href={authSwitchHref('signup')} className="font-bold text-[#ffc400]">{t.switchSignup}</Link>
+                  <Link href={authSwitchHref('signup')} className="font-bold text-[#2457d6]">{t.switchSignup}</Link>
                 ) : mode === 'signup' ? (
-                  <Link href={authSwitchHref('signin')} className="font-bold text-[#ffc400]">{t.switchSignin}</Link>
+                  <Link href={authSwitchHref('signin')} className="font-bold text-[#2457d6]">{t.switchSignin}</Link>
                 ) : null}
               </div>
             </form>
