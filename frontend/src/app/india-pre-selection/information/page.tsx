@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ArrowRight,
   CalendarDays,
@@ -108,16 +109,29 @@ export default function InformationPage() {
         <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-[#102a43] p-5 text-white shadow-[0_18px_45px_rgba(15,55,95,0.14)] sm:p-7 lg:p-9">
           <SectionHeading eyebrow="Experience Itaewon" title="Experience the ITAEWON World Music Festival">Take a look back at moments from the 2025 festival in Seoul.</SectionHeading>
           <div className="mt-6 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-[20px] border border-[#4772a8] bg-[radial-gradient(circle_at_75%_20%,#3d74c5_0%,transparent_33%),linear-gradient(135deg,#164d93,#081a35)] p-6 sm:min-h-[340px] sm:p-8">
-              <div className="absolute -bottom-20 -right-8 h-56 w-56 rounded-full border-[28px] border-[#d29b24]/25" aria-hidden="true" />
-              <div className="relative"><Video className="h-8 w-8 text-[#e5b441]" /><p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-[#bed7ff]">2025 festival archive</p><h3 id="media-heading" className="mt-3 max-w-lg text-2xl font-black sm:text-3xl">Real festival media, added with permission</h3><p className="mt-3 max-w-xl text-sm leading-7 text-[#d5e5fb]">Verified 2025 photos and videos will appear here once approved by the festival organizer. We are not filling this archive with unrelated stock or unverified event media.</p></div>
-              <a href={mediaSources[0].url} target="_blank" rel="noreferrer" className="relative mt-8 inline-flex w-fit items-center gap-2 rounded-full border border-white/40 bg-white/10 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/20">Open official festival source<ExternalLink className="h-4 w-4" /></a>
+            <div className="overflow-hidden rounded-[20px] border border-[#4772a8] bg-[#071a35]">
+              <div className="relative aspect-video bg-black">
+                <video controls playsInline preload="metadata" poster="/assets/itaewon.jpg" className="h-full w-full object-contain" aria-label="2025 Itaewon World Music Festival video archive">
+                  <source src="/assets/25%EB%85%84%20%EC%9D%B4%ED%83%9C%EC%9B%90%EC%9D%8C%EC%95%85%EC%A0%9C.mp4" type="video/mp4" />
+                  Your browser does not support the festival video.
+                </video>
+              </div>
+              <div className="p-5 sm:p-6"><div className="flex items-center gap-3"><Video className="h-7 w-7 text-[#e5b441]" /><p className="text-xs font-black uppercase tracking-[0.2em] text-[#bed7ff]">2025 festival archive • Seoul</p></div><h3 id="media-heading" className="mt-3 text-2xl font-black sm:text-3xl">Highlights from ITAEWON 2025</h3><p className="mt-3 text-sm leading-7 text-[#d5e5fb]">A supplied festival video for visitors to look back on moments from the 2025 Itaewon World Music Festival. Playback is user-controlled and does not autoplay.</p></div>
             </div>
-            <div className="rounded-[20px] border border-[#d8e1ee] bg-white p-5 text-[#102a43] sm:p-6">
-              <div className="flex items-center gap-3"><PlayCircle className="h-7 w-7 text-[#2457d6]" /><h3 className="text-xl font-black">Watch the festival</h3></div>
-              <p className="mt-4 text-sm leading-7 text-[#526f8f]">Only authentic, permission-safe videos will be embedded. When an official 2025 video is confirmed, this area will show a responsive player without autoplay.</p>
-              <div className="mt-6 rounded-[16px] border border-dashed border-[#cbd9ea] bg-[#f8fbff] p-4 text-sm leading-6 text-[#526f8f]">Archive media pending organizer approval.<br /><span className="font-bold text-[#2457d6]">Source: ITAEWONNEWS • 2025 • official archive</span></div>
+            <div className="overflow-hidden rounded-[20px] border border-[#d8e1ee] bg-white text-[#102a43]">
+              <div className="relative aspect-[4/3] bg-[#163c78]"><Image src="/assets/itaewon.jpg" alt="2026 ITAEWON World Music Festival official poster" fill sizes="(min-width: 1024px) 32vw, 100vw" className="object-cover" /></div>
+              <div className="p-5 sm:p-6"><div className="flex items-center gap-3"><PlayCircle className="h-7 w-7 text-[#2457d6]" /><h3 className="text-xl font-black">Festival campaign archive</h3></div><p className="mt-4 text-sm leading-7 text-[#526f8f]">This poster is current 2026 festival campaign material, shown here for context. It is not presented as a 2025 event photograph.</p><a href={mediaSources[0].url} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[#2457d6]">Open official festival source<ExternalLink className="h-4 w-4" /></a></div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="identity-heading">
+        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-white p-5 sm:p-7 lg:p-9">
+          <SectionHeading eyebrow="Festival identity" title="The India participation story">The festival identity and the India-side campaign materials that connect K-CUBE with the official participation journey.</SectionHeading>
+          <div id="identity-heading" className="mt-6 grid gap-5 md:grid-cols-2">
+            <article className="overflow-hidden rounded-[20px] border border-[#d8e1ee] bg-[#091735]"><div className="relative aspect-[16/10]"><Image src="/assets/kcube-india-preselection-cube.png" alt="K-CUBE cube visual with global music festival lighting" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" loading="lazy" /></div><div className="p-5"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#e5b441]">K-CUBE visual identity</p><h3 className="mt-2 text-xl font-black text-white">A platform for cultural exchange</h3><p className="mt-2 text-sm leading-6 text-[#c3d8f1]">The K-CUBE visual language brings together community, music and international connection.</p></div></article>
+            <article className="overflow-hidden rounded-[20px] border border-[#d8e1ee] bg-[#f8fbff]"><div className="relative aspect-[16/10]"><Image src="/assets/kcube-india-preselection-competition.jpg" alt="K-CUBE India Pre-Selection campaign visual" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" loading="lazy" /></div><div className="p-5"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#2457d6]">India pre-selection campaign</p><h3 className="mt-2 text-xl font-black text-[#102a43]">From India to the global stage</h3><p className="mt-2 text-sm leading-6 text-[#526f8f]">A campaign visual for the completed 2026 India pre-selection, retained as a record of the K-CUBE participation route.</p></div></article>
           </div>
         </div>
       </section>
