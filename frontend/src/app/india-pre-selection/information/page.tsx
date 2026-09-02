@@ -3,7 +3,6 @@ import {
   ArrowRight,
   CalendarDays,
   CheckCircle2,
-  ExternalLink,
   Camera,
   Sparkles,
   Video,
@@ -108,10 +107,10 @@ export default function InformationPage() {
         <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-[#102a43] p-5 text-white shadow-[0_18px_45px_rgba(15,55,95,0.14)] sm:p-7 lg:p-9">
           <SectionHeading eyebrow="Experience Itaewon" title="Experience the ITAEWON World Music Festival">Take a look back at moments from the 2025 festival in Seoul.</SectionHeading>
           <div className="mt-6 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-[20px] border border-[#4772a8] bg-[radial-gradient(circle_at_75%_20%,#3d74c5_0%,transparent_33%),linear-gradient(135deg,#164d93,#081a35)] p-6 sm:min-h-[340px] sm:p-8">
+            <div className="relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-[20px] border border-[#4772a8] bg-[radial-gradient(circle_at_76%_18%,#3d74c5_0%,transparent_34%),linear-gradient(135deg,#164d93,#081a35)] p-6 sm:min-h-[340px] sm:p-8">
               <div className="absolute -bottom-20 -right-8 h-56 w-56 rounded-full border-[28px] border-[#d29b24]/25" aria-hidden="true" />
-              <div className="relative"><Video className="h-8 w-8 text-[#e5b441]" /><p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-[#bed7ff]">2025 festival archive</p><h3 id="media-heading" className="mt-3 max-w-lg text-2xl font-black sm:text-3xl">Real festival media, added with permission</h3><p className="mt-3 max-w-xl text-sm leading-7 text-[#d5e5fb]">Verified 2025 photos and videos will appear here once approved by the festival organizer. We are not filling this archive with unrelated stock or unverified event media.</p></div>
-              <a href={mediaSources[0].url} target="_blank" rel="noreferrer" className="relative mt-8 inline-flex w-fit items-center gap-2 rounded-full border border-white/40 bg-white/10 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/20">Open official festival source<ExternalLink className="h-4 w-4" /></a>
+              <div className="relative"><div className="flex items-end justify-between gap-4"><Video className="h-8 w-8 text-[#e5b441]" /><span className="text-6xl font-black leading-none text-white/10 sm:text-8xl">2025</span></div><p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-[#bed7ff]">Festival archive - Seoul</p><h3 id="media-heading" className="mt-3 max-w-lg text-2xl font-black sm:text-3xl">A moment from the world music stage</h3><p className="mt-3 max-w-xl text-sm leading-7 text-[#d5e5fb]">Take a look back at the 2025 ITAEWON World Music Festival through the supplied archive video. Music, remembrance and international voices come together in one visual record.</p></div>
+              <div className="relative mt-8 flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#cfe0f7]"><span className="rounded-full border border-white/25 bg-white/10 px-3 py-2">Itaewon</span><span className="rounded-full border border-white/25 bg-white/10 px-3 py-2">Seoul, Korea</span><span className="rounded-full border border-[#e5b441]/45 bg-[#e5b441]/10 px-3 py-2 text-[#f4ca61]">Archive video</span></div>
             </div>
             <div className="overflow-hidden rounded-[20px] border border-[#d8e1ee] bg-white text-[#102a43]">
               <div className="flex items-center gap-3 p-5 pb-4 sm:p-6 sm:pb-4"><Video className="h-7 w-7 text-[#2457d6]" /><h3 className="text-xl font-black">Watch the festival</h3></div>
