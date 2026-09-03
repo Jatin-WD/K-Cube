@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, KeyRound, Plane, Trophy, UploadCloud, UserRound, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
@@ -111,7 +111,6 @@ const uploadCategories = [
 
 const MemberDashboard = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
   const setPoints = useAppStore((state) => state.setPoints);
@@ -150,11 +149,11 @@ const MemberDashboard = () => {
   const submissionsPerPage = 10;
 
   useEffect(() => {
-    const view = searchParams.get('view');
+    const view = new URLSearchParams(window.location.search).get('view');
     if (view === 'submissions' || view === 'submissionHistory' || view === 'profile') {
       setActiveView(view);
     }
-  }, [searchParams]);
+  }, []);
 
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
