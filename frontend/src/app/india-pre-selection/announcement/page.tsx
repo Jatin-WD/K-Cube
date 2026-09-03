@@ -1,3 +1,5 @@
+"use client";
+
 import Link from 'next/link';
 import {
   ArrowDown,
@@ -8,11 +10,13 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useAppStore } from '@/store/useAppStore';
 
-export const metadata = {
-  title: 'Official Announcements | ITAEWON World Music Spirit Festival 2026 | K-CUBE',
-  description: 'Official live notices, selection status, participant instructions and important dates for the K-CUBE India Pre-Selection.',
-};
+const announcementCopy = {
+  en: { notice: 'Official notice board · 2026', title: 'ITAEWON World Music Spirit 2026', title2: 'Official Announcements', intro: 'Official updates for K-CUBE India participants, selection stages, important dates and festival-related notices.', closed: 'India pre-selection · Closed', ongoing: 'Selection process continues for existing participants.', latest: 'View latest update', info: 'Festival information' },
+  ko: { notice: '공식 공지 게시판 · 2026', title: '이태원 세계 음악 페스티벌 2026', title2: '공식 공지사항', intro: 'K-CUBE 인도 참가자를 위한 공식 업데이트, 선발 단계, 주요 일정과 축제 안내입니다.', closed: '인도 프리셀렉션 · 종료', ongoing: '기존 참가자의 선발 과정은 계속 진행됩니다.', latest: '최신 업데이트 보기', info: '축제 정보' },
+  hi: { notice: 'आधिकारिक सूचना बोर्ड · 2026', title: 'इटावॉन वर्ल्ड म्यूज़िक स्पिरिट 2026', title2: 'आधिकारिक घोषणाएँ', intro: 'K-CUBE इंडिया प्रतिभागियों के लिए आधिकारिक अपडेट, चयन चरण, महत्वपूर्ण तारीखें और फेस्टिवल सूचनाएँ।', closed: 'इंडिया प्री-सेलेक्शन · बंद', ongoing: 'मौजूदा प्रतिभागियों की चयन प्रक्रिया जारी है।', latest: 'नवीनतम अपडेट देखें', info: 'फेस्टिवल की जानकारी' },
+} as const;
 
 const participantActions = [
   ['01', 'Stay Active on K-CUBE', 'Continue using your K-CUBE account and follow your participant progress.'],
@@ -54,17 +58,19 @@ function StatusChip({ children, tone }: { children: ReactNode; tone: string }) {
 }
 
 export default function AnnouncementPage() {
+  const language = useAppStore((state) => state.language);
+  const t = announcementCopy[language];
   return (
     <main className="min-h-screen bg-[#eef4f8] text-[#102a43]">
       <section className="px-3 py-6 sm:px-4 sm:py-8 lg:px-10">
         <div className="mx-auto grid max-w-[1240px] gap-5 lg:grid-cols-[1fr_280px] lg:items-stretch">
           <article className="rounded-[24px] border border-[#cbd9ea] bg-white p-6 shadow-[0_14px_35px_rgba(15,55,95,0.08)] sm:p-8 lg:p-9">
             <p className="inline-flex items-center gap-2 rounded-full border border-[#e5c56b] bg-[#fff8df] px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#9a6800]"><BellRing className="h-4 w-4" />Official notice board • 2026</p>
-            <h1 className="mt-5 max-w-3xl text-3xl font-black leading-tight tracking-tight text-[#102a43] sm:text-4xl lg:text-5xl">ITAEWON World Music Spirit 2026<br />Official Announcements</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#526f8f] sm:text-base">Official updates for K-CUBE India participants, selection stages, important dates and festival-related notices.</p>
-            <div className="mt-5 flex flex-wrap items-center gap-3"><StatusChip tone="completed"><CheckCircle2 className="mr-2 h-4 w-4" />India pre-selection • Closed</StatusChip><span className="text-sm font-semibold text-[#526f8f]">Selection process continues for existing participants.</span></div>
+            <h1 className="mt-5 max-w-3xl text-3xl font-black leading-tight tracking-tight text-[#102a43] sm:text-4xl lg:text-5xl">{t.title}<br />{t.title2}</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#526f8f] sm:text-base">{t.intro}</p>
+            <div className="mt-5 flex flex-wrap items-center gap-3"><StatusChip tone="completed"><CheckCircle2 className="mr-2 h-4 w-4" />{t.closed}</StatusChip><span className="text-sm font-semibold text-[#526f8f]">{t.ongoing}</span></div>
             <p className="mt-3 text-sm leading-6 text-[#526f8f]">India Pre-Selection concluded on 30 August 2026. This board carries the next official updates.</p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row"><a href="#latest-update" className="kc-button kc-button-primary">View latest update<ArrowDown className="h-4 w-4" /></a><Link href="/india-pre-selection/information" className="kc-button kc-button-secondary">Festival information<ArrowRight className="h-4 w-4" /></Link></div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row"><a href="#latest-update" className="kc-button kc-button-primary">{t.latest}<ArrowDown className="h-4 w-4" /></a><Link href="/india-pre-selection/information" className="kc-button kc-button-secondary">{t.info}<ArrowRight className="h-4 w-4" /></Link></div>
           </article>
           <aside className="flex flex-col justify-between rounded-[24px] border border-[#cbd9ea] bg-[#102a43] p-6 text-white shadow-[0_14px_35px_rgba(15,55,95,0.1)] sm:p-7">
             <div><Eyebrow>Current status</Eyebrow><p className="mt-3 text-3xl font-black leading-tight">Selection process ongoing</p><p className="mt-3 text-sm leading-6 text-[#c3d8f1]">Existing participant submissions remain part of the current review process.</p></div>
