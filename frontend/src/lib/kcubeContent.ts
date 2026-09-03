@@ -13,6 +13,7 @@ export interface MenuLink {
   points?: number;
   external?: boolean;
   featured?: boolean;
+  status?: LocalText;
   children?: MenuLink[];
 }
 
@@ -747,39 +748,42 @@ const itaewonSubmissionLink: MenuLink = {
   label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
   href: '/india-pre-selection',
   description: txt(
-    'Official India pre-selection and festival submission hub for the ITAEWON World Music Spirit Festival 2026.',
-    'ITAEWON World Music Spirit Festival 2026을 위한 공식 인도 예선 및 제출 허브입니다.',
-    'ITAEWON World Music Spirit Festival 2026 ke liye official India pre-selection aur submission hub.',
+    'Follow the 2026 India journey to the ITAEWON World Music Spirit Festival in Seoul.',
+    '서울 ITAEWON World Music Spirit Festival로 이어지는 2026년 인도의 여정을 확인하세요.',
+    'Seoul ke ITAEWON World Music Spirit Festival tak India ki 2026 journey follow karein.',
   ),
-  points: 200,
   featured: true,
+  status: txt('2026 FESTIVAL · INDIA', '2026 FESTIVAL · INDIA', '2026 FESTIVAL · INDIA'),
   children: [
     {
-      label: txt('Information', 'Information', 'Information'),
+      label: txt('Festival Information', 'Festival Information', 'Festival Information'),
       href: '/india-pre-selection/information',
       description: txt(
-        'Festival background, dates, and participation overview.',
-        '축제 배경, 일정, 참여 개요입니다.',
-        'Festival background, dates, aur participation overview.',
+        'Festival story, official India representation, dates and the India-to-Seoul journey.',
+        '축제 이야기, 공식 인도 대표, 일정 및 인도에서 서울로 이어지는 여정입니다.',
+        'Festival story, official India representation, dates aur India-to-Seoul journey.',
       ),
+      status: txt('Overview', 'Overview', 'Overview'),
     },
     {
-      label: txt('Announcement', 'Announcement', 'Announcement'),
+      label: txt('Official Updates', 'Official Updates', 'Official Updates'),
       href: '/india-pre-selection/announcement',
       description: txt(
-        'Official notices, updates, and important reminders.',
-        '공식 공지, 업데이트, 중요한 안내입니다.',
-        'Official notices, updates, aur important reminders.',
+        'Selection updates, official rounds, participant notices and festival announcements.',
+        '선발 업데이트, 공식 라운드, 참가자 공지 및 축제 안내입니다.',
+        'Selection updates, official rounds, participant notices aur festival announcements.',
       ),
+      status: txt('Latest', 'Latest', 'Latest'),
     },
     {
-      label: txt('Apply', 'Apply', 'Apply'),
+      label: txt('2026 Application', '2026 Application', '2026 Application'),
       href: '/india-pre-selection/apply',
       description: txt(
-        'Open the application page and send your submission.',
-        '신청 페이지를 열고 지원서를 제출하세요.',
-        'Application page kholkar apna submission bhejein.',
+        'India Pre-Selection applications closed on 30 August 2026.',
+        '인도 예선 신청은 2026년 8월 30일에 마감되었습니다.',
+        'India Pre-Selection applications 30 August 2026 ko close ho chuki hain.',
       ),
+      status: txt('Closed ✓', 'Closed ✓', 'Closed ✓'),
     },
   ],
 };
