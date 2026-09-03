@@ -3123,7 +3123,7 @@ const AdminControlCenter = () => {
     });
 
     const printUsers = () => {
-      const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+      const printWindow = window.open('', 'kcube-users-print');
       if (!printWindow) {
         setNotice('Please allow pop-ups to print the users list.');
         return;
@@ -3137,27 +3137,31 @@ const AdminControlCenter = () => {
           <td>${escapePrintHtml(entry.status)}</td>
           <td>${escapePrintHtml(entry.points)}</td>
         </tr>`).join('');
+      printWindow.document.open();
       printWindow.document.write(`<!doctype html><html><head><title>K-CUBE Users List</title><style>
         body{font-family:Arial,sans-serif;color:#102a43;padding:28px}h1{font-size:22px;margin:0 0 6px}p{color:#627d98;margin:0 0 20px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #bcccdc;padding:9px;text-align:left}th{background:#eaf2f8;color:#0b4eae;text-transform:uppercase;font-size:10px;letter-spacing:.08em}
       </style></head><body><h1>K-CUBE Users List</h1><p>${filteredUsers.length} ${userRoleFilter === 'all' ? 'users' : `${escapePrintHtml(userRoleFilter)} accounts`} · Printed ${new Date().toLocaleString()}</p><table><thead><tr><th>S.No.</th><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Points</th></tr></thead><tbody>${rows || '<tr><td colspan="6">No users found.</td></tr>'}</tbody></table></body></html>`);
       printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
+      window.setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 150);
     };
 
     return (
       <>
         <SectionShell title="Users" description="Manage account access, profile details and user actions from one compact list." actions={<div className="flex flex-wrap items-center justify-end gap-2"><span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span><select aria-label="Filter users by role" value={userRoleFilter} onChange={(event) => setUserRoleFilter(event.target.value)} className="rounded-lg border border-white/10 bg-[#101014] px-3 py-2 text-xs font-bold text-white"><option value="member">Users</option><option value="manager">Managers</option><option value="admin">Admins</option><option value="guest">Guests</option><option value="all">All roles</option></select><button type="button" onClick={printUsers} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]"><Printer className="h-4 w-4" /> Print list</button></div>}>
           <div className="overflow-hidden rounded-xl border border-white/10">
-            <div className="hidden grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] gap-3 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400] lg:grid">
-              <span>S.No.</span><span>Name</span><span>Email</span><span>Role</span><span>Status</span><span>Points</span><span>Streak</span><span>Actions</span>
+            <div className="hidden grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_150px_100px_100px_90px_90px_150px] gap-3 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400] lg:grid">
+              <span>S.No.</span><span>Name</span><span>Email</span><span>Phone</span><span>Role</span><span>Status</span><span>Points</span><span>Streak</span><span>Actions</span>
             </div>
             <PaginatedList items={filteredUsers}>
               {(visibleUsers, userOffset) => visibleUsers.map((entry, index) => (
-                <div key={entry.id} className="grid gap-3 border-t border-white/10 bg-black/20 px-4 py-3 transition hover:bg-white/[0.04] lg:grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] lg:items-center">
+                <div key={entry.id} className="grid gap-3 border-t border-white/10 bg-black/20 px-4 py-3 transition hover:bg-white/[0.04] lg:grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_150px_100px_100px_90px_90px_150px] lg:items-center">
                   <p className="text-xs font-black text-[#7d8a99]">{userOffset + index + 1}</p>
                   <div><p className="font-bold text-white">{entry.full_name}</p><p className="mt-1 text-xs text-[#7d8a99]">#{entry.id}</p></div>
                   <p className="truncate text-sm text-[#aab5c6]">{entry.email}</p>
+                  <p className="text-sm text-[#aab5c6]">{entry.phone || '—'}</p>
                   <p className="text-sm capitalize text-[#d4dbe7]">{entry.role}</p>
                   <p className="text-sm capitalize text-[#d4dbe7]">{entry.status}</p>
                   <p className="text-sm font-bold text-white">{entry.points}</p>
