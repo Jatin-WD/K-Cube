@@ -333,7 +333,7 @@ const MemberDashboard = () => {
               {[
                 ['overview', t.overview],
                 ['actions', t.earnPoints],
-                ['submissions', t.newSubmission],
+                ['submissions', language === 'en' ? 'View submissions' : language === 'ko' ? '제출 내역 보기' : 'सबमिशन देखें'],
                 ['learning', t.learningProgress],
                 ['events', t.events],
                 ['referrals', t.referrals],
