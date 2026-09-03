@@ -45,11 +45,11 @@ const storyCards = [
 const journey = ['India', 'K-CUBE - India Participation Platform', 'India Pre-Selection', 'Official Festival Process', 'Itaewon, Seoul'] as const;
 
 const timeline = [
-  ['2025', 'Previous Festival Highlights · Archive', 'Music, culture and international voices from Seoul.'],
-  ['30 AUG 2026', 'India Pre-Selection · Completed', 'The India application period concluded through K-CUBE.'],
-  ['CURRENT', 'Selection & Festival Journey · In Progress', 'Follow official announcements for current-cycle updates.'],
-  ['4-6 OCT 2026', 'ITAEWON World Music Spirit Festival · Upcoming', 'The festival is scheduled for Seoul, South Korea.'],
-  ['2027', 'Next India Participation Cycle · To Be Announced', 'Future dates and requirements are subject to official confirmation.'],
+  ['2025', 'Previous Festival Highlights - Archive', 'Music, culture and international voices from Seoul.'],
+  ['30 AUG 2026', 'India Pre-Selection - Completed', 'The India application period concluded through K-CUBE.'],
+  ['CURRENT', 'Selection & Festival Journey - In Progress', 'Follow official announcements for current-cycle updates.'],
+  ['4-6 OCT 2026', 'ITAEWON World Music Spirit Festival - Upcoming', 'The festival is scheduled for Seoul, South Korea.'],
+  ['2027', 'Next India Participation Cycle - To Be Announced', 'Future dates and requirements are subject to official confirmation.'],
 ] as const;
 
 function Eyebrow({ children }: { children: ReactNode }) {
@@ -166,7 +166,7 @@ export default function InformationPage() {
       </section>
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="timeline-heading">
-        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-white p-5 sm:p-7 lg:p-9"><SectionHeading eyebrow="Festival timeline" title="A journey across seasons">The 2026 India stage is complete; the next participation cycle will be announced after confirmation.</SectionHeading><div id="timeline-heading" className="mt-7 grid gap-4 lg:grid-cols-4">{timeline.map(([date, title, text], index) => <article key={date} className="relative rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-5"><div className="flex items-center gap-2 text-[#2457d6]"><CalendarDays className="h-4 w-4" /><span className="text-xs font-black tracking-[0.16em]">{date}</span></div><h3 className="mt-4 text-base font-black text-[#102a43]">{title}</h3><p className="mt-2 text-sm leading-6 text-[#526f8f]">{text}</p>{index < timeline.length - 1 && <ArrowRight className="absolute -right-3 top-1/2 z-10 hidden h-5 w-5 rounded-full bg-white text-[#b77900] lg:block" />}</article>)}</div></div>
+        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-white p-5 sm:p-7 lg:p-9"><SectionHeading eyebrow="Festival timeline" title="A journey across seasons">The current festival journey continues through October; future participation dates will be announced after confirmation.</SectionHeading><div id="timeline-heading" className="mt-7 grid gap-4 xl:grid-cols-5">{timeline.map(([date, title, text], index) => <article key={date} className={`relative rounded-[18px] border p-5 ${index === 2 ? 'border-[#b9cdec] bg-[#eef4ff]' : 'border-[#d8e1ee] bg-[#f8fbff]'}`}><div className="flex items-center gap-2 text-[#2457d6]"><CalendarDays className="h-4 w-4" /><span className="text-xs font-black tracking-[0.14em]">{date}</span></div><h3 className="mt-4 text-base font-black leading-6 text-[#102a43]">{title}</h3><p className="mt-2 text-sm leading-6 text-[#526f8f]">{text}</p>{index === 0 && <a href="#media-heading" className="mt-4 inline-flex text-xs font-black text-[#2457d6] hover:underline">View archive video <ArrowRight className="ml-1 h-4 w-4" /></a>}{index < timeline.length - 1 && <ArrowRight className="absolute -right-3 top-1/2 z-10 hidden h-5 w-5 rounded-full bg-white text-[#b77900] xl:block" />}</article>)}</div></div>
       </section>
 
       <section className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10" aria-labelledby="stay-connected-heading"><div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-white p-6 text-center sm:p-9"><Eyebrow>Stay connected</Eyebrow><h2 id="stay-connected-heading" className="mt-2 text-3xl font-black text-[#102a43] sm:text-4xl">Stay Connected to the Festival Journey</h2><p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#526f8f]">The 2026 journey is still underway. Follow official K-CUBE announcements for updates from the current India selection process, the ITAEWON World Music Spirit Festival in Seoul, and future India participation opportunities.</p><div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><Link href="/india-pre-selection/announcement" className="kc-button kc-button-primary">View latest announcements<ArrowRight className="h-4 w-4" /></Link><a href="https://www.instagram.com/k_cube_store/" target="_blank" rel="noreferrer" className="kc-button kc-button-secondary"><Camera className="h-4 w-4" />Follow on Instagram</a></div><p className="mt-4 text-xs text-[#8290a3]">Future India participation dates are subject to official confirmation.</p></div></section>
