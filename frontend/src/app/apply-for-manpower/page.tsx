@@ -1,10 +1,10 @@
-import KCubePage from '@/components/KCubePage';
+import ManpowerPage from '@/components/ManpowerPage';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 const ApplyForManpowerPage = () => {
-  return <KCubePage pageKey="apply" />;
+  return <ManpowerPage />;
 };
 
 export default ApplyForManpowerPage;
