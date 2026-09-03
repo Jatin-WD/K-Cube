@@ -112,7 +112,7 @@ export default function ManpowerPage() {
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-24"><p className="text-xl leading-9 text-[#486581]">K-CUBE brings together Korean culture, events, learning, food, community experiences and digital participation.</p><p className="text-xl leading-9 text-[#486581]">Behind every experience is a team that makes it happen. Bring your perspective, your craft and your energy to the ecosystem.</p></div>
       </motion.section>
 
-      <section ref={rolesRef} id="roles" className="relative bg-[#e3eefb] lg:min-h-[330vh]">
+      <section ref={rolesRef} id="roles" className="relative bg-[#e3eefb] lg:min-h-[220vh]">
         <div className="mx-auto max-w-[1480px] px-6 py-20 sm:px-10 lg:sticky lg:top-[126px] lg:flex lg:h-[calc(100vh-126px)] lg:items-center lg:gap-16 lg:px-16 lg:py-12">
           <div className="max-w-md shrink-0 lg:w-[35%]"><p className="kc-eyebrow">02 — Explore roles</p><h2 className="mt-5 text-5xl font-black leading-[.98] tracking-[-.045em] text-[#0b2850] sm:text-6xl">Find your place inside K-CUBE.</h2><p className="mt-6 text-lg leading-8 text-[#486581]">Scroll to explore opportunities and find the kind of work that feels like yours.</p><div className="mt-10 hidden h-1 w-40 overflow-hidden bg-[#c8d8eb] lg:block"><motion.div style={{ scaleX: reducedMotion ? 1 : rolesProgress }} className="h-full origin-left bg-[#1460c2]" /></div></div>
           <div className="mt-14 grid gap-5 lg:relative lg:mt-0 lg:h-[min(620px,72vh)] lg:flex-1">
