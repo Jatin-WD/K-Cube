@@ -82,7 +82,7 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
     return (
       <div id="desktop-mega-menu" data-mega-panel className="pointer-events-auto mx-auto w-full max-w-[1320px] px-3 sm:px-4 lg:px-6" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
           <div className="max-h-[calc(100vh-172px)] overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-2.5 pb-3 shadow-[0_18px_40px_rgba(15,55,95,0.12)]">
-          <div className="grid min-h-0 gap-3 lg:grid-cols-[minmax(220px,0.92fr)_minmax(240px,1fr)_minmax(280px,1.08fr)_minmax(260px,0.96fr)]">
+          <div className="grid min-h-0 items-start gap-3 lg:grid-cols-[minmax(190px,0.78fr)_minmax(210px,0.82fr)_minmax(260px,0.98fr)_minmax(340px,1.45fr)]">
           <aside className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
             <div className="border-b border-[#eef0f1] px-4 py-3">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">Categories</p>

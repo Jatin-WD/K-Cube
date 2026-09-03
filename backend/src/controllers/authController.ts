@@ -220,9 +220,10 @@ export const register = async (req: Request, res: Response) => {
   const normalizedEmail = normalizeEmail(email);
   const normalizedUsername = normalizeUsername(username);
   const normalizedFullName = normalizeName(full_name);
+  const normalizedPhone = String(phone || '').trim();
   const categoryAccess = category_access || 'category_c';
-  if (!normalizedEmail || !password || !normalizedUsername || !normalizedFullName) {
-    return fail(res, 400, 'VALIDATION_ERROR', 'Missing required fields');
+  if (!normalizedEmail || !password || !normalizedUsername || !normalizedFullName || !normalizedPhone) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Full name, username, mobile number, email and password are required');
   }
   if (referralCode) {
     const referrer = await findReferrerByCode(referralCode);
@@ -239,7 +240,7 @@ export const register = async (req: Request, res: Response) => {
   const result = await pool.query(
     `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, referred_by, created_at, status)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'pending')`,
-    [normalizedFullName, normalizedUsername, normalizedEmail, phone || null, passwordHash, 'member', categoryAccess, userReferralCode, referralCode || null]
+    [normalizedFullName, normalizedUsername, normalizedEmail, normalizedPhone, passwordHash, 'member', categoryAccess, userReferralCode, referralCode || null]
   );
   const userId = (result as any)[0].insertId;
   await pool.query(
@@ -252,7 +253,7 @@ export const register = async (req: Request, res: Response) => {
     full_name: normalizedFullName,
     username: normalizedUsername,
     email: normalizedEmail,
-    phone: phone || null,
+    phone: normalizedPhone,
     category_access: categoryAccess,
   }).catch((error: unknown) => {
     console.error('Failed to send user registration notification', error);
@@ -262,6 +263,7 @@ export const register = async (req: Request, res: Response) => {
       id: userId,
       email: normalizedEmail,
       username: normalizedUsername,
+      phone: normalizedPhone,
       full_name: normalizedFullName,
       role: 'member',
       category_access: categoryAccess,

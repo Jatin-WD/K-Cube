@@ -24,6 +24,7 @@ const authCopy = {
     subtitle: 'Use email and password to access your K-CUBE account. Your points balance is restored from the server after login.',
     name: 'Full name',
     username: 'Username',
+    phone: 'Mobile number',
     email: 'Email address',
     password: 'Password',
     emailLogin: 'Email login',
@@ -201,6 +202,7 @@ const AuthExperience = ({
         response = await api.post('/auth/register', {
           full_name: form.fullName,
           username: form.username,
+          phone: form.phone.trim(),
           email: form.email,
           password: form.password,
           referral_code: form.referralCode.trim() || undefined,
@@ -306,6 +308,14 @@ const AuthExperience = ({
                     <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
                     {t.username}
                     <input value={form.username} onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
+                  </label>
+                ) : null}
+
+                {mode === 'signup' ? (
+                  <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
+                    {t.phone} <span className="text-[#b42318]" aria-hidden="true">*</span>
+                    <input required type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" placeholder="Enter your mobile number" aria-describedby="signup-phone-help" />
+                    <span id="signup-phone-help" className="text-xs font-medium text-[#64748b]">Required for account contact and participation updates.</span>
                   </label>
                 ) : null}
 

@@ -330,14 +330,35 @@ const MemberDashboard = () => {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-[#070708] px-5 py-16 text-white lg:px-10">
-        <section className="mx-auto max-w-3xl rounded-xl border border-white/10 bg-[#111113] p-8 text-center">
-          <Gift className="mx-auto h-12 w-12 text-[#ffc400]" />
-          <h1 className="mt-5 text-3xl font-black">Member dashboard locked</h1>
-          <p className="mt-3 text-sm leading-7 text-[#aab5c6]">Register or sign in to earn welcome points, learning points, K-Food points and Korea trip ranking.</p>
-          <div className="mt-6 flex justify-center gap-3">
-            <Link href="/signup" className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">Create account</Link>
-            <Link href="/signin" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">Sign in</Link>
+      <main className="bg-[#eef4f8] px-4 py-10 text-[#102a43] sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+        <section className="mx-auto max-w-[1080px] overflow-hidden rounded-2xl border border-[#d8e4f0] bg-white shadow-[0_18px_50px_rgba(15,55,95,0.08)]">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="p-7 sm:p-10 lg:p-14">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eaf3ff] text-[#0b4eae]"><Gift className="h-6 w-6" aria-hidden="true" /></div>
+              <p className="mt-7 text-xs font-black uppercase tracking-[0.28em] text-[#b36a00]">Member area</p>
+              <h1 className="mt-3 max-w-xl text-4xl font-black leading-tight text-[#102a43] sm:text-5xl">Your K-CUBE workspace starts here.</h1>
+              <p className="mt-5 max-w-xl text-base leading-7 text-[#486581]">Create an account or sign in to access your points, learning progress, submissions, referrals and festival participation.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/signup" className="rounded-lg bg-[#0b4eae] px-5 py-3 text-sm font-black text-white transition hover:bg-[#073a82]">Create account</Link>
+                <Link href="/signin" className="rounded-lg border border-[#b8cce3] bg-white px-5 py-3 text-sm font-bold text-[#102a43] transition hover:border-[#0b4eae] hover:text-[#0b4eae]">Sign in</Link>
+              </div>
+            </div>
+            <div className="border-t border-[#e3ebf3] bg-[#f7fafd] p-7 sm:p-10 lg:border-l lg:border-t-0 lg:p-12">
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">Inside your workspace</p>
+              <div className="mt-6 space-y-3">
+                {[
+                  ['Points & rewards', 'Track verified activity and reward progress.'],
+                  ['Learning & culture', 'Practice Korean and explore K-CUBE content.'],
+                  ['Submissions & events', 'Manage participation and follow updates.'],
+                ].map(([title, description]) => (
+                  <div key={title} className="rounded-xl border border-[#d8e4f0] bg-white p-4">
+                    <p className="font-black text-[#102a43]">{title}</p>
+                    <p className="mt-1 text-sm leading-6 text-[#486581]">{description}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-6 text-xs leading-5 text-[#6c8298]">Your personal dashboard is available after secure sign-in.</p>
+            </div>
           </div>
         </section>
       </main>
