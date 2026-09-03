@@ -6,8 +6,8 @@ import { getStoreMeta, type ShopStore } from '@/lib/shopCatalog';
 const ShopCatalogPage = () => (
   <main className="min-h-screen bg-[#eef4f9] px-4 py-8 text-[#102a43] lg:px-8">
     <section className="mx-auto max-w-[1320px]">
-      <div className="relative overflow-hidden rounded-[1.5rem] border border-[#dce6f0] bg-[#dce9f7] shadow-[0_12px_30px_rgba(16,42,67,0.06)]">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.84) 47%, rgba(255,255,255,0.24) 100%), url('/assets/korean shopping.png')" }} aria-hidden="true" />
+      <div className="relative overflow-hidden rounded-[1.5rem] border border-[#dce6f0] bg-[#dce9f7] shadow-[0_12px_30px_rgba(16,42,67,0.06)]" style={{ backgroundImage: "url('/assets/korean%20shopping.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.9)_0%,rgba(255,255,255,0.72)_48%,rgba(255,255,255,0.12)_100%)]" aria-hidden="true" />
         <div className="relative p-6 sm:min-h-[330px] sm:p-10">
           <p className="kc-eyebrow">SHOP KOREA</p>
           <h1 className="mt-3 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">Your gateway to Korean shopping.</h1>
