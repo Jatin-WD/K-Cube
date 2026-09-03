@@ -738,7 +738,6 @@ export interface AllMenuCategory {
 const shopGatewayLinks: MenuLink[] = [
   { label: txt('Koreanshop', 'Koreanshop', 'Koreanshop'), href: 'https://koreanshop.in/', external: true, featured: true, description: txt('Korean food, pantry essentials and lifestyle products.', '한국 식품, 식료품 및 라이프스타일 상품을 만나보세요.', 'Korean food, pantry essentials aur lifestyle products discover karein.') },
   { label: txt('MOA Beauty', 'MOA Beauty', 'MOA Beauty'), href: 'https://www.moabeauty.in/', external: true, description: txt('Korean skincare, cosmetics and beauty essentials.', '한국 스킨케어, 화장품 및 뷰티 상품을 만나보세요.', 'Korean skincare, cosmetics aur beauty essentials discover karein.') },
-  { label: txt('Curated by K-CUBE', 'K-CUBE 큐레이션', 'K-CUBE curated'), href: '/shop', description: txt('Browse Korean favorites and choose the right specialist store.', '한국 상품을 둘러보고 전문 스토어를 선택하세요.', 'Korean favorites browse karke specialist store choose karein.') },
 ];
 
 const buildShopServiceLinks = (): MenuLink[] => shopGatewayLinks;
@@ -909,10 +908,6 @@ export const navItems: NavItem[] = [
   {
     label: txt('Shop', '샵', 'Shop'),
     href: '/shop',
-    dropdown: [{
-      title: txt('Shopping platforms', '쇼핑 플랫폼', 'Shopping platforms'),
-      links: shopGatewayLinks,
-    }],
   },
   {
     label: txt('Activities', '활동', 'Activities'),
