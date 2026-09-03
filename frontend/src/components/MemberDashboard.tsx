@@ -7,6 +7,7 @@ import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, KeyRound, Plane, Trop
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 import { memberCopy } from '@/lib/memberContent';
+import PasswordInput from '@/components/PasswordInput';
 
 interface LearningProgressRow {
   trackSlug: string;
@@ -384,9 +385,9 @@ const MemberDashboard = () => {
           <section className="mt-6 rounded-xl border border-white/10 bg-[#111113] p-6 sm:p-8">
             <div className="flex items-center gap-3"><KeyRound className="h-6 w-6 text-[#ffc400]" /><div><h2 className="text-2xl font-black">Change password</h2><p className="mt-1 text-sm text-[#aab5c6]">Use your current password to secure your account with a new one.</p></div></div>
             <form onSubmit={changePassword} className="mt-6 grid gap-4 sm:grid-cols-3">
-              <input required type="password" minLength={8} value={passwordForm.current_password} onChange={(event) => setPasswordForm((current) => ({ ...current, current_password: event.target.value }))} placeholder="Current password" aria-label="Current password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-              <input required type="password" minLength={8} value={passwordForm.new_password} onChange={(event) => setPasswordForm((current) => ({ ...current, new_password: event.target.value }))} placeholder="New password (8+ characters)" aria-label="New password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-              <input required type="password" minLength={8} value={passwordForm.confirm_password} onChange={(event) => setPasswordForm((current) => ({ ...current, confirm_password: event.target.value }))} placeholder="Confirm new password" aria-label="Confirm new password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <PasswordInput required minLength={8} value={passwordForm.current_password} onChange={(event) => setPasswordForm((current) => ({ ...current, current_password: event.target.value }))} placeholder="Current password" aria-label="Current password" label="current password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <PasswordInput required minLength={8} value={passwordForm.new_password} onChange={(event) => setPasswordForm((current) => ({ ...current, new_password: event.target.value }))} placeholder="New password (8+ characters)" aria-label="New password" label="new password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <PasswordInput required minLength={8} value={passwordForm.confirm_password} onChange={(event) => setPasswordForm((current) => ({ ...current, confirm_password: event.target.value }))} placeholder="Confirm new password" aria-label="Confirm new password" label="confirm password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
               <div className="flex flex-wrap items-center gap-3 sm:col-span-3"><button disabled={passwordSaving} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60"><KeyRound className="h-4 w-4" />{passwordSaving ? 'Updating...' : 'Update password'}</button>{passwordMessage ? <span className="text-sm font-bold text-[#9be7c2]">{passwordMessage}</span> : null}{passwordError ? <span className="text-sm font-bold text-red-300">{passwordError}</span> : null}</div>
             </form>
           </section>

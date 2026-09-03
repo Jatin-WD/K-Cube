@@ -40,6 +40,7 @@ import {
 import api from '@/lib/api';
 import { detailItems } from '@/lib/kcubeContent';
 import { useAppStore } from '@/store/useAppStore';
+import PasswordInput from '@/components/PasswordInput';
 
 type AdminSection =
   | 'overview'
@@ -3262,13 +3263,13 @@ const AdminControlCenter = () => {
             <div className="space-y-3 rounded-3xl border border-white/10 bg-black/20 p-4">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-[#ffc400]">Security</p>
               <Field label="Current password">
-                <input type="password" className={inputClass} value={adminPasswordForm.current_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, current_password: event.target.value }))} />
+                <PasswordInput label="current password" className={inputClass} value={adminPasswordForm.current_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, current_password: event.target.value }))} />
               </Field>
               <Field label="New password">
-                <input type="password" className={inputClass} value={adminPasswordForm.new_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, new_password: event.target.value }))} />
+                <PasswordInput label="new password" className={inputClass} value={adminPasswordForm.new_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, new_password: event.target.value }))} />
               </Field>
               <Field label="Confirm password">
-                <input type="password" className={inputClass} value={adminPasswordForm.confirm_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, confirm_password: event.target.value }))} />
+                <PasswordInput label="confirm password" className={inputClass} value={adminPasswordForm.confirm_password} onChange={(event) => setAdminPasswordForm((state) => ({ ...state, confirm_password: event.target.value }))} />
               </Field>
               <button type="button" onClick={changeAdminPassword} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm font-black text-white">
                 <KeyRound className="h-4 w-4" />
@@ -3359,7 +3360,7 @@ const AdminControlCenter = () => {
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Password">
-              <input type="password" className={inputClass} value={adminAccountForm.password} onChange={(event) => setAdminAccountForm((state) => ({ ...state, password: event.target.value }))} />
+              <PasswordInput label="password" className={inputClass} value={adminAccountForm.password} onChange={(event) => setAdminAccountForm((state) => ({ ...state, password: event.target.value }))} />
             </Field>
             <Field label="Status">
               <select className={selectClass} value={adminAccountForm.status} onChange={(event) => setAdminAccountForm((state) => ({ ...state, status: event.target.value }))}>
