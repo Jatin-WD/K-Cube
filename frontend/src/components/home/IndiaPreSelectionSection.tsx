@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Music4, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { festival2026 } from '@/lib/festival2026';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -16,6 +15,42 @@ const localizedCopy = {
   hi: {
     journey: 'इवेंट जर्नी', completed: 'पूरा: India Pre-Selection', indiaSeoul: 'India से Seoul 2026', start: 'आपकी यात्रा यहाँ से शुरू होती है', voice: 'आपकी आवाज़। आपका संदेश। आपका मंच।', intro: 'India pre-selection stage पूरी हो चुकी है। अगले राउंड और ITAEWON World Music Spirit Festival 2026 के आधिकारिक अपडेट देखें।', updates: 'आधिकारिक अपडेट देखें', details: 'इवेंट विवरण देखें', officialArt: 'आधिकारिक फेस्टिवल artwork और event message नीचे की timeline के साथ दिए गए हैं।', dates: 'महत्वपूर्ण तारीखें', timeline: 'एक स्पष्ट timeline', timelineIntro: 'India pre-selection, official rounds और final festival को एक continuous journey के रूप में देखें।', why: 'K-CUBE से क्यों जुड़ें?', reason: 'जुड़ने की वजह', reasonText: 'मुख्य timeline को support करने के लिए यह section संक्षिप्त और उपयोगी रखा गया है।',
   },
+} as const;
+
+const cleanLocalizedCopy = {
+  en: { journey: 'Event journey', completed: 'Completed: India Pre-Selection', indiaSeoul: 'India to Seoul 2026', start: 'Your journey starts here', voice: 'Your voice. Your message. Your stage.', intro: 'The India pre-selection stage is complete. Follow official updates for the next round and the ITAEWON World Music Spirit Festival 2026.', updates: 'View Official Updates', details: 'View Event Details', officialArt: 'Official festival artwork and event message stay aligned with the timeline below.', dates: 'Important dates', timeline: 'One clear timeline', timelineIntro: 'The India pre-selection, official rounds, and final festival are presented as one continuous journey.', why: 'Why join K-CUBE?', reason: 'A compact reason to get involved', reasonText: 'Keep this section light and motivating so it supports the main timeline.' },
+  ko: { journey: '이벤트 여정', completed: '완료: 인도 프리셀렉션', indiaSeoul: '인도에서 서울까지 2026', start: '여정은 여기서 시작됩니다', voice: '당신의 목소리. 당신의 메시지. 당신의 무대.', intro: '인도 프리셀렉션 단계가 완료되었습니다. 다음 라운드와 ITAEWON World Music Spirit Festival 2026의 공식 업데이트를 확인하세요.', updates: '공식 업데이트 보기', details: '이벤트 상세 보기', officialArt: '공식 페스티벌 아트워크와 이벤트 메시지는 아래 일정과 함께 안내됩니다.', dates: '주요 일정', timeline: '한눈에 보는 일정', timelineIntro: '인도 프리셀렉션, 공식 라운드와 최종 페스티벌을 하나의 여정으로 안내합니다.', why: '왜 K-CUBE에 참여하나요?', reason: '참여해야 하는 이유', reasonText: '주요 일정에 집중할 수 있도록 간결하고 유용한 정보만 안내합니다.' },
+  hi: { journey: 'इवेंट यात्रा', completed: 'पूरा हुआ: इंडिया प्री-सेलेक्शन', indiaSeoul: 'भारत से सियोल तक 2026', start: 'आपकी यात्रा यहाँ से शुरू होती है', voice: 'आपकी आवाज़। आपका संदेश। आपका मंच।', intro: 'इंडिया प्री-सेलेक्शन चरण पूरा हो चुका है। अगले राउंड और ITAEWON World Music Spirit Festival 2026 के आधिकारिक अपडेट्स देखें।', updates: 'आधिकारिक अपडेट्स देखें', details: 'इवेंट की जानकारी देखें', officialArt: 'आधिकारिक फेस्टिवल आर्टवर्क और इवेंट संदेश नीचे दी गई टाइमलाइन के साथ जुड़े हुए हैं।', dates: 'महत्वपूर्ण तारीखें', timeline: 'एक स्पष्ट टाइमलाइन', timelineIntro: 'इंडिया प्री-सेलेक्शन, आधिकारिक राउंड और फाइनल फेस्टिवल को एक निरंतर यात्रा के रूप में देखें।', why: 'K-CUBE से क्यों जुड़ें?', reason: 'जुड़ने के कारण', reasonText: 'मुख्य टाइमलाइन पर ध्यान रखने के लिए इस सेक्शन में संक्षिप्त और उपयोगी जानकारी दी गई है।' },
+} as const;
+
+const localizedTimeline = {
+  en: [
+    ['Completed stage', 'India Pre-Selection', 'The India pre-selection stage has been completed. Historical submissions remain available to the K-CUBE team.'],
+    ['Official round', 'Official Second Round', 'The second official round before the Seoul festival stage.'],
+    ['Festival', 'ITAEWON World Music Spirit Festival', 'Seoul, South Korea', 'Final destination of the journey'],
+  ],
+  ko: [
+    ['완료된 단계', '인도 프리셀렉션', '인도 프리셀렉션 단계가 완료되었습니다. 이전 제출 자료는 K-CUBE 팀에서 확인할 수 있습니다.'],
+    ['공식 라운드', '공식 2차 라운드', '서울 페스티벌 무대 전 진행되는 두 번째 공식 라운드입니다.'],
+    ['페스티벌', '이태원 월드 뮤직 스피릿 페스티벌', '대한민국 서울', '여정의 최종 목적지'],
+  ],
+  hi: [
+    ['पूरा हुआ चरण', 'इंडिया प्री-सेलेक्शन', 'इंडिया प्री-सेलेक्शन चरण पूरा हो चुका है। पुराने सबमिशन K-CUBE टीम के लिए उपलब्ध रहेंगे।'],
+    ['आधिकारिक राउंड', 'आधिकारिक दूसरा राउंड', 'सियोल फेस्टिवल मंच से पहले होने वाला दूसरा आधिकारिक राउंड।'],
+    ['फेस्टिवल', 'इतेवॉन वर्ल्ड म्यूज़िक स्पिरिट फेस्टिवल', 'सियोल, दक्षिण कोरिया', 'यात्रा की अंतिम मंज़िल'],
+  ],
+} as const;
+
+const localizedDates = {
+  en: ['August 30, 2026', 'September 30, 2026', 'October 4–6, 2026'],
+  ko: ['2026년 8월 30일', '2026년 9월 30일', '2026년 10월 4–6일'],
+  hi: ['30 अगस्त 2026', '30 सितंबर 2026', '4–6 अक्टूबर 2026'],
+} as const;
+
+const localizedBenefits = {
+  en: [['Perform', 'Show your talent through the India pre-selection.'], ['Learn', 'Explore Korean culture, language and creative experiences.'], ['Earn', 'Complete K-CUBE activities and earn points.'], ['Experience', 'Follow the journey from India toward Korea.']],
+  ko: [['공연', '인도 프리셀렉션을 통해 여러분의 재능을 보여주세요.'], ['학습', '한국 문화, 언어와 창의적인 경험을 만나보세요.'], ['적립', 'K-CUBE 활동을 완료하고 포인트를 적립하세요.'], ['경험', '인도에서 한국으로 이어지는 여정을 따라가세요.']],
+  hi: [['प्रदर्शन', 'इंडिया प्री-सेलेक्शन के ज़रिए अपनी प्रतिभा दिखाएँ।'], ['सीखें', 'कोरियाई संस्कृति, भाषा और रचनात्मक अनुभवों को जानें।'], ['कमाएँ', 'K-CUBE गतिविधियाँ पूरी करके पॉइंट्स कमाएँ।'], ['अनुभव करें', 'भारत से कोरिया तक की यात्रा का हिस्सा बनें।']],
 } as const;
 
 const timeline = [
@@ -58,7 +93,9 @@ const benefits = [
 
 const IndiaPreSelectionSection = () => {
   const language = useAppStore((state) => state.language);
-  const t = localizedCopy[language];
+  const t = cleanLocalizedCopy[language];
+  const timelineLabels = localizedTimeline[language];
+  const benefitsText = localizedBenefits[language];
   const translate = (value: string) => {
     const translations: Record<string, string> = language === 'ko' ? {
       'Completed stage': '완료된 단계', 'Official round': '공식 라운드', Festival: '축제', 'ITAEWON World Music Spirit Festival': 'ITAEWON World Music Spirit Festival', 'The second official round before the Seoul festival stage.': '서울 축제 무대 전 진행되는 두 번째 공식 라운드입니다.', 'Seoul, South Korea': '대한민국 서울', 'Final destination of the journey': '여정의 최종 목적지', Perform: '공연', Learn: '학습', Earn: '적립', Experience: '경험', 'Show your talent through the India pre-selection.': '인도 프리셀렉션을 통해 재능을 보여주세요.', 'Explore Korean culture, language and creative experiences.': '한국 문화, 언어와 창의적인 경험을 만나보세요.', 'Complete K-CUBE activities and earn points.': 'K-CUBE 활동을 완료하고 포인트를 적립하세요.', 'Follow the journey from India toward Korea.': '인도에서 한국으로 이어지는 여정을 따라가세요.',
@@ -69,21 +106,13 @@ const IndiaPreSelectionSection = () => {
   };
   return (
     <section aria-labelledby="kcube-india-preselection" className="px-3 py-10 sm:px-4 sm:py-14 lg:px-10 lg:py-16">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.55, ease: 'easeOut' }}
+      <div
         className="mx-auto max-w-[1760px] overflow-hidden rounded-[28px] border border-[#d8e1ee] bg-white shadow-[0_24px_70px_rgba(15,23,42,0.08)]"
       >
         <div className="relative">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(36,87,214,0.08),_transparent_22%),radial-gradient(circle_at_top_right,_rgba(255,216,20,0.16),_transparent_18%),radial-gradient(circle_at_bottom_left,_rgba(96,165,250,0.08),_transparent_22%)]" />
           <div className="relative grid gap-8 px-5 py-7 sm:px-6 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-10 lg:px-8 lg:py-10">
-            <motion.div
-              initial={{ opacity: 0, x: -18 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6, ease: 'easeOut', delay: 0.05 }}
+            <div
               className="flex h-full flex-col"
             >
               <p className="inline-flex w-fit items-center gap-2 rounded-full border border-[#2457d6]/15 bg-[#2457d6]/8 px-4 py-2 text-[11px] font-black uppercase tracking-[0.26em] text-[#2457d6]">
@@ -124,10 +153,10 @@ const IndiaPreSelectionSection = () => {
               </div>
 
               <div className="mt-8 grid grid-cols-2 gap-3">
-                {benefits.map((item) => (
-                  <article key={item.title} className="rounded-[20px] border border-[#d8e1ee] bg-[#f8fbff] px-4 py-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#2457d6]">{translate(item.title)}</p>
-                    <p className="mt-2 text-sm leading-7 text-[#475569]">{translate(item.text)}</p>
+                {benefitsText.map(([title, text]) => (
+                  <article key={title} className="rounded-[20px] border border-[#d8e1ee] bg-[#f8fbff] px-4 py-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#2457d6]">{title}</p>
+                    <p className="mt-2 text-sm leading-7 text-[#475569]">{text}</p>
                   </article>
                 ))}
               </div>
@@ -138,13 +167,9 @@ const IndiaPreSelectionSection = () => {
                   {t.officialArt}
                 </p>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 18 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
+            <div
               className="flex h-full flex-col"
             >
               <div className="flex flex-col gap-2">
@@ -178,8 +203,8 @@ const IndiaPreSelectionSection = () => {
                       {index === 0 ? <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#2457d6] to-transparent" /> : null}
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
-                          <p className={`text-[10px] font-black uppercase tracking-[0.24em] ${index === 0 ? 'text-[#087f52]' : 'text-current/65'}`}>{translate(item.label)}</p>
-                          <h4 className="mt-3 text-base font-black leading-tight text-[#0f172a] sm:text-lg">{translate(item.title)}</h4>
+                          <p className={`text-[10px] font-black uppercase tracking-[0.24em] ${index === 0 ? 'text-[#087f52]' : 'text-current/65'}`}>{timelineLabels[index][0]}</p>
+                          <h4 className="mt-3 text-base font-black leading-tight text-[#0f172a] sm:text-lg">{timelineLabels[index][1]}</h4>
                         </div>
                         <CalendarDays className={`mt-0.5 h-5 w-5 shrink-0 ${index === 0 ? 'text-[#2457d6]' : 'text-[#94a3b8]'}`} />
                       </div>
@@ -188,26 +213,26 @@ const IndiaPreSelectionSection = () => {
                         dateTime={item.dateTime}
                         className={`mt-4 block text-[1.5rem] font-black leading-none tracking-tight sm:text-[1.75rem] ${item.dateTone}`}
                       >
-                        {item.date}
+                        {localizedDates[language][index]}
                       </time>
 
                       <p className={`mt-3 text-xs leading-6 sm:text-sm sm:leading-7 ${index === 0 ? 'text-[#475569]' : 'text-[#64748b]'}`}>
-                        {translate(item.description)}
+                        {timelineLabels[index][2]}
                       </p>
 
                       {'extra' in item ? (
                         <p className="mt-2 text-xs font-bold uppercase tracking-[0.22em] text-[#2457d6]">
-                          {translate(item.extra)}
+                          {timelineLabels[index][3]}
                         </p>
                       ) : null}
                     </article>
                   </li>
                 ))}
               </ol>
-            </motion.div>
+            </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <div className="mx-auto mt-5 max-w-[1760px] rounded-[28px] border border-[#d8e1ee] bg-white px-5 py-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:px-6 sm:py-6 lg:px-8">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -221,10 +246,10 @@ const IndiaPreSelectionSection = () => {
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {benefits.map((item) => (
-            <article key={item.title} className="rounded-[22px] border border-[#d8e1ee] bg-[#f8fbff] p-5">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">{translate(item.title)}</p>
-              <p className="mt-3 text-sm leading-7 text-[#475569]">{translate(item.text)}</p>
+          {benefitsText.map(([title, text]) => (
+            <article key={title} className="rounded-[22px] border border-[#d8e1ee] bg-[#f8fbff] p-5">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">{title}</p>
+              <p className="mt-3 text-sm leading-7 text-[#475569]">{text}</p>
             </article>
           ))}
         </div>
