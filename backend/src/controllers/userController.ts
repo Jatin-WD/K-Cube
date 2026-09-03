@@ -24,6 +24,43 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
   return ok(res, user);
 };
 
+export const getPointsWallet = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
+
+  const [balanceRows] = await pool.query(
+    'SELECT points FROM users WHERE id = ? LIMIT 1',
+    [userId],
+  );
+  const balance = (balanceRows as any[])[0];
+  if (!balance) return fail(res, 404, 'NOT_FOUND', 'User not found');
+
+  const [transactionRows] = await pool.query(
+    `SELECT id, source_type, source_slug, points_delta, balance_after, status, metadata, created_at
+     FROM point_transactions
+     WHERE user_id = ?
+     ORDER BY created_at DESC, id DESC
+     LIMIT 25`,
+    [userId],
+  );
+
+  const [summaryRows] = await pool.query(
+    `SELECT
+       COALESCE(SUM(CASE WHEN points_delta > 0 AND status = 'approved' THEN points_delta ELSE 0 END), 0) AS lifetime_earned,
+       COALESCE(SUM(CASE WHEN points_delta < 0 AND status = 'approved' THEN ABS(points_delta) ELSE 0 END), 0) AS redeemed,
+       COALESCE(SUM(CASE WHEN status = 'pending' THEN points_delta ELSE 0 END), 0) AS pending
+     FROM point_transactions
+     WHERE user_id = ?`,
+    [userId],
+  );
+
+  return ok(res, {
+    balance: Number(balance.points ?? 0),
+    summary: (summaryRows as any[])[0] || { lifetime_earned: 0, redeemed: 0, pending: 0 },
+    transactions: transactionRows,
+  });
+};
+
 export const updateOwnProfile = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');

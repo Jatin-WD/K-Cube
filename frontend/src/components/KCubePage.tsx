@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Coins, Gift, Plane, ShoppingBag, Star } from 'lucide-react';
+import { ArrowRight, Check, Coins, Plane, ShoppingBag, Star } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
 import { shopProducts } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
+import api from '@/lib/api';
 import IndiaPreSelectionSection from './home/IndiaPreSelectionSection';
 
 interface KCubePageProps {
@@ -96,9 +98,9 @@ const marketplaceTileValues = {
 } as const;
 
 const homeSectionCopy = {
-  en: { next: 'Next event', explore: 'Explore by category', curated: 'Curated for India', spotlight: 'Shop spotlight', featured: 'Featured products on the homepage', openShop: 'Open shop', viewShop: 'View in shop', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food purchase claims and referrals feed into the backend points ledger.', allActions: 'View All Point Actions', dashboard: 'Member dashboard', welcome: '100 welcome points' },
+  en: { next: 'Next event', explore: 'Explore by category', curated: 'Curated for India', spotlight: 'Shop spotlight', featured: 'Shop & Earn Points', openShop: 'Open shop', viewShop: 'View in shop', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food purchase claims and referrals feed into the points ledger.', allActions: 'View All Point Actions', dashboard: 'Member dashboard', welcome: 'Account activity' },
   ko: { next: '다음 이벤트', explore: '카테고리 둘러보기', curated: '인도를 위한 큐레이션', spotlight: '쇼핑 추천', featured: '홈페이지 추천 상품', openShop: '쇼핑몰 열기', viewShop: '쇼핑몰에서 보기', actions: 'K-CUBE 포인트 활동', actionsDesc: '인증된 활동, 학습 진행, K-Food 구매 신청 및 추천이 포인트 장부에 반영됩니다.', allActions: '모든 포인트 활동 보기', dashboard: '회원 대시보드', welcome: '웰컴 포인트 100점' },
-  hi: { next: 'अगला इवेंट', explore: 'कैटेगरी देखें', curated: 'India के लिए curated', spotlight: 'Shop spotlight', featured: 'Homepage के featured products', openShop: 'Shop खोलें', viewShop: 'Shop में देखें', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food claims और referrals points ledger में जुड़ते हैं।', allActions: 'सभी point actions देखें', dashboard: 'Member dashboard', welcome: '100 welcome points' },
+  hi: { next: 'अगला इवेंट', explore: 'कैटेगरी देखें', curated: 'India के लिए curated', spotlight: 'Shop spotlight', featured: 'Shop से Points कमाएँ', openShop: 'Shop खोलें', viewShop: 'Shop में देखें', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food claims और referrals points ledger में जुड़ते हैं।', allActions: 'सभी point actions देखें', dashboard: 'Member dashboard', welcome: 'Account activity' },
 } as const;
 
 const homeBannerCopy = {
@@ -171,17 +173,63 @@ const tileAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8'];
 const cardAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8', '#1d67c9', '#12a66a'];
 
 const featuredShopProducts = shopProducts.slice(0, 3);
+const rewardsUi = {
+  en: {
+    title: 'Earn Points. Unlock Rewards. Go Further.',
+    subtitle: 'Earn K-CUBE Points through eligible activities, learning, referrals, shopping and events — then use them toward rewards and special opportunities.',
+    description: 'Discover ways to earn, review your personal wallet and follow the Trip to Korea program from one trusted place.',
+    wallet: 'My points wallet',
+    lifetime: 'Lifetime earned',
+    redeemed: 'Redeemed',
+    pending: 'Pending',
+    activity: 'Recent point activity',
+    noActivity: 'Your verified point activity will appear here after an eligible action.',
+    trip: 'Trip to Korea',
+    tripCopy: 'Qualification is based on the current program rules and verified points. Follow official updates for eligibility information.',
+    viewWallet: 'View points wallet',
+  },
+  ko: {
+    title: '포인트를 적립하고, 리워드를 만나고, 더 멀리 가세요.',
+    subtitle: '활동, 학습, 추천, 쇼핑 및 이벤트를 통해 K-CUBE 포인트를 적립하고 리워드와 특별한 기회를 확인하세요.',
+    description: '적립 방법과 개인 지갑, 한국 여행 프로그램을 한 곳에서 확인하세요.',
+    wallet: '내 포인트 지갑', lifetime: '누적 적립', redeemed: '사용됨', pending: '대기 중', activity: '최근 포인트 활동', noActivity: '적립 활동 후 인증된 포인트 내역이 표시됩니다.', trip: '한국 여행', tripCopy: '자격은 현재 프로그램 규칙과 인증된 포인트에 따라 결정됩니다. 공식 업데이트를 확인하세요.', viewWallet: '포인트 지갑 보기',
+  },
+  hi: {
+    title: 'पॉइंट्स कमाएँ। रिवॉर्ड्स अनलॉक करें। आगे बढ़ें।',
+    subtitle: 'योग्य activities, learning, referrals, shopping और events से K-CUBE पॉइंट्स कमाएँ और उन्हें rewards व special opportunities के लिए इस्तेमाल करें।',
+    description: 'कमाने के तरीके, अपना wallet और Trip to Korea program एक ही जगह देखें।',
+    wallet: 'मेरा पॉइंट्स वॉलेट', lifetime: 'कुल कमाए', redeemed: 'रिडीम किए', pending: 'पेंडिंग', activity: 'हाल की पॉइंट गतिविधि', noActivity: 'योग्य action के बाद verified point activity यहाँ दिखेगी।', trip: 'Trip to Korea', tripCopy: 'Eligibility current program rules और verified points पर निर्भर है। Official updates देखें।', viewWallet: 'पॉइंट्स वॉलेट देखें',
+  },
+} as const;
+
 const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const language = useAppStore((state) => state.language);
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
-  const completedActions = useAppStore((state) => state.completedActions);
-  const awardPoints = useAppStore((state) => state.awardPoints);
   const page = pages[pageKey];
   const t = copy[language];
   const homeText = homeSectionCopy[language];
   const bannerText = homeBannerCopy[language];
   const visual = pageVisuals[pageKey];
+  const rewardsText = rewardsUi[language];
+  const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
+  const [walletLoading, setWalletLoading] = useState(false);
+
+  useEffect(() => {
+    if (pageKey !== 'rewards' || !user) {
+      setWallet(null);
+      return;
+    }
+    let cancelled = false;
+    setWalletLoading(true);
+    api.get('/users/points-wallet')
+      .then((response) => {
+        if (!cancelled) setWallet(response.data?.data || null);
+      })
+      .catch(() => { if (!cancelled) setWallet(null); })
+      .finally(() => { if (!cancelled) setWalletLoading(false); });
+    return () => { cancelled = true; };
+  }, [pageKey, user]);
 
   return (
     <main className="mx-auto min-h-screen max-w-[1320px] overflow-hidden bg-white text-[#111827] shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
@@ -277,10 +325,10 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   {page.badge[language]}
                 </p>
                 <h1 className="mt-4 max-w-5xl text-2xl font-black leading-tight tracking-tight text-[#0f172a] drop-shadow-xl sm:mt-6 sm:text-5xl lg:text-6xl">
-                  {page.title[language]}
+                  {pageKey === 'rewards' ? rewardsText.title : page.title[language]}
                 </h1>
-                <p className="mt-4 max-w-3xl text-sm leading-6 text-[#334155] sm:mt-5 sm:text-lg sm:leading-8">{page.subtitle[language]}</p>
-                <p className="mt-3 max-w-3xl text-xs leading-6 text-[#64748b] sm:mt-4 sm:text-sm sm:leading-7">{page.description[language]}</p>
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-[#334155] sm:mt-5 sm:text-lg sm:leading-8">{pageKey === 'rewards' ? rewardsText.subtitle : page.subtitle[language]}</p>
+                <p className="mt-3 max-w-3xl text-xs leading-6 text-[#64748b] sm:mt-4 sm:text-sm sm:leading-7">{pageKey === 'rewards' ? rewardsText.description : page.description[language]}</p>
                 <div className="mt-5 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-3">
                   {isExternal(page.primaryHref) ? (
                     <a
@@ -309,6 +357,36 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
               </div>
 
               <aside className="rounded-[24px] border border-[#d8e1ee] bg-white p-4 text-[#111827] shadow-[0_12px_30px_rgba(15,23,42,0.08)] sm:p-5">
+                {pageKey === 'rewards' ? (
+                  <>
+                    <div className="flex items-start justify-between gap-4 border-b border-[#e6edf6] pb-5">
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">{rewardsText.wallet}</p>
+                        <p className="mt-2 text-4xl font-black text-[#2457d6]" aria-live="polite">
+                          {walletLoading ? <span className="inline-block h-9 w-24 animate-pulse rounded bg-[#e8f0ff]" aria-label="Loading points" /> : wallet ? `${wallet.balance} pts` : '—'}
+                        </p>
+                      </div>
+                      <Coins className="h-8 w-8 text-[#2457d6]" aria-hidden="true" />
+                    </div>
+                    {wallet ? (
+                      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                        {[[rewardsText.lifetime, wallet.summary.lifetime_earned], [rewardsText.redeemed, wallet.summary.redeemed], [rewardsText.pending, wallet.summary.pending]].map(([label, value]) => (
+                          <div key={String(label)} className="rounded-xl bg-[#f8fbff] p-2">
+                            <p className="text-[10px] font-bold text-[#64748b]">{label}</p>
+                            <p className="mt-1 text-sm font-black text-[#0f172a]">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                    <Link href="/dashboard" className="mt-4 inline-flex text-sm font-black text-[#2457d6]">{rewardsText.viewWallet} →</Link>
+                    <div className="mt-5 border-t border-[#e6edf6] pt-4">
+                      <p className="text-xs font-black uppercase tracking-[0.18em] text-[#d97706]">{rewardsText.trip}</p>
+                      <p className="mt-2 text-sm leading-6 text-[#64748b]">{rewardsText.tripCopy}</p>
+                      <Link href="/trip-to-korea" className="mt-3 inline-flex text-sm font-black text-[#2457d6]">{t.koreaTrip} →</Link>
+                    </div>
+                  </>
+                ) : null}
+                {pageKey !== 'rewards' ? <>
                 <div className="flex items-center justify-between gap-4 border-b border-[#e6edf6] pb-5">
                   <div>
                     <p className="text-sm font-bold text-[#64748b]">{t.pointsWallet}</p>
@@ -318,32 +396,53 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                     <Coins className="h-7 w-7" />
                   </div>
                 </div>
-                <div className="mt-5 grid gap-3">
-                  <div className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-4">
-                    <div className="flex items-center gap-3">
-                      <Gift className="h-5 w-5 text-[#2457d6]" />
-                    <p className="text-sm font-bold text-[#0f172a]">{homeText.welcome}</p>
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-[#64748b]">
-                      {user ? `${copy[language].hello}, ${user.fullName}` : t.welcomeBonus}
-                    </p>
-                  </div>
+                <div className="mt-5">
                   <div className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-4">
                     <div className="flex items-center gap-3">
                       <Plane className="h-5 w-5 text-[#2457d6]" />
                       <p className="text-sm font-bold text-[#0f172a]">{t.koreaTrip}</p>
                     </div>
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#d8e1ee]">
-                      <div className="h-full rounded-full bg-[#2457d6]" style={{ width: `${user ? Math.min(points / 20, 100) : 0}%` }} />
-                    </div>
                     <p className="mt-2 text-sm leading-6 text-[#64748b]">{t.tripLine}</p>
                   </div>
                 </div>
+                </> : null}
               </aside>
             </>
           )}
         </div>
       </section>
+
+      {pageKey === 'rewards' && user ? (
+        <section className="border-b border-[#d8e1ee] bg-[#f8fbff] px-3 py-6 sm:px-4 lg:px-10">
+          <div className="mx-auto grid max-w-[1320px] gap-4 lg:grid-cols-[1.35fr_1fr]">
+            <div className="rounded-2xl border border-[#d8e1ee] bg-white p-5">
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#d97706]">{rewardsText.activity}</p>
+                  <h2 className="mt-2 text-xl font-black text-[#0f172a]">{wallet?.transactions.length ? `${wallet.transactions.length} recent records` : rewardsText.activity}</h2>
+                </div>
+                {wallet?.transactions.length ? <span className="text-xs font-bold text-[#64748b]">Verified ledger</span> : null}
+              </div>
+              {walletLoading ? <div className="mt-4 h-14 animate-pulse rounded-xl bg-[#eef4fb]" aria-label="Loading point activity" /> : wallet?.transactions.length ? (
+                <div className="mt-4 divide-y divide-[#edf2f7]">
+                  {wallet.transactions.slice(0, 5).map((transaction) => (
+                    <div key={transaction.id} className="flex items-center justify-between gap-3 py-3">
+                      <div><p className="text-sm font-bold capitalize text-[#0f172a]">{transaction.source_type.replace(/_/g, ' ')}</p><p className="text-xs text-[#64748b]">{new Date(transaction.created_at).toLocaleDateString()}</p></div>
+                      <span className={`text-sm font-black ${transaction.points_delta >= 0 ? 'text-[#087f52]' : 'text-[#b12704]'}`}>{transaction.points_delta >= 0 ? '+' : ''}{transaction.points_delta} pts</span>
+                    </div>
+                  ))}
+                </div>
+              ) : <p className="mt-4 rounded-xl bg-[#f8fbff] p-4 text-sm text-[#64748b]">{rewardsText.noActivity}</p>}
+            </div>
+            <div className="rounded-2xl border border-[#d8e1ee] bg-[#eef5ff] p-5">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">Wallet guidance</p>
+              <h2 className="mt-2 text-xl font-black text-[#0f172a]">Your balance stays tied to verified activity.</h2>
+              <p className="mt-3 text-sm leading-6 text-[#64748b]">Pending reviews and approved rewards are kept separate in the points ledger. No points are added by visiting this page.</p>
+              <Link href="/dashboard" className="mt-4 inline-flex rounded-full bg-[#2457d6] px-4 py-2.5 text-sm font-black text-white">View wallet details <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {pageKey === 'home' ? <IndiaPreSelectionSection /> : null}
 
@@ -494,7 +593,6 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {actions.slice(0, 6).map((action, index) => {
-                const completed = completedActions.includes(action.id);
                 return (
                   <article key={action.id} className="rounded-[24px] border border-[#d8e1ee] bg-[#f8fbff] p-4 sm:p-5" style={{ borderTop: `4px solid ${cardAccents[index % cardAccents.length]}` }}>
                     <div className="flex items-start justify-between gap-4">
@@ -509,18 +607,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                     <p className="mt-3 text-sm leading-6 text-[#565959] sm:min-h-[52px]">{action.description[language]}</p>
                     <button
                       type="button"
-                      disabled={completed}
-                      onClick={() => {
-                        if (!user) {
-                          window.location.href = '/signin';
-                          return;
-                        }
-                        awardPoints(action.id, action.points);
-                      }}
-                      className="kc-button kc-button-primary mt-5 w-full disabled:cursor-not-allowed disabled:bg-[#d8e4f0] disabled:text-[#486581]"
+                      onClick={() => { window.location.href = user ? `/${action.id.replace('-', '/')}` : '/signin'; }}
+                      className="kc-button kc-button-primary mt-5 w-full"
                     >
-                      {completed ? <Check className="h-4 w-4" /> : <ShoppingBag className="h-4 w-4" />}
-                      {completed ? t.completed : user ? t.earnPoints : t.loginRequired}
+                      <ArrowRight className="h-4 w-4" />
+                      {user ? 'View details' : t.loginRequired}
                     </button>
                   </article>
                 );

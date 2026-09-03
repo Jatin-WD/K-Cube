@@ -59,6 +59,7 @@ interface AppState {
   toggleLanguage: () => void;
   signIn: (user: KCubeUser, token?: string | null, refreshToken?: string | null, points?: number) => void;
   updateUser: (user: Partial<KCubeUser>) => void;
+  setPoints: (points: number) => void;
   signOut: () => void;
   awardPoints: (actionId: string, points: number) => void;
   addToCart: (productId: string, quantity?: number) => void;
@@ -114,6 +115,7 @@ export const useAppStore = create<AppState>()(
       updateUser: (user) => set((state) => ({
         user: state.user ? { ...state.user, ...user } : state.user,
       })),
+      setPoints: (points) => set((state) => ({ points, user: state.user ? { ...state.user, points } : state.user })),
       signOut: () => set({ user: null, token: null, refreshToken: null, sessionSeed: null, points: 0, completedActions: [], shopCart: [], shopOrders: [] }),
       awardPoints: (actionId, points) =>
         set((state) => {

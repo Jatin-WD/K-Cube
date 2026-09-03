@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { BriefcaseBusiness, Camera, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import { copy, navItems } from '@/lib/kcubeContent';
+import api from '@/lib/api';
 import { useAppStore, type Language } from '@/store/useAppStore';
 
 const languageLabels: Record<Language, string> = {
@@ -18,6 +19,9 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenuKey, setActiveMenuKey] = useState<string | null>(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [walletLoading, setWalletLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const headerRef = useRef<HTMLElement | null>(null);
   const activeTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -56,6 +60,7 @@ const Header = () => {
     clearMenuTimers();
     setActiveMenuKey(null);
     setLanguageMenuOpen(false);
+    setAccountMenuOpen(false);
     setMobileMenuOpen(false);
   };
 
@@ -65,9 +70,11 @@ const Header = () => {
       const insideTrigger = target instanceof Element && Boolean(target.closest('[data-mega-trigger]'));
       const insidePanel = target instanceof Element && Boolean(target.closest('[data-mega-panel]'));
       const insideLanguageMenu = target instanceof Element && Boolean(target.closest('[data-language-menu]'));
-      if (!insideTrigger && !insidePanel && !insideLanguageMenu) {
+      const insideAccountMenu = target instanceof Element && Boolean(target.closest('[data-account-menu]'));
+      if (!insideTrigger && !insidePanel && !insideLanguageMenu && !insideAccountMenu) {
         setActiveMenuKey(null);
         setLanguageMenuOpen(false);
+        setAccountMenuOpen(false);
       }
     };
 
@@ -76,6 +83,7 @@ const Header = () => {
           const hadMegaMenu = Boolean(activeMenuKey);
           setActiveMenuKey(null);
           setLanguageMenuOpen(false);
+          setAccountMenuOpen(false);
           setMobileMenuOpen(false);
           if (hadMegaMenu) activeTriggerRef.current?.focus();
         }
@@ -90,6 +98,23 @@ const Header = () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [activeMenuKey]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!user) {
+      setWalletBalance(null);
+      setWalletLoading(false);
+      return () => { cancelled = true; };
+    }
+    setWalletLoading(true);
+    api.get('/users/points-wallet')
+      .then((response) => {
+        if (!cancelled && typeof response.data?.data?.balance === 'number') setWalletBalance(response.data.data.balance);
+      })
+      .catch(() => { if (!cancelled) setWalletBalance(null); })
+      .finally(() => { if (!cancelled) setWalletLoading(false); });
+    return () => { cancelled = true; };
+  }, [user]);
 
   const openMenu = (key: string) => {
     clearMenuTimers();
@@ -232,8 +257,8 @@ const Header = () => {
               {t.koreaTrip}
             </Link>
             {user ? (
-              <div className="group/account relative">
-                <button type="button" aria-haspopup="menu" className="flex shrink-0 items-center gap-2 text-[11px] leading-tight xl:text-xs">
+              <div className="group/account relative" data-account-menu>
+                <button type="button" aria-haspopup="menu" aria-expanded={accountMenuOpen} aria-controls="account-menu" onClick={() => setAccountMenuOpen((open) => !open)} className="flex shrink-0 items-center gap-2 text-[11px] leading-tight xl:text-xs">
                   <User className="h-[18px] w-[18px] text-[#2457d6]" />
                   <span>
                     <span className="block text-[#5b6b7f]">{t.hello}</span>
@@ -242,16 +267,25 @@ const Header = () => {
                     </span>
                   </span>
                 </button>
-                <div className="invisible absolute right-0 top-full z-20 w-44 pt-2 opacity-0 transition group-hover/account:visible group-hover/account:opacity-100 group-focus-within/account:visible group-focus-within/account:opacity-100">
+                <div id="account-menu" role="menu" className={`absolute right-0 top-full z-20 w-56 pt-2 transition ${accountMenuOpen ? 'visible opacity-100' : 'invisible pointer-events-none opacity-0'} group-hover/account:visible group-hover/account:opacity-100 group-focus-within/account:visible group-focus-within/account:opacity-100`}>
                   <div className="rounded-2xl border border-[#d6dfeb] bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
-                    <Link href="/rewards" className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
-                      {t.pointsWallet}
-                    </Link>
-                    <Link href="/dashboard" className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
+                    <div className="mb-2 border-b border-[#e6edf6] px-3 pb-3">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748b]">{language === 'ko' ? '내 포인트' : language === 'hi' ? 'मेरे पॉइंट्स' : 'My points'}</p>
+                      <p className="mt-1 text-2xl font-black text-[#2457d6]" aria-live="polite">
+                        {walletLoading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-[#e8f0ff]" aria-label="Loading points" /> : walletBalance !== null ? `${walletBalance} pts` : '—'}
+                      </p>
+                      <Link href="/dashboard" onClick={() => setAccountMenuOpen(false)} className="mt-1 inline-flex text-xs font-black text-[#2457d6] hover:text-[#1f4bb8]">
+                        {language === 'ko' ? '포인트 지갑 보기 →' : language === 'hi' ? 'पॉइंट्स वॉलेट देखें →' : 'View points wallet →'}
+                      </Link>
+                    </div>
+                    <Link href="/dashboard" onClick={() => setAccountMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
                       Dashboard
                     </Link>
-                    <Link href="/profile" className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
+                    <Link href="/profile" onClick={() => setAccountMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
                       My profile
+                    </Link>
+                    <Link href="/rewards" onClick={() => setAccountMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-bold text-[#111827] hover:bg-[#f4f7fb]">
+                      Rewards Hub
                     </Link>
                     <button type="button" onClick={signOut} className="block w-full rounded-lg px-3 py-2 text-left text-sm font-bold text-[#b12704] hover:bg-[#f4f7fb]">
                       {t.signOut}
@@ -276,22 +310,21 @@ const Header = () => {
       {mobileMenuOpen ? (
         <div className="border-b border-[#d8e1ee] bg-white px-3 py-3 md:hidden">
           <div className="grid gap-3">
-            <div className="grid grid-cols-2 gap-2">
-              <Link
-                href="/signin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center rounded-full border border-[#d6dfeb] px-3 py-2 text-sm font-bold text-[#0f172a]"
-              >
-                {t.signIn}
-              </Link>
-              <Link
-                href="/signup"
-                onClick={() => setMobileMenuOpen(false)}
-                className="inline-flex items-center justify-center rounded-full bg-[#2457d6] px-3 py-2 text-sm font-black text-white"
-              >
-                {t.signUp}
-              </Link>
-            </div>
+            {user ? (
+              <div className="grid gap-1 rounded-2xl border border-[#d6dfeb] bg-[#f8fbff] p-2">
+                <p className="px-2 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#64748b]">My points · {walletBalance !== null ? `${walletBalance} pts` : '—'}</p>
+                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="rounded-lg bg-white px-3 py-2 text-sm font-black text-[#2457d6]">View points wallet →</Link>
+                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-sm font-bold text-[#0f172a]">Dashboard</Link>
+                <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-sm font-bold text-[#0f172a]">My profile</Link>
+                <Link href="/rewards" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-sm font-bold text-[#0f172a]">Rewards Hub</Link>
+                <button type="button" onClick={signOut} className="border-t border-[#e6edf6] px-3 pt-2 text-left text-sm font-bold text-[#b12704]">{t.signOut}</button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/signin" onClick={() => setMobileMenuOpen(false)} className="inline-flex items-center justify-center rounded-full border border-[#d6dfeb] px-3 py-2 text-sm font-bold text-[#0f172a]">{t.signIn}</Link>
+                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="inline-flex items-center justify-center rounded-full bg-[#2457d6] px-3 py-2 text-sm font-black text-white">{t.signUp}</Link>
+              </div>
+            )}
             <Link
               href="/trip-to-korea"
               onClick={() => setMobileMenuOpen(false)}

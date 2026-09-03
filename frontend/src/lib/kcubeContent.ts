@@ -1037,13 +1037,13 @@ export const pages: Record<PageKey, PageContent> = {
     badge: txt('Rewards', '리워드', 'Rewards'),
     title: txt('Points system for signups, activities, learning, food, and events', '가입, 활동, 학습, 음식, 이벤트를 위한 포인트 시스템', 'Signups, activities, learning, food aur events ke liye points system'),
     subtitle: txt('Users must be logged in to apply for points-based actions. Sign-out hides private wallet data.', '포인트 기반 액션 신청은 로그인이 필요하며 로그아웃 시 개인 지갑 데이터가 숨겨집니다.', 'Points actions ke liye login zaruri hai. Sign out ke baad private wallet hide hota hai.'),
-    description: txt('A backend point ledger should store every award, redemption, admin adjustment, and Korea trip qualification event.', '백엔드 포인트 원장은 모든 지급, 교환, 관리자 조정, 한국 여행 자격 이벤트를 저장해야 합니다.', 'Backend point ledger every award, redemption, admin adjustment aur Korea trip qualification store karega.'),
+    description: txt('Discover eligible ways to earn, follow verified point activity and review current reward opportunities.', '참여 가능한 적립 방법과 인증된 포인트 활동, 현재 리워드 기회를 확인하세요.', 'Eligible earning methods, verified point activity aur current reward opportunities dekhein.'),
     primaryCta: txt('See points system', '포인트 시스템 보기', 'Points system dekhein'),
-    primaryHref: '/rewards/points-system',
+    primaryHref: '/activities',
     cards: [
-      { title: txt('Earn points', '포인트 적립', 'Points earn'), description: txt('Welcome bonus, activity tasks, lessons, K-Food missions, RSVPs and referrals.', '웰컴 보너스, 활동, 수업, K-Food 미션, RSVP, 추천.', 'Welcome bonus, tasks, lessons, K-Food, RSVP aur referrals.'), href: '/rewards/points-system', cta: txt('Open details', '상세 보기', 'Details dekhein') },
+      { title: txt('Earn points', '포인트 적립', 'Points earn'), description: txt('Explore eligible activities, lessons, K-Food participation, RSVPs and referrals.', '참여 가능한 활동, 수업, K-Food 참여, RSVP 및 추천을 확인하세요.', 'Eligible activities, lessons, K-Food participation, RSVPs aur referrals explore karein.'), href: '/activities', cta: txt('Explore ways to earn', '적립 방법 보기', 'Earn karne ke tareeqe') },
       { title: txt('Trip to Korea', '한국 여행', 'Trip to Korea'), description: txt('A dedicated page for the grand reward and qualification rules.', '대표 리워드와 자격 규칙을 위한 전용 페이지.', 'Grand reward aur qualification rules ka dedicated page.'), href: '/trip-to-korea', cta: txt('View trip page', '여행 페이지 보기', 'Trip page dekhein') },
-      { title: txt('Redeem rewards', '리워드 교환', 'Rewards redeem'), description: txt('Coupons, event access, K-Food offers, merch and premium benefits.', '쿠폰, 이벤트 입장, K-Food 혜택, 굿즈, 프리미엄 혜택.', 'Coupons, event access, K-Food offers, merch aur benefits.'), href: '/rewards/points-system', cta: txt('See redemption', '교환 보기', 'Redemption dekhein') },
+      { title: txt('Reward opportunities', '리워드 기회', 'Reward opportunities'), description: txt('Review current K-CUBE reward opportunities and program updates.', '현재 K-CUBE 리워드 기회와 프로그램 업데이트를 확인하세요.', 'Current K-CUBE reward opportunities aur program updates dekhein.'), href: '/rewards', cta: txt('View opportunities', '기회 보기', 'Opportunities dekhein') },
     ],
   },
   events: {
@@ -1108,7 +1108,7 @@ export const pages: Record<PageKey, PageContent> = {
     primaryCta: txt('Start earning', '포인트 모으기', 'Earning start karein'),
     primaryHref: '/signup',
     cards: [
-      { title: txt('Qualification', '자격', 'Qualification'), description: txt('Only verified points count toward trip eligibility.', '검증된 포인트만 여행 자격에 반영됩니다.', 'Sirf verified points trip eligibility mein count honge.'), href: '/rewards/points-system', cta: txt('See rules', '규칙 보기', 'Rules dekhein') },
+      { title: txt('Qualification', '자격', 'Qualification'), description: txt('Only verified points count toward trip eligibility.', '검증된 포인트만 여행 자격에 반영됩니다.', 'Sirf verified points trip eligibility mein count honge.'), href: '/trip-to-korea', cta: txt('See program', '프로그램 보기', 'Program dekhein') },
       { title: txt('Monthly race', '월간 레이스', 'Monthly race'), description: txt('Admins can review users, points, fraud flags and final winners.', '관리자는 사용자, 포인트, 부정 플래그, 최종 우승자를 검토합니다.', 'Admins users, points, fraud flags aur winners review karte hain.'), href: '/admin', cta: txt('Admin CMS', '관리자 CMS', 'Admin CMS') },
       { title: txt('Culture journey', '문화 여정', 'Culture journey'), description: txt('The reward celebrates Korean culture, food, language and community.', '이 리워드는 한국 문화, 음식, 언어, 커뮤니티를 기념합니다.', 'Reward Korean culture, food, language aur community celebrate karta hai.'), href: '/activities', cta: txt('Explore', '둘러보기', 'Explore') },
     ],

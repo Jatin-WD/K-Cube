@@ -113,6 +113,7 @@ const MemberDashboard = () => {
   const router = useRouter();
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
+  const setPoints = useAppStore((state) => state.setPoints);
   const language = useAppStore((state) => state.language);
   const t = memberCopy[language];
   const ui = memberUiCopy[language];
@@ -250,6 +251,16 @@ const MemberDashboard = () => {
       setProfileForm({ full_name: data.full_name || user.fullName, phone: data.phone || '', city: data.city || '', state: data.state || '', country: data.country || '' });
     }).catch(() => setProfileMessage('Profile load nahi ho paya.'));
   }, [activeView, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    api.get('/users/points-wallet').then((response) => {
+      const balance = response.data?.data?.balance;
+      if (!cancelled && typeof balance === 'number') setPoints(balance);
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [setPoints, user]);
 
   useEffect(() => {
     if (!user || activeView !== 'submissionHistory') return;
