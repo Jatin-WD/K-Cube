@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check, Coins, ExternalLink, Plane, ShoppingBag, Star } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
-import { getStoreMeta, shopProducts } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
 import IndiaPreSelectionSection from './home/IndiaPreSelectionSection';
+import { getStoreMeta, shopProducts } from '@/lib/shopCatalog';
 
 interface KCubePageProps {
   pageKey: PageKey;
@@ -15,6 +15,7 @@ interface KCubePageProps {
 }
 
 const isExternal = (href: string) => href.startsWith('http');
+const featuredShopProducts = shopProducts.slice(0, 3);
 
 const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string; accentHex: string }> = {
   home: {
@@ -172,7 +173,6 @@ const homeBannerCopy = {
 const tileAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8'];
 const cardAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8', '#1d67c9', '#12a66a'];
 
-const featuredShopProducts = shopProducts.slice(0, 3);
 const rewardsUi = {
   en: {
     title: 'Earn Points. Unlock Rewards. Go Further.',
@@ -505,7 +505,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
         </div>
       </section>
 
-      <section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
+      {false && (<section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
         <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[#d8e1ee] bg-white p-4 text-[#0f172a] shadow-[0_6px_20px_rgba(15,55,95,0.07)] sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -541,7 +541,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
             ))}
           </div>
         </div>
-      </section>
+      </section>)}
 
       {pageKey === 'about' ? (
         <section id="contact" className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
