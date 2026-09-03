@@ -31,6 +31,7 @@ import {
   Mail,
   Send,
   PlayCircle,
+  Printer,
   Plus,
   Trash2,
   X,
@@ -791,6 +792,13 @@ const matchesQuery = (query: string, values: Array<unknown>) => {
   return values.some((value) => normalize(value).includes(query));
 };
 
+const escapePrintHtml = (value: unknown) => String(value ?? '')
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#039;');
+
 const submissionKey = (submission: Pick<SubmissionRow, 'source_type' | 'id'>) => `${submission.source_type}:${submission.id}`;
 
 const readPayload = <T,>(result: PromiseSettledResult<unknown>, fallback: T): T => {
@@ -1140,6 +1148,7 @@ const AdminControlCenter = () => {
   const [overviewActivityPage, setOverviewActivityPage] = useState(1);
   const [userDeleteConfirm, setUserDeleteConfirm] = useState(false);
   const [adminQuery, setAdminQuery] = useState('');
+  const [userRoleFilter, setUserRoleFilter] = useState('member');
   const sidebarOpen = true;
   const adminScope = (user?.adminScope || 'super_admin') as AdminScope;
   const canAccess = (scope: AdminScope | null) => !scope || adminScope === 'super_admin' || adminScope === scope;
@@ -1294,8 +1303,11 @@ const AdminControlCenter = () => {
     [blocks, selectedPageId],
   );
   const filteredUsers = useMemo(
-    () => users.filter((entry) => matchesQuery(query, [entry.full_name, entry.username, entry.email, entry.role, entry.status, entry.city, entry.state, entry.country])),
-    [query, users],
+    () => users.filter((entry) => {
+      const matchesRole = userRoleFilter === 'all' || entry.role === userRoleFilter;
+      return matchesRole && matchesQuery(query, [entry.full_name, entry.username, entry.email, entry.role, entry.status, entry.city, entry.state, entry.country]);
+    }),
+    [query, userRoleFilter, users],
   );
   const filteredAdminAccounts = useMemo(
     () => adminAccounts.filter((entry) => matchesQuery(query, [entry.full_name, entry.username, entry.email, entry.phone, entry.status, entry.city, entry.state, entry.country])),
@@ -3110,9 +3122,32 @@ const AdminControlCenter = () => {
       profile_image: entry.profile_image || '',
     });
 
+    const printUsers = () => {
+      const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+      if (!printWindow) {
+        setNotice('Please allow pop-ups to print the users list.');
+        return;
+      }
+      const rows = filteredUsers.map((entry, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${escapePrintHtml(entry.full_name)}</td>
+          <td>${escapePrintHtml(entry.email)}</td>
+          <td>${escapePrintHtml(entry.phone || '—')}</td>
+          <td>${escapePrintHtml(entry.status)}</td>
+          <td>${escapePrintHtml(entry.points)}</td>
+        </tr>`).join('');
+      printWindow.document.write(`<!doctype html><html><head><title>K-CUBE Users List</title><style>
+        body{font-family:Arial,sans-serif;color:#102a43;padding:28px}h1{font-size:22px;margin:0 0 6px}p{color:#627d98;margin:0 0 20px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #bcccdc;padding:9px;text-align:left}th{background:#eaf2f8;color:#0b4eae;text-transform:uppercase;font-size:10px;letter-spacing:.08em}
+      </style></head><body><h1>K-CUBE Users List</h1><p>${filteredUsers.length} ${userRoleFilter === 'all' ? 'users' : `${escapePrintHtml(userRoleFilter)} accounts`} · Printed ${new Date().toLocaleString()}</p><table><thead><tr><th>S.No.</th><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Points</th></tr></thead><tbody>${rows || '<tr><td colspan="6">No users found.</td></tr>'}</tbody></table></body></html>`);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    };
+
     return (
       <>
-        <SectionShell title="Users" description="Manage account access, profile details and user actions from one compact list." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span>}>
+        <SectionShell title="Users" description="Manage account access, profile details and user actions from one compact list." actions={<div className="flex flex-wrap items-center justify-end gap-2"><span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span><select aria-label="Filter users by role" value={userRoleFilter} onChange={(event) => setUserRoleFilter(event.target.value)} className="rounded-lg border border-white/10 bg-[#101014] px-3 py-2 text-xs font-bold text-white"><option value="member">Users</option><option value="manager">Managers</option><option value="admin">Admins</option><option value="guest">Guests</option><option value="all">All roles</option></select><button type="button" onClick={printUsers} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]"><Printer className="h-4 w-4" /> Print list</button></div>}>
           <div className="overflow-hidden rounded-xl border border-white/10">
             <div className="hidden grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_100px_100px_90px_90px_150px] gap-3 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400] lg:grid">
               <span>S.No.</span><span>Name</span><span>Email</span><span>Role</span><span>Status</span><span>Points</span><span>Streak</span><span>Actions</span>
