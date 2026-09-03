@@ -11,15 +11,17 @@ interface MegaMenuProps {
   sections: MegaSection[];
   language: Language;
   onNavigate?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   variant?: 'default' | 'all';
 }
 
 const getLinkKey = (link: MenuLink) => `${link.label.en}-${link.href}`;
 
 const panelCard =
-  'flex w-full items-start justify-between gap-3 rounded-[10px] border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0b4eae]';
+  'flex w-full items-start justify-between gap-3 rounded-[10px] border px-4 py-2.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0b4eae]';
 
-const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaMenuProps) => {
+const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, variant = 'default' }: MegaMenuProps) => {
   const initialFeaturedIndex = sections[0]?.links.findIndex((link) => link.featured) ?? -1;
   const [activeLinkIndex, setActiveLinkIndex] = useState(initialFeaturedIndex >= 0 ? initialFeaturedIndex : 0);
   const [activeChildIndex, setActiveChildIndex] = useState(0);
@@ -44,8 +46,8 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
 
   if (isAllMenu) {
     return (
-      <div className="mx-auto w-full max-w-[1320px] px-3 sm:px-4 lg:px-6">
-          <div className="max-h-[min(68vh,480px)] overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-3 pb-4 shadow-[0_18px_40px_rgba(15,55,95,0.12)]">
+      <div id="desktop-mega-menu" data-mega-panel className="pointer-events-auto mx-auto w-full max-w-[1320px] px-3 sm:px-4 lg:px-6" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+          <div className="max-h-[calc(100vh-172px)] overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-2.5 pb-3 shadow-[0_18px_40px_rgba(15,55,95,0.12)]">
           <div className="grid min-h-0 gap-3 lg:grid-cols-[minmax(220px,0.92fr)_minmax(240px,1fr)_minmax(280px,1.08fr)_minmax(260px,0.96fr)]">
           <aside className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
             <div className="border-b border-[#eef0f1] px-4 py-3">
@@ -255,9 +257,9 @@ const MegaMenu = ({ sections, language, onNavigate, variant = 'default' }: MegaM
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-3 sm:px-4 lg:px-6">
+    <div id="desktop-mega-menu" data-mega-panel className="pointer-events-auto mx-auto w-full max-w-[1320px] px-3 sm:px-4 lg:px-6" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <div
-        className={`grid max-h-[min(68vh,480px)] min-h-0 gap-3 overflow-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-3 shadow-[0_18px_40px_rgba(15,55,95,0.12)] ${
+        className={`grid max-h-[calc(100vh-172px)] min-h-0 gap-2.5 overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-2.5 shadow-[0_18px_40px_rgba(15,55,95,0.12)] ${
           isAllMenu
             ? 'lg:grid-cols-[minmax(250px,0.96fr)_minmax(250px,0.92fr)_minmax(300px,1.06fr)_minmax(260px,0.92fr)]'
             : 'lg:grid-cols-[minmax(240px,0.92fr)_minmax(260px,1fr)_minmax(300px,1.04fr)]'

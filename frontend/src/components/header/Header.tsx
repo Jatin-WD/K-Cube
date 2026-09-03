@@ -19,6 +19,7 @@ const Header = () => {
   const [activeMenuKey, setActiveMenuKey] = useState<string | null>(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
+  const activeTriggerRef = useRef<HTMLButtonElement | null>(null);
   const openMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const language = useAppStore((state) => state.language);
@@ -51,19 +52,23 @@ const Header = () => {
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent | PointerEvent) => {
-      if (!headerRef.current) return;
-      if (!headerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const insideTrigger = target instanceof Element && Boolean(target.closest('[data-mega-trigger]'));
+      const insidePanel = target instanceof Element && Boolean(target.closest('[data-mega-panel]'));
+      if (!insideTrigger && !insidePanel) {
         setActiveMenuKey(null);
         setLanguageMenuOpen(false);
       }
     };
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setActiveMenuKey(null);
-        setLanguageMenuOpen(false);
-        setMobileMenuOpen(false);
-      }
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          const hadMegaMenu = Boolean(activeMenuKey);
+          setActiveMenuKey(null);
+          setLanguageMenuOpen(false);
+          setMobileMenuOpen(false);
+          if (hadMegaMenu) activeTriggerRef.current?.focus();
+        }
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
@@ -74,7 +79,7 @@ const Header = () => {
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [activeMenuKey]);
 
   const openMenu = (key: string) => {
     clearMenuTimers();
@@ -83,6 +88,10 @@ const Header = () => {
 
   const scheduleOpenMenu = (key: string) => {
     clearMenuTimers();
+    if (activeMenuKey) {
+      setActiveMenuKey(key);
+      return;
+    }
     openMenuTimerRef.current = setTimeout(() => {
       setActiveMenuKey(key);
       openMenuTimerRef.current = null;
@@ -94,7 +103,7 @@ const Header = () => {
     closeMenuTimerRef.current = setTimeout(() => {
       setActiveMenuKey(null);
       closeMenuTimerRef.current = null;
-    }, 140);
+    }, 160);
   };
 
   if (isAdminRoute) {
@@ -370,6 +379,9 @@ const Header = () => {
         className="group/nav relative hidden border-b border-[#e6edf6] bg-[#f8fbff] md:block"
         onMouseEnter={clearMenuTimers}
         onMouseLeave={scheduleCloseMenus}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) scheduleCloseMenus();
+        }}
       >
         <div className="mx-auto flex max-w-[1320px] items-center gap-2 px-3 sm:px-4 lg:px-8">
           <div className="flex min-h-[34px] flex-1 items-center gap-0.5 overflow-visible px-0 lg:min-h-[40px]">
@@ -380,11 +392,17 @@ const Header = () => {
                   <button
                     key={item.label.en}
                     type="button"
+                    ref={isActive ? activeTriggerRef : undefined}
+                    data-mega-trigger
+                    aria-controls="desktop-mega-menu"
                     aria-haspopup="menu"
                     aria-expanded={isActive}
                     onMouseEnter={() => scheduleOpenMenu(item.label.en)}
                     onMouseLeave={scheduleCloseMenus}
-                    onFocus={() => openMenu(item.label.en)}
+                    onFocus={(event) => {
+                      activeTriggerRef.current = event.currentTarget;
+                      openMenu(item.label.en);
+                    }}
                     onClick={() => {
                       if (isActive) {
                         closeAllMenus();
@@ -436,15 +454,15 @@ const Header = () => {
           </a>
           {activeMenu?.dropdown ? (
             <div
-              className="absolute inset-x-0 top-full z-[130] pt-0"
-              onMouseEnter={() => openMenu(activeMenu.label.en)}
-              onMouseLeave={scheduleCloseMenus}
+              className="pointer-events-none absolute inset-x-0 top-full z-[130]"
             >
               <MegaMenu
                 key={`${activeMenu.label.en}-${activeMenu.dropdown.length}`}
                 sections={activeMenu.dropdown}
                 language={language}
                 onNavigate={closeAllMenus}
+                onMouseEnter={() => openMenu(activeMenu.label.en)}
+                onMouseLeave={scheduleCloseMenus}
                 variant={activeMenu.label.en === 'All' ? 'all' : 'default'}
               />
             </div>

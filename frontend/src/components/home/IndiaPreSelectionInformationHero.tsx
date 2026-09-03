@@ -21,6 +21,7 @@ export default function IndiaPreSelectionInformationHero() {
               <Link href="/india-pre-selection/announcement" className="kc-button kc-button-primary w-full whitespace-nowrap sm:w-auto">View announcements<ArrowRight className="h-4 w-4" /></Link>
               <a href="#festival-story" className="kc-button kc-button-secondary w-full whitespace-nowrap sm:w-auto">Explore the festival<ArrowRight className="h-4 w-4" /></a>
             </div>
+            <a href="#official-india-representation" className="mt-5 inline-flex w-fit items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#d7e7ff] underline decoration-[#d29b24] underline-offset-4 hover:text-white">Official India representation<ArrowRight className="h-3.5 w-3.5" /></a>
           </div>
         </article>
         <figure className="relative min-h-[360px] overflow-hidden bg-[#101b36] lg:min-h-[500px]">

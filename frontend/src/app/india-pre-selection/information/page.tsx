@@ -10,10 +10,11 @@ import {
 import type { ReactNode } from 'react';
 import IndiaPreSelectionInformationHero from '@/components/home/IndiaPreSelectionInformationHero';
 import FestivalVideoPlayer from '@/components/home/FestivalVideoPlayer';
+import OfficialRepresentationSection from '@/components/home/OfficialRepresentationSection';
 
 export const metadata = {
-  title: 'ITAEWON World Music Festival | India Participation & Festival Highlights | K-CUBE',
-  description: "Explore the ITAEWON World Music Festival, view previous festival highlights, learn about K-CUBE's India pre-selection journey and stay informed about future participation opportunities.",
+  title: 'ITAEWON World Music Festival India | K-CUBE',
+  description: 'Explore the ITAEWON World Music Spirit Festival, the completed 2026 India Pre-Selection, official India representation, festival updates, Seoul event information and future participation opportunities through K-CUBE.',
 };
 
 const mediaSources = [
@@ -41,7 +42,7 @@ const storyCards = [
   ['04', 'Itaewon, Seoul', 'A globally recognized cultural district where international communities, music, food and culture meet.'],
 ] as const;
 
-const journey = ['India', 'K-CUBE', 'India pre-selection', 'Official festival process', 'Seoul, Korea'] as const;
+const journey = ['India', 'K-CUBE · India Participation Platform', 'India Pre-Selection', 'Official Festival Process', 'Itaewon, Seoul'] as const;
 
 const timeline = [
   ['2025', 'Previous festival highlights', 'Photos and videos from Seoul will be added after media approval.'],
@@ -76,7 +77,7 @@ export default function InformationPage() {
           <div>
             <Eyebrow>Application status</Eyebrow>
             <h2 id="status-heading" className="mt-2 text-2xl font-black text-[#102a43] sm:text-3xl">2026 India Pre-Selection Has Closed</h2>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#526f8f]">Thank you to everyone who participated in the 2026 ITAEWON World Music Festival India Pre-Selection through K-CUBE. The application period concluded on 30 August 2026. Applicants and selected participants should follow official K-CUBE announcements for further updates regarding the current festival cycle.</p>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#526f8f]">Thank you to everyone who participated in the 2026 ITAEWON World Music Festival India Pre-Selection through K-CUBE. The application period concluded on 30 August 2026. Applicants and shortlisted participants should continue following official K-CUBE announcements for updates regarding the current festival cycle.</p>
           </div>
           <div className="flex flex-col items-start gap-3 lg:items-end">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#b9d9d0] bg-[#effaf6] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#19745d]"><CheckCircle2 className="h-4 w-4" />2026 participation closed</div>
@@ -88,12 +89,28 @@ export default function InformationPage() {
         </div>
       </section>
 
+      <OfficialRepresentationSection />
+
+      <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="current-cycle-heading">
+        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-white p-5 shadow-[0_12px_35px_rgba(15,55,95,0.07)] sm:p-7 lg:p-9">
+          <SectionHeading eyebrow="Current festival cycle" title="The 2026 Journey Continues">India registration is closed, while the current festival cycle continues through official selection and festival updates.</SectionHeading>
+          <div id="current-cycle-heading" className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              ['30 AUG 2026', 'India Pre-Selection', 'Completed', 'border-[#b9d9d0] bg-[#effaf6] text-[#19745d]'],
+              ['CURRENT STAGE', 'Selection & Festival Updates', 'In Progress', 'border-[#b9cdec] bg-[#eef4ff] text-[#2457d6]'],
+              ['4–6 OCT 2026', 'ITAEWON World Music Spirit Festival', 'Upcoming', 'border-[#d9c4f0] bg-[#f7f1ff] text-[#5c2a8d]'],
+              ['2027', 'Next India Participation Cycle', 'To Be Announced', 'border-[#d8e1ee] bg-[#f8fbff] text-[#526f8f]'],
+            ].map(([date, title, status, tone], index) => <article key={title} className={`rounded-[18px] border p-5 ${tone}`}><p className="text-xs font-black tracking-[0.16em]">{date}</p><h3 className="mt-4 text-lg font-black text-[#102a43]">{title}</h3><p className="mt-3 text-xs font-black uppercase tracking-[0.16em]">{status}</p>{index < 3 ? <div className="mt-4 h-1 rounded-full bg-current/20"><div className="h-full w-2/3 rounded-full bg-current" /></div> : null}</article>)}
+          </div>
+        </div>
+      </section>
+
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="next-cycle-heading">
         <div className="mx-auto grid max-w-[1320px] gap-6 overflow-hidden rounded-[24px] border border-[#d9c4f0] bg-[#f7f1ff] p-5 sm:p-7 lg:grid-cols-[1fr_260px] lg:items-center lg:p-9">
           <div>
             <Eyebrow>Next participation cycle</Eyebrow>
             <h2 id="next-cycle-heading" className="mt-2 text-3xl font-black text-[#102a43] sm:text-4xl">Want to Represent India Next Time?</h2>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#526f8f]">The 2026 India Pre-Selection has concluded. K-CUBE plans to open participation opportunities again for the next ITAEWON World Music Festival cycle in 2027. Future eligibility, submission requirements, schedules and participation details will be published on K-CUBE after official confirmation.</p>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#526f8f]">The 2026 India Pre-Selection has concluded. K-CUBE plans to share future India participation opportunities for the next ITAEWON World Music Festival cycle after official confirmation. Eligibility, submission requirements, schedules and participation details will be published through official K-CUBE announcements.</p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <Link href="/india-pre-selection/announcement" className="kc-button kc-button-primary">View announcements<ArrowRight className="h-4 w-4" /></Link>
               <a href="https://www.instagram.com/k_cube_store/" target="_blank" rel="noreferrer" className="kc-button kc-button-secondary"><Camera className="h-4 w-4" />Follow K-CUBE updates</a>
@@ -123,7 +140,7 @@ export default function InformationPage() {
 
       <section id="festival-story" className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="story-heading">
         <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-white p-5 sm:p-7 lg:p-9">
-          <SectionHeading eyebrow="About the festival" title="More Than a Music Festival">A cultural meeting point shaped by music, remembrance and international community.</SectionHeading>
+          <SectionHeading eyebrow="About the festival" title="Four Ideas at the Heart of the Festival">A cultural meeting point shaped by music, remembrance and international community.</SectionHeading>
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {storyCards.map(([number, title, text]) => <article key={title} className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-5"><p className="text-xs font-black tracking-[0.16em] text-[#2457d6]">{number}</p><h3 id={number === '01' ? 'story-heading' : undefined} className="mt-4 text-lg font-black capitalize text-[#102a43]">{title}</h3><p className="mt-3 text-sm leading-7 text-[#526f8f]">{text}</p></article>)}
           </div>
@@ -136,13 +153,13 @@ export default function InformationPage() {
           <div id="journey-heading" className="mt-7 grid overflow-hidden rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] md:grid-cols-5">
             {journey.map((item, index) => <div key={item} className="relative flex items-center gap-3 border-b border-[#d8e1ee] p-4 last:border-b-0 md:flex-col md:items-start md:border-b-0 md:border-r md:last:border-r-0 md:p-5"><span className="text-xs font-black tracking-[0.16em] text-[#2457d6]">0{index + 1}</span><span className="text-sm font-bold capitalize text-[#102a43]">{item}</span>{index < journey.length - 1 && <ArrowRight className="absolute right-4 hidden h-4 w-4 text-[#b77900] md:block" />}</div>)}
           </div>
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row"><span className="inline-flex items-center gap-2 rounded-full border border-[#b9d9d0] bg-[#effaf6] px-4 py-2 text-xs font-bold text-[#19745d]"><CheckCircle2 className="h-4 w-4" />2026 pre-selection completed</span><span className="inline-flex items-center gap-2 rounded-full border border-[#d7b8ef] bg-[#f7f1ff] px-4 py-2 text-xs font-bold text-[#5c2a8d]"><Sparkles className="h-4 w-4" />2027 updates planned</span></div>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row"><span className="inline-flex items-center gap-2 rounded-full border border-[#b9d9d0] bg-[#effaf6] px-4 py-2 text-xs font-bold text-[#19745d]"><CheckCircle2 className="h-4 w-4" />2026 pre-selection completed</span><a href="#official-india-representation" className="inline-flex items-center gap-2 rounded-full border border-[#d7b8ef] bg-[#f7f1ff] px-4 py-2 text-xs font-bold text-[#5c2a8d] hover:border-[#5c2a8d]"><Sparkles className="h-4 w-4" />View official appointment</a></div>
         </div>
       </section>
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="points-heading">
         <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-white p-5 sm:p-7 lg:p-9">
-          <SectionHeading eyebrow="2026 participation journey" title="How the 2026 India Pre-Selection Worked">This section reflects the 2026 India Pre-Selection journey and is retained for reference. These stage points are not an active registration offer.</SectionHeading>
+          <SectionHeading eyebrow="2026 participation journey · archive / for reference" title="How the 2026 India Pre-Selection Worked">This section reflects the completed 2026 India Pre-Selection journey and is retained for historical reference only. These stage points are not an active registration offer.</SectionHeading>
           <div id="points-heading" className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">{pointsJourney.map(([number, points, title, description]) => <article key={title} className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-5"><div className="flex items-center justify-between"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#eaf3ff] text-xs font-black text-[#2457d6]">{number}</span><span className="text-sm font-black text-[#b77900]">{points}</span></div><h3 className="mt-5 text-base font-black text-[#102a43]">{title}</h3><p className="mt-3 text-sm leading-6 text-[#526f8f]">{description}</p></article>)}</div>
         </div>
       </section>
@@ -152,6 +169,8 @@ export default function InformationPage() {
       </section>
 
       <section className="px-3 pb-10 sm:px-4 sm:pb-12 lg:px-10"><div className="mx-auto grid max-w-[1320px] gap-6 rounded-[24px] bg-[#082f68] p-6 text-white shadow-[0_18px_45px_rgba(15,55,95,0.16)] sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:p-10"><div><Eyebrow>Your next stage</Eyebrow><h2 className="mt-2 text-3xl font-black sm:text-4xl">Your Next Stage Could Begin in 2027</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-[#d5e5fb]">The 2026 India participation window has closed, but the journey continues. Follow K-CUBE announcements to know when the next India participation opportunity becomes available.</p><p className="mt-3 text-xs text-[#bcd7ff]">Application dates and requirements will be announced after official confirmation.</p></div><div className="flex flex-col gap-3 sm:flex-row lg:flex-col"><Link href="/india-pre-selection/announcement" className="kc-button kc-button-primary whitespace-nowrap">View announcements<ArrowRight className="h-4 w-4" /></Link><a href="https://www.instagram.com/k_cube_store/" target="_blank" rel="noreferrer" className="kc-button kc-button-secondary whitespace-nowrap"><Camera className="h-4 w-4" />Follow on Instagram</a></div></div></section>
+
+      <section className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10" aria-labelledby="stay-connected-heading"><div className="mx-auto max-w-[1320px] rounded-[24px] border border-[#cbd9ea] bg-white p-6 text-center sm:p-9"><Eyebrow>Stay connected</Eyebrow><h2 id="stay-connected-heading" className="mt-2 text-3xl font-black text-[#102a43] sm:text-4xl">Stay Connected to the Festival Journey</h2><p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#526f8f]">The 2026 journey is still underway. Follow official K-CUBE announcements for updates from the current India selection process, the ITAEWON World Music Spirit Festival in Seoul, and future India participation opportunities.</p><div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><Link href="/india-pre-selection/announcement" className="kc-button kc-button-primary">View latest announcements<ArrowRight className="h-4 w-4" /></Link><a href="https://www.instagram.com/k_cube_store/" target="_blank" rel="noreferrer" className="kc-button kc-button-secondary"><Camera className="h-4 w-4" />Follow on Instagram</a></div><p className="mt-4 text-xs text-[#8290a3]">Future India participation dates are subject to official confirmation.</p></div></section>
 
       <div className="sr-only">Media source record: {mediaSources.map((source) => `${source.title}, ${source.source}, ${source.year}, ${source.mediaType}, ${source.url}`).join(' | ')}</div>
     </main>
