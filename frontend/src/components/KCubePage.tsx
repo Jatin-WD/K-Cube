@@ -101,17 +101,76 @@ const homeSectionCopy = {
   hi: { next: 'अगला इवेंट', explore: 'कैटेगरी देखें', curated: 'India के लिए curated', spotlight: 'Shop spotlight', featured: 'Homepage के featured products', openShop: 'Shop खोलें', viewShop: 'Shop में देखें', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food claims और referrals points ledger में जुड़ते हैं।', allActions: 'सभी point actions देखें', dashboard: 'Member dashboard', welcome: '100 welcome points' },
 } as const;
 
+const homeBannerCopy = {
+  en: {
+    strip: 'K-CUBE INDIA PRE-SELECTION · APPLICATION WINDOW CLOSED · OFFICIAL UPDATES',
+    festival: 'ITAEWON WORLD MUSIC SPIRIT FESTIVAL 2026',
+    title: 'K-CUBE INDIA PRE-SELECTION',
+    subtitle: 'Your voice. Your message. Your stage.',
+    completed: 'India Pre-Selection completed on August 30, 2026',
+    support: 'Important selection & travel support',
+    status: 'India Pre-Selection completed',
+    stages: 'Official festival stages and updates',
+    announcement: 'View Full Announcement',
+    points: [
+      { value: '100 pts', label: 'K-CUBE Registration' },
+      { value: '+200 pts', label: 'Preliminary Round Video Submission' },
+      { value: '+300 pts', label: 'Passing the Preliminary Round' },
+      { value: '+1,000 pts', label: 'Passing the Final Selection', supporting: 'Earn points for the final round' },
+    ],
+    closed: 'The India Pre-Selection application window is closed.',
+    notice: 'Use the notice board for the next official stage and the main information page for the broader festival story.',
+    updates: 'View Official Updates',
+    details: 'View Event Details',
+  },
+  ko: {
+    strip: 'K-CUBE 인도 프리셀렉션 · 신청 기간 종료 · 공식 업데이트',
+    festival: '이태원 월드 뮤직 스피릿 페스티벌 2026',
+    title: 'K-CUBE 인도 프리셀렉션',
+    subtitle: '당신의 목소리. 당신의 메시지. 당신의 무대.',
+    completed: '인도 프리셀렉션이 2026년 8월 30일 완료되었습니다',
+    support: '중요 선발 및 여행 지원 안내',
+    status: '인도 프리셀렉션 완료',
+    stages: '공식 페스티벌 단계 및 업데이트',
+    announcement: '전체 공지 보기',
+    points: [
+      { value: '100점', label: 'K-CUBE 등록' },
+      { value: '+200점', label: '예선 라운드 영상 제출' },
+      { value: '+300점', label: '예선 라운드 통과' },
+      { value: '+1,000점', label: '최종 선발 통과', supporting: '최종 라운드 포인트 적립' },
+    ],
+    closed: '인도 프리셀렉션 신청 기간이 종료되었습니다.',
+    notice: '다음 공식 단계는 공지 게시판에서 확인하고, 페스티벌의 전체 내용은 안내 페이지에서 확인하세요.',
+    updates: '공식 업데이트 보기',
+    details: '이벤트 상세 보기',
+  },
+  hi: {
+    strip: 'K-CUBE इंडिया प्री-सेलेक्शन · आवेदन विंडो बंद · आधिकारिक अपडेट्स',
+    festival: 'इतेवॉन वर्ल्ड म्यूज़िक स्पिरिट फेस्टिवल 2026',
+    title: 'K-CUBE इंडिया प्री-सेलेक्शन',
+    subtitle: 'आपकी आवाज़। आपका संदेश। आपका मंच।',
+    completed: 'इंडिया प्री-सेलेक्शन 30 अगस्त 2026 को पूरा हुआ',
+    support: 'ज़रूरी चयन और यात्रा सहायता',
+    status: 'इंडिया प्री-सेलेक्शन पूरा हुआ',
+    stages: 'आधिकारिक फेस्टिवल चरण और अपडेट्स',
+    announcement: 'पूरा अनाउंसमेंट देखें',
+    points: [
+      { value: '100 पॉइंट्स', label: 'K-CUBE रजिस्ट्रेशन' },
+      { value: '+200 पॉइंट्स', label: 'प्रीलिमिनरी राउंड वीडियो सबमिशन' },
+      { value: '+300 पॉइंट्स', label: 'प्रीलिमिनरी राउंड पास करना' },
+      { value: '+1,000 पॉइंट्स', label: 'फाइनल सेलेक्शन पास करना', supporting: 'फाइनल राउंड के लिए पॉइंट्स कमाएँ' },
+    ],
+    closed: 'इंडिया प्री-सेलेक्शन आवेदन विंडो बंद हो चुकी है।',
+    notice: 'अगले आधिकारिक चरण के लिए नोटिस बोर्ड देखें और फेस्टिवल की पूरी जानकारी के लिए मुख्य इन्फॉर्मेशन पेज देखें।',
+    updates: 'आधिकारिक अपडेट्स देखें',
+    details: 'इवेंट की जानकारी देखें',
+  },
+} as const;
+
 const tileAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8'];
 const cardAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8', '#1d67c9', '#12a66a'];
 
 const featuredShopProducts = shopProducts.slice(0, 3);
-const homeSelectionSupportPoints = [
-  { value: '100 pts', label: 'K-CUBE Registration' },
-  { value: '+200 pts', label: 'Preliminary Round Video Submission' },
-  { value: '+300 pts', label: 'Passing the Preliminary Round' },
-  { value: '+1,000 pts', label: 'Passing the Final Selection', supporting: 'Earn points for the final round' },
-] as const;
-
 const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const language = useAppStore((state) => state.language);
   const user = useAppStore((state) => state.user);
@@ -121,6 +180,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const page = pages[pageKey];
   const t = copy[language];
   const homeText = homeSectionCopy[language];
+  const bannerText = homeBannerCopy[language];
   const visual = pageVisuals[pageKey];
 
   return (
@@ -129,7 +189,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       <section className="border-b border-[#d8e1ee] bg-white px-3 py-2 text-xs text-[#0f172a] sm:px-4 sm:py-3 sm:text-sm lg:px-10">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
           <span className="rounded-full px-3 py-1 font-black text-white shadow-[0_10px_20px_rgba(15,23,42,0.14)]" style={{ backgroundColor: visual.accentHex }}>{pageKey === 'home' ? homeText.next : visual.accent}</span>
-          <span className="font-semibold leading-5 text-[#475569]">{visual.strip}</span>
+          <span className="font-semibold leading-5 text-[#475569]">{pageKey === 'home' ? bannerText.strip : visual.strip}</span>
           <Link href="/dashboard" className="hidden items-center gap-2 rounded-full border border-[#d8e1ee] px-3 py-1 font-bold text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6] sm:ml-auto sm:inline-flex">
             {homeText.dashboard} <ArrowRight className="h-4 w-4" />
           </Link>
@@ -149,37 +209,37 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
             <div className="py-3 sm:min-h-[390px] sm:py-7">
                 <div className="inline-flex max-w-full items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white shadow-[0_4px_18px_rgba(15,55,95,0.12)] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.18em]">
                   <span className="h-2 w-2 rounded-full bg-[#f59e0b]" />
-                  ITAEWON WORLD MUSIC SPIRIT FESTIVAL 2026
+                  {bannerText.festival}
                 </div>
                 <h1 className="mt-4 max-w-5xl text-3xl font-bold leading-[1.05] tracking-tight text-white drop-shadow-xl sm:mt-6 sm:text-4xl lg:text-6xl">
-                  K-CUBE INDIA PRE-SELECTION
+                  {bannerText.title}
                 </h1>
                 <p className="mt-3 max-w-3xl text-base font-medium leading-7 text-[#d8e7f9] sm:text-lg">
-                  Your voice. Your message. Your stage.
+                  {bannerText.subtitle}
                 </p>
                 <div className="mt-4 inline-flex items-center gap-2 rounded-md border border-[#12a66a]/40 bg-[#effbf6] px-3 py-2 text-xs font-bold text-[#087f52]">
-                  <Check className="h-4 w-4" /> India Pre-Selection completed on August 30, 2026
+                  <Check className="h-4 w-4" /> {bannerText.completed}
                 </div>
                 <div className="mt-5 max-w-6xl rounded-[22px] border border-[#d8e1ee] bg-white/95 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div className="max-w-2xl">
-                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#2457d6]">Important selection & travel support</p>
+                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#2457d6]">{bannerText.support}</p>
                       <span className="mt-2 inline-flex items-center gap-2 rounded-md border border-[#12a66a]/30 bg-[#effbf6] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#087f52]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#12a66a]" /> India Pre-Selection completed
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#12a66a]" /> {bannerText.status}
                       </span>
-                      <h2 className="mt-2 text-xl font-black leading-tight text-[#0f172a] sm:text-2xl">Official festival stages and updates</h2>
+                      <h2 className="mt-2 text-xl font-black leading-tight text-[#0f172a] sm:text-2xl">{bannerText.stages}</h2>
                     </div>
                     <Link
                       href="/india-pre-selection/announcement"
                       className="inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full border border-[#d8e1ee] bg-[#f8fbff] px-4 py-2.5 text-sm font-black text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6]"
                     >
-                      View Full Announcement
+                      {bannerText.announcement}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    {homeSelectionSupportPoints.map((item) => (
+                    {bannerText.points.map((item) => (
                       <div key={item.label} className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-3">
                         <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#2457d6]">{item.value}</p>
                         <p className="mt-2 text-sm font-semibold leading-6 text-[#0f172a]">{item.label}</p>
@@ -190,22 +250,22 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
                   <div className="mt-4 flex flex-col gap-3 border-t border-[#e6edf6] pt-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-col gap-1 text-sm text-[#64748b]">
-                      <p className="font-semibold text-[#0f172a]">The India Pre-Selection application window is closed.</p>
-                      <p>Use the notice board for the next official stage and the main information page for the broader festival story.</p>
+                      <p className="font-semibold text-[#0f172a]">{bannerText.closed}</p>
+                      <p>{bannerText.notice}</p>
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
                       <Link
                         href="/india-pre-selection/apply"
                         className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2457d6] px-5 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(36,87,214,0.18)] transition hover:bg-[#1f4bb8]"
                       >
-                        View Official Updates
+                        {bannerText.updates}
                         <ArrowRight className="h-4 w-4" />
                       </Link>
                       <Link
                         href="/india-pre-selection"
                         className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d8e1ee] bg-white px-5 py-3 text-sm font-bold text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6]"
                       >
-                        View Event Details
+                        {bannerText.details}
                       </Link>
                     </div>
                   </div>
