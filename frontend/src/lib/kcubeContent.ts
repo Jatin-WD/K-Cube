@@ -734,6 +734,37 @@ const kFoodUploadLink: MenuLink = {
   status: txt('SUBMIT', 'SUBMIT', 'SUBMIT'),
 };
 
+const buildKFoodServiceLinks = (): MenuLink[] =>
+  detailItems
+    .filter((item) => item.category === 'kfood')
+    .map((item) => ({
+      label: item.title,
+      href: detailHref(item.category, item.slug),
+      description: item.summary,
+      points: item.points,
+      status: item.slug === 'food-missions'
+        ? txt('COOK & SHARE', '요리하고 공유하기', 'COOK & SHARE')
+        : txt('RECIPES', '레시피', 'RECIPES'),
+      children: item.slug === 'food-missions'
+        ? [
+            kFoodUploadLink,
+            {
+              label: txt('Food Discovery Mission', '푸드 디스커버리 미션', 'Food discovery mission'),
+              href: detailHref(item.category, item.slug),
+              description: txt('Cook, review and share your Korean food journey with the K-CUBE community.', '요리하고 리뷰하며 K-CUBE 커뮤니티와 한국 음식 여정을 공유하세요.', 'Cook, review aur apni Korean food journey K-CUBE community ke saath share karein.'),
+              status: txt('MISSION', '미션', 'MISSION'),
+            },
+          ]
+        : [
+            {
+              label: txt('Explore Korean Recipes', '한국 음식 레시피 보기', 'Korean recipes dekhein'),
+              href: detailHref(item.category, item.slug),
+              description: item.summary,
+              status: txt('RECIPES', '레시피', 'RECIPES'),
+            },
+          ],
+    }));
+
 export interface AllMenuCategory {
   label: LocalText;
   href: string;
@@ -838,22 +869,14 @@ export const allMenuCategories: AllMenuCategory[] = [
         href: detailHref(item.category, item.slug),
         description: item.summary,
         points: item.points,
-        children: item.slug === 'food-missions' ? [kFoodUploadLink, ...buildSectionPreviewLinks(item)] : buildSectionPreviewLinks(item),
+        children: buildSectionPreviewLinks(item),
       })),
   },
   {
     label: txt('K-Food', 'K-푸드', 'K-Food'),
     href: '/kfood',
     description: txt('Recipes, food missions and K-CUBE shop commerce bridge.', '레시피, 음식 미션, K-CUBE shop 연결.', 'Recipes, food missions aur K-CUBE shop bridge.'),
-    services: detailItems
-      .filter((item) => item.category === 'kfood')
-      .map((item) => ({
-        label: item.title,
-        href: detailHref(item.category, item.slug),
-        description: item.summary,
-        points: item.points,
-        children: buildSectionPreviewLinks(item),
-      })),
+    services: buildKFoodServiceLinks(),
   },
   {
     label: txt('Shop', '샵', 'Shop'),
@@ -944,7 +967,7 @@ export const navItems: NavItem[] = [
             href: detailHref(item.category, item.slug),
             description: item.summary,
             points: item.points,
-            children: item.slug === 'food-missions' ? [kFoodUploadLink, ...buildSectionPreviewLinks(item)] : buildSectionPreviewLinks(item),
+            children: item.slug === 'food-missions' ? [kFoodUploadLink, { label: txt('Food Discovery Mission', '푸드 디스커버리 미션', 'Food discovery mission'), href: detailHref(item.category, item.slug), description: item.summary, status: txt('MISSION', '미션', 'MISSION') }] : [{ label: txt('Explore Korean Recipes', '한국 음식 레시피 보기', 'Korean recipes dekhein'), href: detailHref(item.category, item.slug), description: item.summary, status: txt('RECIPES', '레시피', 'RECIPES') }],
           })),
         ],
       },
