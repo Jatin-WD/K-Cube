@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { BriefcaseBusiness, Camera, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import { copy, navItems } from '@/lib/kcubeContent';
@@ -18,6 +18,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenuKey, setActiveMenuKey] = useState<string | null>(null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const headerRef = useRef<HTMLElement | null>(null);
   const activeTriggerRef = useRef<HTMLButtonElement | null>(null);
   const openMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -27,9 +28,17 @@ const Header = () => {
   const user = useAppStore((state) => state.user);
   const signOut = useAppStore((state) => state.signOut);
   const pathname = usePathname();
+  const router = useRouter();
   const isAdminRoute = pathname.startsWith('/admin');
   const t = copy[language];
   const activeMenu = navItems.find((item) => item.label.en === activeMenuKey && item.dropdown?.length) ?? null;
+
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  };
 
   const clearMenuTimers = () => {
     if (openMenuTimerRef.current) {
@@ -141,12 +150,15 @@ const Header = () => {
             </span>
           </Link>
 
-          <form className="order-3 col-span-full flex min-h-[38px] overflow-hidden rounded-full border border-[#d6dfeb] bg-[#f8fbff] text-[#101012] shadow-[0_8px_18px_rgba(15,23,42,0.06)] focus-within:border-[#2457d6] md:order-none md:col-span-1 md:min-h-[40px]">
+          <form onSubmit={submitSearch} className="order-3 col-span-full flex min-h-[38px] overflow-hidden rounded-full border border-[#d6dfeb] bg-[#f8fbff] text-[#101012] shadow-[0_8px_18px_rgba(15,23,42,0.06)] focus-within:border-[#2457d6] md:order-none md:col-span-1 md:min-h-[40px]">
             <label className="sr-only" htmlFor="header-search">
               Search K-CUBE
             </label>
             <input
               id="header-search"
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
               className="min-w-0 flex-1 px-3 text-sm text-[#171717] outline-none placeholder:text-[#8f95a3] sm:px-4 sm:text-sm"
               placeholder={t.search}
             />
