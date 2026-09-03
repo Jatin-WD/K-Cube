@@ -246,6 +246,7 @@ export const register = async (req: Request, res: Response) => {
     'INSERT IGNORE INTO auth_identities (user_id, provider, provider_user_id, email, verified, created_at, updated_at) VALUES (?, ?, ?, ?, FALSE, NOW(), NOW())',
     [userId, 'password', normalizedEmail, normalizedEmail],
   );
+  const referralAward = referralCode ? await awardReferralPoints(userId, referralCode) : { awarded: false };
   const { verificationUrl, verificationEmailSent, verificationEmailError } = await issueEmailVerification(userId, normalizedEmail, normalizedFullName);
   void sendUserRegistrationNotificationEmail({
     full_name: normalizedFullName,
@@ -272,6 +273,7 @@ export const register = async (req: Request, res: Response) => {
     verificationRequired: true,
     verificationEmailSent,
     verificationEmailError,
+    referralAwarded: referralAward.awarded,
     message: verificationEmailSent
       ? 'Verification email sent. Please confirm your email before signing in.'
       : 'Account created, but the verification email could not be delivered. Please try again or contact support.',
