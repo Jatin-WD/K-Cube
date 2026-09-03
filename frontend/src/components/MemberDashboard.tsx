@@ -7,6 +7,7 @@ import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, KeyRound, Plane, Trop
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 import { memberCopy } from '@/lib/memberContent';
+import { memberUiCopy } from '@/lib/memberUiContent';
 import PasswordInput from '@/components/PasswordInput';
 
 interface LearningProgressRow {
@@ -114,6 +115,7 @@ const MemberDashboard = () => {
   const points = useAppStore((state) => state.points);
   const language = useAppStore((state) => state.language);
   const t = memberCopy[language];
+  const ui = memberUiCopy[language];
   const [activeView, setActiveView] = useState<DashboardView>('overview');
   const [message, setMessage] = useState('');
   const [upload, setUpload] = useState({
@@ -391,8 +393,8 @@ const MemberDashboard = () => {
         <div className="min-w-0 flex-1">
         {activeView === 'profile' ? <section className="rounded-xl border border-white/10 bg-[#111113] p-6 sm:p-8">
           <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">My profile</p>
-          <h1 className="mt-2 text-3xl font-black">Account details</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#aab5c6]">Update your personal information here. Email, username, points and account access stay protected.</p>
+          <h1 className="mt-2 text-3xl font-black">{ui.accountDetails}</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#aab5c6]">{ui.profileDesc}</p>
           <form onSubmit={saveDashboardProfile} className="mt-8 grid gap-4 sm:grid-cols-2">
             <label className="sm:col-span-2"><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Full name</span><input required value={profileForm.full_name} onChange={(event) => setProfileForm((current) => ({ ...current, full_name: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
             <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Phone</span><input value={profileForm.phone} onChange={(event) => setProfileForm((current) => ({ ...current, phone: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
@@ -401,15 +403,15 @@ const MemberDashboard = () => {
             <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">State</span><input value={profileForm.state} onChange={(event) => setProfileForm((current) => ({ ...current, state: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
             <div className="sm:col-span-2 grid gap-4 sm:grid-cols-2"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#98a4b1]">Email</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#aab5c6]">{user.email || user.phone}</p></div><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#98a4b1]">Referral code</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-black text-[#aab5c6]">{user.referralCode || 'Not available'}</p></div></div>
             {profileMessage ? <p className="sm:col-span-2 text-sm font-bold text-[#9be7c2]">{profileMessage}</p> : null}
-            <div className="sm:col-span-2 flex flex-wrap gap-3"><button disabled={profileSaving} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60">{profileSaving ? 'Saving...' : 'Save changes'}</button><Link href="/profile" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">Open full profile page</Link></div>
+            <div className="sm:col-span-2 flex flex-wrap gap-3"><button disabled={profileSaving} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60">{profileSaving ? ui.saving : ui.saveChanges}</button><Link href="/profile" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">{ui.openProfile}</Link></div>
           </form>
           <section className="mt-6 rounded-xl border border-white/10 bg-[#111113] p-6 sm:p-8">
-            <div className="flex items-center gap-3"><KeyRound className="h-6 w-6 text-[#ffc400]" /><div><h2 className="text-2xl font-black">Change password</h2><p className="mt-1 text-sm text-[#aab5c6]">Use your current password to secure your account with a new one.</p></div></div>
+            <div className="flex items-center gap-3"><KeyRound className="h-6 w-6 text-[#ffc400]" /><div><h2 className="text-2xl font-black">{ui.changePassword}</h2><p className="mt-1 text-sm text-[#aab5c6]">{ui.passwordDesc}</p></div></div>
             <form onSubmit={changePassword} className="mt-6 grid gap-4 sm:grid-cols-3">
-              <PasswordInput required minLength={8} value={passwordForm.current_password} onChange={(event) => setPasswordForm((current) => ({ ...current, current_password: event.target.value }))} placeholder="Current password" aria-label="Current password" label="current password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-              <PasswordInput required minLength={8} value={passwordForm.new_password} onChange={(event) => setPasswordForm((current) => ({ ...current, new_password: event.target.value }))} placeholder="New password (8+ characters)" aria-label="New password" label="new password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-              <PasswordInput required minLength={8} value={passwordForm.confirm_password} onChange={(event) => setPasswordForm((current) => ({ ...current, confirm_password: event.target.value }))} placeholder="Confirm new password" aria-label="Confirm new password" label="confirm password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
-              <div className="flex flex-wrap items-center gap-3 sm:col-span-3"><button disabled={passwordSaving} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60"><KeyRound className="h-4 w-4" />{passwordSaving ? 'Updating...' : 'Update password'}</button>{passwordMessage ? <span className="text-sm font-bold text-[#9be7c2]">{passwordMessage}</span> : null}{passwordError ? <span className="text-sm font-bold text-red-300">{passwordError}</span> : null}</div>
+              <PasswordInput required minLength={8} value={passwordForm.current_password} onChange={(event) => setPasswordForm((current) => ({ ...current, current_password: event.target.value }))} placeholder={ui.currentPassword} aria-label={ui.currentPassword} label={ui.currentPassword} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <PasswordInput required minLength={8} value={passwordForm.new_password} onChange={(event) => setPasswordForm((current) => ({ ...current, new_password: event.target.value }))} placeholder={ui.newPassword} aria-label={ui.newPassword} label={ui.newPassword} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <PasswordInput required minLength={8} value={passwordForm.confirm_password} onChange={(event) => setPasswordForm((current) => ({ ...current, confirm_password: event.target.value }))} placeholder={ui.confirmPassword} aria-label={ui.confirmPassword} label={ui.confirmPassword} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <div className="flex flex-wrap items-center gap-3 sm:col-span-3"><button disabled={passwordSaving} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60"><KeyRound className="h-4 w-4" />{passwordSaving ? ui.updating : ui.updatePassword}</button>{passwordMessage ? <span className="text-sm font-bold text-[#9be7c2]">{passwordMessage}</span> : null}{passwordError ? <span className="text-sm font-bold text-red-300">{passwordError}</span> : null}</div>
             </form>
           </section>
         </section> : null}
@@ -422,17 +424,17 @@ const MemberDashboard = () => {
           {activeView === 'submissions' ? <>
           <div className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">New submission</p>
-            <h1 className="mt-2 text-3xl font-black text-[#102a43]">Submit your Korean culture content</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#486581]">Dance, song, drama review ya K-Food story submit karein. Admin review ke baad approved content par points assign honge.</p>
+            <h1 className="mt-2 text-3xl font-black text-[#102a43]">{ui.submitVideo}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#486581]">{ui.submitVideoDesc}</p>
           </div>
           <form onSubmit={submitUpload} className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
-            <div className="flex items-center gap-3"><div className="rounded-lg bg-[#eaf3ff] p-3"><Clapperboard className="h-6 w-6 text-[#0b4eae]" /></div><div><h2 className="text-xl font-black text-[#102a43]">Submission details</h2><p className="text-sm text-[#486581]">All fields can be reviewed by the K-CUBE team.</p></div></div>
+            <div className="flex items-center gap-3"><div className="rounded-lg bg-[#eaf3ff] p-3"><Clapperboard className="h-6 w-6 text-[#0b4eae]" /></div><div><h2 className="text-xl font-black text-[#102a43]">{t.submissionDetails}</h2><p className="text-sm text-[#486581]">{t.reviewTeam}</p></div></div>
             <div className="mt-6 grid gap-4">
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Content category<select value={upload.category} onChange={(event) => setUpload((current) => ({ ...current, category: event.target.value }))} className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none focus:border-[#0b4eae]">{uploadCategories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}</select></label>
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Video title<input required value={upload.title} onChange={(event) => setUpload((current) => ({ ...current, title: event.target.value }))} placeholder="Give your submission a clear title" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Video URL<input required type="url" value={upload.video_url} onChange={(event) => setUpload((current) => ({ ...current, video_url: event.target.value }))} placeholder="YouTube / Drive video URL" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Thumbnail image URL<input type="url" value={upload.thumbnail_url} onChange={(event) => setUpload((current) => ({ ...current, thumbnail_url: event.target.value }))} placeholder="Optional thumbnail image URL" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">Short description<textarea required value={upload.description} onChange={(event) => setUpload((current) => ({ ...current, description: event.target.value }))} placeholder="Tell us briefly about your content" className="min-h-32 rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.contentCategory}<select value={upload.category} onChange={(event) => setUpload((current) => ({ ...current, category: event.target.value }))} className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none focus:border-[#0b4eae]">{uploadCategories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}</select></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.videoTitle}<input required value={upload.title} onChange={(event) => setUpload((current) => ({ ...current, title: event.target.value }))} placeholder="Give your submission a clear title" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.videoUrl}<input required type="url" value={upload.video_url} onChange={(event) => setUpload((current) => ({ ...current, video_url: event.target.value }))} placeholder="YouTube / Drive video URL" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.thumbnailUrl}<input type="url" value={upload.thumbnail_url} onChange={(event) => setUpload((current) => ({ ...current, thumbnail_url: event.target.value }))} placeholder="Optional thumbnail image URL" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.shortDescription}<textarea required value={upload.description} onChange={(event) => setUpload((current) => ({ ...current, description: event.target.value }))} placeholder="Tell us briefly about your content" className="min-h-32 rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
             </div>
             <button className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-[#0b4eae] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#073a82]"><UploadCloud className="h-4 w-4" /> Submit for review</button>
           </form>
@@ -440,9 +442,9 @@ const MemberDashboard = () => {
         </section> : null}
         {activeView === 'events' ? <section className="space-y-5">
           <div className="rounded-xl border border-[#ffc400]/20 bg-[linear-gradient(110deg,rgba(255,196,0,0.12),rgba(17,17,19,1)_62%)] p-6 sm:p-8">
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">Member events</p>
-            <h1 className="mt-2 text-3xl font-black sm:text-4xl">Events and participation</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#aab5c6]">See upcoming K-CUBE events, understand the participation requirements, RSVP directly and track the points available for verified attendance.</p>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">{ui.memberEvents}</p>
+            <h1 className="mt-2 text-3xl font-black sm:text-4xl">{ui.eventsTitle}</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#aab5c6]">{ui.eventsDesc}</p>
           </div>
           <article className="rounded-xl border border-[#ffc400]/30 bg-[#111113] p-6 sm:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Featured event</p><h2 className="mt-2 text-2xl font-black sm:text-3xl">Itaewon World Music Spirit Festival 2026</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-[#aab5c6]">A music and culture festival journey for Indian singers and musical artists, connected to the K-CUBE India pre-selection.</p></div><span className="shrink-0 rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black text-[#ffc400]">Featured</span></div>
@@ -472,9 +474,9 @@ const MemberDashboard = () => {
           </div>
           <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111113]">
             <div className="p-6 sm:p-8 lg:p-10">
-                <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Member command center</p>
-                <h1 className="mt-4 max-w-4xl text-3xl font-black leading-[1.08] sm:text-4xl lg:text-5xl">{language === 'en' ? 'Earn points from culture, learning, food and purchases.' : language === 'ko' ? '문화, 학습, 음식과 쇼핑으로 포인트를 적립하세요.' : 'Culture, learning, food और purchases से पॉइंट्स कमाएँ।'}</h1>
-                <p className="mt-5 max-w-2xl text-sm leading-7 text-[#aab5c6]">K-CUBE tracks every meaningful action toward the Korea trip leaderboard. Upload your Korean culture content, complete daily learning, refer friends, and claim K-Food purchases.</p>
+                <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{ui.memberCommand}</p>
+                <h1 className="mt-4 max-w-4xl text-3xl font-black leading-[1.08] sm:text-4xl lg:text-5xl">{ui.dashboardHeading}</h1>
+                <p className="mt-5 max-w-2xl text-sm leading-7 text-[#aab5c6]">{ui.dashboardIntro}</p>
                 <div className="mt-8 grid gap-3 sm:grid-cols-3">
                   <div className="rounded-lg border border-[#ffc400]/25 bg-[#ffc400]/10 p-4">
                     <Trophy className="h-5 w-5 text-[#ffc400]" />
@@ -503,28 +505,26 @@ const MemberDashboard = () => {
           </div>
 
           <aside className="rounded-xl border border-white/10 bg-[#111113] p-6">
-            <h2 className="text-2xl font-black">Korea trip ranking</h2>
-            <p className="mt-3 text-sm leading-7 text-[#aab5c6]">Winner announce hone se pehle admin all point sources verify karega: uploads, learning, K-Food and manual adjustments.</p>
+            <h2 className="text-2xl font-black">{ui.ranking}</h2>
+            <p className="mt-3 text-sm leading-7 text-[#aab5c6]">{ui.rankingDesc}</p>
             <div className="mt-6 h-3 overflow-hidden rounded-full bg-white/10">
               <div className="h-full rounded-full bg-[#ffc400]" style={{ width: `${Math.min(points / 20, 100)}%` }} />
             </div>
             <button type="button" onClick={visitKFood} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909]">
-              Visit K-CUBE Shop
+              {ui.visitShop}
             </button>
 
             <div id="referrals" className="mt-6 scroll-mt-24 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-5">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Invite friends</p>
-              <h3 className="mt-2 text-xl font-black text-white">Earn 30 points per join</h3>
-              <p className="mt-2 text-sm leading-6 text-[#d4dbe7]">
-                Share your referral code. When a new user joins with it and completes signup, you get 30 points automatically.
-              </p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">{ui.invite}</p>
+              <h3 className="mt-2 text-xl font-black text-white">{ui.earn30}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#d4dbe7]">{ui.referralDesc}</p>
               <div className="mt-4 rounded-lg border border-white/10 bg-[#070708] px-4 py-3">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">Your referral code</p>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">{ui.referralCode}</p>
                 <p className="mt-1 break-all text-lg font-black text-white">{user.referralCode ?? 'Loading...'}</p>
               </div>
               <button type="button" onClick={copyReferralLink} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#ffc400]/40 bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909]">
                 <Copy className="h-4 w-4" />
-                Copy invite link
+                {ui.copyInvite}
               </button>
               {referralMessage ? <p className="mt-3 text-sm leading-6 text-[#d4dbe7]">{referralMessage}</p> : null}
             </div>
@@ -554,8 +554,8 @@ const MemberDashboard = () => {
 
           <section id="learning" className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <BookOpen className="h-7 w-7 text-[#ffc400]" />
-            <h2 className="mt-4 text-2xl font-black">Daily Korean learning</h2>
-            <p className="mt-2 text-sm leading-6 text-[#aab5c6]">First login se learning journey start hoti hai. Har completed chapter points ledger me save hota hai.</p>
+            <h2 className="mt-4 text-2xl font-black">{ui.dailyLearning}</h2>
+            <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{ui.dailyDesc}</p>
             <div className="mt-5 grid gap-3">
               {lessons.map((lesson) => (
                 <article key={lesson.id} className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
@@ -566,8 +566,8 @@ const MemberDashboard = () => {
                     </div>
                     <span className="rounded-full bg-[#ffc400]/10 px-3 py-1 text-sm font-black text-[#ffc400]">+{lesson.points}</span>
                   </div>
-                  <button type="button" onClick={() => completeLesson(lesson.id)} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/35 px-4 py-2 text-sm font-black text-[#ffc400]">
-                    <CheckCircle2 className="h-4 w-4" /> Complete chapter
+                    <button type="button" onClick={() => completeLesson(lesson.id)} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/35 px-4 py-2 text-sm font-black text-[#ffc400]">
+                    <CheckCircle2 className="h-4 w-4" /> {ui.completeChapter}
                   </button>
                 </article>
               ))}
@@ -576,15 +576,15 @@ const MemberDashboard = () => {
 
           <form id="kfood" onSubmit={submitPurchaseClaim} className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <Utensils className="h-7 w-7 text-[#ffc400]" />
-            <h2 className="mt-4 text-2xl font-black">Claim K-Food purchase points</h2>
-            <p className="mt-2 text-sm leading-6 text-[#aab5c6]">WordPress side theek hone tak order ID/coupon based manual review flow use kar sakte hain.</p>
+            <h2 className="mt-4 text-2xl font-black">{ui.claimFood}</h2>
+            <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{ui.claimFoodDesc}</p>
             <div className="mt-5 grid gap-3">
               <input value={purchase.order_id} onChange={(event) => setPurchase((current) => ({ ...current, order_id: event.target.value }))} placeholder="K-Food order ID" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
               <input value={purchase.order_total} onChange={(event) => setPurchase((current) => ({ ...current, order_total: event.target.value }))} placeholder="Order total" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
               <input value={purchase.coupon_code} onChange={(event) => setPurchase((current) => ({ ...current, coupon_code: event.target.value.toUpperCase() }))} placeholder="Coupon code" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
             </div>
             <button className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909]">
-              <Gift className="h-4 w-4" /> Submit claim
+              <Gift className="h-4 w-4" /> {ui.submitClaim}
             </button>
           </form>
         </div>
@@ -594,12 +594,12 @@ const MemberDashboard = () => {
         <div className="mx-auto max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">Saved learning progress</p>
-              <h2 className="mt-2 text-2xl font-black">Streaks and recent history</h2>
-              <p className="mt-2 text-sm leading-6 text-[#aab5c6]">Ye data `user_learning_progress` aur `learning_sessions` se load hota hai, so refresh ke baad bhi persist rahega.</p>
+              <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{ui.savedProgress}</p>
+              <h2 className="mt-2 text-2xl font-black">{ui.history}</h2>
+              <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{ui.persistence}</p>
             </div>
             <div className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-[#d4dbe7]">
-              {learningLoading ? 'Loading saved progress...' : `${learningProgress.length} tracked paths`}
+              {learningLoading ? ui.loadingProgress : `${learningProgress.length} ${ui.trackedPaths}`}
             </div>
           </div>
 
@@ -611,28 +611,28 @@ const MemberDashboard = () => {
                   <h3 className="mt-2 text-xl font-black">{track.trackTitle}</h3>
                   <div className="mt-4 grid grid-cols-3 gap-3 text-center">
                     <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
-                      <p className="text-xs font-bold text-[#aab5c6]">Current</p>
+                      <p className="text-xs font-bold text-[#aab5c6]">{ui.current}</p>
                       <p className="mt-1 text-2xl font-black" style={{ color: track.accent }}>{track.currentStreak}</p>
                     </div>
                     <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
-                      <p className="text-xs font-bold text-[#aab5c6]">Best</p>
+                      <p className="text-xs font-bold text-[#aab5c6]">{ui.best}</p>
                       <p className="mt-1 text-2xl font-black">{track.bestStreak}</p>
                     </div>
                     <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
-                      <p className="text-xs font-bold text-[#aab5c6]">Sessions</p>
+                      <p className="text-xs font-bold text-[#aab5c6]">{ui.sessions}</p>
                       <p className="mt-1 text-2xl font-black">{track.totalSessions}</p>
                     </div>
                   </div>
                   <div className="mt-4 space-y-2 text-sm text-[#d4dbe7]">
-                    <p className="flex justify-between gap-4"><span>Total correct</span><span className="font-black">{track.totalCorrect}</span></p>
-                    <p className="flex justify-between gap-4"><span>Total points</span><span className="font-black">{track.totalPoints}</span></p>
-                    <p className="flex justify-between gap-4"><span>Last completed</span><span className="font-black">{track.lastCompletedAt ? new Date(track.lastCompletedAt).toLocaleString() : 'Not yet'}</span></p>
+                    <p className="flex justify-between gap-4"><span>{ui.totalCorrect}</span><span className="font-black">{track.totalCorrect}</span></p>
+                    <p className="flex justify-between gap-4"><span>{ui.totalPoints}</span><span className="font-black">{track.totalPoints}</span></p>
+                    <p className="flex justify-between gap-4"><span>{ui.lastCompleted}</span><span className="font-black">{track.lastCompletedAt ? new Date(track.lastCompletedAt).toLocaleString() : ui.notYet}</span></p>
                   </div>
                 </article>
               ))
             ) : (
               <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-[#aab5c6] lg:col-span-3">
-                No saved learning progress yet. Complete a few Korean lessons and your streak history will appear here.
+                {ui.noProgress}
               </div>
             )}
           </div>
@@ -640,10 +640,10 @@ const MemberDashboard = () => {
           <div className="mt-8">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-black uppercase tracking-[0.2em] text-[#ffc400]">Recent sessions</p>
-                <h3 className="mt-2 text-xl font-black">Latest completions</h3>
+                <p className="text-sm font-black uppercase tracking-[0.2em] text-[#ffc400]">{ui.recentSessions}</p>
+                <h3 className="mt-2 text-xl font-black">{ui.latestCompletions}</h3>
               </div>
-              <span className="text-sm text-[#aab5c6]">{learningSessions.length} records</span>
+              <span className="text-sm text-[#aab5c6]">{learningSessions.length} {ui.records}</span>
             </div>
             <div className="mt-4 grid gap-3">
               {learningSessions.length ? (
@@ -662,7 +662,7 @@ const MemberDashboard = () => {
                 ))
               ) : (
                 <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-[#aab5c6]">
-                  Recent session history will appear here after you finish a learning track.
+                  {ui.noSessions}
                 </div>
               )}
             </div>
@@ -673,11 +673,11 @@ const MemberDashboard = () => {
 
       {activeView === 'referrals' ? <section className="px-0 pb-12 sm:pb-5">
         <div className="mx-auto max-w-3xl rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-6 sm:p-8">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Invite friends</p>
-          <h2 className="mt-3 text-3xl font-black">Earn 30 points per join</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d4dbe7]">Share your referral link. When a new user joins with your code and completes signup, the referral reward is credited automatically.</p>
-          <div className="mt-6 rounded-lg border border-white/10 bg-[#070708] px-4 py-4"><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">Your referral code</p><p className="mt-2 text-2xl font-black tracking-[0.12em]">{user.referralCode ?? 'Loading...'}</p></div>
-          <button type="button" onClick={copyReferralLink} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]"><Copy className="h-4 w-4" /> Copy invite link</button>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">{ui.invite}</p>
+          <h2 className="mt-3 text-3xl font-black">{ui.earn30}</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d4dbe7]">{ui.referralDesc}</p>
+          <div className="mt-6 rounded-lg border border-white/10 bg-[#070708] px-4 py-4"><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">{ui.referralCode}</p><p className="mt-2 text-2xl font-black tracking-[0.12em]">{user.referralCode ?? 'Loading...'}</p></div>
+          <button type="button" onClick={copyReferralLink} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]"><Copy className="h-4 w-4" /> {ui.copyInvite}</button>
           {referralMessage ? <p className="mt-3 text-sm font-bold text-[#d4dbe7]">{referralMessage}</p> : null}
         </div>
       </section> : null}

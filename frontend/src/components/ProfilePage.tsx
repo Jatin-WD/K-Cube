@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle2, MapPin, Save, ShieldCheck, UserRound } from 'l
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 import { memberCopy } from '@/lib/memberContent';
+import { memberUiCopy } from '@/lib/memberUiContent';
 
 type ProfileData = {
   id: number;
@@ -35,6 +36,7 @@ const ProfilePage = () => {
   const language = useAppStore((state) => state.language);
   const updateUser = useAppStore((state) => state.updateUser);
   const t = memberCopy[language];
+  const ui = memberUiCopy[language];
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
@@ -125,7 +127,7 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {loading ? <div className="p-8 text-sm text-[#aab5c6]">Loading your profile...</div> : (
+          {loading ? <div className="p-8 text-sm text-[#aab5c6]">{language === 'en' ? 'Loading your profile...' : language === 'ko' ? '프로필을 불러오는 중...' : 'Profile load ho raha hai...'}</div> : (
             <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_0.7fr]">
               <form onSubmit={saveProfile} className="space-y-5">
                 <div><h2 className="text-2xl font-black">{t.personalDetails}</h2><p className="mt-1 text-sm text-[#aab5c6]">{t.keepDetails}</p></div>
