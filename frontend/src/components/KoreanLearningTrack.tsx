@@ -20,6 +20,12 @@ import { getSessionQuestions, getTrackBySlug, shuffleSeeded, type LearningTrackC
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
 
+const learningUi = {
+  en: { questionBank: 'Question bank', sessionSize: 'Session size', questions: 'questions', reward: 'Reward', signIn: 'Sign in to learn', create: 'Create account', back: 'Back to learning', locked: 'Locked preview', restart: 'Restart track', play: 'Play Korean audio', skip: 'Skip', continue: 'Continue', check: 'Check', points: 'Points system', solve: 'Question solve', completion: 'Track completion', remaining: 'Remaining', summary: 'Track summary', state: 'Session state', completed: 'Completed', progress: 'In progress', earned: 'Points earned this session', speak: 'I completed the speaking attempt', arrange: 'Tap the words to build the sentence.' },
+  ko: { questionBank: '문제 은행', sessionSize: '세션 규모', questions: '문제', reward: '보상', signIn: '로그인하고 학습하기', create: '계정 만들기', back: '학습으로 돌아가기', locked: '미리보기 잠금', restart: '트랙 다시 시작', play: '한국어 오디오 재생', skip: '건너뛰기', continue: '계속', check: '확인', points: '포인트 시스템', solve: '문제 풀이', completion: '트랙 완료', remaining: '남은 문제', summary: '트랙 요약', state: '세션 상태', completed: '완료', progress: '진행 중', earned: '이번 세션 획득 포인트', speak: '말하기 시도를 완료했습니다', arrange: '단어를 눌러 문장을 만들어 보세요.' },
+  hi: { questionBank: 'प्रश्न बैंक', sessionSize: 'सेशन आकार', questions: 'प्रश्न', reward: 'रिवॉर्ड', signIn: 'लॉगिन करके सीखें', create: 'अकाउंट बनाएँ', back: 'लर्निंग पर वापस जाएँ', locked: 'लॉक्ड प्रीव्यू', restart: 'ट्रैक फिर शुरू करें', play: 'कोरियन ऑडियो चलाएँ', skip: 'स्किप', continue: 'जारी रखें', check: 'जाँचें', points: 'पॉइंट्स सिस्टम', solve: 'प्रश्न हल करना', completion: 'ट्रैक पूरा करना', remaining: 'बाकी', summary: 'ट्रैक सारांश', state: 'सेशन स्थिति', completed: 'पूरा हुआ', progress: 'जारी है', earned: 'इस सेशन में मिले पॉइंट्स', speak: 'मैंने बोलने का प्रयास पूरा किया', arrange: 'वाक्य बनाने के लिए शब्दों पर टैप करें।' },
+} as const;
+
 interface SessionAttempt {
   questionKey: string;
   userAnswer: string;
@@ -63,7 +69,9 @@ const visualIcons: Record<string, string> = {
 
 const formatTitle = (question: QuizRound) => `${question.tag} · ${question.points} pts`;
 
-const LearningPreview = ({ title, intro, accent, overview, loginCopy, bankSize, rewardPoints, slug }: LearningTrackConfig) => (
+const LearningPreview = ({ title, intro, accent, overview, loginCopy, bankSize, rewardPoints, slug, language }: LearningTrackConfig & { language: keyof typeof learningUi }) => {
+  const ui = learningUi[language];
+  return (
   <article className="overflow-hidden rounded-xl border border-[#dce6f0] bg-white p-6 shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
     <p className="text-xs font-black uppercase tracking-[0.3em]" style={{ color: accent }}>{title}</p>
     <h2 className="mt-3 text-2xl font-bold text-[#102a43]">{title}</h2>
@@ -77,15 +85,15 @@ const LearningPreview = ({ title, intro, accent, overview, loginCopy, bankSize, 
     </div>
     <div className="mt-6 grid gap-4 sm:grid-cols-3">
       <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">Question bank</p>
+      <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">{ui.questionBank}</p>
         <p className="mt-2 text-2xl font-bold text-[#0b4eae]">{bankSize}</p>
       </div>
       <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">Session size</p>
-        <p className="mt-2 text-2xl font-bold text-[#0b4eae]">10 questions</p>
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">{ui.sessionSize}</p>
+        <p className="mt-2 text-2xl font-bold text-[#0b4eae]">10 {ui.questions}</p>
       </div>
       <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">Reward</p>
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">{ui.reward}</p>
         <p className="mt-2 text-2xl font-bold text-[#b77900]">+{rewardPoints} pts</p>
       </div>
     </div>
@@ -98,19 +106,22 @@ const LearningPreview = ({ title, intro, accent, overview, loginCopy, bankSize, 
     </div>
     <div className="mt-7 flex flex-wrap gap-3">
       <Link href={`/signin?returnTo=/learning/${slug}`} className="kc-button kc-button-primary">
-        <Lock className="h-4 w-4" /> Sign in to learn
+        <Lock className="h-4 w-4" /> {ui.signIn}
       </Link>
       <Link href={`/signup?returnTo=/learning/${slug}`} className="kc-button kc-button-secondary">
-        Create account
+        {ui.create}
       </Link>
     </div>
   </article>
-);
+  );
+};
 
 const LearningTrackPage = ({ slug }: { slug: string }) => {
   const staticTrack = getTrackBySlug(slug);
   const [remoteTrack, setRemoteTrack] = useState<LearningTrackConfig | null>(null);
   const user = useAppStore((state) => state.user);
+  const language = useAppStore((state) => state.language);
+  const ui = learningUi[language];
   const points = useAppStore((state) => state.points);
   const sessionSeed = useAppStore((state) => state.sessionSeed);
   const awardPoints = useAppStore((state) => state.awardPoints);
@@ -443,7 +454,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                 ))}
               </div>
             ) : (
-              <p className="text-sm font-bold text-[#708995]">Tap the words to build the sentence.</p>
+              <p className="text-sm font-bold text-[#708995]">{ui.arrange}</p>
             )}
           </div>
           <div className="flex flex-wrap gap-3">
@@ -493,7 +504,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
         onClick={() => setSelected('spoken')}
         className="inline-flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-[#2c4049] bg-[#0f1d22] px-5 py-6 text-lg font-black"
       >
-        <Mic className="h-7 w-7 text-[#ffcf86]" /> I completed the speaking attempt
+        <Mic className="h-7 w-7 text-[#ffcf86]" /> {ui.speak}
       </button>
     );
   };
@@ -507,13 +518,13 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
               <ArrowLeft className="h-4 w-4" /> Back to learning
             </Link>
             <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-[#ffcf86]">
-              Locked preview
+              {ui.locked}
             </span>
           </div>
         </section>
         <section className="px-4 py-8 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-[1500px]">
-            <LearningPreview {...track} />
+            <LearningPreview {...track} language={language} />
           </div>
         </section>
       </main>
@@ -528,7 +539,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-3">
           <Link href="/learning" className="inline-flex items-center gap-2 rounded-xl border border-[#35505d] px-3 py-2 text-sm font-black text-[#9fb2bd] hover:text-white">
             <ArrowLeft className="h-4 w-4" />
-            Korean Learning
+            {ui.back}
           </Link>
           <div className="min-w-0">
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#ffcf86]">{track.eyebrow}</p>
@@ -559,7 +570,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                   setAttempts([]);
                 }}
                 className="text-[#708995]"
-                aria-label="Restart track"
+                aria-label={ui.restart}
               >
                 <RotateCcw className="h-6 w-6" />
               </button>
@@ -578,7 +589,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                 <p className="text-4xl font-black sm:text-6xl lg:text-7xl">{question.korean}</p>
                 {(question.type === 'listen' || question.type === 'speak') ? (
                   <button type="button" onClick={speak} className="mt-5 inline-flex items-center gap-2 rounded-xl border-2 border-[#35505d] px-4 py-3 text-sm font-black text-[#ffcf86]">
-                    <Volume2 className="h-5 w-5" /> Play Korean audio
+                    <Volume2 className="h-5 w-5" /> {ui.play}
                   </button>
                 ) : null}
               </div>
@@ -597,7 +608,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                   }}
                   className="rounded-xl border-2 border-[#35505d] px-6 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#708995]"
                 >
-                  Skip
+                  {ui.skip}
                 </button>
                 {status === 'correct' ? (
                   <button
@@ -606,7 +617,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                     className="rounded-xl px-8 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#06251a] shadow-[0_5px_0_rgba(0,0,0,0.28)]"
                     style={{ backgroundColor: track.accent }}
                   >
-                    Continue
+                    {ui.continue}
                   </button>
                 ) : (
                   <button
@@ -615,7 +626,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                     disabled={!currentAnswer()}
                     className="rounded-xl bg-[#1cb0f6] px-8 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#06232f] shadow-[0_5px_0_#0b75a5] disabled:bg-[#354b58] disabled:text-[#708995] disabled:shadow-none"
                   >
-                    Check
+                    {ui.check}
                   </button>
                 )}
               </div>
@@ -626,19 +637,19 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
             <div className="rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <Trophy className="h-6 w-6 text-[#ff9600]" />
-                <h2 className="text-xl font-black">Points system</h2>
+                <h2 className="text-xl font-black">{ui.points}</h2>
               </div>
               <div className="mt-4 grid gap-3 text-sm font-bold text-[#565959]">
-                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>Question solve</span><span>+{question.points}</span></p>
-                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>Track completion</span><span>+{track.rewardPoints}</span></p>
-                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>Session length</span><span>{sessionQuestions.length} questions</span></p>
-                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>Remaining</span><span>{remainingQuestions}</span></p>
+                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>{ui.solve}</span><span>+{question.points}</span></p>
+                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>{ui.completion}</span><span>+{track.rewardPoints}</span></p>
+                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>{ui.sessionSize}</span><span>{sessionQuestions.length} {ui.questions}</span></p>
+                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>{ui.remaining}</span><span>{remainingQuestions}</span></p>
               </div>
             </div>
             <div className="rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <BookOpen className="h-6 w-6 text-[#007185]" />
-                <h2 className="text-xl font-black">Track summary</h2>
+                <h2 className="text-xl font-black">{ui.summary}</h2>
               </div>
               <p className="mt-3 text-sm font-bold leading-7 text-[#565959]">{track.intro}</p>
               <div className="mt-4 grid gap-2">
@@ -652,10 +663,10 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
             <div className="rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <ChevronRight className="h-6 w-6 text-[#b12704]" />
-                <h2 className="text-xl font-black">Session state</h2>
+                <h2 className="text-xl font-black">{ui.state}</h2>
               </div>
-              <p className="mt-3 text-sm font-bold text-[#565959]">{completed ? 'Completed' : 'In progress'}</p>
-              <p className="mt-2 text-sm font-bold text-[#565959]">Points earned this session: {sessionPoints}</p>
+              <p className="mt-3 text-sm font-bold text-[#565959]">{completed ? ui.completed : ui.progress}</p>
+              <p className="mt-2 text-sm font-bold text-[#565959]">{ui.earned}: {sessionPoints}</p>
             </div>
           </aside>
         </div>
