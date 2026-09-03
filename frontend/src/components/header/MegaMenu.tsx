@@ -81,21 +81,11 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
   if (isAllMenu) {
     return (
       <div id="desktop-mega-menu" data-mega-panel className="pointer-events-auto mx-auto w-full max-w-[1320px] px-3 sm:px-4 lg:px-6" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <div className="max-h-[calc(100vh-172px)] overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-2.5 pb-3 shadow-[0_18px_40px_rgba(15,55,95,0.12)]">
-          <div className="mb-2.5 flex flex-wrap items-center gap-2 rounded-[10px] border border-[#dce6f0] bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#486581]">
-            <span className="mr-1 text-[#0b4eae]">Explore by path</span>
-            <span className="rounded-full bg-[#eaf3ff] px-2 py-1 text-[#0b4eae]">1 Choose category</span>
-            <span className="text-[#9aaabd]" aria-hidden="true">→</span>
-            <span className="rounded-full bg-[#f5f9fe] px-2 py-1">2 Choose service</span>
-            <span className="text-[#9aaabd]" aria-hidden="true">→</span>
-            <span className="rounded-full bg-[#f5f9fe] px-2 py-1">3 Choose a page</span>
-            <span className="text-[#9aaabd]" aria-hidden="true">→</span>
-            <span className="rounded-full bg-[#eefaf4] px-2 py-1 text-[#168354]">4 View preview</span>
-          </div>
+          <div className="max-h-[calc(100vh-172px)] overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-2.5 pb-3 shadow-[0_18px_40px_rgba(15,55,95,0.12)]">
           <div className="grid min-h-0 items-start gap-3 lg:grid-cols-[minmax(190px,0.78fr)_minmax(210px,0.82fr)_minmax(260px,0.98fr)_minmax(340px,1.45fr)]">
           <aside className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
             <div className="border-b border-[#eef0f1] px-4 py-3">
-              <div className="flex items-center justify-between gap-2"><p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">1 · Categories</p><span className="rounded-full bg-[#eaf3ff] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#0b4eae]">Start here</span></div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">Categories</p>
             </div>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
               {allMenuCategories.map((category, index) => {
@@ -125,7 +115,6 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
                         ? 'border-[#0b4eae] bg-[#eaf3ff] text-[#102a43]'
                         : 'border-transparent bg-[#f5f9fe] text-[#102a43] hover:border-[#dce6f0] hover:bg-white'
                     }`}
-                    aria-current={active ? 'true' : undefined}
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-black">{category.label[language]}</span>
@@ -142,7 +131,7 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
 
           <section className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
             <div className="border-b border-[#eef0f1] px-4 py-3">
-              <div className="flex items-center justify-between gap-2"><p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">2 · Services</p><span className="rounded-full bg-[#f5f9fe] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#486581]">Choose one</span></div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">Services</p>
             </div>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
               {categoryServices.map((service, index) => {
@@ -173,7 +162,6 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
                           ? 'border-[#0b4eae] bg-[#eaf3ff] text-[#102a43]'
                           : 'border-transparent bg-[#f5f9fe] text-[#102a43] hover:border-[#dce6f0] hover:bg-white'
                     }`}
-                    aria-current={active ? 'true' : undefined}
                   >
                     <span className="min-w-0">
                       <span className={`block text-sm font-black ${service.href === '/india-pre-selection' ? 'line-clamp-2 leading-5' : 'truncate'}`}>{service.label[language]}</span>
@@ -195,7 +183,7 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
 
           <section className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
             <div className="border-b border-[#eef0f1] px-4 py-3">
-              <div className="flex items-center justify-between gap-2"><p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0b4eae]">3 · Pages</p><span className="rounded-full bg-[#f5f9fe] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#486581]">Choose one</span></div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0b4eae]">Sub services</p>
             </div>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
               {activeCategoryChildren.length ? (
@@ -216,7 +204,6 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
                           ? 'border-[#0b4eae] bg-[#eaf3ff]'
                           : 'border-transparent bg-[#f5f9fe] hover:border-[#dce6f0] hover:bg-white'
                       }`}
-                      aria-current={active ? 'true' : undefined}
                     >
                       <span className="min-w-0">
                         <span className="block text-sm font-black text-[#102a43]">{child.label[language]}</span>
@@ -238,7 +225,7 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
 
           <aside className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white p-4 pb-6 text-[#102a43] shadow-[0_10px_24px_rgba(15,55,95,0.06)]">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center justify-between gap-2"><p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0b4eae]">4 · Preview</p><span className="rounded-full bg-[#eefaf4] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#168354]">Selected</span></div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0b4eae]">Service preview</p>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto pr-1 pb-2">
