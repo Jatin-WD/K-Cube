@@ -1,25 +1,26 @@
 import AuthExperience from '@/components/AuthExperience';
 
 interface SignUpPageProps {
-  searchParams?: {
+  searchParams?: Promise<{
     returnTo?: string;
     ref?: string;
     referral?: string;
     referral_code?: string;
     verified?: string;
     email?: string;
-  };
+  }>;
 }
 
-const SignUpPage = ({ searchParams }: SignUpPageProps) => {
-  const referralParam = searchParams?.ref ?? searchParams?.referral ?? searchParams?.referral_code ?? null;
+const SignUpPage = async ({ searchParams }: SignUpPageProps) => {
+  const params = await searchParams;
+  const referralParam = params?.ref ?? params?.referral ?? params?.referral_code ?? null;
 
   return (
     <AuthExperience
       mode="signup"
-      returnTo={searchParams?.returnTo ?? null}
-      verified={searchParams?.verified ?? null}
-      verifiedEmail={searchParams?.email ?? null}
+      returnTo={params?.returnTo ?? null}
+      verified={params?.verified ?? null}
+      verifiedEmail={params?.email ?? null}
       referralParam={referralParam}
     />
   );
