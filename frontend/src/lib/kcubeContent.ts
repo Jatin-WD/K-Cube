@@ -1,5 +1,4 @@
 ﻿import type { Language } from '@/store/useAppStore';
-import { shopMenuLinks } from '@/lib/shopCatalog';
 
 export type PageKey = 'home' | 'activities' | 'learning' | 'kfood' | 'rewards' | 'events' | 'about' | 'apply' | 'trip' | 'studyAbroad';
 export type DetailCategory = 'activities' | 'learning' | 'kfood' | 'rewards' | 'events';
@@ -728,6 +727,13 @@ const buildSectionPreviewLinks = (item: DetailItem): MenuLink[] =>
     status: item.slug === 'k-pop-missions' ? txt('Available', '이용 가능', 'Available') : undefined,
   })) ?? [];
 
+const kFoodUploadLink: MenuLink = {
+  label: txt('Upload Cooking Video', '요리 영상 업로드', 'Cooking video upload karein'),
+  href: '/dashboard?view=submissions',
+  description: txt('Share your Korean cooking video for K-Food review and community discovery.', '한국 요리 영상을 공유하고 K-Food 검토를 받아보세요.', 'Apna Korean cooking video K-Food review ke liye submit karein.'),
+  status: txt('SUBMIT', 'SUBMIT', 'SUBMIT'),
+};
+
 export interface AllMenuCategory {
   label: LocalText;
   href: string;
@@ -832,7 +838,7 @@ export const allMenuCategories: AllMenuCategory[] = [
         href: detailHref(item.category, item.slug),
         description: item.summary,
         points: item.points,
-        children: buildSectionPreviewLinks(item),
+        children: item.slug === 'food-missions' ? [kFoodUploadLink, ...buildSectionPreviewLinks(item)] : buildSectionPreviewLinks(item),
       })),
   },
   {
@@ -938,9 +944,8 @@ export const navItems: NavItem[] = [
             href: detailHref(item.category, item.slug),
             description: item.summary,
             points: item.points,
-            children: buildSectionPreviewLinks(item),
+            children: item.slug === 'food-missions' ? [kFoodUploadLink, ...buildSectionPreviewLinks(item)] : buildSectionPreviewLinks(item),
           })),
-          { label: txt('Find products on Koreanshop', 'Koreanshop에서 상품 찾기', 'Koreanshop par products dekhein'), href: '/shop', description: txt('Discover Korean food here, then continue to Koreanshop for current prices and availability.', '한국 식품을 둘러본 후 Koreanshop에서 최신 가격과 재고를 확인하세요.', 'Korean food discover karein, phir current price aur availability ke liye Koreanshop par jayein.'), children: shopMenuLinks.slice(0, 4) },
         ],
       },
     ],
@@ -993,7 +998,7 @@ export const pages: Record<PageKey, PageContent> = {
     cards: [
       { title: txt('Culture activities', '문화 활동', 'Culture activities'), description: txt('K-Pop, K-Dance, drama, culture and food missions.', 'K-Pop, K-Dance, 드라마, 문화, 음식 미션.', 'K-Pop, K-Dance, drama, culture aur food missions.'), href: '/activities', cta: txt('Explore activities', '활동 보기', 'Activities dekhein') },
       { title: txt('Korean learning', '한국어 학습', 'Korean learning'), description: txt('SEO-friendly Korean lessons with points-based progress.', '포인트 기반 진도를 가진 SEO 친화 한국어 수업.', 'SEO-friendly Korean lessons with points progress.'), href: '/learning', cta: txt('Start learning', '학습 시작', 'Learning start karein') },
-      { title: txt('K-Food bridge', 'K-Food 연결', 'K-Food bridge'), description: txt('Recipes and food content guide users toward K-CUBE shop purchases.', '레시피와 음식 콘텐츠가 K-CUBE 쇼핑 구매로 이어집니다.', 'Recipes users ko K-CUBE shop purchase tak guide karte hain.'), href: '/shop', cta: txt('Discover K-Food', 'K-Food 보기', 'K-Food dekhein') },
+      { title: txt('K-Food cooking studio', 'K-Food 쿠킹 스튜디오', 'K-Food cooking studio'), description: txt('Explore Korean food and share your own cooking video with the K-CUBE community.', '한국 음식을 탐색하고 나만의 요리 영상을 K-CUBE 커뮤니티와 공유하세요.', 'Korean food explore karein aur apna cooking video K-CUBE community ke saath share karein.'), href: '/kfood', cta: txt('Open K-Food', 'K-Food 열기', 'K-Food kholen') },
     ],
   },
   activities: {
