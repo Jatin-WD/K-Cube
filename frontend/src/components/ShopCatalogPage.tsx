@@ -6,10 +6,13 @@ import { getStoreMeta, type ShopStore } from '@/lib/shopCatalog';
 const ShopCatalogPage = () => (
   <main className="min-h-screen bg-[#eef4f9] px-4 py-8 text-[#102a43] lg:px-8">
     <section className="mx-auto max-w-[1320px]">
-      <div className="rounded-[1.5rem] border border-[#dce6f0] bg-white p-6 shadow-[0_12px_30px_rgba(16,42,67,0.06)] sm:p-10">
-        <p className="kc-eyebrow">SHOP KOREA</p>
-        <h1 className="mt-3 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">Your gateway to Korean shopping.</h1>
-        <p className="mt-5 max-w-2xl text-base leading-7 text-[#486581]">Discover Korean food, lifestyle and beauty products, then continue securely on the specialist store that sells them.</p>
+      <div className="relative overflow-hidden rounded-[1.5rem] border border-[#dce6f0] bg-[#dce9f7] shadow-[0_12px_30px_rgba(16,42,67,0.06)]">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.84) 47%, rgba(255,255,255,0.24) 100%), url('/assets/korean shopping.png')" }} aria-hidden="true" />
+        <div className="relative p-6 sm:min-h-[330px] sm:p-10">
+          <p className="kc-eyebrow">SHOP KOREA</p>
+          <h1 className="mt-3 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">Your gateway to Korean shopping.</h1>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-[#486581]">Discover Korean food, lifestyle and beauty products, then continue securely on the specialist store that sells them.</p>
+        </div>
       </div>
 
       <div className="mt-6 grid gap-5 md:grid-cols-2">
