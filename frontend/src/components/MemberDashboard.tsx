@@ -65,6 +65,20 @@ interface IndiaApplicationSummary {
   reviewed_at: string | null;
 }
 
+interface MyContentSubmission {
+  id: number;
+  category: string;
+  title: string;
+  description: string | null;
+  video_url: string;
+  thumbnail_url: string | null;
+  status: string;
+  review_note?: string | null;
+  points_reward?: number;
+  created_at: string;
+  updated_at?: string;
+}
+
 const heroImages = [
   {
     title: 'Culture uploads',
@@ -121,6 +135,10 @@ const MemberDashboard = () => {
   const [eventMessage, setEventMessage] = useState('');
   const [indiaApplication, setIndiaApplication] = useState<IndiaApplicationSummary | null>(null);
   const [applicationLoading, setApplicationLoading] = useState(false);
+  const [mySubmissions, setMySubmissions] = useState<MyContentSubmission[]>([]);
+  const [submissionsLoading, setSubmissionsLoading] = useState(false);
+  const [submissionsPage, setSubmissionsPage] = useState(1);
+  const submissionsPerPage = 10;
 
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -227,6 +245,25 @@ const MemberDashboard = () => {
   }, [activeView, user]);
 
   useEffect(() => {
+    if (!user || activeView !== 'submissions') return;
+    let cancelled = false;
+    setSubmissionsLoading(true);
+    api.get('/engagement/uploads/me').then((response) => {
+      const payload = response.data?.data ?? response.data;
+      const rows = Array.isArray(payload) ? payload : Array.isArray(payload?.uploads) ? payload.uploads : [];
+      if (!cancelled) {
+        setMySubmissions(rows);
+        setSubmissionsPage(1);
+      }
+    }).catch(() => {
+      if (!cancelled) setMySubmissions([]);
+    }).finally(() => {
+      if (!cancelled) setSubmissionsLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [activeView, user]);
+
+  useEffect(() => {
     if (!user) return;
     api.get('/events').then((response) => {
       const data = response.data?.data ?? response.data;
@@ -324,7 +361,12 @@ const MemberDashboard = () => {
             <div className="sm:col-span-2 flex flex-wrap gap-3"><button disabled={profileSaving} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60">{profileSaving ? 'Saving...' : 'Save changes'}</button><Link href="/profile" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">Open full profile page</Link></div>
           </form>
         </section> : null}
-        {activeView === 'submissions' ? <section className="mx-auto max-w-3xl space-y-5">
+        {activeView === 'submissions' ? <section className="mx-auto max-w-4xl space-y-5">
+          <div className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
+            <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">My submissions</p><h1 className="mt-2 text-3xl font-black text-[#102a43]">Your submitted content</h1><p className="mt-3 text-sm leading-7 text-[#486581]">Review your submitted videos, their current status and any feedback from the K-CUBE team.</p></div><span className="rounded-full bg-[#eaf3ff] px-3 py-2 text-xs font-black text-[#0b4eae]">{mySubmissions.length} {mySubmissions.length === 1 ? 'submission' : 'submissions'}</span></div>
+            {submissionsLoading ? <p className="mt-6 rounded-lg bg-[#f7fafd] p-4 text-sm font-semibold text-[#486581]">Loading your submissions...</p> : mySubmissions.length ? <div className="mt-6 space-y-3">{mySubmissions.slice((submissionsPage - 1) * submissionsPerPage, submissionsPage * submissionsPerPage).map((submission) => <article key={submission.id} className="rounded-lg border border-[#d8e4f0] bg-[#f8fbff] p-4 sm:p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.16em] text-[#0b4eae]">{submission.category.replace(/_/g, ' ')}</p><h2 className="mt-1 truncate text-lg font-black text-[#102a43]">{submission.title}</h2></div><span className="rounded-full border border-[#d8e4f0] bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-[#486581]">{submission.status}</span></div><p className="mt-3 text-sm leading-6 text-[#486581]">{submission.description || 'No description provided.'}</p><div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-[#6c8298]"><span>Submitted {new Date(submission.created_at).toLocaleDateString()}</span><a href={submission.video_url} target="_blank" rel="noreferrer" className="font-black text-[#0b4eae] underline underline-offset-2">View submission</a></div>{submission.review_note ? <p className="mt-3 border-l-2 border-[#0b4eae] pl-3 text-sm text-[#486581]"><span className="font-black">Review note:</span> {submission.review_note}</p> : null}</article>)}</div> : <div className="mt-6 rounded-lg border border-dashed border-[#cbd9ea] bg-[#f8fbff] p-5 text-sm leading-7 text-[#486581]">You have not submitted any content yet. Your submitted videos will appear here after you send them for review.</div>}
+            {mySubmissions.length > submissionsPerPage ? <div className="mt-5 flex items-center justify-between border-t border-[#d8e4f0] pt-4"><span className="text-xs font-semibold text-[#6c8298]">Page {submissionsPage} of {Math.ceil(mySubmissions.length / submissionsPerPage)}</span><div className="flex gap-2"><button type="button" onClick={() => setSubmissionsPage((page) => Math.max(1, page - 1))} disabled={submissionsPage === 1} className="rounded-lg border border-[#cbd9ea] px-3 py-2 text-xs font-bold text-[#486581] disabled:opacity-40">Previous</button><button type="button" onClick={() => setSubmissionsPage((page) => Math.min(Math.ceil(mySubmissions.length / submissionsPerPage), page + 1))} disabled={submissionsPage >= Math.ceil(mySubmissions.length / submissionsPerPage)} className="rounded-lg border border-[#cbd9ea] px-3 py-2 text-xs font-bold text-[#486581] disabled:opacity-40">Next</button></div></div> : null}
+          </div>
           <div className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">New submission</p>
             <h1 className="mt-2 text-3xl font-black text-[#102a43]">Submit your Korean culture content</h1>
