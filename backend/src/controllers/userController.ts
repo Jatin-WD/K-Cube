@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 import pool from '../db/pool';
 import { AuthRequest } from '../middleware/auth';
 import { fail, ok } from '../lib/apiResponse';
@@ -42,6 +43,33 @@ export const updateOwnProfile = async (req: AuthRequest, res: Response) => {
   );
   const [rows] = await pool.query(`SELECT ${profileFields} FROM users WHERE id = ? LIMIT 1`, [userId]);
   return ok(res, (rows as any[])[0] || { id: userId });
+};
+
+export const changeOwnPassword = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
+
+  const currentPassword = String(req.body?.current_password || '');
+  const newPassword = String(req.body?.new_password || '');
+  const confirmPassword = String(req.body?.confirm_password || '');
+  if (!currentPassword || !newPassword || newPassword.length < 8) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'Current password and a new password of at least 8 characters are required');
+  }
+  if (newPassword !== confirmPassword) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'New password and confirmation do not match');
+  }
+
+  const [rows] = await pool.query('SELECT password_hash FROM users WHERE id = ? LIMIT 1', [userId]);
+  const user = (rows as any[])[0];
+  if (!user) return fail(res, 404, 'NOT_FOUND', 'User not found');
+  if (!user.password_hash || !(await bcrypt.compare(currentPassword, String(user.password_hash)))) {
+    return fail(res, 401, 'INVALID_CREDENTIALS', 'Current password is incorrect');
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  await pool.query('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, userId]);
+  await pool.query('UPDATE auth_identities SET verified = TRUE, updated_at = NOW() WHERE user_id = ? AND provider = ?', [userId, 'password']);
+  return ok(res, { changed: true });
 };
 
 export const listUsers = async (req: Request, res: Response) => {

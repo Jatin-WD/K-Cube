@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, Plane, Trophy, UploadCloud, UserRound, Utensils } from 'lucide-react';
+import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, KeyRound, Plane, Trophy, UploadCloud, UserRound, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 import { memberCopy } from '@/lib/memberContent';
@@ -130,6 +130,10 @@ const MemberDashboard = () => {
   const [profileForm, setProfileForm] = useState({ full_name: '', phone: '', city: '', state: '', country: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState('');
+  const [passwordForm, setPasswordForm] = useState({ current_password: '', new_password: '', confirm_password: '' });
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
   const [events, setEvents] = useState<MemberEventRow[]>([]);
   const [rsvpStatus, setRsvpStatus] = useState<Record<number, string>>({});
   const [eventMessage, setEventMessage] = useState('');
@@ -307,6 +311,22 @@ const MemberDashboard = () => {
     }
   };
 
+  const changePassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setPasswordSaving(true);
+    setPasswordMessage('');
+    setPasswordError('');
+    try {
+      await api.patch('/users/profile/password', passwordForm);
+      setPasswordForm({ current_password: '', new_password: '', confirm_password: '' });
+      setPasswordMessage('Password changed successfully.');
+    } catch (error: any) {
+      setPasswordError(error?.response?.data?.error?.message || error?.response?.data?.message || 'Password change nahi ho paya. Details check karein.');
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
+
   if (!user) {
     return (
       <main className="min-h-screen bg-[#070708] px-5 py-16 text-white lg:px-10">
@@ -361,6 +381,15 @@ const MemberDashboard = () => {
             {profileMessage ? <p className="sm:col-span-2 text-sm font-bold text-[#9be7c2]">{profileMessage}</p> : null}
             <div className="sm:col-span-2 flex flex-wrap gap-3"><button disabled={profileSaving} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60">{profileSaving ? 'Saving...' : 'Save changes'}</button><Link href="/profile" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">Open full profile page</Link></div>
           </form>
+          <section className="mt-6 rounded-xl border border-white/10 bg-[#111113] p-6 sm:p-8">
+            <div className="flex items-center gap-3"><KeyRound className="h-6 w-6 text-[#ffc400]" /><div><h2 className="text-2xl font-black">Change password</h2><p className="mt-1 text-sm text-[#aab5c6]">Use your current password to secure your account with a new one.</p></div></div>
+            <form onSubmit={changePassword} className="mt-6 grid gap-4 sm:grid-cols-3">
+              <input required type="password" minLength={8} value={passwordForm.current_password} onChange={(event) => setPasswordForm((current) => ({ ...current, current_password: event.target.value }))} placeholder="Current password" aria-label="Current password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <input required type="password" minLength={8} value={passwordForm.new_password} onChange={(event) => setPasswordForm((current) => ({ ...current, new_password: event.target.value }))} placeholder="New password (8+ characters)" aria-label="New password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <input required type="password" minLength={8} value={passwordForm.confirm_password} onChange={(event) => setPasswordForm((current) => ({ ...current, confirm_password: event.target.value }))} placeholder="Confirm new password" aria-label="Confirm new password" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
+              <div className="flex flex-wrap items-center gap-3 sm:col-span-3"><button disabled={passwordSaving} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60"><KeyRound className="h-4 w-4" />{passwordSaving ? 'Updating...' : 'Update password'}</button>{passwordMessage ? <span className="text-sm font-bold text-[#9be7c2]">{passwordMessage}</span> : null}{passwordError ? <span className="text-sm font-bold text-red-300">{passwordError}</span> : null}</div>
+            </form>
+          </section>
         </section> : null}
         {activeView === 'submissions' || activeView === 'submissionHistory' ? <section className="mx-auto max-w-4xl space-y-5">
           {activeView === 'submissionHistory' ? <div className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
