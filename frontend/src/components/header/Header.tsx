@@ -267,7 +267,7 @@ const Header = () => {
                     </span>
                   </span>
                 </button>
-                <div id="account-menu" role="menu" className={`absolute right-0 top-full z-20 w-56 pt-2 transition ${accountMenuOpen ? 'visible opacity-100' : 'invisible pointer-events-none opacity-0'} group-hover/account:visible group-hover/account:opacity-100 group-focus-within/account:visible group-focus-within/account:opacity-100`}>
+                <div id="account-menu" role="menu" className={`absolute right-0 top-full z-20 w-56 pt-2 transition ${accountMenuOpen ? 'visible opacity-100' : 'invisible pointer-events-none opacity-0'} group-hover/account:pointer-events-auto group-hover/account:visible group-hover/account:opacity-100 group-focus-within/account:pointer-events-auto group-focus-within/account:visible group-focus-within/account:opacity-100`}>
                   <div className="rounded-2xl border border-[#d6dfeb] bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
                     <div className="mb-2 border-b border-[#e6edf6] px-3 pb-3">
                       <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748b]">{language === 'ko' ? '내 포인트' : language === 'hi' ? 'मेरे पॉइंट्स' : 'My points'}</p>
