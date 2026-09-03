@@ -55,7 +55,8 @@ const Header = () => {
       const target = event.target as Node;
       const insideTrigger = target instanceof Element && Boolean(target.closest('[data-mega-trigger]'));
       const insidePanel = target instanceof Element && Boolean(target.closest('[data-mega-panel]'));
-      if (!insideTrigger && !insidePanel) {
+      const insideLanguageMenu = target instanceof Element && Boolean(target.closest('[data-language-menu]'));
+      if (!insideTrigger && !insidePanel && !insideLanguageMenu) {
         setActiveMenuKey(null);
         setLanguageMenuOpen(false);
       }
@@ -170,6 +171,7 @@ const Header = () => {
             </button>
             <div
               className="relative"
+              data-language-menu
               onMouseEnter={() => setLanguageMenuOpen(true)}
               onMouseLeave={() => setLanguageMenuOpen(false)}
             >
