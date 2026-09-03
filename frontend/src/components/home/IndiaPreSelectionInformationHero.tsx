@@ -25,7 +25,7 @@ export default function IndiaPreSelectionInformationHero() {
           </div>
         </article>
         <figure className="relative min-h-[360px] overflow-hidden bg-[#101b36] lg:min-h-[500px]">
-          <Image src="/assets/k-cube-banner.png" alt="2026 official ITAEWON World Music Festival India Pre-Selection campaign banner" fill sizes="(min-width: 1024px) 48vw, 100vw" className="object-cover object-center" priority />
+          <Image src="/assets/itaewon-logo.png" alt="ITAEWON World Music Festival logo" fill sizes="(min-width: 1024px) 48vw, 100vw" className="object-cover object-center" priority />
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#07101b]/90 via-[#07101b]/35 to-transparent px-5 pb-5 pt-16 sm:px-7 sm:pb-7">
             <p className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-[#07101b]/60 px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white backdrop-blur-sm"><Sparkles className="h-4 w-4" />2026 official India pre-selection campaign</p>
             <figcaption className="mt-3 flex items-center gap-2 text-xs font-semibold text-[#e5edf9]"><CalendarDays className="h-4 w-4" />Archival campaign poster for the completed 2026 season</figcaption>
