@@ -82,9 +82,9 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
     return (
       <div id="desktop-mega-menu" data-mega-panel className="pointer-events-auto mx-auto w-full max-w-[1320px] px-3 sm:px-4 lg:px-6" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
           <div className="max-h-[calc(100vh-172px)] overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-2.5 pb-3 shadow-[0_18px_40px_rgba(15,55,95,0.12)]">
-          <div className="grid min-h-0 items-start gap-3 lg:grid-cols-[minmax(190px,0.78fr)_minmax(210px,0.82fr)_minmax(260px,0.98fr)_minmax(340px,1.45fr)]">
-          <aside className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
-            <div className="border-b border-[#eef0f1] px-4 py-3">
+          <div className="grid min-h-0 items-start gap-0 lg:grid-cols-[minmax(190px,0.78fr)_minmax(210px,0.82fr)_minmax(260px,0.98fr)_minmax(340px,1.45fr)]">
+          <aside className="flex min-h-0 flex-col border-r border-[#dce6f0] px-2 pb-1 lg:px-3">
+            <div className="px-2 py-3">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">Categories</p>
             </div>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
@@ -112,7 +112,7 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
                     }}
                     className={`${panelCard} cursor-pointer ${
                       active
-                        ? 'border-[#0b4eae] bg-[#eaf3ff] text-[#102a43]'
+                        ? 'border-[#8eb6e9] border-l-2 bg-[#eef5ff] text-[#102a43]'
                         : 'border-transparent bg-[#f5f9fe] text-[#102a43] hover:border-[#dce6f0] hover:bg-white'
                     }`}
                   >
@@ -129,8 +129,8 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
             </div>
           </aside>
 
-          <section className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
-            <div className="border-b border-[#eef0f1] px-4 py-3">
+          <section className="flex min-h-0 flex-col border-r border-[#dce6f0] px-2 pb-1 lg:px-3">
+            <div className="px-2 py-3">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">Services</p>
             </div>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
@@ -156,10 +156,10 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
                     className={`${panelCard} cursor-pointer ${
                       service.featured
                         ? active
-                          ? 'border-[#0b4eae] bg-[#eaf3ff] text-[#102a43] shadow-[0_8px_18px_rgba(11,78,174,0.10)]'
+                          ? 'border-[#6e9fdf] border-l-2 bg-[#eef5ff] text-[#102a43] shadow-[0_5px_14px_rgba(11,78,174,0.07)]'
                           : 'border-[#dce6f0] bg-[#f7fafd] text-[#102a43] hover:border-[#9fc1ee] hover:bg-white'
                         : active
-                          ? 'border-[#0b4eae] bg-[#eaf3ff] text-[#102a43]'
+                          ? 'border-[#6e9fdf] border-l-2 bg-[#eef5ff] text-[#102a43]'
                           : 'border-transparent bg-[#f5f9fe] text-[#102a43] hover:border-[#dce6f0] hover:bg-white'
                     }`}
                   >
@@ -181,8 +181,8 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
             </div>
           </section>
 
-          <section className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
-            <div className="border-b border-[#eef0f1] px-4 py-3">
+          <section className="flex min-h-0 flex-col border-r border-[#dce6f0] px-2 pb-1 lg:px-3">
+            <div className="px-2 py-3">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0b4eae]">Sub services</p>
             </div>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
@@ -201,7 +201,7 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
                       onFocus={() => setActiveChildIndex(index)}
                       className={`${panelCard} cursor-pointer ${
                         active
-                          ? 'border-[#0b4eae] bg-[#eaf3ff]'
+                          ? 'border-[#0b4eae] border-l-2 bg-[#e1efff] text-[#0f2f59] shadow-[0_6px_14px_rgba(11,78,174,0.10)]'
                           : 'border-transparent bg-[#f5f9fe] hover:border-[#dce6f0] hover:bg-white'
                       }`}
                     >
@@ -223,12 +223,15 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
             </div>
           </section>
 
-          <aside className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white p-4 pb-6 text-[#102a43] shadow-[0_10px_24px_rgba(15,55,95,0.06)]">
+          <aside className="flex min-h-0 flex-col overflow-hidden rounded-[10px] bg-[#f8fbff] p-4 pb-5 text-[#102a43] shadow-[inset_1px_0_0_#eef3f8]">
             <div className="flex items-center justify-between gap-3">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0b4eae]">Service preview</p>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto pr-1 pb-2">
+              <p className="mt-3 truncate text-[10px] font-bold tracking-[0.08em] text-[#7a8da4]" title={`${activeCategory?.label[language]} › ${activeCategoryService?.label[language]} › ${activeCategoryChild?.label[language]}`}>
+                {activeCategory?.label[language]} <span aria-hidden="true">›</span> {activeCategoryService?.label[language]} <span aria-hidden="true">›</span> {activeCategoryChild?.label[language]}
+              </p>
               <p className="mt-4 text-sm font-bold uppercase tracking-[0.16em] text-[#0b4eae]">{isAllItaewonService ? selectedFestivalPreview.eyebrow[language] : activeCategory?.label[language]}</p>
               <h3 className="mt-2 text-[clamp(1.4rem,1.8vw,1.95rem)] font-black leading-[1.12] text-[#102a43]">{isAllItaewonService ? selectedFestivalPreview.title[language] : activeCategoryService?.label[language]}</h3>
               {isAllItaewonService ? <p className="mt-2 inline-flex rounded-full border border-[#b8e0cf] bg-[#eefaf4] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#168354]">{selectedFestivalPreview.badge[language]}</p> : null}
@@ -287,14 +290,14 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
   return (
     <div id="desktop-mega-menu" data-mega-panel className="pointer-events-auto mx-auto w-full max-w-[1320px] px-3 sm:px-4 lg:px-6" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <div
-        className={`grid max-h-[calc(100vh-172px)] min-h-0 gap-2.5 overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-[#f7fafd] p-2.5 shadow-[0_18px_40px_rgba(15,55,95,0.12)] ${
+        className={`grid max-h-[calc(100vh-172px)] min-h-0 gap-0 overflow-y-auto overflow-x-hidden rounded-b-[14px] border border-t-0 border-[#dce6f0] bg-white p-3 shadow-[0_18px_40px_rgba(15,55,95,0.12)] ${
           isAllMenu
             ? 'lg:grid-cols-[minmax(250px,0.96fr)_minmax(250px,0.92fr)_minmax(300px,1.06fr)_minmax(260px,0.92fr)]'
             : 'lg:grid-cols-[minmax(240px,0.92fr)_minmax(260px,1fr)_minmax(300px,1.04fr)]'
         }`}
       >
-        <aside className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
-          <div className="border-b border-[#eef0f1] px-4 py-3">
+        <aside className="flex min-h-0 flex-col border-r border-[#dce6f0] px-2 pb-1 lg:px-3">
+          <div className="px-2 py-3">
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">Services</p>
           </div>
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
@@ -320,10 +323,10 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
                   className={`${panelCard} cursor-pointer ${
                     link.featured
                       ? active
-                        ? 'border-[#0b4eae] bg-[#eaf3ff] text-[#102a43] shadow-[0_8px_18px_rgba(11,78,174,0.10)]'
+                        ? 'border-[#6e9fdf] border-l-2 bg-[#eef5ff] text-[#102a43] shadow-[0_5px_14px_rgba(11,78,174,0.07)]'
                         : 'border-[#dce6f0] bg-[#f7fafd] text-[#102a43] hover:border-[#9fc1ee] hover:bg-white'
                       : active
-                        ? 'border-[#0b4eae] bg-[#eaf3ff] text-[#102a43]'
+                        ? 'border-[#6e9fdf] border-l-2 bg-[#eef5ff] text-[#102a43]'
                         : 'border-transparent bg-[#f5f9fe] text-[#102a43] hover:border-[#dce6f0] hover:bg-white'
                   }`}
                 >
@@ -345,8 +348,8 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
           </div>
         </aside>
 
-        <section className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white">
-          <div className="border-b border-[#eef0f1] px-4 py-3">
+        <section className="flex min-h-0 flex-col border-r border-[#dce6f0] px-2 pb-1 lg:px-3">
+          <div className="px-2 py-3">
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#2457d6]">Sub services</p>
           </div>
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
@@ -365,7 +368,7 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
                     onFocus={() => setActiveChildIndex(index)}
                     className={`${panelCard} cursor-pointer ${
                       active
-                        ? 'border-[#2457d6] bg-[#e8f0ff]'
+                        ? 'border-[#0b4eae] border-l-2 bg-[#e1efff] text-[#0f2f59] shadow-[0_6px_14px_rgba(11,78,174,0.10)]'
                         : 'border-transparent bg-[#f5f9fe] hover:border-[#dce6f0] hover:bg-white'
                     }`}
                   >
@@ -387,12 +390,15 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
           </div>
         </section>
 
-          <aside className="flex min-h-0 flex-col overflow-hidden rounded-[12px] border border-[#dce6f0] bg-white p-4 text-[#102a43] shadow-[0_10px_24px_rgba(15,55,95,0.06)]">
+          <aside className="flex min-h-0 flex-col overflow-hidden rounded-[10px] bg-[#f8fbff] p-4 text-[#102a43] shadow-[inset_1px_0_0_#eef3f8]">
           <div className="flex items-center justify-between gap-3">
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0b4eae]">Service preview</p>
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+            <p className="mt-3 truncate text-[10px] font-bold tracking-[0.08em] text-[#7a8da4]" title={`${activeSection.title[language]} › ${activeLink?.label[language]} › ${activeChild?.label[language]}`}>
+              {activeSection.title[language]} <span aria-hidden="true">›</span> {activeLink?.label[language]} <span aria-hidden="true">›</span> {activeChild?.label[language]}
+            </p>
             <p className="mt-4 text-sm font-bold uppercase tracking-[0.16em] text-[#0b4eae]">{isItaewonService ? selectedFestivalPreview.eyebrow[language] : activeSection.title[language]}</p>
             <h3 className="mt-2 text-[clamp(1.4rem,1.8vw,1.95rem)] font-black leading-[1.12] text-[#102a43]">{isItaewonService ? selectedFestivalPreview.title[language] : activeLink?.label[language]}</h3>
             {isItaewonService ? <p className="mt-2 inline-flex rounded-full border border-[#b8e0cf] bg-[#eefaf4] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#168354]">{selectedFestivalPreview.badge[language]}</p> : null}
