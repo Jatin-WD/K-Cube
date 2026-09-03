@@ -735,7 +735,13 @@ export interface AllMenuCategory {
   services: MenuLink[];
 }
 
-const buildShopServiceLinks = (): MenuLink[] => shopMenuLinks.slice(0, 5);
+const shopGatewayLinks: MenuLink[] = [
+  { label: txt('Koreanshop', 'Koreanshop', 'Koreanshop'), href: 'https://koreanshop.in/', external: true, featured: true, description: txt('Korean food, pantry essentials and lifestyle products.', '한국 식품, 식료품 및 라이프스타일 상품을 만나보세요.', 'Korean food, pantry essentials aur lifestyle products discover karein.') },
+  { label: txt('MOA Beauty', 'MOA Beauty', 'MOA Beauty'), href: 'https://www.moabeauty.in/', external: true, description: txt('Korean skincare, cosmetics and beauty essentials.', '한국 스킨케어, 화장품 및 뷰티 상품을 만나보세요.', 'Korean skincare, cosmetics aur beauty essentials discover karein.') },
+  { label: txt('Curated by K-CUBE', 'K-CUBE 큐레이션', 'K-CUBE curated'), href: '/shop', description: txt('Browse Korean favorites and choose the right specialist store.', '한국 상품을 둘러보고 전문 스토어를 선택하세요.', 'Korean favorites browse karke specialist store choose karein.') },
+];
+
+const buildShopServiceLinks = (): MenuLink[] => shopGatewayLinks;
 
 const itaewonSubmissionLink: MenuLink = {
   label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
@@ -847,7 +853,7 @@ export const allMenuCategories: AllMenuCategory[] = [
   {
     label: txt('Shop', '샵', 'Shop'),
     href: '/shop',
-    description: txt('Buy Korean products directly on K-CUBE with account rewards.', 'K-CUBE에서 한국 상품을 직접 구매하고 계정 리워드를 받으세요.', 'K-CUBE par Korean products directly buy karo aur account rewards pao.'),
+    description: txt('Discover Korean products and continue to the specialist store that sells them.', '한국 상품을 발견하고 전문 스토어에서 쇼핑하세요.', 'Korean products discover karke specialist store par shop karein.'),
     services: buildShopServiceLinks(),
   },
 ];
@@ -903,6 +909,10 @@ export const navItems: NavItem[] = [
   {
     label: txt('Shop', '샵', 'Shop'),
     href: '/shop',
+    dropdown: [{
+      title: txt('Shopping platforms', '쇼핑 플랫폼', 'Shopping platforms'),
+      links: shopGatewayLinks,
+    }],
   },
   {
     label: txt('Activities', '활동', 'Activities'),
@@ -935,7 +945,7 @@ export const navItems: NavItem[] = [
             points: item.points,
             children: buildSectionPreviewLinks(item),
           })),
-          { label: txt('Shop on K-CUBE', 'K-CUBE 쇼핑', 'K-CUBE Shop'), href: '/shop', description: txt('Buy Korean food directly on K-CUBE with login-gated checkout and rewards.', 'K-CUBE에서 로그인 기반 결제와 리워드로 한국 식품을 직접 구매하세요.', 'K-CUBE par login-gated checkout aur rewards ke saath Korean food kharidein.'), children: shopMenuLinks.slice(0, 4) },
+          { label: txt('Find products on Koreanshop', 'Koreanshop에서 상품 찾기', 'Koreanshop par products dekhein'), href: '/shop', description: txt('Discover Korean food here, then continue to Koreanshop for current prices and availability.', '한국 식품을 둘러본 후 Koreanshop에서 최신 가격과 재고를 확인하세요.', 'Korean food discover karein, phir current price aur availability ke liye Koreanshop par jayein.'), children: shopMenuLinks.slice(0, 4) },
         ],
       },
     ],
@@ -1021,10 +1031,10 @@ export const pages: Record<PageKey, PageContent> = {
   },
   kfood: {
     badge: txt('K-Food', 'K-푸드', 'K-Food'),
-    title: txt('Korean food content that connects to the K-CUBE shop', 'K-CUBE 샵과 연결되는 한국 음식 콘텐츠', 'K-CUBE shop se connected Korean food content'),
-    subtitle: txt('Recipes and food missions attract users, then guide high-intent visitors toward ecommerce.', '레시피와 음식 미션이 사용자를 끌어오고 구매 의도가 높은 방문자를 커머스로 안내합니다.', 'Recipes aur food missions users ko attract karke ecommerce tak guide karte hain.'),
-    description: txt('K-CUBE now handles discovery, shopping, login-gated checkout, and product purchase rewards in one place.', 'K-CUBE가 이제 탐색, 쇼핑, 로그인 기반 결제, 상품 구매 리워드를 한 곳에서 처리합니다.', 'K-CUBE ab discovery, shopping, login-gated checkout aur product purchase rewards ek hi jagah handle karega.'),
-    primaryCta: txt('Open shop', '샵 열기', 'Shop kholo'),
+    title: txt('Korean food content and trusted shopping destinations', '한국 음식 콘텐츠와 신뢰할 수 있는 쇼핑 플랫폼', 'Korean food content aur trusted shopping destinations'),
+    subtitle: txt('Explore recipes and food missions, then discover the specialist store for Korean products.', '레시피와 음식 미션을 둘러본 후 한국 상품 전문 스토어를 확인하세요.', 'Recipes aur food missions explore karke Korean products ke specialist store dekhein.'),
+    description: txt('K-CUBE helps you discover Korean food; checkout and fulfilment happen on the destination store.', 'K-CUBE에서 한국 음식을 발견하고 결제와 배송은 전문 스토어에서 진행하세요.', 'K-CUBE par Korean food discover karein; checkout aur fulfilment destination store par hota hai.'),
+    primaryCta: txt('Discover Korean shopping', '한국 쇼핑 둘러보기', 'Korean shopping discover karein'),
     primaryHref: '/shop',
     cards: detailItems.filter((item) => item.category === 'kfood').map((item) => ({
       title: item.title,

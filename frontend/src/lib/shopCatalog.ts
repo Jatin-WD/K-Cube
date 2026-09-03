@@ -18,7 +18,28 @@ export interface ShopProduct {
   stockLabel: LocalText;
   badges: LocalText[];
   includes: LocalText[];
+  store?: ShopStore;
+  externalProductUrl?: string;
 }
+
+export type ShopStore = 'koreanshop' | 'moa_beauty';
+
+export const shopStores: Record<ShopStore, { name: string; url: string; label: string; description: string }> = {
+  koreanshop: {
+    name: 'Koreanshop',
+    url: 'https://koreanshop.in/',
+    label: 'Korean food & lifestyle',
+    description: 'Korean food, pantry essentials, snacks and everyday lifestyle products.',
+  },
+  moa_beauty: {
+    name: 'MOA Beauty',
+    url: 'https://www.moabeauty.in/',
+    label: 'K-Beauty',
+    description: 'Korean skincare, cosmetics and beauty essentials.',
+  },
+};
+
+export const getStoreMeta = (store: ShopStore = 'koreanshop') => shopStores[store];
 
 export interface ShopCategoryOption {
   key: string;
@@ -135,6 +156,7 @@ const product = (
   stockLabel,
   badges,
   includes,
+  store: 'koreanshop',
 });
 
 export const shopCopy: Record<Language, Record<string, string>> = {

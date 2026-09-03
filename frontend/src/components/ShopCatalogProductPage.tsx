@@ -1,9 +1,9 @@
 "use client";
 
 import Link from 'next/link';
-import { ArrowRight, Coins, Lock, ShoppingBag, Sparkles } from 'lucide-react';
+import { ArrowRight, ExternalLink, Sparkles } from 'lucide-react';
 import type { ShopProduct } from '@/lib/shopCatalog';
-import { getRelatedShopProducts, shopCopy } from '@/lib/shopCatalog';
+import { getRelatedShopProducts, getStoreMeta, shopCopy } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
 
 interface ShopCatalogProductPageProps {
@@ -12,9 +12,8 @@ interface ShopCatalogProductPageProps {
 
 const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
   const language = useAppStore((state) => state.language);
-  const user = useAppStore((state) => state.user);
-  const addToCart = useAppStore((state) => state.addToCart);
   const t = shopCopy[language];
+  const store = getStoreMeta(product.store ?? 'koreanshop');
   const relatedProducts = getRelatedShopProducts(product.id, product.categoryKey);
 
   return (
@@ -53,47 +52,20 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
               </div>
             </section>
 
-            <aside className="rounded-[1.75rem] border border-[#131921] bg-[#131921] p-5 text-white">
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f3a847]">{t.badge}</p>
-              <p className="mt-4 text-4xl font-black">Rs. {product.price}</p>
+            <aside className="rounded-[1.75rem] border border-[#d9e4ef] bg-[#f7fafd] p-5 text-[#102a43]">
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#0b4eae]">SHOPPING DESTINATION</p>
+              <p className="mt-4 text-2xl font-black">{store.name}</p>
+              <p className="mt-4 text-sm leading-6 text-[#486581]">Price and availability may change. Confirm the current details on the destination store.</p>
+              <p className="mt-5 text-3xl font-black">Rs. {product.price}</p>
               {product.compareAtPrice ? <p className="mt-2 text-lg font-bold text-[#9ca3af] line-through">Rs. {product.compareAtPrice}</p> : null}
-              <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#fff4cc] px-4 py-2 text-sm font-black text-[#111827]">
-                <Coins className="h-4 w-4" />
-                +{product.rewardPoints} pts
-              </p>
-              <div className="mt-5 space-y-2 text-sm leading-6 text-[#d5d9d9]">
-                <p><span className="font-black text-white">{t.stock}:</span> {product.stockLabel[language]}</p>
-                <p><span className="font-black text-white">{t.sku}:</span> {product.sku}</p>
+              <div className="mt-5 space-y-2 text-sm leading-6 text-[#486581]">
+                <p><span className="font-black text-[#102a43]">{t.sku}:</span> {product.sku}</p>
               </div>
-              <p className="mt-4 text-sm leading-6 text-[#d5d9d9]">{t.rewardsLine}</p>
+              <p className="mt-4 text-sm leading-6 text-[#486581]">K-CUBE currently provides product discovery; no automatic external-store reward is promised here.</p>
 
               <div className="mt-6 space-y-3">
-                {user ? (
-                  <>
-                    <button
-                      type="button"
-                      disabled={!product.inStock}
-                      onClick={() => addToCart(product.id, 1)}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#ffd814] px-5 py-4 text-sm font-black text-[#111827] disabled:cursor-not-allowed disabled:bg-[#4b5563] disabled:text-[#d5d9d9]"
-                    >
-                      <ShoppingBag className="h-4 w-4" />
-                      {product.inStock ? t.addToCart : t.outOfStock}
-                    </button>
-                    <Link href="/shop" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/20 px-5 py-4 text-sm font-bold text-white">
-                      {t.continueShopping}
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link href={`/signin?returnTo=/shop/${product.slug}`} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#ffd814] px-5 py-4 text-sm font-black text-[#111827]">
-                      <Lock className="h-4 w-4" />
-                      {t.signInToBuy}
-                    </Link>
-                    <Link href={`/signup?returnTo=/shop/${product.slug}`} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/20 px-5 py-4 text-sm font-bold text-white">
-                      {t.accountPrompt}
-                    </Link>
-                  </>
-                )}
+                <a href={product.externalProductUrl ?? store.url} target="_blank" rel="noopener noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0b4eae] px-5 py-4 text-sm font-black text-white">Shop on {store.name} <ExternalLink className="h-4 w-4" /></a>
+                <Link href="/shop" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#c8d6e5] px-5 py-4 text-sm font-bold text-[#102a43]">Back to shopping hub</Link>
               </div>
 
               <Link href="/shop" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#f3a847]">
@@ -126,7 +98,7 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
                   <p className="mt-2 text-sm leading-6 text-[#5d646d]">{related.subtitle[language]}</p>
                   <div className="mt-4 flex items-center justify-between gap-3">
                     <p className="text-lg font-black">Rs. {related.price}</p>
-                    <span className="text-sm font-bold text-[#b12704]">+{related.rewardPoints} pts</span>
+                    <span className="text-xs font-bold text-[#718096]">{getStoreMeta(related.store ?? 'koreanshop').name}</span>
                   </div>
                   <Link href={`/shop/${related.slug}`} className="mt-4 inline-flex items-center gap-2 text-sm font-black text-[#111827]">
                     {t.viewDetails}

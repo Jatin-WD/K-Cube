@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Coins, Plane, ShoppingBag, Star } from 'lucide-react';
+import { ArrowRight, Check, Coins, ExternalLink, Plane, ShoppingBag, Star } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
-import { shopProducts } from '@/lib/shopCatalog';
+import { getStoreMeta, shopProducts } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
 import IndiaPreSelectionSection from './home/IndiaPreSelectionSection';
@@ -82,7 +82,7 @@ const marketplaceTiles = [
   { title: 'Welcome bonus', value: '+100 points', image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=700&q=80' },
   { title: 'Refer friends', value: '+150 / +100', image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=700&q=80' },
   { title: 'Upload videos', value: 'Admin reviewed', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=80' },
-  { title: 'Shop Korean Products', value: 'Earn purchase rewards', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=700&q=80' },
+  { title: 'Discover Korean Products', value: 'Explore specialist stores', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=700&q=80' },
 ];
 
 const marketplaceTileLabels = {
@@ -92,7 +92,7 @@ const marketplaceTileLabels = {
 } as const;
 
 const marketplaceTileValues = {
-  en: ['+100 points', '+150 / +100', 'Admin reviewed', 'Earn purchase rewards'],
+  en: ['+100 points', '+150 / +100', 'Admin reviewed', 'Explore Korean stores'],
   ko: ['+100 포인트', '+150 / +100', '관리자 검토', '구매 보상 적립'],
   hi: ['+100 पॉइंट्स', '+150 / +100', 'एडमिन रिव्यू', 'खरीदारी rewards कमाएँ'],
 } as const;
@@ -523,7 +523,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                 <div className="p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2457d6]">{product.category[language]}</p>
-                    <span className="rounded-full bg-[#fff0d9] px-3 py-1 text-xs font-black text-[#c45f08]">+{product.rewardPoints} pts</span>
+                    <span className="rounded-full bg-[#eaf3ff] px-3 py-1 text-xs font-black text-[#2457d6]">Available on Koreanshop</span>
                   </div>
                   <h3 className="mt-3 text-lg font-black text-[#0f172a]">{product.title[language]}</h3>
                   <p className="mt-2 text-sm leading-6 text-[#64748b]">{product.subtitle[language]}</p>
@@ -532,9 +532,9 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                       <p className="text-sm font-bold text-[#f3a847]">₹{product.price}</p>
                       {product.compareAtPrice ? <p className="text-xs text-[#9ca3af] line-through">₹{product.compareAtPrice}</p> : null}
                     </div>
-                    <Link href="/shop" className="inline-flex items-center gap-2 rounded-full bg-[#2457d6] px-4 py-2 text-sm font-black text-white">
-                      {homeText.viewShop} <ShoppingBag className="h-4 w-4" />
-                    </Link>
+                    <a href={getStoreMeta(product.store ?? 'koreanshop').url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#2457d6] px-4 py-2 text-sm font-black text-white">
+                      Visit store <ExternalLink className="h-4 w-4" />
+                    </a>
                   </div>
                 </div>
               </article>
