@@ -358,25 +358,17 @@ export const detailItems: DetailItem[] = [
     slug: 'k-pop-missions',
     title: txt('K-Pop Missions', 'K-Pop 미션', 'K-Pop Missions'),
     eyebrow: txt('Activities', '활동', 'Activities'),
-    summary: txt('Simple K-Pop tasks, pre-selection, and singing video submissions that earn points.', '간단한 K-Pop 미션, 예선, 노래 영상 제출로 포인트를 적립합니다.', 'Simple K-Pop tasks, pre-selection aur singing video submissions se points milte hain.'),
+    summary: txt('Complete K-Pop challenges, creative missions and eligible activities to earn K-CUBE points.', 'K-Pop 챌린지, 창의적인 미션 및 참여 가능한 활동을 완료하고 K-CUBE 포인트를 적립하세요.', 'K-Pop challenges, creative missions aur eligible activities complete karke K-CUBE points earn karein.'),
     seo: 'K-Pop missions, Korean music activities, fan quiz, K-CUBE points rewards',
     points: 80,
     protectedAction: true,
     bullets: [
-      txt('Join the K-CUBE India Pre-Selection from this mission.', '이 미션에서 K-CUBE India 예선에 참여하세요.', 'Is mission se K-CUBE India Pre-Selection join karein.'),
       txt('Submit your singing video daily or weekly for more points.', '매일 또는 주간으로 노래 영상을 제출하면 더 많은 포인트를 받을 수 있습니다.', 'Daily ya weekly singing video submit karke more points earn karein.'),
       txt('Simple tasks keep the page easy for first-time users.', '처음 보는 사람도 이해하기 쉬운 구성입니다.', 'Simple tasks page ko first-time users ke liye easy rakhte hain.'),
     ],
     sections: [
       {
-        title: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
-        content: [
-          txt('India-level pre-selection for singers and musical artists heading toward Seoul.', '서울로 향하는 가수와 음악가를 위한 인도 예선입니다.', 'India-level pre-selection for singers and musical artists heading toward Seoul.'),
-          txt('Use this step to apply for the India stage and stay in the K-CUBE music journey.', '이 단계에서 인도 무대 지원을 진행하고 K-CUBE 음악 여정을 이어가세요.', 'Use this step to apply for the India stage and stay in the K-CUBE music journey.'),
-        ],
-      },
-      {
-        title: txt('Submit Your Singing Video', 'Submit Your Singing Video', 'Submit Your Singing Video'),
+        title: txt('Submit Your Singing Video', '노래 영상 제출', 'Submit Your Singing Video'),
         content: [
           txt('Submit a short singing video daily or weekly for more points.', '짧은 노래 영상을 매일 또는 주간으로 제출하면 더 많은 포인트를 받을 수 있습니다.', 'Daily ya weekly short singing video submit karke more points earn karein.'),
           txt('This keeps the mission active and gives creators a simple way to participate.', '이 미션은 크리에이터가 쉽게 참여할 수 있는 형태로 유지됩니다.', 'Ye mission creators ke liye simple participation way deta hai.'),
@@ -730,9 +722,10 @@ const detailHref = (category: DetailCategory, slug: string) => `/${category}/${s
 const buildSectionPreviewLinks = (item: DetailItem): MenuLink[] =>
   item.sections?.slice(0, 3).map((section) => ({
     label: section.title,
-    href: item.slug === 'k-pop-missions' ? '/india-pre-selection' : detailHref(item.category, item.slug),
+    href: detailHref(item.category, item.slug),
     description: section.content[0] ?? item.summary,
     points: item.points,
+    status: item.slug === 'k-pop-missions' ? txt('Available', '이용 가능', 'Available') : undefined,
   })) ?? [];
 
 export interface AllMenuCategory {
