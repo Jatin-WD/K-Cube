@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Lock, Sparkles, Trophy, Zap } from 'lucide-react';
+import { ArrowRight, BookOpen, Lock, Sparkles, Trophy } from 'lucide-react';
 import { learningTracks } from '@/lib/koreanLearningBank';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
@@ -29,8 +29,6 @@ const KoreanLearningHub = () => {
               eyebrow: string;
               intro: string;
               accent: string;
-              rewardPoints?: number;
-              reward_points?: number;
               bankSize?: number;
               bank_size?: number;
               stepSize?: number;
@@ -43,7 +41,7 @@ const KoreanLearningHub = () => {
               eyebrow: track.eyebrow,
               intro: track.intro,
               accent: track.accent,
-              rewardPoints: Number(track.rewardPoints ?? track.reward_points ?? 0),
+              rewardPoints: 0,
               bankSize: Number(track.bankSize ?? track.bank_size ?? 0),
               stepSize: Number(track.stepSize ?? track.step_size ?? 10),
               overview: Array.isArray(track.overview) ? track.overview : [],
@@ -72,7 +70,7 @@ const KoreanLearningHub = () => {
             <p className="kc-eyebrow">{language === 'en' ? 'Learning Gateway' : language === 'ko' ? '학습 게이트웨이' : 'लर्निंग गेटवे'}</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{language === 'en' ? 'Korean learning, points, and login-gated progress' : language === 'ko' ? '한국어 학습, 포인트 및 로그인 기반 진행' : 'Korean learning, पॉइंट्स और लॉगिन आधारित प्रोग्रेस'}</h1>
           </div>
-          <div className="rounded-md border border-[#dce6f0] bg-white px-4 py-2 text-sm font-semibold text-[#486581]">
+          <div className="hidden rounded-md border border-[#dce6f0] bg-white px-4 py-2 text-sm font-semibold text-[#486581]">
             {user ? `${t.points}: ${points}` : `${t.signIn} ${language === 'ko' ? '전 미리보기' : language === 'hi' ? 'से पहले प्रीव्यू' : 'to preview'}`}
           </div>
         </div>
@@ -106,7 +104,7 @@ const KoreanLearningHub = () => {
                     <h3 className="text-xl font-bold text-[#102a43]">Login required</h3>
                   </div>
                   <p className="mt-3 text-sm leading-7 text-[#486581]">
-                    Every real lesson, question shuffle, and point reward is available only after sign in. Before that, users see only basic service info and track summaries.
+                    Sign in to access the full lesson practice, question shuffle, and saved progress. Before that, users see basic service information and track summaries.
                   </p>
                   <div className="mt-5 flex flex-wrap gap-3">
                     <Link href="/signin?returnTo=/learning" className="kc-button kc-button-primary">
@@ -120,7 +118,7 @@ const KoreanLearningHub = () => {
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[
                     { title: 'Session shuffle', value: 'Per login', detail: 'A new seed changes the quiz order each time.' },
-                    { title: 'Points', value: 'Yes', detail: 'Correct answers and completion both reward points.' },
+                    { title: 'Rewards', value: 'None', detail: 'This is a focused Korean practice experience.' },
                     { title: 'Guest mode', value: 'Preview', detail: 'Only high-level learning info is visible.' },
                     { title: 'Pool size', value: '100+', detail: 'Each track has a large question bank.' },
                   ].map((item) => (
@@ -140,14 +138,11 @@ const KoreanLearningHub = () => {
                     href={`/learning/${track.slug}`}
                     className="group rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-5 transition hover:-translate-y-0.5 hover:border-[#0b4eae]/40 hover:bg-[#eaf3ff]"
                   >
-                    <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-xs font-black uppercase tracking-[0.24em]" style={{ color: track.accent }}>{track.eyebrow}</p>
                         <h3 className="mt-2 text-2xl font-black">{track.title}</h3>
                       </div>
-                      <span className="rounded-md border border-[#dce6f0] bg-white px-3 py-1 text-xs font-bold text-[#0b4eae]">
-                        +{track.rewardPoints} pts
-                      </span>
                     </div>
                     <p className="mt-4 text-sm leading-7 text-[#486581]">{track.intro}</p>
                     <div className="mt-5 flex items-center justify-between text-sm font-bold text-[#486581]">
@@ -185,12 +180,12 @@ const KoreanLearningHub = () => {
               </div>
               <ul className="mt-5 space-y-3 text-sm leading-7 text-[#486581]">
                 <li>Fresh session order is derived from the login seed, so every sign-in can feel different.</li>
-                <li>Points are awarded for learning completion after authentication.</li>
+                <li>Learning progress is saved for practice and revision.</li>
                 <li>Guests can inspect the structure, but not the playable quiz content.</li>
                 <li>The class-content track is original, book-inspired practice and not copied textbook text.</li>
               </ul>
               <div className="mt-6 inline-flex items-center gap-2 rounded-md border border-[#0b4eae]/20 bg-[#eaf3ff] px-4 py-2 text-sm font-bold text-[#0b4eae]">
-                <Zap className="h-4 w-4" /> Adaptive + points-based
+                Adaptive practice sessions
               </div>
             </div>
           </aside>

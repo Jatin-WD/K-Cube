@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../db/pool';
 import { AuthRequest } from '../middleware/auth';
-import { awardPoints } from '../services/pointsService';
 import { created, fail, ok } from '../lib/apiResponse';
 
 export const createContentUpload = async (req: AuthRequest, res: Response) => {
@@ -61,7 +60,7 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
     const trackEyebrow = sessionMeta.trackEyebrow || sessionMeta.eyebrow || 'Learning track';
     const trackIntro = sessionMeta.trackIntro || sessionMeta.intro || `Auto-synced track data for ${track_slug}.`;
     const trackAccent = sessionMeta.trackAccent || sessionMeta.accent || '#19c37d';
-    const rewardPoints = Number(sessionMeta.trackRewardPoints ?? sessionMeta.rewardPoints ?? 0);
+    const rewardPoints = 0;
     const bankSize = Number(sessionMeta.trackBankSize ?? attemptList.length ?? 0);
     const stepSize = Number(sessionMeta.trackStepSize ?? 10);
     const overview = Array.isArray(sessionMeta.trackOverview) ? sessionMeta.trackOverview : [];
@@ -127,9 +126,7 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
       const resolvedAccuracy = resolvedTotalQuestions > 0
         ? Number(((resolvedCorrectAnswers / resolvedTotalQuestions) * 100).toFixed(2))
         : Number(accuracy || 100);
-      const resolvedSessionPoints = Number(
-        session_points ?? attemptList.reduce((sum: number, attempt: any) => sum + Number(attempt?.pointsAwarded ?? attempt?.points_awarded ?? 0), 0) + Number(track.reward_points || 0),
-      );
+      const resolvedSessionPoints = 0;
 
       const [sessionInsert] = await connection.query(
         `
@@ -161,7 +158,7 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
             String(attempt?.userAnswer ?? attempt?.user_answer ?? ''),
             String(attempt?.expectedAnswer ?? attempt?.expected_answer ?? ''),
             Boolean(attempt?.isCorrect ?? attempt?.is_correct) ? 1 : 0,
-            Number(attempt?.pointsAwarded ?? attempt?.points_awarded ?? 0),
+            0,
           ],
         );
       }
@@ -186,24 +183,6 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
 
       await connection.commit();
 
-      let balance = undefined;
-      if (resolvedSessionPoints > 0) {
-        const award = await awardPoints({
-          userId,
-          sourceType: 'lesson',
-          sourceSlug: `learning-session-${track.slug}-${completionSeed}`,
-          points: resolvedSessionPoints,
-          metadata: {
-            track_slug,
-            session_seed: completionSeed,
-            correct_answers: resolvedCorrectAnswers,
-            total_questions: resolvedTotalQuestions,
-          },
-          once: true,
-        });
-        balance = award.balance;
-      }
-
       return ok(res, {
         sessionId,
         trackSlug: track.slug,
@@ -211,8 +190,7 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
         correctAnswers: resolvedCorrectAnswers,
         accuracy: resolvedAccuracy,
         streak: currentStreak,
-        pointsAwarded: resolvedSessionPoints,
-        balance,
+        pointsAwarded: 0,
       });
     } catch (error) {
       await connection.rollback();
@@ -224,7 +202,7 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
 
   if (!lesson_id) return fail(res, 400, 'VALIDATION_ERROR', 'Lesson ID is required');
 
-  const [lessonRows] = await pool.query('SELECT id, slug, points_reward FROM lessons WHERE id = ? AND active = TRUE LIMIT 1', [lesson_id]);
+  const [lessonRows] = await pool.query('SELECT id, slug FROM lessons WHERE id = ? AND active = TRUE LIMIT 1', [lesson_id]);
   const lesson = (lessonRows as any[])[0];
   if (!lesson) return fail(res, 404, 'NOT_FOUND', 'Lesson not found');
 
@@ -235,17 +213,7 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
     [userId, lesson_id, accuracy],
   );
 
-  const points = Number(lesson.points_reward || 40);
-  const award = await awardPoints({
-    userId,
-    sourceType: 'lesson',
-    sourceSlug: `lesson-${lesson.slug}`,
-    points,
-    metadata: { lesson_id, accuracy },
-    once: true,
-  });
-
-  return ok(res, { pointsAwarded: award.awarded ? points : 0, balance: award.balance });
+  return ok(res, { pointsAwarded: 0 });
 };
 
 export const trackKFoodClick = async (req: AuthRequest, res: Response) => {
@@ -280,12 +248,12 @@ export const claimKFoodPurchase = async (req: AuthRequest, res: Response) => {
 
 export const trackLearningCourseAction = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id || null;
-  const { course_id, course_title, track_slug, action, price = 0, points_reward = 0, metadata = {} } = req.body;
+  const { course_id, course_title, track_slug, action, price = 0, metadata = {} } = req.body;
   if (!course_id || !course_title || !track_slug || !['cart', 'trial', 'purchase'].includes(action)) {
     return fail(res, 400, 'VALIDATION_ERROR', 'course_id, course_title, track_slug and valid action are required');
   }
 
-  const points = Number(points_reward || (action === 'cart' ? 10 : action === 'trial' ? 40 : 250));
+  const points = 0;
   const [result] = await pool.query(
     `INSERT INTO learning_course_orders
       (user_id, course_id, course_title, track_slug, action, price, points_reward, status, metadata, created_at)
@@ -293,18 +261,5 @@ export const trackLearningCourseAction = async (req: AuthRequest, res: Response)
     [userId, course_id, course_title, track_slug, action, Number(price || 0), points, action === 'cart' ? 'pending' : 'confirmed', JSON.stringify(metadata)],
   );
 
-  let balance;
-  if (userId && points > 0) {
-    const award = await awardPoints({
-      userId,
-      sourceType: 'lesson',
-      sourceSlug: `course-${action}-${course_id}`,
-      points,
-      metadata: { course_id, course_title, track_slug, action, price },
-      once: action !== 'purchase',
-    });
-    balance = award.balance;
-  }
-
-  return created(res, { id: (result as any).insertId, action, pointsReward: points, balance });
+  return created(res, { id: (result as any).insertId, action, pointsReward: 0 });
 };

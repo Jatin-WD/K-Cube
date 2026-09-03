@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Check, Coins, Lock, SearchCheck } from 'lucide-react';
+import { Check, Coins, Lock, SearchCheck, UploadCloud } from 'lucide-react';
 import { copy, type DetailItem } from '@/lib/kcubeContent';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
@@ -40,6 +40,10 @@ const DetailPage = ({ item }: DetailPageProps) => {
   const activeItem = cmsItem;
   const actionId = `${activeItem.category}-${activeItem.slug}`;
   const completed = completedActions.includes(actionId);
+  const reviewSubmission = ['k-pop-missions', 'k-dance-covers', 'k-drama-culture', 'food-missions'].includes(activeItem.slug);
+  const nonRewardLearning = activeItem.category === 'learning';
+  const submissionCategory = activeItem.slug === 'k-pop-missions' ? 'k_song' : activeItem.slug === 'k-dance-covers' ? 'k_dance' : activeItem.slug === 'k-drama-culture' ? 'k_drama' : 'k_food';
+  const submissionHref = `/dashboard?view=submissions&category=${submissionCategory}`;
   const image = detailImages[activeItem.slug] || detailImages[activeItem.category] || detailImages.default;
   const toAnchor = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
@@ -73,7 +77,7 @@ const DetailPage = ({ item }: DetailPageProps) => {
               <SearchCheck className="h-4 w-4 text-[#007185]" />
               SEO: {activeItem.seo}
             </span>
-            {activeItem.points ? (
+            {activeItem.points && !reviewSubmission && !nonRewardLearning ? (
               <span className="inline-flex items-center gap-2 rounded-md border border-[#f59e0b]/35 bg-[#fff7e6] px-4 py-2 font-bold text-[#9a6700]">
                 <Coins className="h-4 w-4" />
                 +{activeItem.points}
@@ -83,15 +87,29 @@ const DetailPage = ({ item }: DetailPageProps) => {
           </div>
 
           <aside className="rounded-[10px] border border-[#dce6f0] bg-white p-6 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
-            <h2 className="text-2xl font-black text-[#111827]">{t.earnPoints}</h2>
+            <h2 className="text-2xl font-black text-[#111827]">{reviewSubmission ? 'Submit for review' : nonRewardLearning ? 'Practice Korean' : t.earnPoints}</h2>
             <p className="mt-3 text-sm leading-6 text-[#565959]">
-              {activeItem.protectedAction ? t.loginRequired : t.tripLine}
+              {reviewSubmission ? 'Submit your video first. K-CUBE will review it and award eligible points only after approval.' : nonRewardLearning ? 'Use these lessons and exercises as normal Korean practice. Learning activities do not award points.' : activeItem.protectedAction ? t.loginRequired : t.tripLine}
             </p>
-            <div className="mt-5 rounded-sm border border-[#d5d9d9] bg-[#f7fafa] p-4">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#565959]">Reward value</p>
-              <p className="mt-2 text-3xl font-black text-[#b12704]">{activeItem.points ? `+${activeItem.points}` : 'Verified'}</p>
-            </div>
-            {activeItem.protectedAction && activeItem.points ? (
+            {reviewSubmission ? (
+              <div className="mt-5 rounded-sm border border-[#f3d39b] bg-[#fff8e8] p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#9a6700]">Points status</p>
+                <p className="mt-2 text-sm font-bold leading-6 text-[#62450b]">Pending review until an admin approves your submission.</p>
+              </div>
+            ) : null}
+            {reviewSubmission ? (
+              user ? (
+                <Link href={submissionHref} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#073a82]">
+                  <UploadCloud className="h-4 w-4" />
+                  Submit video for review
+                </Link>
+              ) : (
+                <Link href="/signin" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#073a82]">
+                  <Lock className="h-4 w-4" />
+                  {t.signIn} to submit
+                </Link>
+              )
+            ) : !nonRewardLearning && activeItem.protectedAction && activeItem.points ? (
               user ? (
                 <button
                   type="button"

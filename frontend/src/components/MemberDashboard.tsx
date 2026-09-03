@@ -109,6 +109,19 @@ const uploadCategories = [
   { value: 'k_food', label: 'K-Food story' },
 ];
 
+const uploadCategoryFromQuery = (value: string | null) =>
+  uploadCategories.some((category) => category.value === value) ? value as string : null;
+
+const initialDashboardState = () => {
+  if (typeof window === 'undefined') return { view: 'overview' as DashboardView, category: 'k_dance' };
+  const params = new URLSearchParams(window.location.search);
+  const view = params.get('view');
+  return {
+    view: view === 'submissions' || view === 'submissionHistory' || view === 'profile' ? view : 'overview' as DashboardView,
+    category: uploadCategoryFromQuery(params.get('category')) || 'k_dance',
+  };
+};
+
 const MemberDashboard = () => {
   const router = useRouter();
   const user = useAppStore((state) => state.user);
@@ -117,10 +130,11 @@ const MemberDashboard = () => {
   const language = useAppStore((state) => state.language);
   const t = memberCopy[language];
   const ui = memberUiCopy[language];
-  const [activeView, setActiveView] = useState<DashboardView>('overview');
+  const initialState = initialDashboardState();
+  const [activeView, setActiveView] = useState<DashboardView>(initialState.view);
   const [message, setMessage] = useState('');
   const [upload, setUpload] = useState({
-    category: 'k_dance',
+    category: initialState.category,
     title: '',
     description: '',
     video_url: '',
@@ -148,20 +162,13 @@ const MemberDashboard = () => {
   const [submissionsPage, setSubmissionsPage] = useState(1);
   const submissionsPerPage = 10;
 
-  useEffect(() => {
-    const view = new URLSearchParams(window.location.search).get('view');
-    if (view === 'submissions' || view === 'submissionHistory' || view === 'profile') {
-      setActiveView(view);
-    }
-  }, []);
-
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage('');
     try {
       await api.post('/engagement/uploads', upload);
       setMessage('Upload submitted. Admin review ke baad points award honge.');
-      setUpload({ category: 'k_dance', title: '', description: '', video_url: '', thumbnail_url: '' });
+      setUpload((current) => ({ ...current, title: '', description: '', video_url: '', thumbnail_url: '' }));
     } catch {
       setMessage('Upload submit nahi ho paya. Please login aur fields check karein.');
     }
@@ -442,8 +449,8 @@ const MemberDashboard = () => {
           {activeView === 'submissions' ? <>
           <div className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">New submission</p>
-            <h1 className="mt-2 text-3xl font-black text-[#102a43]">{ui.submitVideo}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#486581]">{ui.submitVideoDesc}</p>
+            <h1 className="mt-2 text-3xl font-black text-[#102a43]">{uploadCategoryFromQuery(upload.category) ? `Submit ${uploadCategories.find((category) => category.value === upload.category)?.label.replace(/^Korean |K-Drama \/ /, '') || 'Video'}` : ui.submitVideo}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#486581]">{ui.submitVideoDesc} Admin approval ke baad hi points award honge.</p>
           </div>
           <form onSubmit={submitUpload} className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
             <div className="flex items-center gap-3"><div className="rounded-lg bg-[#eaf3ff] p-3"><Clapperboard className="h-6 w-6 text-[#0b4eae]" /></div><div><h2 className="text-xl font-black text-[#102a43]">{t.submissionDetails}</h2><p className="text-sm text-[#486581]">{t.reviewTeam}</p></div></div>

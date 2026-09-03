@@ -444,7 +444,6 @@ export const detailItems: DetailItem[] = [
     eyebrow: txt('Korean Learning', '한국어 학습', 'Korean Learning'),
     summary: txt('Start with Hangul, greetings, numbers, and survival Korean phrases.', '한글, 인사, 숫자, 기초 한국어 표현부터 시작하세요.', 'Hangul, greetings, numbers aur basic Korean phrases se start karein.'),
     seo: 'Beginner Korean learning, Hangul lessons, Korean language course India',
-    points: 60,
     protectedAction: true,
     bullets: [
       txt('Learn Hangul reading and pronunciation basics.', '한글 읽기와 발음 기초를 배웁니다.', 'Hangul reading aur pronunciation basics sikhein.'),
@@ -475,7 +474,6 @@ export const detailItems: DetailItem[] = [
     eyebrow: txt('Korean Learning', '한국어 학습', 'Korean Learning'),
     summary: txt('Daily Korean word practice built for retention and rewards.', '유지율과 리워드를 위한 매일 한국어 단어 학습.', 'Daily Korean words practice with streak rewards.'),
     seo: 'Korean vocabulary practice, daily Korean words, language streak rewards',
-    points: 45,
     protectedAction: true,
     bullets: [
       txt('Practice themed Korean word lists.', '주제별 한국어 단어를 연습합니다.', 'Themed Korean word lists practice karein.'),
@@ -506,7 +504,6 @@ export const detailItems: DetailItem[] = [
     eyebrow: txt('Korean Learning', '한국어 학습', 'Korean Learning'),
     summary: txt('Pronunciation, conversation prompts, and speaking challenges.', '발음, 회화 프롬프트, 말하기 챌린지.', 'Pronunciation aur conversation speaking challenges.'),
     seo: 'Korean speaking practice, Korean pronunciation, conversation lessons',
-    points: 70,
     protectedAction: true,
     bullets: [
       txt('Practice short Korean conversation scripts.', '짧은 한국어 회화 스크립트를 연습합니다.', 'Short Korean conversation scripts practice karein.'),
@@ -537,7 +534,6 @@ export const detailItems: DetailItem[] = [
     eyebrow: txt('Korean Learning', '한국어 학습', 'Korean Learning'),
     summary: txt('Structured Korean class content for learners and point rewards.', '학습자와 포인트 보상을 위한 구조화된 한국어 수업 콘텐츠입니다.', 'Structured Korean class content with lesson rewards.'),
     seo: 'Korean class content, Korean lessons, language class page',
-    points: 65,
     protectedAction: true,
     bullets: [
       txt('Access structured class content and lesson modules.', '구조화된 수업 콘텐츠와 레슨 모듈에 액세스하세요.', 'Access structured class content and lesson modules.'),
@@ -729,9 +725,40 @@ const buildSectionPreviewLinks = (item: DetailItem): MenuLink[] =>
 
 const kFoodUploadLink: MenuLink = {
   label: txt('Upload Cooking Video', '요리 영상 업로드', 'Cooking video upload karein'),
-  href: '/dashboard?view=submissions',
+  href: '/dashboard?view=submissions&category=k_food',
   description: txt('Share your Korean cooking video for K-Food review and community discovery.', '한국 요리 영상을 공유하고 K-Food 검토를 받아보세요.', 'Apna Korean cooking video K-Food review ke liye submit karein.'),
   status: txt('SUBMIT', 'SUBMIT', 'SUBMIT'),
+};
+
+const activityUploadLink = (category: string, label: LocalText, description: LocalText): MenuLink => ({
+  label,
+  href: `/dashboard?view=submissions&category=${category}`,
+  description,
+  status: txt('SUBMIT', '제출', 'SUBMIT'),
+});
+
+const activitySubmissionLinks: Record<string, MenuLink> = {
+  'k-pop-missions': activityUploadLink(
+    'k_song',
+    txt('Submit Your Singing Video', '노래 영상 제출', 'Submit Your Singing Video'),
+    txt('Share a singing video for K-Pop activity review. Points are awarded only after admin approval.', 'K-Pop 활동 검토를 위해 노래 영상을 공유하세요. 관리자 승인 후에만 포인트가 지급됩니다.', 'K-Pop activity review ke liye singing video submit karein. Admin approval ke baad hi points milenge.'),
+  ),
+  'k-dance-covers': activityUploadLink(
+    'k_dance',
+    txt('Submit Your Dance Video', '댄스 영상 제출', 'Submit Your Dance Video'),
+    txt('Share your K-Dance cover for activity review. Points are awarded only after admin approval.', 'K-Dance 커버를 활동 검토를 위해 공유하세요. 관리자 승인 후에만 포인트가 지급됩니다.', 'K-Dance cover activity review ke liye submit karein. Admin approval ke baad hi points milenge.'),
+  ),
+  'k-drama-culture': activityUploadLink(
+    'k_drama',
+    txt('Submit Your Culture Video', '문화 영상 제출', 'Submit Your Culture Video'),
+    txt('Share a K-Drama or Korean culture video for activity review. Points are awarded only after admin approval.', 'K-Drama 또는 한국 문화 영상을 활동 검토를 위해 공유하세요. 관리자 승인 후에만 포인트가 지급됩니다.', 'K-Drama ya Korean culture video activity review ke liye submit karein. Admin approval ke baad hi points milenge.'),
+  ),
+};
+
+const buildActivityPreviewLinks = (item: DetailItem): MenuLink[] => {
+  const submission = activitySubmissionLinks[item.slug];
+  const existing = buildSectionPreviewLinks(item).filter((link) => link.label.en !== submission?.label.en);
+  return submission ? [submission, ...existing] : existing;
 };
 
 const buildKFoodServiceLinks = (): MenuLink[] =>
@@ -855,7 +882,7 @@ export const allMenuCategories: AllMenuCategory[] = [
         description: item.summary,
         points: item.points,
         featured: item.slug === 'k-pop-missions',
-        children: buildSectionPreviewLinks(item),
+        children: buildActivityPreviewLinks(item),
       })),
   },
   {
@@ -868,7 +895,6 @@ export const allMenuCategories: AllMenuCategory[] = [
         label: item.title,
         href: detailHref(item.category, item.slug),
         description: item.summary,
-        points: item.points,
         children: buildSectionPreviewLinks(item),
       })),
   },
@@ -950,7 +976,7 @@ export const navItems: NavItem[] = [
           description: item.summary,
           points: item.points,
           featured: item.slug === 'k-pop-missions',
-          children: buildSectionPreviewLinks(item),
+          children: buildActivityPreviewLinks(item),
         })),
       },
     ],
@@ -1001,7 +1027,6 @@ export const navItems: NavItem[] = [
           label: item.title,
           href: detailHref(item.category, item.slug),
           description: item.summary,
-          points: item.points,
           children: buildSectionPreviewLinks(item),
         })),
       },

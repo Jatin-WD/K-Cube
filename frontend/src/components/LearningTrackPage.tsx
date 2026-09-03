@@ -87,11 +87,11 @@ const tracks: Record<string, LearningTrack> = {
     slug: 'beginner-korean',
     title: 'Beginner Korean Learning',
     eyebrow: 'Hangul starter path',
-    intro: 'Start from zero with Hangul, greetings, numbers, and survival phrases. Every lesson gives XP, K-CUBE points, and a clear next action.',
+    intro: 'Start from zero with Hangul, greetings, numbers, and survival phrases. Every lesson gives you a clear next action.',
     accent: '#19c37d',
     rewardPoints: 60,
     startXp: 0,
-    outcomes: ['Read first Hangul vowels', 'Use polite greetings', 'Build simple request sentences', 'Unlock beginner certificate points'],
+    outcomes: ['Read first Hangul vowels', 'Use polite greetings', 'Build simple request sentences', 'Review your practice progress'],
     rounds: [
       {
         type: 'cards',
@@ -209,7 +209,7 @@ const tracks: Record<string, LearningTrack> = {
     accent: '#1cb0f6',
     rewardPoints: 45,
     startXp: 0,
-    outcomes: ['Daily word streaks', 'K-Food vocabulary', 'Memory review loops', 'Bonus points for streak milestones'],
+    outcomes: ['Daily word streaks', 'K-Food vocabulary', 'Memory review loops', 'Consistent practice milestones'],
     rounds: [
       {
         type: 'listen',
@@ -323,7 +323,7 @@ const tracks: Record<string, LearningTrack> = {
     slug: 'speaking-practice',
     title: 'Korean Speaking Practice',
     eyebrow: 'Pronunciation and conversation',
-    intro: 'Practice short speaking prompts, repeat after native-style audio, and submit attempts for review workflows. Speaking actions carry higher points.',
+    intro: 'Practice short speaking prompts and repeat after native-style audio in a focused learning workflow.',
     accent: '#ce82ff',
     rewardPoints: 70,
     startXp: 0,
@@ -436,11 +436,11 @@ const tracks: Record<string, LearningTrack> = {
     slug: 'class-content',
     title: 'Korean Class Content',
     eyebrow: 'Structured course library',
-    intro: 'Access organized lessons, class recordings, worksheets, quizzes, and culture modules. Each module has study, quiz, review, and completion points.',
+    intro: 'Access organized lessons, class recordings, worksheets, quizzes, and culture modules for guided practice.',
     accent: '#ff9600',
     rewardPoints: 65,
     startXp: 0,
-    outcomes: ['Structured class modules', 'Worksheets and recordings', 'Module completion points', 'Certificate-style progress'],
+    outcomes: ['Structured class modules', 'Worksheets and recordings', 'Module review', 'Certificate-style progress'],
     rounds: [
       {
         type: 'choice',
@@ -569,8 +569,6 @@ const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 const LearningTrackPage = ({ slug }: { slug: string }) => {
   const track = tracks[slug] || tracks['beginner-korean'];
   const user = useAppStore((state) => state.user);
-  const walletPoints = useAppStore((state) => state.points);
-  const awardPoints = useAppStore((state) => state.awardPoints);
   const [roundIndex, setRoundIndex] = useState(0);
   const [selected, setSelected] = useState('');
   const [builtWords, setBuiltWords] = useState<string[]>([]);
@@ -579,8 +577,6 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   const [hearts, setHearts] = useState(5);
   const [xp, setXp] = useState(track.startXp);
   const [streak, setStreak] = useState(0);
-  const [guestPoints, setGuestPoints] = useState(0);
-  const [guestActions, setGuestActions] = useState<string[]>([]);
   const [cart, setCart] = useState<string[]>([]);
   const [notice, setNotice] = useState('');
   const [trackCompleted, setTrackCompleted] = useState(false);
@@ -589,18 +585,6 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   const round = track.rounds[roundIndex];
   const progress = ((roundIndex + (feedback === 'correct' || trackCompleted ? 1 : 0)) / track.rounds.length) * 100;
   const wordBank = useMemo(() => shuffle(round.words || []), [round]);
-  const displayedWalletPoints = user ? walletPoints : guestPoints;
-
-  const awardLearningPoints = (actionId: string, points: number) => {
-    if (user) {
-      awardPoints(actionId, points);
-      return;
-    }
-    if (guestActions.includes(actionId)) return;
-    setGuestActions((items) => [...items, actionId]);
-    setGuestPoints((value) => value + points);
-  };
-
   const speak = () => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     const utterance = new SpeechSynthesisUtterance(round.korean);
@@ -637,13 +621,12 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
     }
     setXp((value) => value + 80);
     setStreak((value) => value + 1);
-    awardLearningPoints(`learning-track-${track.slug}`, track.rewardPoints);
     setTrackCompleted(true);
-    setNotice(`Track complete. +80 XP and +${track.rewardPoints} K-CUBE points added.`);
+    setNotice('Track complete. Your learning progress has been saved.');
     try {
       await api.post('/engagement/lessons/complete', { lesson_id: Math.max(1, roundIndex + 1), accuracy: 100 });
     } catch {
-      setNotice(`Track complete locally. Login/API connection ke baad server points sync honge. +${track.rewardPoints} points ready.`);
+      setNotice('Track complete locally. Login/API connection ke baad progress sync hoga.');
     }
   };
 
@@ -686,13 +669,8 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
 
   const addToCart = async (product: CourseProduct) => {
     setCart((items) => (items.includes(product.id) ? items : [...items, product.id]));
-    const synced = await logCourseAction(product, 'cart', 10);
-    if (synced) {
-      awardLearningPoints(`course-cart-${product.id}`, Number(synced.pointsReward || 10));
-    } else {
-      awardLearningPoints(`course-cart-${product.id}`, 10);
-    }
-    setNotice(`${product.title} added to cart. +10 cart action points${synced ? ' synced' : ' locally saved'}.`);
+    await logCourseAction(product, 'cart', 0);
+    setNotice(`${product.title} added to cart.`);
   };
 
   const buyNow = async (product: CourseProduct) => {
@@ -706,13 +684,8 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
     }
 
     if (product.trial || product.price <= 0) {
-      const synced = await logCourseAction(product, 'trial', product.points);
-      if (synced) {
-        awardLearningPoints(`course-buy-${product.id}`, Number(synced.pointsReward || product.points));
-      } else {
-        awardLearningPoints(`course-buy-${product.id}`, product.points);
-      }
-      setNotice(`${product.title} enrolled. +${product.points} trial points ${synced ? 'synced' : 'locally saved'}.`);
+      await logCourseAction(product, 'trial', 0);
+      setNotice(`${product.title} enrolled.`);
       return;
     }
 
@@ -730,7 +703,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
         notes: {
           courseTitle: product.title,
           trackSlug: track.slug,
-          pointsReward: product.points,
+          pointsReward: 0,
           price: product.price,
         },
         course: {
@@ -738,15 +711,14 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
           courseTitle: product.title,
           trackSlug: track.slug,
           price: product.price,
-          pointsReward: product.points,
+          pointsReward: 0,
           teacher: product.teacher,
           schedule: product.schedule,
           lessons: product.lessons,
         },
       });
 
-      awardLearningPoints(`razorpay-payment-${payment.paymentOrderId}`, payment.pointsAwarded || product.points);
-      setNotice(`${product.title} payment successful. +${payment.pointsAwarded || product.points} points synced.`);
+      setNotice(`${product.title} payment successful.`);
     } catch (error: unknown) {
       setNotice(error instanceof Error ? error.message : 'Payment could not be completed.');
     } finally {
@@ -755,8 +727,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   };
 
   const previewGuideBook = (guideBook: GuideBook) => {
-    awardLearningPoints(`guide-preview-${guideBook.id}`, 5);
-    setNotice(`${guideBook.title} preview opened. ${guideBook.pages} pages, ${guideBook.format}. +5 guide preview points.`);
+    setNotice(`${guideBook.title} preview opened. ${guideBook.pages} pages, ${guideBook.format}.`);
   };
 
   const renderGameBody = () => {
@@ -882,11 +853,6 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                 <p className="mt-1 text-2xl font-black">{streak}</p>
               </div>
             </div>
-            <div className="mt-4 rounded-lg bg-[#101f24] p-4">
-              <p className="text-sm font-bold text-[#9fb2bd]">Wallet points</p>
-              <p className="text-4xl font-black text-[#ffd900]">{displayedWalletPoints}</p>
-              <p className="mt-2 text-xs font-bold text-[#9fb2bd]">{user ? 'Backend ledger se synced points.' : 'Guest session points. Login ke baad server ledger sync hoga.'}</p>
-            </div>
           </aside>
         </div>
       </section>
@@ -944,13 +910,11 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
             <div className="rounded-lg border border-[#d5d9d9] bg-white p-5">
               <div className="flex items-center gap-3">
                 <Trophy className="h-6 w-6 text-[#ff9600]" />
-                <h2 className="text-xl font-black">Points system</h2>
+                <h2 className="text-xl font-black">Practice progress</h2>
               </div>
               <div className="mt-4 grid gap-3 text-sm font-bold text-[#565959]">
-                <p className="flex justify-between rounded-lg bg-[#f7fafa] p-3"><span>Track completion</span><span>+{track.rewardPoints}</span></p>
-                <p className="flex justify-between rounded-lg bg-[#f7fafa] p-3"><span>Add course to cart</span><span>+10</span></p>
-                <p className="flex justify-between rounded-lg bg-[#f7fafa] p-3"><span>Trial booking</span><span>+35 to +50</span></p>
-                <p className="flex justify-between rounded-lg bg-[#f7fafa] p-3"><span>Paid course purchase</span><span>+220 to +550</span></p>
+                <p className="rounded-lg bg-[#f7fafa] p-3">Complete lessons to build your Korean practice progress.</p>
+                <p className="rounded-lg bg-[#f7fafa] p-3">Use the guides, quizzes and course materials to keep learning.</p>
               </div>
             </div>
             <div className="rounded-lg border border-[#d5d9d9] bg-white p-5">
@@ -1055,7 +1019,6 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                     <h3 className="mt-4 text-2xl font-black">{product.title}</h3>
                     <p className="mt-2 text-sm font-bold text-[#565959]">{product.teacher}</p>
                   </div>
-                  <span className="rounded-lg bg-[#fff4cc] px-3 py-2 text-sm font-black text-[#b12704]">+{product.points} pts</span>
                 </div>
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
                   <p className="rounded-lg bg-[#f7fafa] p-3 text-sm font-bold text-[#565959]"><BookOpen className="mb-2 h-5 w-5 text-[#007185]" /> {product.lessons} lessons</p>
