@@ -193,6 +193,12 @@ const AuthExperience = ({
     setMessage('');
     setVerificationLink('');
     setSignupReferralCode('');
+
+    if (mode === 'signup' && (!form.fullName.trim() || !form.username.trim() || !form.phone.trim() || !form.email.trim() || !form.password)) {
+      setMessage('Full name, username, mobile number, email and password are required.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -299,15 +305,15 @@ const AuthExperience = ({
               <div className="mt-6 grid gap-4">
                 {mode === 'signup' ? (
                     <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
-                    {t.name}
-                    <input value={form.fullName} onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
+                    {t.name} <span className="text-[#b42318]" aria-hidden="true">*</span>
+                    <input required autoComplete="name" value={form.fullName} onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
                   </label>
                 ) : null}
 
                 {mode === 'signup' ? (
                     <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
-                    {t.username}
-                    <input value={form.username} onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
+                    {t.username} <span className="text-[#b42318]" aria-hidden="true">*</span>
+                    <input required autoComplete="username" value={form.username} onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
                   </label>
                 ) : null}
 
@@ -333,14 +339,16 @@ const AuthExperience = ({
                 ) : null}
 
                 <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
-                  {t.email}
-                  <input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
+                  {t.email} {mode !== 'admin' ? <span className="text-[#b42318]" aria-hidden="true">*</span> : null}
+                  <input required={mode !== 'admin'} type="email" autoComplete="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 text-[#0f172a] outline-none focus:border-[#2457d6]" />
                 </label>
                 <label className="grid gap-2 text-sm font-bold text-[#0f172a]">
-                  {t.password}
+                  {t.password} {mode !== 'admin' ? <span className="text-[#b42318]" aria-hidden="true">*</span> : null}
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
+                      required={mode !== 'admin'}
+                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                       value={form.password}
                       onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
                       className="w-full rounded-lg border border-[#d8e1ee] bg-[#f8fbff] px-4 py-3 pr-12 text-[#0f172a] outline-none focus:border-[#2457d6]"
