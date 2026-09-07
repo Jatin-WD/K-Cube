@@ -49,6 +49,7 @@ const CommunityMapPanel = ({ onViewUser, onViewMembers }: Props) => {
   const markersRef = useRef<CircleMarker[]>([]);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const autoFocusDoneRef = useRef(false);
+  const semanticLevelRef = useRef<MapLevel>('country');
 
   useEffect(() => { const timer = window.setTimeout(() => setDebouncedSearch(search.trim()), 250); return () => window.clearTimeout(timer); }, [search]);
 
@@ -109,20 +110,29 @@ const CommunityMapPanel = ({ onViewUser, onViewMembers }: Props) => {
   }, [view]);
 
   useEffect(() => {
+    semanticLevelRef.current = visibleAggregationLevel;
+  }, [visibleAggregationLevel]);
+
+  useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
     const syncSemanticLevel = () => {
       const zoom = map.getZoom();
-      const nextLevel: MapLevel = zoom <= 3.5
-        ? 'country'
-        : zoom <= 7 && payload.locations.states.length
-          ? 'state'
-          : payload.locations.cities.length
-            ? 'city'
-            : payload.locations.states.length
-              ? 'state'
-              : 'country';
-      setVisibleAggregationLevel((current) => current === nextLevel ? current : nextLevel);
+      const currentLevel = semanticLevelRef.current;
+      const nextLevel: MapLevel = currentLevel === 'country'
+        ? zoom > 5.5 && payload.locations.states.length ? 'state' : 'country'
+        : currentLevel === 'state'
+          ? zoom < 4.5 ? 'country' : zoom > 8 && payload.locations.cities.length ? 'city' : 'state'
+          : zoom < 7 && payload.locations.states.length ? 'state' : 'city';
+      if (currentLevel === nextLevel) return;
+      semanticLevelRef.current = nextLevel;
+      setVisibleAggregationLevel(nextLevel);
+      setSelectedLocation(null);
+      setFocus((current) => nextLevel === 'country'
+        ? { country: current.country, state: null, city: null }
+        : nextLevel === 'state'
+          ? { country: current.country, state: current.state, city: null }
+          : current);
     };
     map.on('zoomend', syncSemanticLevel);
     syncSemanticLevel();
@@ -160,16 +170,19 @@ const CommunityMapPanel = ({ onViewUser, onViewMembers }: Props) => {
 
   useEffect(() => {
     const map = mapRef.current; const markerLayer = markerLayerRef.current; if (!map || !markerLayer) return;
+    let cancelled = false;
     void import('leaflet').then((leaflet) => {
+      if (cancelled) return;
       markerLayer.clearLayers(); markersRef.current = [];
       visibleMarkers.filter((location) => location.mapped && location.latitude !== null && location.longitude !== null).forEach((location) => {
         const radius = Math.min(30, 9 + Math.sqrt(Math.max(1, location.users)) * 2.3); const selected = selectedLocation?.key === location.key;
         const marker = leaflet.circleMarker([location.latitude as number, location.longitude as number], { radius, color: location.level === 'country' ? '#073a82' : location.level === 'state' ? '#0b4eae' : '#2979e8', weight: selected ? 4 : 2, fillColor: location.level === 'country' ? '#073a82' : location.level === 'state' ? '#0b4eae' : '#2979e8', fillOpacity: selected ? 0.95 : 0.8, className: selected ? 'community-map-marker-selected' : '' });
-        marker.bindTooltip(formatNumber(location.users), { permanent: true, direction: 'center', opacity: 1, className: 'community-map-count-tooltip' });
+        marker.bindTooltip(`<strong>${formatNumber(location.users)}</strong><span>${escapeHtml(location.label)}</span>`, { permanent: true, direction: 'center', opacity: 1, className: 'community-map-count-tooltip' });
         marker.bindPopup(`<strong>${escapeHtml(location.label)}</strong><br />${formatNumber(location.users)} members`, { closeButton: false, offset: [0, -4] });
         marker.on('click', () => selectLocation(location)); marker.addTo(markerLayer); markersRef.current.push(marker);
       });
     });
+    return () => { cancelled = true; markerLayer.clearLayers(); markersRef.current = []; };
   }, [selectLocation, selectedLocation?.key, visibleMarkers]);
 
   useEffect(() => { window.setTimeout(() => mapRef.current?.invalidateSize(), 120); }, [fullscreen, view]);

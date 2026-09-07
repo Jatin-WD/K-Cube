@@ -68,6 +68,19 @@ html {
   html {
     font-size: 14px;
   }
+
+  .community-map-count-tooltip strong,
+  .community-map-count-tooltip span {
+    display: block;
+    line-height: 1.05;
+  }
+
+  .community-map-count-tooltip span {
+    margin-top: 2px;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
 }
 
 body {
