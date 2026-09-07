@@ -22,6 +22,7 @@ const inputClass = 'w-full rounded-[8px] border border-[#ccd9e6] bg-white px-3 p
 const selectClass = 'w-full rounded-[8px] border border-[#ccd9e6] bg-white px-3 py-2 text-sm text-[#102a43] outline-none transition focus:border-[#0b4eae] focus:ring-2 focus:ring-[#0b4eae]/10';
 const formatNumber = (value: number) => new Intl.NumberFormat('en-IN').format(Number(value || 0));
 const normalize = (value: string | null | undefined) => String(value || '').trim().toLocaleLowerCase();
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character] || character));
 
 const CommunityMapPanel = ({ onViewUser, onViewMembers }: Props) => {
   const [payload, setPayload] = useState<MapPayload>(emptyPayload);
@@ -143,7 +144,9 @@ const CommunityMapPanel = ({ onViewUser, onViewMembers }: Props) => {
       visibleMarkers.filter((location) => location.mapped && location.latitude !== null && location.longitude !== null).forEach((location) => {
         const radius = Math.min(30, 9 + Math.sqrt(Math.max(1, location.users)) * 2.3); const selected = selectedLocation?.key === location.key;
         const marker = leaflet.circleMarker([location.latitude as number, location.longitude as number], { radius, color: location.level === 'country' ? '#073a82' : location.level === 'state' ? '#0b4eae' : '#2979e8', weight: selected ? 4 : 2, fillColor: location.level === 'country' ? '#073a82' : location.level === 'state' ? '#0b4eae' : '#2979e8', fillOpacity: selected ? 0.95 : 0.8, className: selected ? 'community-map-marker-selected' : '' });
-        marker.bindTooltip(`${location.label} · ${formatNumber(location.users)} members`, { direction: 'top', opacity: 0.96, className: 'community-map-tooltip' }); marker.on('click', () => selectLocation(location)); marker.addTo(markerLayer); markersRef.current.push(marker);
+        marker.bindTooltip(formatNumber(location.users), { permanent: true, direction: 'center', opacity: 1, className: 'community-map-count-tooltip' });
+        marker.bindPopup(`<strong>${escapeHtml(location.label)}</strong><br />${formatNumber(location.users)} members`, { closeButton: false, offset: [0, -4] });
+        marker.on('click', () => selectLocation(location)); marker.addTo(markerLayer); markersRef.current.push(marker);
       });
     });
   }, [selectLocation, selectedLocation?.key, visibleMarkers]);

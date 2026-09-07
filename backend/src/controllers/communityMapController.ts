@@ -117,21 +117,32 @@ const cityCoordinates: Record<string, [number, number]> = {
   'singapore||singapore': [1.3521, 103.8198],
 };
 
+const cityCoordinateEntry = (countryKey: string, stateKey: string, cityKey: string) => Object.entries(cityCoordinates).find(([key]) => {
+  const [entryCountry, entryState, entryCity] = key.split('|');
+  return entryCountry === countryKey && entryCity === cityKey && (!stateKey || entryState === stateKey);
+  });
+
+const knownStateForCity = (country: string | null, state: string | null, city: string | null) => {
+  const entry = cityCoordinateEntry(keyPart(country), keyPart(state), keyPart(city));
+  return entry?.[0].split('|')[1] || null;
+};
+
 const coordinatesFor = (country: string | null, state: string | null, city: string | null, level: MapLevel) => {
   const countryKey = keyPart(country);
   const stateKey = keyPart(state);
   const cityKey = keyPart(city);
   const coords = level === 'city'
-    ? cityCoordinates[`${countryKey}|${stateKey}|${cityKey}`]
+    ? cityCoordinateEntry(countryKey, stateKey, cityKey)?.[1]
     : level === 'state'
       ? stateCoordinates[`${countryKey}|${stateKey}`]
       : countryCoordinates[countryKey];
   return coords ? { latitude: coords[0], longitude: coords[1], bounds: level === 'country' ? countryBounds[countryKey] || null : null, mapped: true } : { latitude: null, longitude: null, bounds: null, mapped: false };
 };
 
-// The current business rule places Indian profiles without a state in Delhi for map presentation.
+// City is preferred over state. For known cities, infer the state only for hierarchy/map context.
+// The current business rule places Indian profiles without city and state in Delhi for map presentation.
 // The stored user record is never modified; this only supplies a conservative display fallback.
-const effectiveState = (user: CommunityUser) => normalizePart(user.state) || (keyPart(user.country) === 'india' ? 'Delhi' : null);
+const effectiveState = (user: CommunityUser) => normalizePart(user.state) || knownStateForCity(user.country, user.state, user.city) || (!normalizePart(user.city) && keyPart(user.country) === 'india' ? 'Delhi' : null);
 
 const locationLevel = (user: CommunityUser): MapLevel => {
   const state = effectiveState(user);
