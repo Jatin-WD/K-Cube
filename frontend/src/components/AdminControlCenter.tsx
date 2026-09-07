@@ -3152,13 +3152,14 @@ const AdminControlCenter = () => {
     return (
       <>
         <SectionShell title="Users" description="Manage account access, profile details and user actions from one compact list." actions={<div className="flex flex-wrap items-center justify-end gap-2"><span className="text-sm font-bold text-[#ffc400]">{filteredUsers.length} records</span><select aria-label="Filter users by role" value={userRoleFilter} onChange={(event) => setUserRoleFilter(event.target.value)} className="rounded-lg border border-white/10 bg-[#101014] px-3 py-2 text-xs font-bold text-white"><option value="member">Users</option><option value="manager">Managers</option><option value="admin">Admins</option><option value="guest">Guests</option><option value="all">All roles</option></select><button type="button" onClick={printUsers} className="inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]"><Printer className="h-4 w-4" /> Print list</button></div>}>
-          <div className="overflow-hidden rounded-xl border border-white/10">
-            <div className="hidden grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_150px_100px_100px_90px_90px_150px] gap-3 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400] lg:grid">
+          <div className="overflow-x-auto rounded-xl border border-white/10">
+            <div className="min-w-[1040px]">
+            <div className="hidden grid-cols-[40px_minmax(140px,1.1fr)_minmax(180px,1.3fr)_minmax(120px,0.9fr)_90px_90px_70px_70px_140px] gap-3 bg-white/[0.04] px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffc400] lg:grid">
               <span>S.No.</span><span>Name</span><span>Email</span><span>Phone</span><span>Role</span><span>Status</span><span>Points</span><span>Streak</span><span>Actions</span>
             </div>
             <PaginatedList items={filteredUsers}>
               {(visibleUsers, userOffset) => visibleUsers.map((entry, index) => (
-                <div key={entry.id} className="grid gap-3 border-t border-white/10 bg-black/20 px-4 py-3 transition hover:bg-white/[0.04] lg:grid-cols-[45px_minmax(180px,1.2fr)_minmax(220px,1.4fr)_150px_100px_100px_90px_90px_150px] lg:items-center">
+                <div key={entry.id} className="grid gap-3 border-t border-white/10 bg-black/20 px-4 py-3 transition hover:bg-white/[0.04] lg:grid-cols-[40px_minmax(140px,1.1fr)_minmax(180px,1.3fr)_minmax(120px,0.9fr)_90px_90px_70px_70px_140px] lg:items-center">
                   <p className="text-xs font-black text-[#7d8a99]">{userOffset + index + 1}</p>
                   <div><p className="font-bold text-white">{entry.full_name}</p><p className="mt-1 text-xs text-[#7d8a99]">#{entry.id}</p></div>
                   <p className="truncate text-sm text-[#aab5c6]">{entry.email}</p>
@@ -3167,13 +3168,14 @@ const AdminControlCenter = () => {
                   <p className="text-sm capitalize text-[#d4dbe7]">{entry.status}</p>
                   <p className="text-sm font-bold text-white">{entry.points}</p>
                   <p className="text-sm text-[#aab5c6]">{entry.streak}</p>
-                  <div className="flex gap-2">
+                  <div className="flex min-w-0 gap-2 whitespace-nowrap">
                     <button type="button" onClick={() => selectUser(entry)} className="rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]">Edit</button>
                     <button type="button" onClick={() => { selectUser(entry); setUserDeleteConfirm(true); }} className="rounded-lg border border-red-500/40 px-3 py-2 text-xs font-black text-red-300">Delete</button>
                   </div>
                 </div>
               ))}
             </PaginatedList>
+            </div>
           </div>
         </SectionShell>
 
