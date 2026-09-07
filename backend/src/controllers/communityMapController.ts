@@ -129,9 +129,14 @@ const coordinatesFor = (country: string | null, state: string | null, city: stri
   return coords ? { latitude: coords[0], longitude: coords[1], bounds: level === 'country' ? countryBounds[countryKey] || null : null, mapped: true } : { latitude: null, longitude: null, bounds: null, mapped: false };
 };
 
+// The current business rule places Indian profiles without a state in Delhi for map presentation.
+// The stored user record is never modified; this only supplies a conservative display fallback.
+const effectiveState = (user: CommunityUser) => normalizePart(user.state) || (keyPart(user.country) === 'india' ? 'Delhi' : null);
+
 const locationLevel = (user: CommunityUser): MapLevel => {
-  if (normalizePart(user.city) && coordinatesFor(user.country, user.state, user.city, 'city').mapped) return 'city';
-  if (normalizePart(user.state) && coordinatesFor(user.country, user.state, user.city, 'state').mapped) return 'state';
+  const state = effectiveState(user);
+  if (normalizePart(user.city) && coordinatesFor(user.country, state, user.city, 'city').mapped) return 'city';
+  if (state && coordinatesFor(user.country, state, user.city, 'state').mapped) return 'state';
   if (normalizePart(user.country) && coordinatesFor(user.country, user.state, user.city, 'country').mapped) return 'country';
   return 'unknown';
 };
@@ -161,7 +166,7 @@ const addUserToSummary = (summary: LocationSummary, user: CommunityUser, monthSt
 
 const buildLocation = (user: CommunityUser, level: MapLevel): LocationSummary => {
   const country = normalizePart(user.country) || null;
-  const state = normalizePart(user.state) || null;
+  const state = effectiveState(user);
   const city = normalizePart(user.city) || null;
   if (level === 'unknown') return emptySummary('unknown', 'unknown', null, null, null, 'Unknown / unmapped');
   if (level === 'country') return emptySummary(`country:${keyPart(country)}`, level, country, null, null, country || 'Unknown country');
@@ -228,7 +233,7 @@ export const getCommunityMap = async (req: Request, res: Response) => {
     const selectedState = normalizePart(req.query.selectedState);
     const selectedCity = normalizePart(req.query.selectedCity);
     const selectedUsers = users
-      .filter((user) => (!selectedCountry || keyPart(user.country) === keyPart(selectedCountry)) && (!selectedState || keyPart(user.state) === keyPart(selectedState)) && (!selectedCity || keyPart(user.city) === keyPart(selectedCity)))
+      .filter((user) => (!selectedCountry || keyPart(user.country) === keyPart(selectedCountry)) && (!selectedState || keyPart(effectiveState(user)) === keyPart(selectedState)) && (!selectedCity || keyPart(user.city) === keyPart(selectedCity)))
       .slice(0, 100)
       .map(({ id, full_name, status, points, city, state, country, created_at, last_login }) => ({ id, full_name, status, points, city, state, country, created_at, last_login }));
     const metrics = {
@@ -236,8 +241,8 @@ export const getCommunityMap = async (req: Request, res: Response) => {
       mappedUsers: mappedUsers.length,
       unmappedUsers: users.length - mappedUsers.length,
       countries: new Set(users.map((user) => keyPart(user.country)).filter(Boolean)).size,
-      states: new Set(users.map((user) => `${keyPart(user.country)}|${keyPart(user.state)}`).filter((value) => value !== '|')).size,
-      cities: new Set(users.map((user) => `${keyPart(user.country)}|${keyPart(user.state)}|${keyPart(user.city)}`).filter((value) => !value.endsWith('|'))).size,
+      states: new Set(aggregate(users, 'state', monthStartTime).map((location) => location.key)).size,
+      cities: new Set(aggregate(users, 'city', monthStartTime).map((location) => location.key)).size,
       newThisMonth: users.filter((user) => new Date(user.created_at).getTime() >= monthStartTime).length,
       activeUsers: users.filter((user) => user.status === 'active').length,
       verifiedUsers: users.filter((user) => Number(user.verified)).length,

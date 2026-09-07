@@ -1142,7 +1142,7 @@ const PaginatedList = <T,>({
   );
 };
 
-const AdminControlCenter = ({ initialSection = 'overview' }: { initialSection?: Extract<AdminSection, 'overview' | 'communityMap'> } = {}) => {
+const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSection?: Extract<AdminSection, 'overview' | 'communityMap'> } = {}) => {
   const user = useAppStore((state) => state.user);
   const [activeSection, setActiveSection] = useState<AdminSection>(initialSection);
   const [notice, setNotice] = useState('');
