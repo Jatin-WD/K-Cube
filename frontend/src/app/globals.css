@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
   --kc-blue-900: #062b63;
@@ -28,6 +29,26 @@
   --surface: var(--kc-surface);
   --surface-strong: var(--kc-surface);
   --radius: var(--kc-radius-md);
+}
+
+.community-map-count-tooltip {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 0 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+}
+
+.community-map-count-tooltip::before {
+  display: none !important;
+}
+
+.community-map-marker-selected {
+  stroke-width: 4;
+  fill-opacity: 1;
 }
 
 @theme inline {

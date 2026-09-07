@@ -56,6 +56,7 @@ import {
   upsertCalendarConnection,
 } from '../controllers/eventController';
 import { getAdminEmailRecipientCount, listSentAdminEmails, sendAdminEmailMessage } from '../controllers/adminEmailController';
+import { getCommunityMap } from '../controllers/communityMapController';
 
 const router = Router();
 
@@ -84,6 +85,7 @@ router.patch('/cms/blocks/:id', requireAdminScope(['content']), upsertCmsBlock);
 router.delete('/cms/blocks/:id', requireAdminScope(['content']), deleteCmsBlock);
 router.post('/cms/sync-static', requireAdminScope(['content']), syncStaticCmsContent);
 router.get('/analytics', requireAdminScope(['analytics']), getSystemAnalytics);
+router.get('/community-map', requireAdminScope(['user_management']), getCommunityMap);
 router.get('/uploads', requireAdminScope(['content']), listContentUploads);
 router.patch('/uploads/:id/review', requireAdminScope(['content']), reviewContentUpload);
 router.get('/points', requireAdminScope(['commerce']), listPointTransactions);

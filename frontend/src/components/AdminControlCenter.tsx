@@ -29,6 +29,7 @@ import {
   FileText,
   LogOut,
   Mail,
+  MapPinned,
   Send,
   PlayCircle,
   Printer,
@@ -41,6 +42,7 @@ import api from '@/lib/api';
 import { detailItems } from '@/lib/kcubeContent';
 import { useAppStore } from '@/store/useAppStore';
 import PasswordInput from '@/components/PasswordInput';
+import CommunityMapPanel from '@/components/CommunityMapPanel';
 
 type AdminSection =
   | 'overview'
@@ -51,6 +53,7 @@ type AdminSection =
   | 'website'
   | 'learning'
   | 'users'
+  | 'communityMap'
   | 'points'
   | 'chapters'
   | 'uploads'
@@ -465,6 +468,7 @@ const adminNav = [
   { id: 'website', label: 'Website CMS', icon: FilePenLine, description: 'Pages, inventory, copy blocks.', scope: 'content' },
   { id: 'learning', label: 'Learning', icon: BookOpen, description: 'Tracks and question bank.', scope: 'content' },
   { id: 'users', label: 'Users', icon: Users, description: 'Profiles, roles and access.', scope: 'user_management' },
+  { id: 'communityMap', label: 'Community Map', icon: MapPinned, description: 'Explore users by location.', scope: 'user_management' },
   { id: 'points', label: 'Points', icon: Coins, description: 'Ledger and manual adjustments.', scope: 'commerce' },
   { id: 'chapters', label: 'Chapters', icon: Users, description: 'Community chapters and leaders.', scope: 'events' },
   { id: 'uploads', label: 'Uploads', icon: Clapperboard, description: 'Content moderation.', scope: 'content' },
@@ -478,7 +482,7 @@ const adminNav = [
 
 const adminSidebarGroups = [
   { title: 'Core', ids: ['overview', 'sendEmail', 'submissions', 'indiaPreSelection', 'website', 'learning'] },
-  { title: 'Operations', ids: ['users', 'points', 'chapters', 'uploads', 'kfood', 'events', 'rewards'] },
+  { title: 'Operations', ids: ['users', 'communityMap', 'points', 'chapters', 'uploads', 'kfood', 'events', 'rewards'] },
   { title: 'System', ids: ['adminProfile', 'adminAccounts', 'announcements', 'calendar', 'analytics'] },
 ] as const;
 
@@ -1138,9 +1142,9 @@ const PaginatedList = <T,>({
   );
 };
 
-const AdminControlCenter = () => {
+const AdminControlCenter = ({ initialSection = 'overview' }: { initialSection?: Extract<AdminSection, 'overview' | 'communityMap'> } = {}) => {
   const user = useAppStore((state) => state.user);
-  const [activeSection, setActiveSection] = useState<AdminSection>('overview');
+  const [activeSection, setActiveSection] = useState<AdminSection>(initialSection);
   const [notice, setNotice] = useState('');
   const [reviewSuccess, setReviewSuccess] = useState('');
   const [userSuccess, setUserSuccess] = useState('');
@@ -1972,6 +1976,22 @@ const AdminControlCenter = () => {
     setNotice('User updated.');
     setUserSuccess('User account updated successfully.');
     await loadAdminData();
+  };
+
+  const openUserEditor = (entry: UserRow) => {
+    setUserForm({
+      id: String(entry.id),
+      full_name: entry.full_name,
+      phone: entry.phone || '',
+      role: entry.role,
+      category_access: entry.category_access,
+      status: entry.status,
+      city: entry.city || '',
+      state: entry.state || '',
+      country: entry.country || '',
+      profile_image: entry.profile_image || '',
+    });
+    setActiveSection('users');
   };
 
   const deleteUser = async (idOverride?: string) => {
@@ -3127,6 +3147,13 @@ const AdminControlCenter = () => {
         </div>
       </SectionShell>
     </div>
+  );
+
+  const renderCommunityMap = () => (
+    <CommunityMapPanel onViewUser={(userId) => {
+      const entry = users.find((candidate) => candidate.id === userId);
+      if (entry) openUserEditor(entry);
+    }} />
   );
 
   const renderUsers = () => {
@@ -5350,6 +5377,8 @@ const AdminControlCenter = () => {
         return renderLearning();
       case 'users':
         return renderUsers();
+      case 'communityMap':
+        return renderCommunityMap();
       case 'chapters':
         return renderChapters();
       case 'points':
@@ -5463,7 +5492,10 @@ const AdminControlCenter = () => {
                             <button
                               key={item.id}
                               type="button"
-                              onClick={() => setActiveSection(item.id as AdminSection)}
+                              onClick={() => {
+                                setActiveSection(item.id as AdminSection);
+                                if (item.id === 'communityMap' && window.location.pathname !== '/admin/community-map') window.history.pushState({}, '', '/admin/community-map');
+                              }}
                               title={item.label}
                               className={`flex w-full items-center rounded-lg border px-2 py-1.5 text-left transition ${
                                 sidebarOpen ? 'gap-3' : 'justify-center'
