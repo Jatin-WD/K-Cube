@@ -837,17 +837,21 @@ export const listPointTransactions = async (_req: Request, res: Response) => {
 
 export const adjustPoints = async (req: any, res: Response) => {
   const { user_id, points_delta, reason } = req.body;
+  const userId = Number(user_id);
   const points = Number(points_delta);
-  if (!user_id || !Number.isFinite(points) || points === 0) return fail(res, 400, 'VALIDATION_ERROR', 'user_id and non-zero points_delta are required');
+  if (!Number.isInteger(userId) || userId <= 0 || !Number.isFinite(points) || points === 0) return fail(res, 400, 'VALIDATION_ERROR', 'A valid user_id and non-zero points_delta are required');
+  const [userRows] = await pool.query('SELECT id FROM users WHERE id = ? LIMIT 1', [userId]);
+  if (!(userRows as any[]).length) return fail(res, 404, 'NOT_FOUND', 'User not found');
   const award = await awardPoints({
-    userId: Number(user_id),
+    userId,
     sourceType: 'admin_adjustment',
     sourceSlug: `admin-adjustment-${Date.now()}`,
     points,
+    status: 'approved',
     metadata: { reason: reason || 'Manual admin adjustment' },
     createdBy: req.user?.id || null,
   });
-  return ok(res, { user_id: Number(user_id), points_delta: points, balance: award.balance });
+  return ok(res, { user_id: userId, points_delta: points, balance: award.balance, status: 'approved' });
 };
 
 export const listKFoodClaims = async (_req: Request, res: Response) => {
