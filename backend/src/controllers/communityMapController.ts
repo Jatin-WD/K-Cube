@@ -140,9 +140,8 @@ const coordinatesFor = (country: string | null, state: string | null, city: stri
 };
 
 // City is preferred over state. For known cities, infer the state only for hierarchy/map context.
-// The current business rule places Indian profiles without city and state in Delhi for map presentation.
-// The stored user record is never modified; this only supplies a conservative display fallback.
-const effectiveState = (user: CommunityUser) => normalizePart(user.state) || knownStateForCity(user.country, user.state, user.city) || (!normalizePart(user.city) && keyPart(user.country) === 'india' ? 'Delhi' : null);
+// Missing location data remains unmapped; no permanent location is fabricated.
+const effectiveState = (user: CommunityUser) => normalizePart(user.state) || knownStateForCity(user.country, user.state, user.city);
 
 const locationLevel = (user: CommunityUser): MapLevel => {
   const state = effectiveState(user);
@@ -189,7 +188,13 @@ const aggregate = (users: CommunityUser[], level: MapLevel, monthStart: number) 
   const groups = new Map<string, LocationSummary>();
   users.forEach((user) => {
     const resolved = locationLevel(user);
-    const groupLevel: MapLevel | null = level === 'unknown' ? (resolved === 'unknown' ? 'unknown' : null) : resolved === 'unknown' ? 'unknown' : level;
+    const groupLevel: MapLevel | null = level === 'unknown'
+      ? (resolved === 'unknown' ? 'unknown' : null)
+      : level === 'city'
+        ? (resolved === 'city' ? 'city' : null)
+        : resolved === 'unknown'
+          ? 'unknown'
+          : level;
     if (!groupLevel) return;
     const summary = buildLocation(user, groupLevel);
     const existing = groups.get(summary.key) || summary;
@@ -213,11 +218,7 @@ const queryUsers = async (req: Request) => {
     values.push(status);
   }
   if (country) { where.push('LOWER(TRIM(u.country)) = LOWER(TRIM(?))'); values.push(country); }
-  if (state && keyPart(state) === 'delhi' && (!country || keyPart(country) === 'india')) {
-    // Keep the SQL filter aligned with effectiveState(): Indian profiles with no state
-    // belong to Delhi only when they also have no city (or a known Delhi city).
-    where.push("(LOWER(TRIM(u.state)) = 'delhi' OR (LOWER(TRIM(COALESCE(u.country, ''))) = 'india' AND (u.state IS NULL OR TRIM(u.state) = '') AND (u.city IS NULL OR TRIM(u.city) = '' OR LOWER(TRIM(u.city)) IN ('delhi', 'new delhi'))))");
-  } else if (state) { where.push('LOWER(TRIM(u.state)) = LOWER(TRIM(?))'); values.push(state); }
+  if (state) { where.push('LOWER(TRIM(u.state)) = LOWER(TRIM(?))'); values.push(state); }
   if (city) { where.push('LOWER(TRIM(u.city)) = LOWER(TRIM(?))'); values.push(city); }
   if (dateFrom) { where.push('u.created_at >= ?'); values.push(dateFrom); }
   if (dateTo) { where.push('u.created_at < DATE_ADD(?, INTERVAL 1 DAY)'); values.push(dateTo); }

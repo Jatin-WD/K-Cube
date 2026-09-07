@@ -108,6 +108,27 @@ const CommunityMapPanel = ({ onViewUser, onViewMembers }: Props) => {
     return () => { cancelled = true; resizeObserverRef.current?.disconnect(); resizeObserverRef.current = null; mapRef.current?.remove(); mapRef.current = null; markerLayerRef.current = null; setMapReady(false); };
   }, [view]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    const syncSemanticLevel = () => {
+      const zoom = map.getZoom();
+      const nextLevel: MapLevel = zoom <= 3.5
+        ? 'country'
+        : zoom <= 7 && payload.locations.states.length
+          ? 'state'
+          : payload.locations.cities.length
+            ? 'city'
+            : payload.locations.states.length
+              ? 'state'
+              : 'country';
+      setVisibleAggregationLevel((current) => current === nextLevel ? current : nextLevel);
+    };
+    map.on('zoomend', syncSemanticLevel);
+    syncSemanticLevel();
+    return () => { map.off('zoomend', syncSemanticLevel); };
+  }, [mapReady, payload.locations.cities.length, payload.locations.states.length]);
+
   const visibleMarkers = useMemo(() => {
     if (visibleAggregationLevel === 'country') return payload.locations.countries;
     if (visibleAggregationLevel === 'state') return payload.locations.states.filter((entry) => !focus.country || normalize(entry.country) === normalize(focus.country.country));

@@ -5540,7 +5540,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
 
           <div className="min-w-0 px-5 py-6 lg:col-start-2 lg:px-8 lg:py-8">
             <div className="mx-auto min-w-0 max-w-[1600px] space-y-4">
-            <section className="admin-hero-panel min-w-0 rounded-[12px] border border-[#cfe0f1] bg-[linear-gradient(120deg,#eaf3ff,#ffffff)] p-5 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
+            {activeSection !== 'communityMap' ? <section className="admin-hero-panel min-w-0 rounded-[12px] border border-[#cfe0f1] bg-[linear-gradient(120deg,#eaf3ff,#ffffff)] p-5 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.26em] text-[#0b4eae]">Admin Dashboard</p>
@@ -5567,7 +5567,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
                   </Link>
                 </div>
               </div>
-            </section>
+            </section> : null}
 
             {sectionBody()}
           </div>
