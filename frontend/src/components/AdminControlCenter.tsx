@@ -42,7 +42,7 @@ import api from '@/lib/api';
 import { detailItems } from '@/lib/kcubeContent';
 import { useAppStore } from '@/store/useAppStore';
 import PasswordInput from '@/components/PasswordInput';
-import CommunityMapPanel from '@/components/CommunityMapPanel';
+import CommunityMapPanel, { type CommunityMapLocation } from '@/components/CommunityMapPanel';
 
 type AdminSection =
   | 'overview'
@@ -3150,10 +3150,16 @@ const AdminControlCenter = ({ initialSection = 'overview' }: { initialSection?: 
   );
 
   const renderCommunityMap = () => (
-    <CommunityMapPanel onViewUser={(userId) => {
-      const entry = users.find((candidate) => candidate.id === userId);
-      if (entry) openUserEditor(entry);
-    }} />
+    <CommunityMapPanel
+      onViewUser={(userId) => {
+        const entry = users.find((candidate) => candidate.id === userId);
+        if (entry) openUserEditor(entry);
+      }}
+      onViewMembers={(location: CommunityMapLocation) => {
+        setAdminQuery(location.city || location.state || location.country || '');
+        setActiveSection('users');
+      }}
+    />
   );
 
   const renderUsers = () => {

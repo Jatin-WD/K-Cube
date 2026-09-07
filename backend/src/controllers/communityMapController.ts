@@ -31,6 +31,7 @@ type LocationSummary = {
   newThisMonth: number;
   latitude: number | null;
   longitude: number | null;
+  bounds: [[number, number], [number, number]] | null;
   mapped: boolean;
 };
 
@@ -56,6 +57,23 @@ const countryCoordinates: Record<string, [number, number]> = {
   france: [46.2276, 2.2137],
   'united arab emirates': [23.4241, 53.8478],
   uae: [23.4241, 53.8478],
+};
+
+const countryBounds: Record<string, [[number, number], [number, number]]> = {
+  india: [[6.4, 68.1], [35.7, 97.4]],
+  'south korea': [[33.1, 124.5], [38.6, 130.9]],
+  korea: [[33.1, 124.5], [38.6, 130.9]],
+  usa: [[24.3, -124.8], [49.4, -66.9]],
+  'united states': [[24.3, -124.8], [49.4, -66.9]],
+  'united states of america': [[24.3, -124.8], [49.4, -66.9]],
+  canada: [[41.7, -141], [83.1, -52.6]],
+  'united kingdom': [[49.8, -8.6], [60.9, 1.8]],
+  uk: [[49.8, -8.6], [60.9, 1.8]],
+  nepal: [[26.3, 80], [30.5, 88.2]],
+  bangladesh: [[20.7, 88], [26.7, 92.7]],
+  australia: [[-43.7, 113], [-10.6, 153.6]],
+  japan: [[24, 122.9], [45.6, 145.8]],
+  singapore: [[1.1, 103.6], [1.5, 104.1]],
 };
 
 const stateCoordinates: Record<string, [number, number]> = {
@@ -108,7 +126,7 @@ const coordinatesFor = (country: string | null, state: string | null, city: stri
     : level === 'state'
       ? stateCoordinates[`${countryKey}|${stateKey}`]
       : countryCoordinates[countryKey];
-  return coords ? { latitude: coords[0], longitude: coords[1], mapped: true } : { latitude: null, longitude: null, mapped: false };
+  return coords ? { latitude: coords[0], longitude: coords[1], bounds: level === 'country' ? countryBounds[countryKey] || null : null, mapped: true } : { latitude: null, longitude: null, bounds: null, mapped: false };
 };
 
 const locationLevel = (user: CommunityUser): MapLevel => {
@@ -167,7 +185,7 @@ const aggregate = (users: CommunityUser[], level: MapLevel, monthStart: number) 
 
 const queryUsers = async (req: Request) => {
   const { q, status, country, state, city, dateFrom, dateTo, pointsMin, pointsMax } = req.query;
-  const where: string[] = ["u.status <> 'deleted'"];
+  const where: string[] = ["u.status <> 'deleted'", "u.role NOT IN ('admin', 'manager')"];
   const values: unknown[] = [];
   if (q) {
     where.push('(u.full_name LIKE ? OR u.email LIKE ? OR u.city LIKE ? OR u.state LIKE ? OR u.country LIKE ?)');
