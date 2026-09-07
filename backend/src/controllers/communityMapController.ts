@@ -213,7 +213,11 @@ const queryUsers = async (req: Request) => {
     values.push(status);
   }
   if (country) { where.push('LOWER(TRIM(u.country)) = LOWER(TRIM(?))'); values.push(country); }
-  if (state) { where.push('LOWER(TRIM(u.state)) = LOWER(TRIM(?))'); values.push(state); }
+  if (state && keyPart(state) === 'delhi' && (!country || keyPart(country) === 'india')) {
+    // Keep the SQL filter aligned with effectiveState(): Indian profiles with no state
+    // belong to Delhi only when they also have no city (or a known Delhi city).
+    where.push("(LOWER(TRIM(u.state)) = 'delhi' OR (LOWER(TRIM(COALESCE(u.country, ''))) = 'india' AND (u.state IS NULL OR TRIM(u.state) = '') AND (u.city IS NULL OR TRIM(u.city) = '' OR LOWER(TRIM(u.city)) IN ('delhi', 'new delhi'))))");
+  } else if (state) { where.push('LOWER(TRIM(u.state)) = LOWER(TRIM(?))'); values.push(state); }
   if (city) { where.push('LOWER(TRIM(u.city)) = LOWER(TRIM(?))'); values.push(city); }
   if (dateFrom) { where.push('u.created_at >= ?'); values.push(dateFrom); }
   if (dateTo) { where.push('u.created_at < DATE_ADD(?, INTERVAL 1 DAY)'); values.push(dateTo); }
