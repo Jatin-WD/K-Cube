@@ -1149,6 +1149,7 @@ const AdminControlCenter = () => {
   const [overviewWorkspacePage, setOverviewWorkspacePage] = useState(1);
   const [overviewActivityPage, setOverviewActivityPage] = useState(1);
   const [userDeleteConfirm, setUserDeleteConfirm] = useState(false);
+  const [pointsAdjustmentMode, setPointsAdjustmentMode] = useState<'add' | 'delete' | null>(null);
   const [adminQuery, setAdminQuery] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('member');
   const sidebarOpen = true;
@@ -2079,14 +2080,32 @@ const AdminControlCenter = () => {
   };
 
   const sendPoints = async () => {
-    await api.post('/admin/points/adjust', {
-      user_id: Number(pointsForm.user_id),
-      points_delta: Number(pointsForm.points_delta || 0),
-      reason: pointsForm.reason,
-    });
-    setNotice('Points adjustment submitted.');
-    setPointsForm(emptyPointsForm);
-    await loadAdminData();
+    const userId = Number(pointsForm.user_id);
+    const amount = Number(pointsForm.points_delta || 0);
+    if (!Number.isInteger(userId) || userId <= 0) {
+      setNotice('Enter a valid user ID.');
+      return;
+    }
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setNotice('Enter a points amount greater than zero.');
+      return;
+    }
+    try {
+      await api.post('/admin/points/adjust', {
+        user_id: userId,
+        points_delta: pointsAdjustmentMode === 'delete' ? -amount : amount,
+        reason: pointsForm.reason || (pointsAdjustmentMode === 'delete' ? 'Manual points deduction' : 'Manual points addition'),
+      });
+      setNotice(pointsAdjustmentMode === 'delete' ? 'Points deducted successfully.' : 'Points added successfully.');
+      setPointsForm(emptyPointsForm);
+      setPointsAdjustmentMode(null);
+      await loadAdminData();
+    } catch (error) {
+      const responseMessage = error && typeof error === 'object' && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : null;
+      setNotice(responseMessage || 'Points adjustment failed. Please check the User ID and try again.');
+    }
   };
 
   const reviewUpload = async (status: 'approved' | 'rejected') => {
@@ -3524,12 +3543,12 @@ const AdminControlCenter = () => {
   );
 
   const renderPoints = () => (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
-      <SectionShell title="Points ledger" description="Manual adjustments and audit history for point balance changes." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPoints.length} records</span>}>
+    <>
+      <SectionShell title="Points ledger" description="Review every point transaction and adjust any user directly from the list." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPoints.length} records</span>}>
         <PaginatedList items={filteredPoints}>
           {(visiblePointPage, pointOffset) => (
           <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left text-sm">
+          <table className="w-full min-w-[1080px] text-left text-sm">
             <thead className="text-[#ffc400]">
               <tr>
                 <th className="border-b border-white/10 py-3">S.No.</th><th className="border-b border-white/10 py-3">User ID</th><th className="border-b border-white/10 py-3">User</th>
@@ -3537,6 +3556,7 @@ const AdminControlCenter = () => {
                 <th className="border-b border-white/10 py-3">Delta</th>
                 <th className="border-b border-white/10 py-3">Balance</th>
                 <th className="border-b border-white/10 py-3">Created</th>
+                <th className="border-b border-white/10 py-3">Actions</th>
               </tr>
             </thead>
             <tbody className="text-[#d4dbe7]">
@@ -3546,7 +3566,8 @@ const AdminControlCenter = () => {
                   <td className="border-b border-white/10 py-3">{tx.source_type}</td>
                   <td className="border-b border-white/10 py-3">{tx.points_delta}</td>
                   <td className="border-b border-white/10 py-3">{tx.balance_after}</td>
-                  <td className="border-b border-white/10 py-3">{new Date(tx.created_at).toLocaleString()}</td>
+                  <td className="whitespace-nowrap border-b border-white/10 py-3">{new Date(tx.created_at).toLocaleString()}</td>
+                  <td className="border-b border-white/10 py-3"><div className="flex gap-2 whitespace-nowrap"><button type="button" onClick={() => { setPointsForm({ user_id: String(tx.user_id), points_delta: 0, reason: '' }); setPointsAdjustmentMode('add'); }} className="rounded-lg bg-[#ffc400] px-3 py-2 text-xs font-black text-[#111]">Add point</button><button type="button" onClick={() => { setPointsForm({ user_id: String(tx.user_id), points_delta: 0, reason: '' }); setPointsAdjustmentMode('delete'); }} className="rounded-lg border border-red-500/40 px-3 py-2 text-xs font-black text-red-300">Delete point</button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -3555,24 +3576,20 @@ const AdminControlCenter = () => {
           )}
         </PaginatedList>
       </SectionShell>
-
-      <SectionShell title="Manual points adjustment" description="Issue or subtract points with an audit note.">
-        <div className="space-y-3">
-          <Field label="User ID">
-            <input className={inputClass} value={pointsForm.user_id} onChange={(event) => setPointsForm((state) => ({ ...state, user_id: event.target.value }))} />
-          </Field>
-          <Field label="Points Delta">
-            <input className={inputClass} type="number" value={pointsForm.points_delta} onChange={(event) => setPointsForm((state) => ({ ...state, points_delta: Number(event.target.value) }))} />
-          </Field>
-          <Field label="Reason">
-            <textarea className={`${inputClass} min-h-24`} value={pointsForm.reason} onChange={(event) => setPointsForm((state) => ({ ...state, reason: event.target.value }))} />
-          </Field>
-          <button type="button" onClick={sendPoints} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
-            <Save className="h-4 w-4" /> Submit adjustment
-          </button>
+      {pointsAdjustmentMode ? (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setPointsAdjustmentMode(null)}>
+          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#101014] p-6 text-white shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4"><div><p className={`text-xs font-black uppercase tracking-[0.22em] ${pointsAdjustmentMode === 'delete' ? 'text-red-300' : 'text-[#ffc400]'}`}>{pointsAdjustmentMode === 'delete' ? 'Delete points' : 'Add points'}</p><h2 className="mt-2 text-2xl font-black">{pointsAdjustmentMode === 'delete' ? 'Deduct points' : 'Add points'}</h2></div><button type="button" onClick={() => setPointsAdjustmentMode(null)} className="rounded-full border border-white/10 px-3 py-1 text-xl text-white" aria-label="Close adjustment popup">×</button></div>
+            <div className="mt-5 space-y-3">
+              <Field label="User ID"><input className={inputClass} value={pointsForm.user_id} onChange={(event) => setPointsForm((state) => ({ ...state, user_id: event.target.value }))} /></Field>
+              <Field label={pointsAdjustmentMode === 'delete' ? 'Points to deduct' : 'Points to add'}><input className={inputClass} type="number" min="1" value={pointsForm.points_delta || ''} onChange={(event) => setPointsForm((state) => ({ ...state, points_delta: Number(event.target.value) }))} /></Field>
+              <Field label="Reason"><textarea className={`${inputClass} min-h-24`} value={pointsForm.reason} onChange={(event) => setPointsForm((state) => ({ ...state, reason: event.target.value }))} placeholder="Add an audit note" /></Field>
+              <button type="button" onClick={sendPoints} className={`inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-black text-[#111] ${pointsAdjustmentMode === 'delete' ? 'bg-red-300' : 'bg-[#ffc400]'}`}><Save className="h-4 w-4" /> Confirm {pointsAdjustmentMode === 'delete' ? 'deduction' : 'addition'}</button>
+            </div>
+          </div>
         </div>
-      </SectionShell>
-    </div>
+      ) : null}
+    </>
   );
 
   const renderUploads = () => (
