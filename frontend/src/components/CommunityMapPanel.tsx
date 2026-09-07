@@ -130,9 +130,9 @@ const CommunityMapPanel = ({ onViewUser, onViewMembers }: Props) => {
   }, [mapReady, payload.locations.cities.length, payload.locations.states.length]);
 
   const visibleMarkers = useMemo(() => {
-    if (visibleAggregationLevel === 'country') return payload.locations.countries;
-    if (visibleAggregationLevel === 'state') return payload.locations.states.filter((entry) => !focus.country || normalize(entry.country) === normalize(focus.country.country));
-    if (visibleAggregationLevel === 'city') return payload.locations.cities.filter((entry) => (!focus.country || normalize(entry.country) === normalize(focus.country.country)) && (!focus.state || normalize(entry.state) === normalize(focus.state.state)));
+    if (visibleAggregationLevel === 'country') return payload.locations.countries.filter((entry) => entry.mapped);
+    if (visibleAggregationLevel === 'state') return payload.locations.states.filter((entry) => entry.mapped && (!focus.country || normalize(entry.country) === normalize(focus.country.country)));
+    if (visibleAggregationLevel === 'city') return payload.locations.cities.filter((entry) => entry.mapped && (!focus.country || normalize(entry.country) === normalize(focus.country.country)) && (!focus.state || normalize(entry.state) === normalize(focus.state.state)));
     return [];
   }, [focus.country, focus.state, payload.locations.cities, payload.locations.countries, payload.locations.states, visibleAggregationLevel]);
 
