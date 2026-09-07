@@ -188,6 +188,7 @@ type UploadRow = {
 
 type PointTxRow = {
   id: number;
+  user_id: number;
   source_type: string;
   source_slug: string | null;
   points_delta: number;
@@ -3531,7 +3532,7 @@ const AdminControlCenter = () => {
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead className="text-[#ffc400]">
               <tr>
-                <th className="border-b border-white/10 py-3">S.No.</th><th className="border-b border-white/10 py-3">User</th>
+                <th className="border-b border-white/10 py-3">S.No.</th><th className="border-b border-white/10 py-3">User ID</th><th className="border-b border-white/10 py-3">User</th>
                 <th className="border-b border-white/10 py-3">Source</th>
                 <th className="border-b border-white/10 py-3">Delta</th>
                 <th className="border-b border-white/10 py-3">Balance</th>
@@ -3541,7 +3542,7 @@ const AdminControlCenter = () => {
             <tbody className="text-[#d4dbe7]">
               {visiblePointPage.map((tx, index) => (
                 <tr key={tx.id}>
-                  <td className="border-b border-white/10 py-3 text-xs text-[#7d8a99]">{pointOffset + index + 1}</td><td className="border-b border-white/10 py-3">{tx.full_name}</td>
+                  <td className="border-b border-white/10 py-3 text-xs text-[#7d8a99]">{pointOffset + index + 1}</td><td className="border-b border-white/10 py-3"><button type="button" onClick={() => setPointsForm((state) => ({ ...state, user_id: String(tx.user_id) }))} className="font-bold text-[#ffc400] hover:underline" aria-label={`Use user ID ${tx.user_id}`}>#{tx.user_id}</button></td><td className="border-b border-white/10 py-3">{tx.full_name}</td>
                   <td className="border-b border-white/10 py-3">{tx.source_type}</td>
                   <td className="border-b border-white/10 py-3">{tx.points_delta}</td>
                   <td className="border-b border-white/10 py-3">{tx.balance_after}</td>
