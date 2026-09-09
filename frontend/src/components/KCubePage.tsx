@@ -523,7 +523,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                 <div className="p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2457d6]">{product.category[language]}</p>
-                    <span className="rounded-full bg-[#eaf3ff] px-3 py-1 text-xs font-black text-[#2457d6]">Available on Koreanshop</span>
+                    <span className="rounded-full bg-[#eaf3ff] px-3 py-1 text-xs font-black text-[#2457d6]">Partner store</span>
                   </div>
                   <h3 className="mt-3 text-lg font-black text-[#0f172a]">{product.title[language]}</h3>
                   <p className="mt-2 text-sm leading-6 text-[#64748b]">{product.subtitle[language]}</p>

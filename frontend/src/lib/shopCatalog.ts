@@ -26,15 +26,15 @@ export type ShopStore = 'koreanshop' | 'moa_beauty';
 
 export const shopStores: Record<ShopStore, { name: string; url: string; label: string; description: string }> = {
   koreanshop: {
-    name: 'Koreanshop',
+    name: 'Korean Shop',
     url: 'https://koreanshop.in/',
-    label: 'Korean food & lifestyle',
+    label: 'Partner company · Korean food & lifestyle',
     description: 'Korean food, pantry essentials, snacks and everyday lifestyle products.',
   },
   moa_beauty: {
-    name: 'MOA Beauty',
+    name: 'Moabeauty Shop',
     url: 'https://www.moabeauty.in/',
-    label: 'K-Beauty',
+    label: 'Partner company · K-Beauty',
     description: 'Korean skincare, cosmetics and beauty essentials.',
   },
 };

@@ -3,9 +3,10 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BriefcaseBusiness, Camera, ChevronDown, Globe2, Languages, Menu, Phone, Plane, Search, User, X } from 'lucide-react';
+import { BriefcaseBusiness, Camera, ChevronDown, ExternalLink, Globe2, Languages, Menu, Phone, Plane, Search, Store, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import { copy, navItems } from '@/lib/kcubeContent';
+import { shopStores } from '@/lib/shopCatalog';
 import api from '@/lib/api';
 import { useAppStore, type Language } from '@/store/useAppStore';
 
@@ -480,6 +481,30 @@ const Header = () => {
                 </Link>
               );
             })}
+          </div>
+          <div className="hidden shrink-0 items-center gap-1.5 lg:flex" aria-label="Partner companies">
+            <span className="mr-0.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#6b7c93]">
+              <Store className="h-3.5 w-3.5 text-[#0b4eae]" aria-hidden="true" />
+              Partners
+            </span>
+            <a
+              href={shopStores.koreanshop.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={closeAllMenus}
+              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#c8d9ee] bg-white px-2.5 py-1 text-[10px] font-black text-[#0b4eae] transition hover:border-[#0b4eae] hover:bg-[#eef5ff] lg:text-[11px]"
+            >
+              Korean Shop <ExternalLink className="h-3 w-3" aria-hidden="true" />
+            </a>
+            <a
+              href={shopStores.moa_beauty.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={closeAllMenus}
+              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#c8d9ee] bg-white px-2.5 py-1 text-[10px] font-black text-[#0b4eae] transition hover:border-[#0b4eae] hover:bg-[#eef5ff] lg:text-[11px]"
+            >
+              Moabeauty Shop <ExternalLink className="h-3 w-3" aria-hidden="true" />
+            </a>
           </div>
           <Link
             href="/study-abroad"

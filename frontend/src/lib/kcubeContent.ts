@@ -800,8 +800,8 @@ export interface AllMenuCategory {
 }
 
 const shopGatewayLinks: MenuLink[] = [
-  { label: txt('Koreanshop', 'Koreanshop', 'Koreanshop'), href: 'https://koreanshop.in/', external: true, featured: true, description: txt('Korean food, pantry essentials and lifestyle products.', '한국 식품, 식료품 및 라이프스타일 상품을 만나보세요.', 'Korean food, pantry essentials aur lifestyle products discover karein.') },
-  { label: txt('MOA Beauty', 'MOA Beauty', 'MOA Beauty'), href: 'https://www.moabeauty.in/', external: true, description: txt('Korean skincare, cosmetics and beauty essentials.', '한국 스킨케어, 화장품 및 뷰티 상품을 만나보세요.', 'Korean skincare, cosmetics aur beauty essentials discover karein.') },
+  { label: txt('Korean Shop', 'Korean Shop', 'Korean Shop'), href: 'https://koreanshop.in/', external: true, featured: true, description: txt('Partner company for Korean food, pantry essentials and lifestyle products.', '한국 식품, 식료품 및 라이프스타일 상품 파트너사입니다.', 'Korean food, pantry essentials aur lifestyle products ki partner company.') },
+  { label: txt('Moabeauty Shop', 'Moabeauty Shop', 'Moabeauty Shop'), href: 'https://www.moabeauty.in/', external: true, description: txt('Partner company for Korean skincare, cosmetics and beauty essentials.', '한국 스킨케어, 화장품 및 뷰티 상품 파트너사입니다.', 'Korean skincare, cosmetics aur beauty essentials ki partner company.') },
 ];
 
 const buildShopServiceLinks = (): MenuLink[] => shopGatewayLinks;
