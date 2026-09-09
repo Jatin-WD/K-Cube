@@ -19,6 +19,7 @@ const languageLabels: Record<Language, string> = {
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenuKey, setActiveMenuKey] = useState<string | null>(null);
+  const [partnerMenuOpen, setPartnerMenuOpen] = useState(false);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
@@ -60,6 +61,7 @@ const Header = () => {
   const closeAllMenus = () => {
     clearMenuTimers();
     setActiveMenuKey(null);
+    setPartnerMenuOpen(false);
     setLanguageMenuOpen(false);
     setAccountMenuOpen(false);
     setMobileMenuOpen(false);
@@ -70,10 +72,12 @@ const Header = () => {
       const target = event.target as Node;
       const insideTrigger = target instanceof Element && Boolean(target.closest('[data-mega-trigger]'));
       const insidePanel = target instanceof Element && Boolean(target.closest('[data-mega-panel]'));
+      const insidePartnerMenu = target instanceof Element && Boolean(target.closest('[data-partner-menu]'));
       const insideLanguageMenu = target instanceof Element && Boolean(target.closest('[data-language-menu]'));
       const insideAccountMenu = target instanceof Element && Boolean(target.closest('[data-account-menu]'));
-      if (!insideTrigger && !insidePanel && !insideLanguageMenu && !insideAccountMenu) {
+      if (!insideTrigger && !insidePanel && !insidePartnerMenu && !insideLanguageMenu && !insideAccountMenu) {
         setActiveMenuKey(null);
+        setPartnerMenuOpen(false);
         setLanguageMenuOpen(false);
         setAccountMenuOpen(false);
       }
@@ -483,28 +487,44 @@ const Header = () => {
             })}
           </div>
           <div className="hidden shrink-0 items-center gap-1.5 lg:flex" aria-label="Partner companies">
-            <span className="mr-0.5 inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#6b7c93]">
-              <Store className="h-3.5 w-3.5 text-[#0b4eae]" aria-hidden="true" />
-              Partners
-            </span>
-            <a
-              href={shopStores.koreanshop.url}
-              target="_blank"
-              rel="noreferrer"
-              onClick={closeAllMenus}
-              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#c8d9ee] bg-white px-2.5 py-1 text-[10px] font-black text-[#0b4eae] transition hover:border-[#0b4eae] hover:bg-[#eef5ff] lg:text-[11px]"
+            <div
+              className="relative"
+              data-partner-menu
+              onMouseEnter={() => setPartnerMenuOpen(true)}
+              onMouseLeave={() => setPartnerMenuOpen(false)}
             >
-              Korean Shop <ExternalLink className="h-3 w-3" aria-hidden="true" />
-            </a>
-            <a
-              href={shopStores.moa_beauty.url}
-              target="_blank"
-              rel="noreferrer"
-              onClick={closeAllMenus}
-              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#c8d9ee] bg-white px-2.5 py-1 text-[10px] font-black text-[#0b4eae] transition hover:border-[#0b4eae] hover:bg-[#eef5ff] lg:text-[11px]"
-            >
-              Moabeauty Shop <ExternalLink className="h-3 w-3" aria-hidden="true" />
-            </a>
+              <button
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={partnerMenuOpen}
+                onClick={() => setPartnerMenuOpen((open) => !open)}
+                className={`inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[11px] font-black transition xl:h-9 xl:text-xs ${
+                  partnerMenuOpen
+                    ? 'border-[#0b4eae] bg-[#eef5ff] text-[#0b4eae]'
+                    : 'border-[#c8d9ee] bg-white text-[#486581] hover:border-[#0b4eae] hover:text-[#0b4eae]'
+                }`}
+              >
+                <Store className="h-3.5 w-3.5 text-[#0b4eae]" aria-hidden="true" />
+                Partner Shops
+                <ChevronDown className={`h-3 w-3 transition ${partnerMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              <div className={`absolute right-0 top-full z-[140] w-72 pt-2 transition ${partnerMenuOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'}`}>
+                <div className="rounded-2xl border border-[#d6dfeb] bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.14)]">
+                  <div className="border-b border-[#e6edf6] px-3 pb-2 pt-1">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#0b4eae]">Official partner companies</p>
+                    <p className="mt-1 text-xs text-[#6b7c93]">Shop Korean food, lifestyle and beauty products.</p>
+                  </div>
+                  <a href={shopStores.koreanshop.url} target="_blank" rel="noreferrer" onClick={closeAllMenus} className="mt-2 flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[#eef5ff]">
+                    <span><span className="block text-sm font-black text-[#102a43]">Korean Shop</span><span className="mt-0.5 block text-[11px] text-[#6b7c93]">Korean food & lifestyle</span></span>
+                    <ExternalLink className="h-4 w-4 shrink-0 text-[#0b4eae]" aria-hidden="true" />
+                  </a>
+                  <a href={shopStores.moa_beauty.url} target="_blank" rel="noreferrer" onClick={closeAllMenus} className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[#eef5ff]">
+                    <span><span className="block text-sm font-black text-[#102a43]">Moabeauty Shop</span><span className="mt-0.5 block text-[11px] text-[#6b7c93]">Korean skincare & cosmetics</span></span>
+                    <ExternalLink className="h-4 w-4 shrink-0 text-[#0b4eae]" aria-hidden="true" />
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
           <Link
             href="/study-abroad"
