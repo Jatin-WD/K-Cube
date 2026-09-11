@@ -17,7 +17,7 @@ import integrationRoutes from './routes/integrations';
 import shopRoutes from './routes/shop';
 import paymentRoutes from './routes/payments';
 import bootstrapDatabase from './db/bootstrap';
-import { API_PREFIX, APP_URL, KCUBE_SERVE_FRONTEND, NODE_ENV } from './config';
+import { API_PREFIX, APP_URL, CORS_ORIGINS, KCUBE_SERVE_FRONTEND, NODE_ENV } from './config';
 
 export const app = express();
 
@@ -33,6 +33,7 @@ const allowedOrigins = new Set(
   [
     APP_URL,
     process.env.FRONTEND_URL,
+    ...CORS_ORIGINS,
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:3001',
@@ -68,7 +69,10 @@ app.use(cors({
       return;
     }
 
-    callback(new Error(`CORS blocked for origin: ${origin}`));
+    // Do not turn a browser policy rejection into an application error or
+    // fill the platform logs. The browser will reject responses without CORS
+    // headers, while configured origins continue to work normally.
+    callback(null, false);
   },
 }));
 app.use(express.json({ limit: '2mb' }));

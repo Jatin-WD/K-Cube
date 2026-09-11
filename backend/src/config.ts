@@ -26,6 +26,10 @@ export const PORT = Number(process.env.PORT || 4000);
 export const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 export const KCUBE_SERVE_FRONTEND = process.env.KCUBE_SERVE_FRONTEND || 'false';
 export const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000';
+export const CORS_ORIGINS = (process.env.CORS_ORIGINS || 'https://seashell-salamander-110599.hostingersite.com')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 export const JWT_SECRET = requiredEnv('JWT_SECRET');
 export const JWT_REFRESH_SECRET = requiredEnv('JWT_REFRESH_SECRET');
 export const MYSQL_HOST = process.env.MYSQL_HOST || '127.0.0.1';
