@@ -112,16 +112,17 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 import { PORT } from './config';
 
 if (require.main === module) {
-  bootstrapDatabase()
-    .then(() => {
-      app.listen(PORT, () => {
-        console.log(`K-CUBE backend running on http://localhost:${PORT}${API_PREFIX}`);
-      });
-    })
-    .catch((error) => {
-      console.error('Database bootstrap failed:', error);
-      process.exit(1);
-    });
+  // Bind the HTTP port before running migrations. A temporary database outage
+  // must not make the container disappear and cause nginx to return 503 for
+  // the whole site. Existing requests will receive the normal API error until
+  // the database is available, while health checks and the frontend stay up.
+  app.listen(PORT, () => {
+    console.log(`K-CUBE backend running on http://localhost:${PORT}${API_PREFIX}`);
+  });
+
+  bootstrapDatabase().catch((error) => {
+    console.error('Database bootstrap failed; backend remains online:', error);
+  });
 }
 
 export default app;
