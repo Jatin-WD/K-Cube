@@ -62,6 +62,7 @@ const createGatewayOrder = async ({
       receipt,
       notes,
     }),
+    signal: AbortSignal.timeout(10000),
   });
 
   const payload = await response.json().catch(() => ({}));

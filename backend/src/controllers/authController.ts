@@ -151,6 +151,7 @@ const verifyGoogleCredential = async (body: any) => {
         redirect_uri: body.redirect_uri || GOOGLE_AUTH_REDIRECT_URI,
         grant_type: 'authorization_code',
       }),
+      signal: AbortSignal.timeout(10000),
     });
     const tokenPayload = await response.json() as any;
     if (!response.ok || !tokenPayload.id_token) {
@@ -161,7 +162,9 @@ const verifyGoogleCredential = async (body: any) => {
 
   if (!idToken) throw Object.assign(new Error('Google credential or authorization code is required'), { status: 400, code: 'VALIDATION_ERROR' });
 
-  const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`);
+  const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`, {
+    signal: AbortSignal.timeout(10000),
+  });
   const claims = await response.json() as any;
   if (!response.ok) throw Object.assign(new Error(claims.error_description || 'Google credential is invalid'), { status: 401, code: 'GOOGLE_TOKEN_INVALID' });
   if (claims.aud !== clientId) throw Object.assign(new Error('Google audience mismatch'), { status: 401, code: 'GOOGLE_AUDIENCE_MISMATCH' });

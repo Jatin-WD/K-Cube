@@ -1421,33 +1421,40 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   );
 
   const loadAdminData = async () => {
-    const requests = await Promise.allSettled([
-      api.get('/admin/dashboard'),
-      api.get('/admin/analytics'),
-      api.get('/users'),
-      api.get('/admin/profile'),
-      api.get('/admin/accounts'),
-      api.get('/admin/uploads'),
-      api.get('/admin/india-pre-selection/applications'),
-      api.get('/admin/points'),
-      api.get('/admin/kfood/claims'),
-      api.get('/admin/kfood/products'),
-      api.get('/admin/kfood/overview'),
-      api.get('/admin/kfood/fulfillments'),
-      api.get('/admin/submissions'),
-      api.get('/learning/admin/tracks'),
-      api.get('/learning/admin/questions'),
-      api.get('/learning/cms/pages'),
-      api.get('/admin/cms/blocks'),
-      api.get('/admin/chapters'),
-      api.get('/admin/events'),
-      api.get('/admin/rewards'),
-      api.get('/admin/announcements'),
-      api.get('/admin/google-calendar/connections'),
-      api.get('/admin/recent-actions'),
-      api.get('/admin/email/sent'),
-      api.get('/admin/email/recipients'),
-    ]);
+    const requestFactories = [
+      () => api.get('/admin/dashboard'),
+      () => api.get('/admin/analytics'),
+      () => api.get('/users'),
+      () => api.get('/admin/profile'),
+      () => api.get('/admin/accounts'),
+      () => api.get('/admin/uploads'),
+      () => api.get('/admin/india-pre-selection/applications'),
+      () => api.get('/admin/points'),
+      () => api.get('/admin/kfood/claims'),
+      () => api.get('/admin/kfood/products'),
+      () => api.get('/admin/kfood/overview'),
+      () => api.get('/admin/kfood/fulfillments'),
+      () => api.get('/admin/submissions'),
+      () => api.get('/learning/admin/tracks'),
+      () => api.get('/learning/admin/questions'),
+      () => api.get('/learning/cms/pages'),
+      () => api.get('/admin/cms/blocks'),
+      () => api.get('/admin/chapters'),
+      () => api.get('/admin/events'),
+      () => api.get('/admin/rewards'),
+      () => api.get('/admin/announcements'),
+      () => api.get('/admin/google-calendar/connections'),
+      () => api.get('/admin/recent-actions'),
+      () => api.get('/admin/email/sent'),
+      () => api.get('/admin/email/recipients'),
+    ];
+    const requests: Awaited<ReturnType<typeof Promise.allSettled>> = [];
+    // Keep the admin dashboard useful without opening 25 database-backed
+    // requests at the exact same time on every refresh.
+    for (let index = 0; index < requestFactories.length; index += 6) {
+      const batch = await Promise.allSettled(requestFactories.slice(index, index + 6).map((request) => request()));
+      requests.push(...batch);
+    }
 
     const dashboardPayload = readPayload<Record<string, unknown>>(requests[0], {});
     const analyticsPayload = readPayload<Record<string, number>>(requests[1], {});

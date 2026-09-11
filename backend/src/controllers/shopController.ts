@@ -262,7 +262,7 @@ export const syncWooCommerceProducts = async (req: Request, res: Response) => {
 
   for (const rawUrl of candidates) {
     try {
-      const listingResponse = await fetch(rawUrl, { headers: { 'user-agent': 'K-CUBE-ShopSync/1.0' } });
+      const listingResponse = await fetch(rawUrl, { headers: { 'user-agent': 'K-CUBE-ShopSync/1.0' }, signal: AbortSignal.timeout(15000) });
       if (!listingResponse.ok) {
         throw new Error(`Failed to fetch ${rawUrl} (${listingResponse.status})`);
       }
@@ -273,7 +273,7 @@ export const syncWooCommerceProducts = async (req: Request, res: Response) => {
 
       for (const targetUrl of targetUrls) {
         try {
-          const productResponse = targetUrl === rawUrl ? listingResponse : await fetch(targetUrl, { headers: { 'user-agent': 'K-CUBE-ShopSync/1.0' } });
+          const productResponse = targetUrl === rawUrl ? listingResponse : await fetch(targetUrl, { headers: { 'user-agent': 'K-CUBE-ShopSync/1.0' }, signal: AbortSignal.timeout(15000) });
           if (!productResponse.ok) {
             throw new Error(`Failed to fetch ${targetUrl} (${productResponse.status})`);
           }

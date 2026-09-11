@@ -97,6 +97,7 @@ const getAccessToken = async () => {
       grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
       assertion,
     }),
+    signal: AbortSignal.timeout(10000),
   });
 
   if (!response.ok) {
@@ -125,6 +126,7 @@ const ensureSheetHeaders = async (accessToken: string, sheetName: string) => {
   const headerRange = encodeURIComponent(`${sheetName}!A1:P1`);
   const readResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_SPREADSHEET_ID}/values/${headerRange}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(10000),
   });
   if (!readResponse.ok) {
     throw new Error(`Google Sheets header read failed: ${readResponse.status} ${await readResponse.text()}`);
@@ -142,6 +144,7 @@ const ensureSheetHeaders = async (accessToken: string, sheetName: string) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ majorDimension: 'ROWS', values: [SHEET_HEADERS] }),
+    signal: AbortSignal.timeout(10000),
   });
   if (!writeResponse.ok) {
     throw new Error(`Google Sheets header write failed: ${writeResponse.status} ${await writeResponse.text()}`);
@@ -191,6 +194,7 @@ export const syncIndiaPreSelectionApplicationToSheets = async (application: Shee
         majorDimension: 'ROWS',
         values: [row],
       }),
+      signal: AbortSignal.timeout(10000),
     },
   );
 

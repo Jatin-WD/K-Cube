@@ -9,7 +9,15 @@ const pool = mysql.createPool({
   database: MYSQL_DATABASE,
   waitForConnections: true,
   connectionLimit: 15,
-  queueLimit: 0,
+  // Never allow an unbounded request backlog to build up during a traffic
+  // spike. Callers get a fast failure instead of keeping Node processes and
+  // sockets alive until the host reaches its process limit.
+  queueLimit: 50,
+  connectTimeout: 10000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
+  maxIdle: 10,
+  idleTimeout: 60000,
   decimalNumbers: true,
 });
 
