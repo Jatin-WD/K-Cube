@@ -4,9 +4,13 @@ import path from 'path';
 
 const envPath = path.resolve(__dirname, '../.env');
 const exampleEnvPath = path.resolve(__dirname, '../.env.example');
+const runtimeNodeEnv = process.env.NODE_ENV || 'development';
 
 dotenv.config({ path: envPath });
-if (!fs.existsSync(envPath) && fs.existsSync(exampleEnvPath)) {
+// Example files are documentation only in production. Loading them there can
+// inject placeholder database credentials and silently replace platform env
+// values during a Hostinger restart.
+if (runtimeNodeEnv !== 'production' && !fs.existsSync(envPath) && fs.existsSync(exampleEnvPath)) {
   dotenv.config({ path: exampleEnvPath });
 }
 
