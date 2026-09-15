@@ -3,17 +3,30 @@ import pool from '../db/pool';
 import { AuthRequest } from '../middleware/auth';
 import { created, fail, ok } from '../lib/apiResponse';
 
+const isSafeHttpUrl = (value: unknown) => {
+  try {
+    const url = new URL(String(value));
+    return (url.protocol === 'http:' || url.protocol === 'https:') && Boolean(url.hostname);
+  } catch {
+    return false;
+  }
+};
+
 export const createContentUpload = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   const { category, title, description, video_url, thumbnail_url } = req.body;
   if (!userId) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
-  if (!category || !title || !video_url) return fail(res, 400, 'VALIDATION_ERROR', 'Category, title and video URL are required');
+  if (!String(category || '').trim() || !String(title || '').trim() || !String(video_url || '').trim()) return fail(res, 400, 'VALIDATION_ERROR', 'Category, title and video URL are required');
+  if (String(category).length > 80 || String(title).length > 255 || String(description || '').length > 5000 || String(video_url).length > 1024 || (thumbnail_url && String(thumbnail_url).length > 1024)) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'One or more upload fields are too long');
+  }
+  if (!isSafeHttpUrl(video_url) || (thumbnail_url && !isSafeHttpUrl(thumbnail_url))) return fail(res, 400, 'INVALID_URL', 'Video and thumbnail URLs must use http or https');
 
   const [result] = await pool.query(
     `INSERT INTO content_uploads
       (user_id, category, title, description, video_url, thumbnail_url, status, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW(), NOW())`,
-    [userId, category, title, description || null, video_url, thumbnail_url || null],
+    [userId, String(category).trim(), String(title).trim(), description ? String(description).trim() : null, String(video_url).trim(), thumbnail_url ? String(thumbnail_url).trim() : null],
   );
 
   return created(res, { uploadId: (result as any).insertId });
