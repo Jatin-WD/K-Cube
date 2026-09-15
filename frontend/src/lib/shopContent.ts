@@ -1,5 +1,6 @@
 import type { LocalText, MenuLink } from '@/lib/kcubeContent';
 import type { Language } from '@/store/useAppStore';
+import { repairMojibake, repairMojibakeTree } from './repairMojibake';
 
 export interface ShopProduct {
   id: string;
@@ -71,9 +72,9 @@ const hindiText: Record<string, string> = {
   'Sign in to buy': 'खरीदने के लिए साइन इन करें',
 };
 
-const txt = (en: string, ko: string, hi: string): LocalText => ({ en, ko, hi: hindiText[en] ?? hi });
+const txt = (en: string, ko: string, hi: string): LocalText => ({ en, ko: repairMojibake(ko), hi: repairMojibake(hindiText[en] ?? hi) });
 
-export const shopCopy: Record<Language, Record<string, string>> = {
+const shopCopyData: Record<Language, Record<string, string>> = {
   en: {
     badge: 'K-CUBE Shop',
     title: 'Buy Korean products directly on K-CUBE and earn rewards on every completed order',
@@ -135,6 +136,8 @@ export const shopCopy: Record<Language, Record<string, string>> = {
     shopCategory: 'Shop',
   },
 };
+
+export const shopCopy = repairMojibakeTree(shopCopyData);
 
 export const shopProducts: ShopProduct[] = [
   {

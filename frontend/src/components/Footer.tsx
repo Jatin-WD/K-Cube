@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useAppStore, type Language } from '@/store/useAppStore';
+import { repairMojibakeTree } from '@/lib/repairMojibake';
 
-const footerCopy: Record<Language, Record<string, string>> = {
+const footerCopyData: Record<Language, Record<string, string>> = {
   en: {
     line: 'A points-first Korean culture, learning, K-Food, events, and rewards ecosystem.',
     platform: 'Platform',
@@ -59,6 +60,8 @@ const footerCopy: Record<Language, Record<string, string>> = {
     trip: 'à¤•à¥‹à¤°à¤¿à¤¯à¤¾ à¤¯à¤¾à¤¤à¥à¤°à¤¾',
   },
 };
+
+const footerCopy = repairMojibakeTree(footerCopyData);
 
 const Footer = () => {
   const language = useAppStore((state) => state.language);

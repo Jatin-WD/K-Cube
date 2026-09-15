@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, CalendarDays, Check, Coins, ExternalLink, MapPin, Plane, ShoppingBag, Star, UsersRound } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
 import { maskedIndiaSecondRoundParticipants } from '@/lib/festival2026';
+import { repairMojibakeTree } from '@/lib/repairMojibake';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
 import IndiaPreSelectionSection from './home/IndiaPreSelectionSection';
@@ -210,10 +211,10 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const page = pages[pageKey];
   const t = copy[language];
   const homeText = homeSectionCopy[language];
-  const bannerText = homeBannerCopy[language];
-  const visual = pageVisuals[pageKey];
+  const bannerText = repairMojibakeTree(homeBannerCopy[language]);
+  const visual = repairMojibakeTree(pageVisuals[pageKey]);
   const tickerLabel = pageKey === 'home' ? 'New event' : visual.accent;
-  const rewardsText = rewardsUi[language];
+  const rewardsText = repairMojibakeTree(rewardsUi[language]);
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
   const [walletLoading, setWalletLoading] = useState(false);
 
