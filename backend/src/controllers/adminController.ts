@@ -817,22 +817,28 @@ export const reviewContentUpload = async (req: any, res: Response) => {
   const { id } = req.params;
   const { status, points_reward = 0, review_note } = req.body;
   if (!['approved', 'rejected'].includes(status)) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid status');
+  const points = Number(points_reward);
+  if (!Number.isInteger(points) || points < 0) return fail(res, 400, 'VALIDATION_ERROR', 'Points reward must be a non-negative whole number');
 
   const [rows] = await pool.query('SELECT * FROM content_uploads WHERE id = ? LIMIT 1', [id]);
   const upload = (rows as any[])[0];
   if (!upload) return fail(res, 404, 'NOT_FOUND', 'Upload not found');
+  if (upload.status !== 'pending') {
+    if (upload.status === status) return ok(res, { id: Number(id), status, idempotent: true });
+    return fail(res, 409, 'REVIEW_LOCKED', 'This upload has already been reviewed and cannot be changed');
+  }
 
   await pool.query(
     'UPDATE content_uploads SET status = ?, points_reward = ?, review_note = ?, reviewed_by = ?, reviewed_at = NOW(), updated_at = NOW() WHERE id = ?',
-    [status, points_reward, review_note || null, req.user?.id || null, id],
+    [status, points, review_note || null, req.user?.id || null, id],
   );
 
-  if (status === 'approved' && Number(points_reward) > 0) {
+  if (status === 'approved' && points > 0) {
     await awardPoints({
       userId: upload.user_id,
       sourceType: 'activity',
       sourceSlug: `upload-${id}`,
-      points: Number(points_reward),
+      points,
       metadata: { category: upload.category, title: upload.title, review_note },
       createdBy: req.user?.id || null,
       once: true,
@@ -894,6 +900,11 @@ export const reviewKFoodClaim = async (req: any, res: Response) => {
   if (!claim) return fail(res, 404, 'NOT_FOUND', 'Claim not found');
 
   const points = Number(points_reward ?? claim.points_reward ?? 0);
+  if (!Number.isInteger(points) || points < 0) return fail(res, 400, 'VALIDATION_ERROR', 'Points reward must be a non-negative whole number');
+  if (claim.status !== 'pending_review') {
+    if (claim.status === status) return ok(res, { id: Number(id), status, idempotent: true });
+    return fail(res, 409, 'REVIEW_LOCKED', 'This purchase claim has already been reviewed and cannot be changed');
+  }
   await pool.query(
     'UPDATE kfood_purchases SET status = ?, points_reward = ?, review_note = ?, reviewed_by = ?, reviewed_at = NOW(), updated_at = NOW() WHERE id = ?',
     [status, points, review_note || null, req.user?.id || null, id],
