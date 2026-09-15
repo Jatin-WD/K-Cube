@@ -5,6 +5,7 @@ import { CalendarDays, CheckCircle2, Clock3, MapPin, UsersRound } from 'lucide-r
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { useAppStore, type Language } from '@/store/useAppStore';
+import RepairText from '@/components/RepairText';
 
 type EventRow = {
   id: number;
@@ -133,7 +134,7 @@ const KoreanLanguageClassEventClean = () => {
   };
 
   const firstEvent = events[0];
-  return <main className="min-h-screen bg-[#eef4f8] text-[#102a43]">
+  return <RepairText><main className="min-h-screen bg-[#eef4f8] text-[#102a43]">
     <section className="bg-[linear-gradient(135deg,#062b63_0%,#0b4eae_58%,#123b78_100%)] px-4 py-12 text-white sm:px-8 sm:py-16 lg:px-10">
       <div className="mx-auto max-w-[1200px]">
         <p className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em]"><SparkleIcon />{t.featured}</p>
@@ -151,7 +152,7 @@ const KoreanLanguageClassEventClean = () => {
       </div>
       <div className="mx-auto mt-6 max-w-[1200px] rounded-[28px] border border-[#d8e1ee] bg-white p-6 shadow-sm sm:p-8"><div className="flex items-center justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[0.22em] text-[#2457d6]">{t.registrations}</p><h2 className="mt-2 text-2xl font-black">{t.chooseSession}</h2></div><UsersRound className="h-7 w-7 text-[#12a66a]" /></div>{loading ? <p className="mt-6 text-sm text-[#64748b]">{t.loading}</p> : <div className="mt-6 grid gap-3 md:grid-cols-2">{events.map((event, index) => { const unavailable = event.registration_status === 'completed' || event.registration_status === 'full'; return <div key={event.id} className="flex flex-col justify-between gap-4 rounded-2xl border border-[#d8e1ee] bg-[#f8fbff] p-5 sm:flex-row sm:items-center"><div><p className="text-lg font-black">{language === 'en' ? event.title.split(' - Week ')[0] : `${t.title} · ${t.week} ${index + 1}`}</p><p className="mt-1 text-sm text-[#64748b]">{formatDate(event.starts_at, language)} · {formatTime(event.starts_at, language)}–{formatTime(event.ends_at, language)}</p></div>{user ? <button type="button" onClick={() => rsvp(event.id)} disabled={Boolean(registered[event.id]) || unavailable} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2457d6] px-4 py-2.5 text-sm font-black text-white disabled:bg-[#d9efe7] disabled:text-[#087f52]">{registered[event.id] ? <><CheckCircle2 className="h-4 w-4" />{t.confirmed}</> : unavailable ? statusLabel(event.registration_status || 'completed', language) : t.reserveSession}</button> : <Link href="/signin" className="inline-flex items-center justify-center rounded-full border border-[#2457d6] px-4 py-2.5 text-sm font-black text-[#2457d6]">{t.signIn}</Link>}</div>; })}</div>}{!loading && !events.length ? <p className="mt-6 rounded-2xl bg-[#fff8df] p-4 text-sm text-[#7a5b00]">{t.published}</p> : null}{message ? <p role="status" className="mt-5 rounded-2xl border border-[#b9d9d0] bg-[#effaf6] p-4 text-sm font-bold text-[#087f52]">{message}</p> : null}</div>
     </section>
-  </main>;
+  </main></RepairText>;
 };
 
 export default KoreanLanguageClassEventClean;

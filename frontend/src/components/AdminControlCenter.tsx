@@ -43,6 +43,7 @@ import api from '@/lib/api';
 import { detailItems } from '@/lib/kcubeContent';
 import { useAppStore } from '@/store/useAppStore';
 import PasswordInput from '@/components/PasswordInput';
+import RepairText from '@/components/RepairText';
 import CommunityMapPanel, { type CommunityMapLocation } from '@/components/CommunityMapPanel';
 
 type AdminSection =
@@ -5096,7 +5097,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   );
 
   const renderKoreanClass = () => (
-    <div className="space-y-5">
+    <RepairText><div className="space-y-5">
       <SectionShell title="Korean Language & Culture Class" description="Dedicated management page for the four-session class, attendance rewards and completion bonus." actions={<Link href="/events/korean-language-culture-class" target="_blank" className="text-sm font-bold text-[#ffc400]">Open public page ↗</Link>}>
         <div className="rounded-2xl border border-[#ffc400]/25 bg-[#ffc400]/[0.06] p-5 text-sm leading-7 text-[#d4dbe7]">
           <p className="font-black text-white">Attendance reward policy</p>
@@ -5116,7 +5117,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
           {eventAttendeesLoading ? <p className="mt-4 text-sm text-[#aab5c6]">Loading registrations…</p> : eventAttendees.length ? <div className="mt-4 space-y-2">{eventAttendees.map((attendee) => <div key={attendee.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/20 p-3"><div><p className="font-bold text-white">{attendee.full_name}</p><p className="text-xs text-[#aab5c6]">{attendee.email}{attendee.phone ? ` · ${attendee.phone}` : ''}</p></div><div className="flex items-center gap-2"><span className="rounded-full border border-white/10 px-2.5 py-1 text-xs font-bold text-[#aab5c6]">{attendee.status.replace('_', ' ')}</span>{attendee.status !== 'checked_in' ? <button type="button" onClick={() => checkInEventAttendee(attendee.event_id, attendee.user_id)} className="rounded-lg bg-[#2457d6] px-3 py-2 text-xs font-black text-white">Verify attendance</button> : <span className="text-xs font-bold text-[#087f52]">+100 awarded</span>}</div></div>)}</div> : <p className="mt-4 rounded-xl bg-black/20 p-4 text-sm text-[#aab5c6]">No registrations for this session yet.</p>}
         </div> : null}
       </SectionShell>
-    </div>
+    </div></RepairText>
   );
 
   const renderRewards = () => (
