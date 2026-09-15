@@ -260,6 +260,18 @@ type EventRow = {
   google_calendar_html_link: string | null;
 };
 
+type EventAttendeeRow = {
+  id: number;
+  event_id: number;
+  user_id: number;
+  status: 'registered' | 'checked_in' | 'cancelled' | 'no_show';
+  checked_in_at: string | null;
+  created_at: string;
+  full_name: string;
+  email: string;
+  phone: string | null;
+};
+
 type RewardRow = {
   id: number;
   name: string;
@@ -1176,6 +1188,9 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   const [blocks, setBlocks] = useState<CmsBlockRow[]>([]);
   const [chapters, setChapters] = useState<ChapterRow[]>([]);
   const [events, setEvents] = useState<EventRow[]>([]);
+  const [eventAttendees, setEventAttendees] = useState<EventAttendeeRow[]>([]);
+  const [selectedKoreanSessionId, setSelectedKoreanSessionId] = useState<number | null>(null);
+  const [eventAttendeesLoading, setEventAttendeesLoading] = useState(false);
   const [rewards, setRewards] = useState<RewardRow[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementRow[]>([]);
   const [calendarConnections, setCalendarConnections] = useState<CalendarConnectionRow[]>([]);
@@ -1782,6 +1797,22 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     }
   }, [selectedChapter]);
 
+  useEffect(() => {
+    if (activeSection !== 'koreanClass') return;
+    const eventId = selectedKoreanSessionId || koreanClassEvents[0]?.id;
+    if (!eventId) return;
+    if (!selectedKoreanSessionId) setSelectedKoreanSessionId(eventId);
+    void api.get(`/admin/events/${eventId}/attendees`)
+      .then((response) => {
+        const data = response.data?.data ?? response.data;
+        setEventAttendees(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        setEventAttendees([]);
+        setNotice('Could not load event registrations.');
+      });
+  }, [activeSection, selectedKoreanSessionId, koreanClassEvents]);
+
   if (!user || user.role !== 'admin') {
     return (
       <main className="min-h-screen bg-[#eef4f8] px-5 py-16 text-[#102a43] lg:px-10">
@@ -2352,6 +2383,30 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     setNotice('Event archived.');
     setEventForm(emptyEventForm);
     await loadAdminData();
+  };
+
+  const loadEventAttendees = async (eventId: number) => {
+    setEventAttendeesLoading(true);
+    try {
+      const response = await api.get(`/admin/events/${eventId}/attendees`);
+      const data = response.data?.data ?? response.data;
+      setEventAttendees(Array.isArray(data) ? data : []);
+    } catch {
+      setEventAttendees([]);
+      setNotice('Could not load event registrations.');
+    } finally {
+      setEventAttendeesLoading(false);
+    }
+  };
+
+  const checkInEventAttendee = async (eventId: number, userId: number) => {
+    try {
+      await api.post(`/admin/events/${eventId}/check-in`, { user_id: userId });
+      setNotice('Attendance verified and points updated.');
+      await loadEventAttendees(eventId);
+    } catch {
+      setNotice('Could not verify attendance.');
+    }
   };
 
   const publishAnnouncement = async () => {
@@ -5059,6 +5114,15 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
           {koreanClassEvents.map((entry, index) => <button key={entry.id} type="button" onClick={() => { setEventForm({ id: String(entry.id), title: entry.title, slug: entry.slug, description: entry.description || '', category: entry.category, starts_at: entry.starts_at.slice(0, 16), ends_at: entry.ends_at.slice(0, 16), timezone: entry.timezone, location_name: entry.location_name || '', location_address: entry.location_address || '', online_meeting_url: entry.online_meeting_url || '', capacity: entry.capacity ? String(entry.capacity) : '', points_reward: entry.points_reward, status: entry.status }); setActiveSection('events'); }} className="rounded-2xl border border-white/10 bg-black/20 p-5 text-left hover:border-[#ffc400]/60"><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Week {index + 1}</p><p className="mt-2 font-black text-white">{new Date(entry.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p><p className="mt-2 text-xs text-[#aab5c6]">3:00–4:00 PM · +{entry.points_reward || 100} points</p><p className="mt-3 text-xs font-bold text-[#ffc400]">Edit in Events →</p></button>)}
         </div>
         {!koreanClassEvents.length ? <p className="mt-4 text-sm text-[#aab5c6]">No Korean class sessions found. Refresh the admin panel after the backend publishes them.</p> : null}
+        {koreanClassEvents.length ? <div className="mt-6 border-t border-white/10 pt-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">Registrations &amp; attendance</p><h3 className="mt-2 text-xl font-black">{eventAttendees.length} attendee{eventAttendees.length === 1 ? '' : 's'} for selected session</h3></div>
+            <select className={selectClass} value={selectedKoreanSessionId || ''} onChange={(event) => { const id = Number(event.target.value); setSelectedKoreanSessionId(id); loadEventAttendees(id); }} aria-label="Select Korean class session">
+              {koreanClassEvents.map((entry, index) => <option key={entry.id} value={entry.id}>Week {index + 1} · {new Date(entry.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</option>)}
+            </select>
+          </div>
+          {eventAttendeesLoading ? <p className="mt-4 text-sm text-[#aab5c6]">Loading registrations…</p> : eventAttendees.length ? <div className="mt-4 space-y-2">{eventAttendees.map((attendee) => <div key={attendee.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/20 p-3"><div><p className="font-bold text-white">{attendee.full_name}</p><p className="text-xs text-[#aab5c6]">{attendee.email}{attendee.phone ? ` · ${attendee.phone}` : ''}</p></div><div className="flex items-center gap-2"><span className="rounded-full border border-white/10 px-2.5 py-1 text-xs font-bold text-[#aab5c6]">{attendee.status.replace('_', ' ')}</span>{attendee.status !== 'checked_in' ? <button type="button" onClick={() => checkInEventAttendee(attendee.event_id, attendee.user_id)} className="rounded-lg bg-[#2457d6] px-3 py-2 text-xs font-black text-white">Verify attendance</button> : <span className="text-xs font-bold text-[#087f52]">+100 awarded</span>}</div></div>)}</div> : <p className="mt-4 rounded-xl bg-black/20 p-4 text-sm text-[#aab5c6]">No registrations for this session yet.</p>}
+        </div> : null}
       </SectionShell>
     </div>
   );

@@ -16,6 +16,21 @@ interface KCubePageProps {
   showActions?: boolean;
 }
 
+type FeaturedEvent = {
+  id: number;
+  title: string;
+  description: string | null;
+  starts_at: string;
+  ends_at: string;
+  timezone: string;
+  location_name: string | null;
+  location_address: string | null;
+  status: string;
+  capacity: number | null;
+  points_reward: number;
+  slug: string;
+};
+
 const isExternal = (href: string) => href.startsWith('http');
 const featuredShopProducts = shopProducts.slice(0, 3);
 
@@ -217,6 +232,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const rewardsText = repairMojibakeTree(rewardsUi[language]);
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
   const [walletLoading, setWalletLoading] = useState(false);
+  const [featuredKoreanEvent, setFeaturedKoreanEvent] = useState<FeaturedEvent | null>(null);
 
   useEffect(() => {
     if (pageKey !== 'rewards' || !user) {
@@ -233,6 +249,24 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       .finally(() => { if (!cancelled) setWalletLoading(false); });
     return () => { cancelled = true; };
   }, [pageKey, user]);
+
+  useEffect(() => {
+    if (pageKey !== 'home') {
+      setFeaturedKoreanEvent(null);
+      return;
+    }
+    let cancelled = false;
+    api.get('/events')
+      .then((response) => {
+        const data = response.data?.data ?? response.data;
+        const event = Array.isArray(data)
+          ? data.find((entry: FeaturedEvent) => entry.slug?.startsWith('korean-language-culture-class-'))
+          : null;
+        if (!cancelled) setFeaturedKoreanEvent(event || null);
+      })
+      .catch(() => { if (!cancelled) setFeaturedKoreanEvent(null); });
+    return () => { cancelled = true; };
+  }, [pageKey]);
 
   return (
     <main className="mx-auto min-h-screen max-w-[1320px] overflow-hidden bg-white text-[#111827] shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
@@ -257,7 +291,26 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       >
         <div className="mx-auto grid max-w-[1320px] gap-6 lg:grid-cols-1 lg:items-stretch">
           {pageKey === 'home' ? (
-            <div className="py-2 sm:py-4">
+            <>
+            <div className="relative overflow-hidden rounded-[24px] border border-white/20 bg-[linear-gradient(120deg,rgba(6,43,99,0.98),rgba(11,78,174,0.86)),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+              <div className="relative max-w-3xl">
+                <p className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#fff3b0]">Free community class</p>
+                <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">Free Korean Language &amp; Culture Class</h1>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-[#e0ecff] sm:text-lg">Discover the Korean language and explore Korean culture through an engaging, beginner-friendly class.</p>
+                <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-[#e0ecff] sm:text-sm">
+                  <span className="rounded-full bg-white/10 px-3 py-2">Every Tuesday · 3:00–4:00 PM</span>
+                  <span className="rounded-full bg-white/10 px-3 py-2">4 sessions</span>
+                  <span className="rounded-full bg-white/10 px-3 py-2">Gurugram</span>
+                </div>
+                <p className="mt-4 text-sm font-bold text-[#fff3b0]">Attend each session for +100 points · Complete all 4 for 500 points total.</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-black text-[#0b4eae]">View class details <ArrowRight className="h-4 w-4" /></Link>
+                  <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-5 py-3 text-sm font-black text-white">Register for free <ArrowRight className="h-4 w-4" /></Link>
+                </div>
+                {featuredKoreanEvent ? <p className="mt-4 text-xs text-[#cfe0fa]">Next session: {new Date(featuredKoreanEvent.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} · {featuredKoreanEvent.status === 'published' ? 'Registration available' : featuredKoreanEvent.status}</p> : <p className="mt-4 text-xs text-[#cfe0fa]">Session details are being prepared. Check the class page for the latest information.</p>}
+              </div>
+            </div>
+            <div className="hidden">
                 <div className="inline-flex max-w-full items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white shadow-[0_4px_18px_rgba(15,55,95,0.12)] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.18em]">
                   <span className="h-2 w-2 rounded-full bg-[#f59e0b]" />
                   {bannerText.festival}
@@ -352,6 +405,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   </div>
                 </div>
             </div>
+            </>
           ) : (
             <>
               <div className="py-3 sm:min-h-[420px] sm:py-8">

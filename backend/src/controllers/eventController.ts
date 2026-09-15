@@ -68,6 +68,19 @@ export const listAdminEvents = async (_req: AuthRequest, res: Response) => {
   return ok(res, rows);
 };
 
+export const listEventAttendees = async (req: AuthRequest, res: Response) => {
+  const [rows] = await pool.query(
+    `SELECT r.id, r.event_id, r.user_id, r.status, r.checked_in_at, r.created_at,
+            u.full_name, u.email, u.phone
+     FROM platform_event_rsvps r
+     JOIN users u ON u.id = r.user_id
+     WHERE r.event_id = ?
+     ORDER BY r.created_at ASC`,
+    [req.params.id],
+  );
+  return ok(res, rows);
+};
+
 export const getEventBySlug = async (req: AuthRequest, res: Response) => {
   const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events WHERE slug = ? AND status IN ('published','cancelled') LIMIT 1`, [req.params.slug]);
   const event = (rows as any[])[0];

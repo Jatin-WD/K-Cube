@@ -49,6 +49,7 @@ import {
   createEvent,
   archiveEvent,
   listAdminEvents,
+  listEventAttendees,
   listCalendarConnections,
   runCalendarSync,
   syncEventToGoogleCalendar,
@@ -110,6 +111,7 @@ router.post('/rewards', requireAdminScope(['commerce']), upsertReward);
 router.patch('/rewards/:id', requireAdminScope(['commerce']), upsertReward);
 router.delete('/rewards/:id', requireAdminScope(['commerce']), retireReward);
 router.get('/events', requireAdminScope(['events']), listAdminEvents);
+router.get('/events/:id/attendees', requireAdminScope(['events']), listEventAttendees);
 router.post('/events', requireAdminScope(['events']), createEvent);
 router.patch('/events/:id', requireAdminScope(['events']), updateEvent);
 router.delete('/events/:id', requireAdminScope(['events']), archiveEvent);
