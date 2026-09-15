@@ -247,7 +247,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       </section>
 
       <section
-        className="relative overflow-hidden border-b border-[#d8e1ee] bg-cover bg-center px-3 py-5 sm:px-4 sm:py-8 lg:px-10 lg:py-12"
+        className="relative overflow-hidden border-b border-[#d8e1ee] bg-cover bg-center px-3 py-4 sm:px-4 sm:py-6 lg:px-10 lg:py-8"
         style={{
           backgroundImage: pageKey === 'home'
             ? `linear-gradient(120deg, rgb(6 43 99) 0%, rgb(11 78 174 / 75%) 52%, rgb(29 103 201 / 0%) 100%), url(${visual.hero})`
@@ -256,24 +256,24 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       >
         <div className="mx-auto grid max-w-[1320px] gap-6 lg:grid-cols-1 lg:items-stretch">
           {pageKey === 'home' ? (
-            <div className="py-3 sm:min-h-[390px] sm:py-7">
+            <div className="py-2 sm:py-4">
                 <div className="inline-flex max-w-full items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white shadow-[0_4px_18px_rgba(15,55,95,0.12)] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.18em]">
                   <span className="h-2 w-2 rounded-full bg-[#f59e0b]" />
                   {bannerText.festival}
                 </div>
-                <h1 className="mt-4 max-w-5xl text-3xl font-bold leading-[1.05] tracking-tight text-white drop-shadow-xl sm:mt-6 sm:text-4xl lg:text-6xl">
+                <h1 className="mt-3 max-w-5xl text-3xl font-bold leading-[1.05] tracking-tight text-white drop-shadow-xl sm:mt-4 sm:text-4xl lg:text-6xl">
                   {bannerText.title}
                 </h1>
-                <p className="mt-3 max-w-3xl text-base font-medium leading-7 text-[#d8e7f9] sm:text-lg">
+                <p className="mt-2 max-w-3xl text-base font-medium leading-7 text-[#d8e7f9] sm:text-lg">
                   {bannerText.subtitle}
                 </p>
-                <div className="mt-4 inline-flex items-center gap-2 rounded-md border border-[#12a66a]/40 bg-[#effbf6] px-3 py-2 text-xs font-bold text-[#087f52]">
+                <div className="mt-3 inline-flex items-center gap-2 rounded-md border border-[#12a66a]/40 bg-[#effbf6] px-3 py-2 text-xs font-bold text-[#087f52]">
                   <Check className="h-4 w-4" /> {bannerText.completed}
                 </div>
-                <div className="mt-5 max-w-6xl rounded-[22px] border border-[#d8e1ee] bg-white/95 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-5">
+                <div className="mt-4 max-w-6xl rounded-[22px] border border-[#d8e1ee] bg-white/95 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div className="max-w-2xl">
-                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#2457d6]">{bannerText.support}</p>
+                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#2457d6]">Festival updates</p>
                       <span className="mt-2 inline-flex items-center gap-2 rounded-md border border-[#12a66a]/30 bg-[#effbf6] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#087f52]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#12a66a]" /> {bannerText.status}
                       </span>
@@ -288,8 +288,8 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                     </Link>
                   </div>
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <article className="relative overflow-hidden rounded-[20px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(36,87,214,0.10)]">
+                  <div className="mt-4">
+                    <article className="hidden relative overflow-hidden rounded-[20px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(36,87,214,0.10)]" aria-hidden="true">
                       <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#2457d6]/10" />
                       <div className="relative">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2457d6] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
@@ -303,7 +303,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                       <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#12a66a]/10" />
                       <div className="relative">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-[#12a66a] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><UsersRound className="h-3.5 w-3.5" /> Selection update</span>
-                        <h3 className="mt-3 text-lg font-black leading-tight text-[#0f172a]">4 people selected for Round 2</h3>
+                        <h3 className="mt-3 text-lg font-black leading-tight text-[#0f172a]">4 Participants Selected for Round 2</h3>
                         <p className="mt-2 text-sm font-black text-[#087f52]">India Pre-Selection</p>
                         <p className="mt-1 text-xs font-semibold leading-5 text-[#64748b]">Selected participants will be contacted directly.</p>
                       <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#087f52]">Selected participants</p>
@@ -312,6 +312,20 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                       </div>
                       </div>
                     </article>
+                  </div>
+
+                  <div className="mt-4 rounded-[20px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(36,87,214,0.08)]">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#2457d6]">Community &amp; Learning Updates</p>
+                        <h3 className="mt-2 text-lg font-black leading-tight text-[#0f172a]">Free Korean Language &amp; Culture Class</h3>
+                        <p className="mt-1 text-sm font-black text-[#2457d6]">Every Tuesday · 3:00–4:00 PM · 22 Sep–13 Oct 2026</p>
+                        <p className="mt-2 flex items-start gap-1.5 text-xs leading-5 text-[#475569]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
+                      </div>
+                      <Link href="/events/korean-language-culture-class" className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-[#2457d6] bg-white px-4 py-2.5 text-sm font-black text-[#0b4eae] transition hover:bg-[#eef5ff]">
+                        View Class Details <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3 border-t border-[#e6edf6] pt-4 sm:flex-row sm:items-center sm:justify-between">

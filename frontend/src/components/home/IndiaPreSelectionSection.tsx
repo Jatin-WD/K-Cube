@@ -126,7 +126,7 @@ const IndiaPreSelectionSection = () => {
                 </div>
                 <p className="mt-4 text-[11px] font-black uppercase tracking-[0.34em] text-[#2457d6]">{t.indiaSeoul}</p>
                 <h2 id="kcube-india-preselection" className="mt-3 text-2xl font-black leading-[1] tracking-tight text-[#0f172a] sm:text-3xl lg:text-4xl">
-                  {t.start}
+                  {language === 'en' ? 'Your journey continues here' : t.start}
                 </h2>
                 <p className="mt-4 text-base font-semibold leading-7 text-[#334155] sm:text-lg">
                   {t.voice}
@@ -140,7 +140,7 @@ const IndiaPreSelectionSection = () => {
                     <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#2457d6]/10" />
                     <div className="relative">
                       <span className="inline-flex items-center gap-2 rounded-full bg-[#2457d6] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
-                      <h3 className="mt-4 text-lg font-black leading-tight text-[#0f172a]">Free Korean Language/Culture Class</h3>
+                      <h3 className="mt-4 text-lg font-black leading-tight text-[#0f172a]">Free Korean Language &amp; Culture Class</h3>
                       <p className="mt-2 text-sm font-bold leading-6 text-[#2457d6]">Every Tuesday · 3:00–4:00 PM</p>
                       <p className="mt-1 text-xs leading-5 text-[#64748b]">22 Sep, 29 Sep, 6 Oct &amp; 13 Oct 2026</p>
                       <p className="mt-3 flex items-start gap-2 text-xs leading-5 text-[#475569]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram</p>
@@ -150,7 +150,7 @@ const IndiaPreSelectionSection = () => {
                     <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#12a66a]/10" />
                     <div className="relative">
                       <span className="inline-flex items-center gap-2 rounded-full bg-[#12a66a] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white"><UsersRound className="h-3.5 w-3.5" /> Selection update</span>
-                      <h3 className="mt-4 text-lg font-black leading-tight text-[#0f172a]">4 people selected for Round 2</h3>
+                      <h3 className="mt-4 text-lg font-black leading-tight text-[#0f172a]">4 Participants Selected for Round 2</h3>
                       <p className="mt-2 text-sm font-bold leading-6 text-[#087f52]">India Pre-Selection</p>
                       <p className="mt-1 text-xs leading-5 text-[#64748b]">Selected participants will be contacted directly.</p>
                       <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#087f52]">Selected participants</p>
@@ -164,7 +164,7 @@ const IndiaPreSelectionSection = () => {
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
-                  href="/india-pre-selection/apply"
+                  href="/india-pre-selection/announcement"
                   className="inline-flex w-fit items-center justify-center gap-2 rounded-full bg-[#2457d6] px-5 py-3 text-sm font-black text-white transition hover:bg-[#1f4bb8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2457d6] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                 >
                   {t.updates}
