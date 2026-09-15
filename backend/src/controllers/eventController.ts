@@ -91,6 +91,29 @@ export const listMyRsvps = async (req: AuthRequest, res: Response) => {
   return ok(res, rows);
 };
 
+export const getEventAccess = async (req: AuthRequest, res: Response) => {
+  if (!req.user?.id) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
+  const [rows] = await pool.query(
+    `SELECT e.id, e.title, e.starts_at, e.ends_at, e.timezone, e.online_meeting_url, r.status
+     FROM platform_events e
+     JOIN platform_event_rsvps r ON r.event_id = e.id
+     WHERE e.id = ? AND r.user_id = ? AND r.status IN ('registered', 'checked_in')
+     LIMIT 1`,
+    [req.params.id, req.user.id],
+  );
+  const access = (rows as any[])[0];
+  if (!access) return fail(res, 404, 'NOT_FOUND', 'Registered event access not found');
+  return ok(res, {
+    event_id: access.id,
+    title: access.title,
+    starts_at: access.starts_at,
+    ends_at: access.ends_at,
+    timezone: access.timezone,
+    meeting_url: access.online_meeting_url || null,
+    registration_status: access.status,
+  });
+};
+
 export const listAdminEvents = async (_req: AuthRequest, res: Response) => {
   await ensureKoreanClassSessions().catch((error) => console.error('Korean class admin sync failed:', error));
   const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events ORDER BY updated_at DESC LIMIT 300`);
@@ -245,6 +268,10 @@ export const rsvpEvent = async (req: AuthRequest, res: Response) => {
 
 export const cancelRsvp = async (req: AuthRequest, res: Response) => {
   if (!req.user?.id) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
+  const [eventRows] = await pool.query('SELECT starts_at, starts_at <= NOW() AS started FROM platform_events WHERE id = ? LIMIT 1', [req.params.id]);
+  const event = (eventRows as any[])[0];
+  if (!event) return fail(res, 404, 'NOT_FOUND', 'Event not found');
+  if (Number(event.started) === 1) return fail(res, 409, 'EVENT_STARTED', 'A started event can no longer be cancelled');
   const [result] = await pool.query(
     'UPDATE platform_event_rsvps SET status = ?, updated_at = NOW() WHERE event_id = ? AND user_id = ? AND status = ?',
     ['cancelled', req.params.id, req.user.id, 'registered'],
