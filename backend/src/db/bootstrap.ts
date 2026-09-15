@@ -1,6 +1,29 @@
 import pool from './pool';
 
 export const bootstrapDatabase = async () => {
+  // Existing MySQL volumes do not rerun database/schema.sql. Keep required
+  // tables self-healing so older installations can use the learning APIs.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS user_learning_progress (
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+      user_id BIGINT UNSIGNED NOT NULL,
+      track_id BIGINT UNSIGNED NOT NULL,
+      current_streak INT UNSIGNED NOT NULL DEFAULT 0,
+      best_streak INT UNSIGNED NOT NULL DEFAULT 0,
+      last_completed_at DATETIME DEFAULT NULL,
+      last_session_id BIGINT UNSIGNED DEFAULT NULL,
+      total_sessions INT UNSIGNED NOT NULL DEFAULT 0,
+      total_correct INT UNSIGNED NOT NULL DEFAULT 0,
+      total_points INT UNSIGNED NOT NULL DEFAULT 0,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (id),
+      UNIQUE KEY uniq_learning_progress (user_id, track_id),
+      INDEX idx_learning_progress_user (user_id),
+      CONSTRAINT fk_learning_progress_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      CONSTRAINT fk_learning_progress_track FOREIGN KEY (track_id) REFERENCES learning_tracks(id) ON DELETE CASCADE,
+      CONSTRAINT fk_learning_progress_session FOREIGN KEY (last_session_id) REFERENCES learning_sessions(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
   await pool.query("ALTER TABLE users ADD COLUMN admin_scope VARCHAR(64) DEFAULT NULL AFTER category_access").catch(() => undefined);
   await pool.query("UPDATE users SET admin_scope = 'super_admin' WHERE role = 'admin' AND (admin_scope IS NULL OR admin_scope = '')").catch(() => undefined);
   await pool.query(`
