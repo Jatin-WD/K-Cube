@@ -38,7 +38,7 @@ const ensureKoreanClassSessions = async () => {
       `INSERT IGNORE INTO platform_events
         (title, slug, description, category, starts_at, ends_at, timezone, location_name, location_address, points_reward, status, sync_status, created_at, updated_at)
        VALUES (?, ?, ?, 'korean_language', ?, ?, 'Asia/Kolkata', ?, ?, 100, 'published', 'not_requested', NOW(), NOW())
-       ON DUPLICATE KEY UPDATE points_reward = 100, status = 'published', updated_at = NOW()`,
+       ON DUPLICATE KEY UPDATE points_reward = 100, updated_at = NOW()`,
       [
         `Free Korean Language & Culture Class - ${week}`,
         `korean-language-culture-class-${startsAt.slice(0, 10)}`,

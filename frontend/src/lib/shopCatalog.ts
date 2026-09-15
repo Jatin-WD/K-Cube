@@ -1,5 +1,6 @@
 import type { LocalText, MenuLink } from '@/lib/kcubeContent';
 import type { Language } from '@/store/useAppStore';
+import { repairMojibakeTree } from '@/lib/repairMojibake';
 
 export interface ShopProduct {
   id: string;
@@ -159,7 +160,7 @@ const product = (
   store: 'koreanshop',
 });
 
-export const shopCopy: Record<Language, Record<string, string>> = {
+const shopCopyData: Record<Language, Record<string, string>> = {
   en: {
     badge: 'K-CUBE Shop',
     title: 'A complete K-CUBE shop with A-Z Korean products, login-gated checkout and built-in rewards',
@@ -294,7 +295,9 @@ export const shopCopy: Record<Language, Record<string, string>> = {
   },
 };
 
-export const shopProducts: ShopProduct[] = [
+export const shopCopy = repairMojibakeTree(shopCopyData);
+
+const shopProductsData: ShopProduct[] = [
   product('brown-rice-green-tea-100t', 'TC-101', txt('Brown Rice Green Tea (100T)', '현미녹차 100T', 'Brown Rice Green Tea (100T)'), txt('Roasted rice and green tea sachets for an everyday calming cup.', '현미와 녹차가 어우러진 데일리 티입니다.', 'Roasted rice aur green tea sachets ka daily pack.'), txt('A mellow tea box that works for pantry shoppers, gifting and repeat beverage orders.', '잔잔한 풍미로 재구매가 잘 나오는 차 상품입니다.', 'Mild tea box jo gifting aur repeat orders dono ke liye strong hai.'), 'tea-coffee', 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80', 720, undefined, 72, false, stock.outOfStock, [txt('Tea staple', '차 스테디셀러', 'Tea staple')], [txt('100 tea bags', '티백 100개', '100 tea bags'), txt('Smooth roasted finish', '고소한 마무리', 'Smooth roasted finish'), txt('Reward eligible on checkout', '결제 리워드 대상', 'Reward eligible on checkout')]),
   product('bibigo-kimchi-jar', 'PN-202', txt('Bibigo Kimchi Jar', '비비고 김치 자', 'Bibigo Kimchi Jar'), txt('Crunchy fermented kimchi jar for bowls, grills and side dishes.', '그릴과 밥상에 잘 어울리는 아삭한 김치입니다.', 'Crunchy kimchi jar jo bowls aur meals ke saath perfect hai.'), txt('Balanced spice, clean tang and a pantry-ready size make this an easy first basket add-on.', '깔끔한 산미와 적당한 매운맛으로 첫 장바구니 진입 상품입니다.', 'Balanced spice aur clean tang ke saath easy first cart add-on.'), 'sauces', 'https://images.unsplash.com/photo-1607301405390-d831c242f59b?auto=format&fit=crop&w=1200&q=80', 549, 620, 55, true, stock.lowStock, [txt('Best for first-time buyers', '첫 구매 추천', 'Best for first-time buyers')], [txt('450g glass jar', '450g 유리병', '450g glass jar'), txt('Cold-side serving', '차갑게 바로 서빙', 'Cold-side serving'), txt('High reward multiplier', '높은 리워드 배수', 'High reward multiplier')]),
   product('buldak-hot-chicken-topokki', 'SN-301', txt('Buldak Hot Chicken Flavour Topokki', '불닭 핫치킨 떡볶이', 'Buldak Hot Chicken Flavour Topokki'), txt('Spicy rice cake cup for fast Korean street-food cravings.', '매콤한 컵 떡볶이로 빠르게 즐기는 길거리 맛입니다.', 'Spicy rice cake cup for quick street-food cravings.'), txt('Heat, chew and finish in minutes. Great as a hero product on snack collections.', '빠르게 조리되는 대표 스낵형 떡볶이 상품입니다.', 'Minutes me ready hone wala strong hero snack product.'), 'snacks', 'https://images.unsplash.com/photo-1583224964978-2f4f7aaf4230?auto=format&fit=crop&w=1200&q=80', 290, 350, 45, true, stock.fastMoving, [txt('Street-food style', '길거리 간식', 'Street-food style')], [txt('Single heat-and-eat cup', '즉석 컵 1개', 'Single heat-and-eat cup'), txt('Hot chicken profile', '핫치킨 풍미', 'Hot chicken profile'), txt('Checkout rewards enabled', '결제 리워드 적용', 'Checkout rewards enabled')]),
@@ -332,6 +335,8 @@ export const shopProducts: ShopProduct[] = [
   product('shin-ramyun-family-pack', 'ND-511', txt('Shin Ramyun Family Pack', '신라면 패밀리팩', 'Shin Ramyun Family Pack'), txt('The classic spicy Korean noodle multipack for fast pantry starts.', '가장 익숙한 매운 한국 라면 멀티팩입니다.', 'Classic spicy Korean noodle multipack.'), txt('A core traffic-driving product that makes the internal K-CUBE shop instantly recognizable.', '내부 K-CUBE 숍의 신뢰를 올려주는 핵심 유입 상품입니다.', 'Core traffic-driving product for the internal shop.'), 'noodles', 'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=80', 699, undefined, 70, true, stock.fastMoving, [txt('Top seller', '상위 판매', 'Top seller'), txt('Starter pack', '스타터 팩', 'Starter pack')], [txt('6 ramen packs', '라면 6개', '6 ramen packs'), txt('Classic spicy broth', '기본 매운 국물', 'Classic spicy broth'), txt('Reward eligible on checkout', '결제 리워드 대상', 'Reward eligible on checkout')]),
   product('wheat-noodle-jungmyeon-900g', 'ND-512', txt('Wheat Noodle (Jungmyeon) 900g', '중면 900g', 'Wheat Noodle (Jungmyeon) 900g'), txt('Traditional wheat noodles for Korean soups, cold bowls and family cooking.', '국수와 냉면 응용에 좋은 전통 면 상품입니다.', 'Traditional wheat noodles for soups and family cooking.'), txt('Adds breadth beyond ramen so the catalog feels like a real Korean grocery shop.', '라면 외 품목을 채워 실제 마트형 카탈로그 완성도를 높입니다.', 'Adds grocery depth beyond ramen.'), 'noodles', 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=80', 330, undefined, 26, true, stock.inStock, [txt('Pantry depth', '팬트리 확장', 'Pantry depth')], [txt('900g family pack', '900g 가정용', '900g family pack'), txt('Soup and cold-bowl fit', '국물/비빔 활용', 'Soup and cold-bowl fit'), txt('Internal rewards', '내부 리워드 적용', 'Internal rewards')]),
 ];
+
+export const shopProducts = repairMojibakeTree(shopProductsData);
 
 export const findShopProduct = (slug: string) => shopProducts.find((item) => item.slug === slug);
 

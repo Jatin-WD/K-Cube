@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppStore, type Language } from '@/store/useAppStore';
+import { repairMojibakeTree } from '@/lib/repairMojibake';
 
 const footerCopy: Record<Language, Record<string, string>> = {
   en: {
@@ -64,10 +65,12 @@ const footerCopy: Record<Language, Record<string, string>> = {
   },
 };
 
+const repairedFooterCopy = repairMojibakeTree(footerCopy);
+
 const InternalFooter = () => {
   const language = useAppStore((state) => state.language);
   const pathname = usePathname();
-  const t = footerCopy[language];
+  const t = repairedFooterCopy[language];
 
   if (pathname.startsWith('/admin')) {
     return null;

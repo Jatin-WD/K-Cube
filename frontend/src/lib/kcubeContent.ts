@@ -1,5 +1,7 @@
 ﻿import type { Language } from '@/store/useAppStore';
 
+import { repairMojibakeTree } from '@/lib/repairMojibake';
+
 export type PageKey = 'home' | 'activities' | 'learning' | 'kfood' | 'rewards' | 'events' | 'about' | 'apply' | 'trip' | 'studyAbroad';
 export type DetailCategory = 'activities' | 'learning' | 'kfood' | 'rewards' | 'events';
 
@@ -285,7 +287,7 @@ export const allMenuQuickLinks: MenuLink[] = [
   },
 ];
 
-export const copy = {
+const copyData = {
   en: {
     search: 'Search activities, lessons, rewards, Korean food...',
     all: 'All',
@@ -350,6 +352,8 @@ export const copy = {
     applyNow: 'अभी आवेदन करें',
   },
 } satisfies Record<Language, Record<string, string>>;
+
+export const copy = repairMojibakeTree(copyData);
 
 export const detailItems: DetailItem[] = [
   {

@@ -6,6 +6,7 @@ import { ChevronRight, ExternalLink } from 'lucide-react';
 import type { Language } from '@/store/useAppStore';
 import type { LocalText, MegaSection, MenuLink } from '@/lib/kcubeContent';
 import { allMenuCategories } from '@/lib/kcubeContent';
+import { repairMojibakeTree } from '@/lib/repairMojibake';
 
 interface MegaMenuProps {
   sections: MegaSection[];
@@ -74,7 +75,7 @@ const MegaMenu = ({ sections, language, onNavigate, onMouseEnter, onMouseLeave, 
   const isItaewonService = activeLink?.href === '/india-pre-selection';
   const isAllItaewonService = activeCategoryService?.href === '/india-pre-selection';
   const selectedFestivalChild = isAllItaewonService ? activeCategoryChild : activeChild;
-  const selectedFestivalPreview = festivalPreview(selectedFestivalChild?.href);
+  const selectedFestivalPreview = repairMojibakeTree(festivalPreview(selectedFestivalChild?.href));
 
   if (!activeSection) return null;
 
