@@ -18,7 +18,7 @@ export const bootstrapDatabase = async () => {
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       PRIMARY KEY (id),
       UNIQUE KEY uniq_learning_progress (user_id, track_id),
-      INDEX idx_learning_progress_user (user_id),
+      INDEX idx_learning_progress_user (user_id)
       -- Do not add foreign keys here: legacy installations can have older
       -- table definitions/engines, which makes MySQL reject this migration.
       -- The canonical schema still defines the relationships for fresh DBs.

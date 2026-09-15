@@ -21,6 +21,10 @@ import { API_PREFIX, APP_URL, CORS_ORIGINS, KCUBE_SERVE_FRONTEND, NODE_ENV } fro
 
 export const app = express();
 
+// The production app is behind Nginx. Trust the single proxy hop so
+// express-rate-limit can safely evaluate forwarded client IPs.
+app.set('trust proxy', 1);
+
 const normalizeOrigin = (value: string) => {
   try {
     return new URL(value).origin;
