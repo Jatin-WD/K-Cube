@@ -7,6 +7,32 @@ export const bootstrapDatabase = async () => {
     ALTER TABLE india_pre_selection_applications
     MODIFY COLUMN status ENUM('pending','submitted','reviewing','shortlisted','selected','approved','rejected','withdrawn') NOT NULL DEFAULT 'pending'
   `).catch(() => undefined);
+
+  // Seed the four-session Korean Language & Culture Class series once.
+  // INSERT IGNORE keeps admin edits and RSVP records intact on later restarts.
+  const koreanClassSessions = [
+    ['Free Korean Language & Culture Class — Week 1', '2026-09-22 15:00:00', '2026-09-22 16:00:00'],
+    ['Free Korean Language & Culture Class — Week 2', '2026-09-29 15:00:00', '2026-09-29 16:00:00'],
+    ['Free Korean Language & Culture Class — Week 3', '2026-10-06 15:00:00', '2026-10-06 16:00:00'],
+    ['Free Korean Language & Culture Class — Week 4', '2026-10-13 15:00:00', '2026-10-13 16:00:00'],
+  ];
+  for (const [title, startsAt, endsAt] of koreanClassSessions) {
+    const slug = `korean-language-culture-class-${startsAt.slice(0, 10)}`;
+    await pool.query(
+      `INSERT IGNORE INTO platform_events
+        (title, slug, description, category, starts_at, ends_at, timezone, location_name, location_address, points_reward, status, sync_status, created_at, updated_at)
+       VALUES (?, ?, ?, 'korean_language', ?, ?, 'Asia/Kolkata', ?, ?, 0, 'published', 'not_requested', NOW(), NOW())`,
+      [
+        title,
+        slug,
+        'A free four-week Korean language and culture class for the K-CUBE community. Learn practical Korean and explore Korean culture in a friendly classroom setting.',
+        startsAt,
+        endsAt,
+        'Korea Edge Cube - Gr',
+        'Plot 149, Sector 44 Rd, Gurugram, Haryana 122023',
+      ],
+    ).catch((error) => console.error(`Korean class event seed failed for ${slug}:`, error));
+  }
   // Correct legacy Itaewon awards exactly once and leave an auditable reversal entry.
   const connection = await pool.getConnection();
   try {

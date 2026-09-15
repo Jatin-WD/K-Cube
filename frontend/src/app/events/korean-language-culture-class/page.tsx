@@ -1,0 +1,12 @@
+import KoreanLanguageClassEvent from '@/components/KoreanLanguageClassEvent';
+
+export const dynamic = 'force-dynamic';
+
+export const metadata = {
+  title: 'Free Korean Language & Culture Class | K-CUBE',
+  description: 'Join K-CUBE for a free four-week Korean language and culture class in Gurugram.',
+};
+
+export default function KoreanLanguageCultureClassPage() {
+  return <KoreanLanguageClassEvent />;
+}

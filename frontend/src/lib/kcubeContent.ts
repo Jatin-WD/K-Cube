@@ -850,8 +850,21 @@ const itaewonSubmissionLink: MenuLink = {
   ],
 };
 
+const koreanLanguageClassLink: MenuLink = {
+  label: txt('Free Korean Language & Culture Class', 'Free Korean Language & Culture Class', 'Free Korean Language & Culture Class'),
+  href: '/events/korean-language-culture-class',
+  description: txt(
+    'Free four-week Korean language and culture classes every Tuesday in Gurugram.',
+    '구루그람에서 매주 화요일 진행되는 4주 무료 한국어 및 한국 문화 수업입니다.',
+    'Gurugram mein har Tuesday hone wali 4-week free Korean language aur culture class.',
+  ),
+  featured: true,
+  status: txt('NEW · 4 WEEKS', 'NEW · 4 WEEKS', 'NEW · 4 WEEKS'),
+};
+
 const buildEventsServiceLinks = (): MenuLink[] => [
   itaewonSubmissionLink,
+  koreanLanguageClassLink,
   ...detailItems
     .filter((item) => item.category === 'events')
     .map((item) => ({
@@ -935,6 +948,7 @@ export const navItems: NavItem[] = [
       {
         title: txt('Event Pages', '이벤트 페이지', 'Event Pages'),
         links: [
+          koreanLanguageClassLink,
           itaewonSubmissionLink,
           ...detailItems
             .filter((item) => item.category === 'events')
@@ -1123,6 +1137,12 @@ export const pages: Record<PageKey, PageContent> = {
         description: txt('Dedicated submission page for the ITAEWON World Music Spirit Festival 2026 with exact timeline and application details.', 'ITAEWON World Music Spirit Festival 2026을 위한 전용 신청 페이지입니다.', 'ITAEWON World Music Spirit Festival 2026 ke liye dedicated submission page.'),
         href: '/india-pre-selection',
         cta: txt('Open dedicated page', '전용 페이지 열기', 'Dedicated page kholo'),
+      },
+      {
+        title: koreanLanguageClassLink.label,
+        description: koreanLanguageClassLink.description,
+        href: koreanLanguageClassLink.href,
+        cta: txt('View class schedule', '수업 일정 보기', 'Class schedule dekhein'),
       },
       ...detailItems.filter((item) => item.category === 'events').map((item) => ({
         title: item.title,

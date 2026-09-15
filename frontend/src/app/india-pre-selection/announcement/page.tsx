@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, BellRing, Camera, CheckCircle2 } from 'lucide-react';
 import { useAppStore, type Language } from '@/store/useAppStore';
+import { maskedIndiaSecondRoundParticipants } from '@/lib/festival2026';
 
 type Copy = { notice:string; title:string; subtitle:string; intro:string; closed:string; ongoing:string; latest:string; info:string; status:string; latestTitle:string; latestText:string[]; existing:string; existingTitle:string; existingText:string; actions:[string,string,string][]; dates:string; datesTitle:string; selection:string; selectionTitle:string; progress:[string,string,string,string][]; next:string; nextTitle:string; nextText:string; stay:string; stayTitle:string; stayText:string; infoButton:string; follow:string };
 
@@ -17,7 +18,7 @@ const Eyebrow = ({ children }: { children: React.ReactNode }) => <p className="t
 
 const NewNotices = () => <>
   <Section><Eyebrow>New announcement</Eyebrow><h2 className="mt-2 text-2xl font-black sm:text-3xl">Free Korean Language/Culture Class</h2><div className="mt-6 max-w-3xl space-y-4 text-sm leading-7 text-[#526f8f]"><p>Join a free Korean language and culture class every Tuesday from 3:00 PM to 4:00 PM for four weeks, starting 22 September 2026.</p><p>Class dates: 22 September, 29 September, 6 October and 13 October 2026.</p><p><strong>Venue:</strong> Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p></div></Section>
-  <Section><Eyebrow>India Pre-Selection update</Eyebrow><h2 className="mt-2 text-2xl font-black sm:text-3xl">Four participants selected for the second round</h2><p className="mt-4 max-w-3xl text-sm leading-7 text-[#526f8f]">Four people have been selected for the second round. Participant names are not being published in full; selected participants will be contacted directly.</p></Section>
+  <Section><Eyebrow>India Pre-Selection update</Eyebrow><h2 className="mt-2 text-2xl font-black sm:text-3xl">Four participants selected for the second round</h2><p className="mt-4 max-w-3xl text-sm leading-7 text-[#526f8f]">Four people have been selected for the second round. Full names are kept private; only partially masked names are shown below.</p><div className="mt-5 flex flex-wrap gap-2">{maskedIndiaSecondRoundParticipants.map((name) => <span key={name} className="rounded-full border border-[#b9d9d0] bg-[#effaf6] px-3 py-2 text-sm font-bold text-[#19745d]">{name}</span>)}</div><p className="mt-4 text-xs leading-6 text-[#8290a3]">Selected participants will be contacted directly with the next-step details.</p></Section>
 </>;
 
 export default function AnnouncementPage() {

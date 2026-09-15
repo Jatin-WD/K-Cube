@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Check, Coins, ExternalLink, MapPin, Plane, ShoppingBag, Star, UsersRound } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
+import { maskedIndiaSecondRoundParticipants } from '@/lib/festival2026';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
 import IndiaPreSelectionSection from './home/IndiaPreSelectionSection';
@@ -20,7 +21,7 @@ const featuredShopProducts = shopProducts.slice(0, 3);
 const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string; accentHex: string }> = {
   home: {
     hero: '/assets/k-cube-banner.png',
-    strip: 'K-CUBE INDIA PRE-SELECTION · APPLICATION WINDOW CLOSED · OFFICIAL UPDATES',
+    strip: 'Free Korean Language & Culture Class · Tuesdays, 3–4 PM · Starts 22 September · Gurugram',
     accent: 'Next event', accentHex: '#2563eb',
   },
   activities: {
@@ -106,12 +107,12 @@ const homeSectionCopy = {
 
 const homeBannerCopy = {
   en: {
-    strip: 'K-CUBE INDIA PRE-SELECTION · APPLICATION WINDOW CLOSED · OFFICIAL UPDATES',
+    strip: 'Free Korean Language & Culture Class · Tuesdays, 3–4 PM · Starts 22 September · Gurugram',
     festival: 'ITAEWON WORLD MUSIC SPIRIT FESTIVAL 2026',
-    title: 'K-CUBE INDIA PRE-SELECTION',
-    subtitle: 'Your voice. Your message. Your stage.',
+    title: 'K-CUBE INDIA · EVENTS & ANNOUNCEMENTS',
+    subtitle: 'Korean culture, community events and official updates.',
     completed: 'India Pre-Selection completed on August 30, 2026',
-    support: 'Important selection & travel support',
+    support: 'Latest announcements',
     status: 'India Pre-Selection completed',
     stages: 'Official festival stages and updates',
     announcement: 'View Full Announcement',
@@ -211,6 +212,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const homeText = homeSectionCopy[language];
   const bannerText = homeBannerCopy[language];
   const visual = pageVisuals[pageKey];
+  const tickerLabel = pageKey === 'home' ? 'New event' : visual.accent;
   const rewardsText = rewardsUi[language];
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
   const [walletLoading, setWalletLoading] = useState(false);
@@ -236,7 +238,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
       <section className="border-b border-[#d8e1ee] bg-white px-3 py-2 text-xs text-[#0f172a] sm:px-4 sm:py-3 sm:text-sm lg:px-10">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
-          <span className="rounded-full px-3 py-1 font-black text-white shadow-[0_10px_20px_rgba(15,23,42,0.14)]" style={{ backgroundColor: visual.accentHex }}>{pageKey === 'home' ? homeText.next : visual.accent}</span>
+          <span className="rounded-full px-3 py-1 font-black text-white shadow-[0_10px_20px_rgba(15,23,42,0.14)]" style={{ backgroundColor: visual.accentHex }}>{tickerLabel}</span>
           <span className="font-semibold leading-5 text-[#475569]">{pageKey === 'home' ? bannerText.strip : visual.strip}</span>
           <Link href="/dashboard" className="hidden items-center gap-2 rounded-full border border-[#d8e1ee] px-3 py-1 font-bold text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6] sm:ml-auto sm:inline-flex">
             {homeText.dashboard} <ArrowRight className="h-4 w-4" />
@@ -304,7 +306,10 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                         <h3 className="mt-3 text-lg font-black leading-tight text-[#0f172a]">4 people selected for Round 2</h3>
                         <p className="mt-2 text-sm font-black text-[#087f52]">India Pre-Selection</p>
                         <p className="mt-1 text-xs font-semibold leading-5 text-[#64748b]">Selected participants will be contacted directly.</p>
-                        <p className="mt-3 text-xs leading-5 text-[#475569]">Names are kept private and will not be published in full.</p>
+                      <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#087f52]">Selected participants</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {maskedIndiaSecondRoundParticipants.map((name) => <span key={name} className="rounded-full border border-[#12a66a]/20 bg-white/80 px-2.5 py-1 text-xs font-bold text-[#334155]">{name}</span>)}
+                      </div>
                       </div>
                     </article>
                   </div>

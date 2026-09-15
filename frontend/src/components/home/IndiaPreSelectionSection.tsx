@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, MapPin, Music4, Sparkles, UsersRound } from 'lucide-react';
-import { festival2026 } from '@/lib/festival2026';
+import { festival2026, maskedIndiaSecondRoundParticipants } from '@/lib/festival2026';
 import { useAppStore } from '@/store/useAppStore';
 
 const localizedCopy = {
@@ -153,7 +153,10 @@ const IndiaPreSelectionSection = () => {
                       <h3 className="mt-4 text-lg font-black leading-tight text-[#0f172a]">4 people selected for Round 2</h3>
                       <p className="mt-2 text-sm font-bold leading-6 text-[#087f52]">India Pre-Selection</p>
                       <p className="mt-1 text-xs leading-5 text-[#64748b]">Selected participants will be contacted directly.</p>
-                      <p className="mt-3 text-xs leading-5 text-[#475569]">Names are kept private and will not be published in full.</p>
+                      <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#087f52]">Selected participants</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {maskedIndiaSecondRoundParticipants.map((name) => <span key={name} className="rounded-full border border-[#12a66a]/20 bg-white/80 px-2.5 py-1 text-xs font-bold text-[#334155]">{name}</span>)}
+                      </div>
                     </div>
                   </article>
                 </div>

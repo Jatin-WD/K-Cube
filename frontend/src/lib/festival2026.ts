@@ -45,6 +45,15 @@ export const festivalJourney: FestivalStage[] = [
   festival2026.mainFestival,
 ];
 
+// Public-safe display names for the four India Pre-Selection Round 2 participants.
+// Full applicant names remain private and are never rendered on public pages.
+export const maskedIndiaSecondRoundParticipants = [
+  'W******m A****t',
+  'S****a A******i R******o',
+  'T*********o K***r',
+  'D****i B',
+] as const;
+
 export const festivalStatusLabel: Record<FestivalStageStatus, string> = {
   completed: 'Completed',
   upcoming: 'Upcoming',
