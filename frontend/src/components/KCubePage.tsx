@@ -261,7 +261,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   <span className="h-2 w-2 rounded-full bg-[#f59e0b]" />
                   {bannerText.festival}
                 </div>
-                <h1 className="mt-3 max-w-5xl text-3xl font-bold leading-[1.05] tracking-tight text-white drop-shadow-xl sm:mt-4 sm:text-4xl lg:text-6xl">
+                <h1 className="mt-3 max-w-none text-3xl font-bold leading-[1.05] tracking-tight text-white drop-shadow-xl sm:mt-4 sm:text-4xl lg:text-5xl xl:text-[3.4rem]">
                   {bannerText.title}
                 </h1>
                 <p className="mt-2 max-w-3xl text-base font-medium leading-7 text-[#d8e7f9] sm:text-lg">
