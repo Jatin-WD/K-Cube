@@ -213,7 +213,15 @@ export const rsvpEvent = async (req: AuthRequest, res: Response) => {
 
 export const cancelRsvp = async (req: AuthRequest, res: Response) => {
   if (!req.user?.id) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
-  await pool.query('UPDATE platform_event_rsvps SET status = ?, updated_at = NOW() WHERE event_id = ? AND user_id = ?', ['cancelled', req.params.id, req.user.id]);
+  const [result] = await pool.query(
+    'UPDATE platform_event_rsvps SET status = ?, updated_at = NOW() WHERE event_id = ? AND user_id = ? AND status = ?',
+    ['cancelled', req.params.id, req.user.id, 'registered'],
+  );
+  if (Number((result as any).affectedRows || 0) === 0) {
+    const [rows] = await pool.query('SELECT status FROM platform_event_rsvps WHERE event_id = ? AND user_id = ? LIMIT 1', [req.params.id, req.user.id]);
+    const status = (rows as any[])[0]?.status;
+    if (status === 'checked_in') return fail(res, 409, 'ATTENDANCE_LOCKED', 'A checked-in registration cannot be cancelled');
+  }
   return ok(res, { event_id: Number(req.params.id), status: 'cancelled' });
 };
 
