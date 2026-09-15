@@ -163,11 +163,15 @@ export const rsvpEvent = async (req: AuthRequest, res: Response) => {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
-    const [events] = await connection.query('SELECT id, capacity FROM platform_events WHERE id = ? AND status = ? LIMIT 1 FOR UPDATE', [req.params.id, 'published']);
+    const [events] = await connection.query('SELECT id, capacity, starts_at, starts_at <= NOW() AS is_completed FROM platform_events WHERE id = ? AND status = ? LIMIT 1 FOR UPDATE', [req.params.id, 'published']);
     const event = (events as any[])[0];
     if (!event) {
       await connection.rollback();
       return fail(res, 404, 'NOT_FOUND', 'Event not found');
+    }
+    if (Number(event.is_completed) === 1) {
+      await connection.rollback();
+      return fail(res, 409, 'EVENT_COMPLETED', 'Completed events are no longer accepting registrations');
     }
 
     const [existingRows] = await connection.query(

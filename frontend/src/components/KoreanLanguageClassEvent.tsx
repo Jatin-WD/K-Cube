@@ -56,6 +56,8 @@ const KoreanLanguageClassEvent = () => {
   const [registered, setRegistered] = useState<Record<number, boolean>>({});
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [eventsError, setEventsError] = useState(false);
+  const [eventsRetry, setEventsRetry] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,14 +65,32 @@ const KoreanLanguageClassEvent = () => {
       if (cancelled) return;
       const data = response.data?.data ?? response.data;
       const rows = Array.isArray(data) ? data : [];
-      setEvents(rows.filter((event): event is EventRow => typeof event?.slug === 'string' && event.slug.startsWith('korean-language-culture-class-')));
+      const classEvents = rows.filter((event): event is EventRow => typeof event?.slug === 'string' && event.slug.startsWith('korean-language-culture-class-'));
+      setEvents(classEvents);
+      setEventsError(false);
+      if (typeof window !== 'undefined') {
+        try {
+          window.sessionStorage.setItem('kcube-korean-class-events', JSON.stringify(classEvents));
+        } catch {
+          // Session storage can be unavailable in privacy-restricted browsers.
+        }
+      }
     }).catch(() => {
-      if (!cancelled) setEvents([]);
+      if (cancelled) return;
+      setEventsError(true);
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = JSON.parse(window.sessionStorage.getItem('kcube-korean-class-events') || '[]');
+          if (Array.isArray(cached) && cached.length) setEvents(cached);
+        } catch {
+          // Ignore malformed browser cache and keep the retry state visible.
+        }
+      }
     }).finally(() => {
       if (!cancelled) setLoading(false);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [eventsRetry]);
 
   useEffect(() => {
     let cancelled = false;
@@ -106,6 +126,7 @@ const KoreanLanguageClassEvent = () => {
       </div>
     </section>
     <section className="px-4 py-8 sm:px-8 sm:py-12 lg:px-10">
+      {eventsError ? <div role="alert" className="mx-auto mb-6 flex max-w-[1200px] flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#f1d98a] bg-[#fff9e5] p-4 text-sm font-bold text-[#806000]"><span>{t.error}</span><button type="button" onClick={() => { setEventsError(false); setLoading(true); setEventsRetry((value) => value + 1); }} className="rounded-full border border-[#806000] px-4 py-2">Retry</button></div> : null}
       <div className="mx-auto grid max-w-[1200px] gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <article className="rounded-[28px] border border-[#d8e1ee] bg-white p-6 shadow-[0_18px_50px_rgba(15,55,95,0.07)] sm:p-8">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-[#2457d6]">{t.schedule}</p><h2 className="mt-2 text-2xl font-black sm:text-3xl">{t.scheduleTitle}</h2>
