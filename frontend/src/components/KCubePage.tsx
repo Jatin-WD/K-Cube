@@ -39,7 +39,7 @@ const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string
   home: {
     hero: '/assets/k-cube-banner.png',
     strip: 'Free Korean Language & Culture Class · Tuesdays, 3–4 PM · Starts 22 September · Gurugram',
-    accent: 'Next event', accentHex: '#2563eb',
+    accent: 'Featured class', accentHex: '#2563eb',
   },
   activities: {
     hero: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1800&q=80',
@@ -117,9 +117,9 @@ const marketplaceTileValues = {
 } as const;
 
 const homeSectionCopy = {
-  en: { next: 'Next event', explore: 'Explore by category', curated: 'Curated for India', spotlight: 'Shop spotlight', featured: 'Shop & Earn Points', openShop: 'Open shop', viewShop: 'View in shop', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food purchase claims and referrals feed into the points ledger.', allActions: 'View All Point Actions', dashboard: 'Member dashboard', welcome: 'Account activity' },
-  ko: { next: '다음 이벤트', explore: '카테고리 둘러보기', curated: '인도를 위한 큐레이션', spotlight: '쇼핑 추천', featured: '홈페이지 추천 상품', openShop: '쇼핑몰 열기', viewShop: '쇼핑몰에서 보기', actions: 'K-CUBE 포인트 활동', actionsDesc: '인증된 활동, 학습 진행, K-Food 구매 신청 및 추천이 포인트 장부에 반영됩니다.', allActions: '모든 포인트 활동 보기', dashboard: '회원 대시보드', welcome: '웰컴 포인트 100점' },
-  hi: { next: 'अगला इवेंट', explore: 'कैटेगरी देखें', curated: 'India के लिए curated', spotlight: 'Shop spotlight', featured: 'Shop से Points कमाएँ', openShop: 'Shop खोलें', viewShop: 'Shop में देखें', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food claims और referrals points ledger में जुड़ते हैं।', allActions: 'सभी point actions देखें', dashboard: 'Member dashboard', welcome: 'Account activity' },
+  en: { next: 'Explore', explore: 'Explore by category', curated: 'Curated for India', spotlight: 'Shop spotlight', featured: 'Shop & Earn Points', openShop: 'Open shop', viewShop: 'View in shop', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food purchase claims and referrals feed into the points ledger.', allActions: 'View All Point Actions', dashboard: 'Member dashboard', welcome: 'Account activity' },
+  ko: { next: '둘러보기', explore: '카테고리 둘러보기', curated: '인도를 위한 큐레이션', spotlight: '쇼핑 추천', featured: '홈페이지 추천 상품', openShop: '쇼핑몰 열기', viewShop: '쇼핑몰에서 보기', actions: 'K-CUBE 포인트 활동', actionsDesc: '인증된 활동, 학습 진행, K-Food 구매 신청 및 추천이 포인트 장부에 반영됩니다.', allActions: '모든 포인트 활동 보기', dashboard: '회원 대시보드', welcome: '웰컴 포인트 100점' },
+  hi: { next: 'देखें', explore: 'कैटेगरी देखें', curated: 'India के लिए curated', spotlight: 'Shop spotlight', featured: 'Shop से Points कमाएँ', openShop: 'Shop खोलें', viewShop: 'Shop में देखें', actions: 'K-CUBE point actions', actionsDesc: 'Verified activities, learning progress, K-Food claims और referrals points ledger में जुड़ते हैं।', allActions: 'सभी point actions देखें', dashboard: 'Member dashboard', welcome: 'Account activity' },
 } as const;
 
 const homeBannerCopy = {
@@ -226,11 +226,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const points = useAppStore((state) => state.points);
   const page = pages[pageKey];
   const t = copy[language];
-  const homeText = homeSectionCopy[language];
+  const homeText = repairMojibakeTree(homeSectionCopy[language]);
   const bannerText = repairMojibakeTree(homeBannerCopy[language]);
   const featuredText = featuredHeroCopy[language];
   const visual = repairMojibakeTree(pageVisuals[pageKey]);
-  const tickerLabel = pageKey === 'home' ? 'New event' : visual.accent;
+  const tickerLabel = pageKey === 'home' ? 'Featured class' : visual.accent;
   const rewardsText = repairMojibakeTree(rewardsUi[language]);
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);

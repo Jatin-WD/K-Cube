@@ -160,20 +160,51 @@ export const archiveEvent = async (req: AuthRequest, res: Response) => {
 
 export const rsvpEvent = async (req: AuthRequest, res: Response) => {
   if (!req.user?.id) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
-  const [events] = await pool.query('SELECT id, capacity FROM platform_events WHERE id = ? AND status = ? LIMIT 1', [req.params.id, 'published']);
-  const event = (events as any[])[0];
-  if (!event) return fail(res, 404, 'NOT_FOUND', 'Event not found');
-  if (event.capacity) {
-    const [countRows] = await pool.query('SELECT COUNT(*) as total FROM platform_event_rsvps WHERE event_id = ? AND status = ?', [event.id, 'registered']);
-    if (Number((countRows as any[])[0]?.total || 0) >= Number(event.capacity)) return fail(res, 409, 'EVENT_FULL', 'Event capacity is full');
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    const [events] = await connection.query('SELECT id, capacity FROM platform_events WHERE id = ? AND status = ? LIMIT 1 FOR UPDATE', [req.params.id, 'published']);
+    const event = (events as any[])[0];
+    if (!event) {
+      await connection.rollback();
+      return fail(res, 404, 'NOT_FOUND', 'Event not found');
+    }
+
+    const [existingRows] = await connection.query(
+      'SELECT status FROM platform_event_rsvps WHERE event_id = ? AND user_id = ? LIMIT 1 FOR UPDATE',
+      [event.id, req.user.id],
+    );
+    const existingStatus = (existingRows as any[])[0]?.status;
+    if (existingStatus === 'checked_in') {
+      await connection.commit();
+      return ok(res, { event_id: event.id, status: 'checked_in' });
+    }
+    if (existingStatus === 'registered') {
+      await connection.commit();
+      return ok(res, { event_id: event.id, status: 'registered' });
+    }
+
+    if (event.capacity) {
+      const [countRows] = await connection.query('SELECT COUNT(*) as total FROM platform_event_rsvps WHERE event_id = ? AND status = ?', [event.id, 'registered']);
+      if (Number((countRows as any[])[0]?.total || 0) >= Number(event.capacity)) {
+        await connection.rollback();
+        return fail(res, 409, 'EVENT_FULL', 'Event capacity is full');
+      }
+    }
+    await connection.query(
+      `INSERT INTO platform_event_rsvps (event_id, user_id, status, created_at, updated_at)
+       VALUES (?, ?, 'registered', NOW(), NOW())
+       ON DUPLICATE KEY UPDATE status = 'registered', updated_at = NOW()`,
+      [event.id, req.user.id],
+    );
+    await connection.commit();
+    return ok(res, { event_id: event.id, status: 'registered' });
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
   }
-  await pool.query(
-    `INSERT INTO platform_event_rsvps (event_id, user_id, status, created_at, updated_at)
-     VALUES (?, ?, 'registered', NOW(), NOW())
-     ON DUPLICATE KEY UPDATE status = 'registered', updated_at = NOW()`,
-    [event.id, req.user.id],
-  );
-  return ok(res, { event_id: event.id, status: 'registered' });
 };
 
 export const cancelRsvp = async (req: AuthRequest, res: Response) => {
@@ -197,6 +228,7 @@ export const checkInEvent = async (req: AuthRequest, res: Response) => {
   const isKoreanClass = event.slug.startsWith('korean-language-culture-class-');
   const points = isKoreanClass ? 100 : Number(req.body.points_reward ?? event.points_reward ?? 0);
   let balance;
+  let pointsAwarded = 0;
   let bonusPoints = 0;
   if (points > 0) {
     const award = await awardPoints({
@@ -209,6 +241,7 @@ export const checkInEvent = async (req: AuthRequest, res: Response) => {
       once: true,
     });
     balance = award.balance;
+    pointsAwarded = award.awarded ? points : 0;
   }
   if (isKoreanClass) {
     const [attendanceRows] = await pool.query(
@@ -231,10 +264,10 @@ export const checkInEvent = async (req: AuthRequest, res: Response) => {
         once: true,
       });
       balance = bonus.balance;
-      bonusPoints = 100;
+      bonusPoints = bonus.awarded ? 100 : 0;
     }
   }
-  return ok(res, { event_id: event.id, user_id: userId, status: 'checked_in', points_awarded: points, bonus_points_awarded: bonusPoints, balance });
+  return ok(res, { event_id: event.id, user_id: userId, status: 'checked_in', points_awarded: pointsAwarded, bonus_points_awarded: bonusPoints, balance });
 };
 
 export const syncEventToGoogleCalendar = async (req: AuthRequest, res: Response) => {
