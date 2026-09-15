@@ -224,14 +224,16 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const language = useAppStore((state) => state.language);
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
-  const page = pages[pageKey];
-  const t = copy[language];
+  const page = repairMojibakeTree(pages[pageKey]);
+  const t = repairMojibakeTree(copy[language]);
   const homeText = repairMojibakeTree(homeSectionCopy[language]);
   const bannerText = repairMojibakeTree(homeBannerCopy[language]);
-  const featuredText = featuredHeroCopy[language];
+  const featuredText = repairMojibakeTree(featuredHeroCopy[language]);
   const visual = repairMojibakeTree(pageVisuals[pageKey]);
-  const tickerLabel = pageKey === 'home' ? 'Featured class' : visual.accent;
+  const tickerLabel = pageKey === 'home' ? (language === 'ko' ? '추천 클래스' : language === 'hi' ? 'विशेष क्लास' : 'Featured class') : visual.accent;
   const rewardsText = repairMojibakeTree(rewardsUi[language]);
+  const marketplaceLabels = repairMojibakeTree(marketplaceTileLabels[language]);
+  const marketplaceValues = repairMojibakeTree(marketplaceTileValues[language]);
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
   const [featuredKoreanEvent, setFeaturedKoreanEvent] = useState<FeaturedEvent | null>(null);
@@ -537,9 +539,9 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
             <article key={tile.title} className="overflow-hidden rounded-[24px] border border-[#d8e1ee] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
               <div className="h-1" style={{ backgroundColor: tileAccents[index] }} />
               <div className="p-4">
-              <h2 className="text-lg font-black text-[#0f172a] sm:text-xl">{marketplaceTileLabels[language][index]}</h2>
+                  <h2 className="text-lg font-black text-[#0f172a] sm:text-xl">{marketplaceLabels[index]}</h2>
               <div className="mt-3 h-28 rounded-[16px] bg-cover bg-center sm:h-36" style={{ backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.2)), url(${tile.image})` }} />
-              <p className="mt-3 text-sm font-bold" style={{ color: tileAccents[index] }}>{marketplaceTileValues[language][index]}</p>
+              <p className="mt-3 text-sm font-bold" style={{ color: tileAccents[index] }}>{marketplaceValues[index]}</p>
               </div>
             </article>
           ))}
