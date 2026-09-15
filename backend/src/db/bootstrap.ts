@@ -19,9 +19,9 @@ export const bootstrapDatabase = async () => {
       PRIMARY KEY (id),
       UNIQUE KEY uniq_learning_progress (user_id, track_id),
       INDEX idx_learning_progress_user (user_id),
-      CONSTRAINT fk_learning_progress_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-      CONSTRAINT fk_learning_progress_track FOREIGN KEY (track_id) REFERENCES learning_tracks(id) ON DELETE CASCADE,
-      CONSTRAINT fk_learning_progress_session FOREIGN KEY (last_session_id) REFERENCES learning_sessions(id) ON DELETE SET NULL
+      -- Do not add foreign keys here: legacy installations can have older
+      -- table definitions/engines, which makes MySQL reject this migration.
+      -- The canonical schema still defines the relationships for fresh DBs.
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
   await pool.query("ALTER TABLE users ADD COLUMN admin_scope VARCHAR(64) DEFAULT NULL AFTER category_access").catch(() => undefined);
