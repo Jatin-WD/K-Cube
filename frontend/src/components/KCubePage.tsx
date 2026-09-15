@@ -350,7 +350,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   </div>
 
                   <div className="mt-4">
-                    <article className="hidden relative overflow-hidden rounded-[20px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(36,87,214,0.10)]" aria-hidden="true">
+                    {false && (<article className="relative overflow-hidden rounded-[20px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(36,87,214,0.10)]" aria-hidden="true">
                       <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#2457d6]/10" />
                       <div className="relative">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2457d6] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
@@ -359,7 +359,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                         <p className="mt-1 text-xs font-semibold text-[#64748b]">22 Sep, 29 Sep, 6 Oct &amp; 13 Oct 2026</p>
                         <p className="mt-3 flex items-start gap-1.5 text-xs leading-5 text-[#475569]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
                       </div>
-                    </article>
+                    </article>)}
                     <article className="relative overflow-hidden rounded-[20px] border border-[#12a66a]/25 bg-[linear-gradient(135deg,#effbf6_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(18,166,106,0.10)]">
                       <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#12a66a]/10" />
                       <div className="relative">
