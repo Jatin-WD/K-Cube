@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { requireAdminScope, requireAuth } from '../middleware/auth';
-import { cancelRsvp, checkInEvent, getEventBySlug, listEvents, rsvpEvent } from '../controllers/eventController';
+import { cancelRsvp, checkInEvent, getEventBySlug, listEvents, listMyRsvps, rsvpEvent } from '../controllers/eventController';
 
 const router = Router();
 
 router.get('/', listEvents);
+router.get('/mine', requireAuth(), listMyRsvps);
 router.get('/:slug', getEventBySlug);
 router.post('/:id/rsvp', requireAuth(), rsvpEvent);
 router.delete('/:id/rsvp', requireAuth(), cancelRsvp);

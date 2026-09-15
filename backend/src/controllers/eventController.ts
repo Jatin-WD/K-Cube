@@ -24,6 +24,17 @@ export const listEvents = async (_req: AuthRequest, res: Response) => {
   return ok(res, rows);
 };
 
+export const listMyRsvps = async (req: AuthRequest, res: Response) => {
+  if (!req.user?.id) return fail(res, 401, 'UNAUTHORIZED', 'Unauthorized');
+  const [rows] = await pool.query(
+    `SELECT event_id, status
+     FROM platform_event_rsvps
+     WHERE user_id = ? AND status IN ('registered', 'checked_in')`,
+    [req.user.id],
+  );
+  return ok(res, rows);
+};
+
 export const listAdminEvents = async (_req: AuthRequest, res: Response) => {
   const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events ORDER BY updated_at DESC LIMIT 300`);
   return ok(res, rows);

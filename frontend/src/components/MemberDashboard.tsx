@@ -298,10 +298,15 @@ const MemberDashboard = () => {
 
   useEffect(() => {
     if (!user) return;
-    api.get('/events').then((response) => {
-      const data = response.data?.data ?? response.data;
+    Promise.all([api.get('/events'), api.get('/events/mine')]).then(([eventsResponse, rsvpResponse]) => {
+      const data = eventsResponse.data?.data ?? eventsResponse.data;
+      const rsvps = rsvpResponse.data?.data ?? rsvpResponse.data;
       setEvents(Array.isArray(data) ? data : []);
-    }).catch(() => setEvents([]));
+      setRsvpStatus(Array.isArray(rsvps) ? Object.fromEntries(rsvps.map((rsvp: { event_id: number; status: string }) => [rsvp.event_id, rsvp.status])) : {});
+    }).catch(() => {
+      setEvents([]);
+      setRsvpStatus({});
+    });
   }, [user]);
 
   useEffect(() => {

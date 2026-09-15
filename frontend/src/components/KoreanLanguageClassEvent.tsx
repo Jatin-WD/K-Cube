@@ -29,11 +29,24 @@ const KoreanLanguageClassEvent = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/events').then((response) => {
-      const data = response.data?.data ?? response.data;
+    let cancelled = false;
+    setLoading(true);
+    Promise.all([
+      api.get('/events'),
+      user ? api.get('/events/mine') : Promise.resolve(null),
+    ]).then(([eventsResponse, rsvpResponse]) => {
+      if (cancelled) return;
+      const data = eventsResponse.data?.data ?? eventsResponse.data;
       setEvents(Array.isArray(data) ? data.filter((event: EventRow) => event.slug.startsWith('korean-language-culture-class-')) : []);
-    }).catch(() => setEvents([])).finally(() => setLoading(false));
-  }, []);
+      const rsvps = rsvpResponse?.data?.data ?? rsvpResponse?.data ?? [];
+      setRegistered(Array.isArray(rsvps) ? Object.fromEntries(rsvps.map((rsvp: { event_id: number; status: string }) => [rsvp.event_id, rsvp.status === 'registered' || rsvp.status === 'checked_in'])) : {});
+    }).catch(() => {
+      if (!cancelled) setEvents([]);
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [user]);
 
   const rsvp = async (eventId: number) => {
     setMessage('');
