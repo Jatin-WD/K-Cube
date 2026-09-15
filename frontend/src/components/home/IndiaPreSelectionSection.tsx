@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, CalendarDays, MapPin, Music4, Sparkles, UsersRound } from 'lucide-react';
 import { festival2026, maskedIndiaSecondRoundParticipants } from '@/lib/festival2026';
 import { useAppStore } from '@/store/useAppStore';
+import { repairMojibakeTree } from '@/lib/repairMojibake';
 
 const localizedCopy = {
   en: {
@@ -18,7 +19,7 @@ const localizedCopy = {
 } as const;
 
 const cleanLocalizedCopy = {
-  en: { journey: 'Event journey', completed: 'Completed: India Pre-Selection', indiaSeoul: 'India to Seoul 2026', start: 'Your journey starts here', voice: 'Your voice. Your message. Your stage.', intro: 'The India pre-selection stage is complete. Follow official updates for the next round and the ITAEWON World Music Spirit Festival 2026.', updates: 'View Official Updates', details: 'View Event Details', officialArt: 'Official festival artwork and event message stay aligned with the timeline below.', dates: 'Important dates', timeline: 'One clear timeline', timelineIntro: 'The India pre-selection, official rounds, and final festival are presented as one continuous journey.', why: 'Why join K-CUBE?', reason: 'A compact reason to get involved', reasonText: 'Keep this section light and motivating so it supports the main timeline.' },
+  en: { journey: 'Event journey', completed: 'Completed: India Pre-Selection', indiaSeoul: 'India to Seoul 2026', start: 'Your journey continues here', voice: 'Your voice. Your message. Your stage.', intro: 'The India pre-selection stage is complete. Follow official updates for the next round and the ITAEWON World Music Spirit Festival 2026.', updates: 'View Official Updates', details: 'View Event Details', officialArt: 'Official festival artwork and event message stay aligned with the timeline below.', dates: 'Important dates', timeline: 'One clear timeline', timelineIntro: 'The India pre-selection, official rounds, and final festival are presented as one continuous journey.', why: 'Why join K-CUBE?', reason: 'A compact reason to get involved', reasonText: 'Keep this section light and motivating so it supports the main timeline.' },
   ko: { journey: '이벤트 여정', completed: '완료: 인도 프리셀렉션', indiaSeoul: '인도에서 서울까지 2026', start: '여정은 여기서 시작됩니다', voice: '당신의 목소리. 당신의 메시지. 당신의 무대.', intro: '인도 프리셀렉션 단계가 완료되었습니다. 다음 라운드와 ITAEWON World Music Spirit Festival 2026의 공식 업데이트를 확인하세요.', updates: '공식 업데이트 보기', details: '이벤트 상세 보기', officialArt: '공식 페스티벌 아트워크와 이벤트 메시지는 아래 일정과 함께 안내됩니다.', dates: '주요 일정', timeline: '한눈에 보는 일정', timelineIntro: '인도 프리셀렉션, 공식 라운드와 최종 페스티벌을 하나의 여정으로 안내합니다.', why: '왜 K-CUBE에 참여하나요?', reason: '참여해야 하는 이유', reasonText: '주요 일정에 집중할 수 있도록 간결하고 유용한 정보만 안내합니다.' },
   hi: { journey: 'इवेंट यात्रा', completed: 'पूरा हुआ: इंडिया प्री-सेलेक्शन', indiaSeoul: 'भारत से सियोल तक 2026', start: 'आपकी यात्रा यहाँ से शुरू होती है', voice: 'आपकी आवाज़। आपका संदेश। आपका मंच।', intro: 'इंडिया प्री-सेलेक्शन चरण पूरा हो चुका है। अगले राउंड और ITAEWON World Music Spirit Festival 2026 के आधिकारिक अपडेट्स देखें।', updates: 'आधिकारिक अपडेट्स देखें', details: 'इवेंट की जानकारी देखें', officialArt: 'आधिकारिक फेस्टिवल आर्टवर्क और इवेंट संदेश नीचे दी गई टाइमलाइन के साथ जुड़े हुए हैं।', dates: 'महत्वपूर्ण तारीखें', timeline: 'एक स्पष्ट टाइमलाइन', timelineIntro: 'इंडिया प्री-सेलेक्शन, आधिकारिक राउंड और फाइनल फेस्टिवल को एक निरंतर यात्रा के रूप में देखें।', why: 'K-CUBE से क्यों जुड़ें?', reason: 'जुड़ने के कारण', reasonText: 'मुख्य टाइमलाइन पर ध्यान रखने के लिए इस सेक्शन में संक्षिप्त और उपयोगी जानकारी दी गई है।' },
 } as const;
@@ -93,9 +94,9 @@ const benefits = [
 
 const IndiaPreSelectionSection = () => {
   const language = useAppStore((state) => state.language);
-  const t = cleanLocalizedCopy[language];
-  const timelineLabels = localizedTimeline[language];
-  const benefitsText = localizedBenefits[language];
+  const t = repairMojibakeTree(cleanLocalizedCopy[language]);
+  const timelineLabels = repairMojibakeTree(localizedTimeline[language]);
+  const benefitsText = repairMojibakeTree(localizedBenefits[language]);
   const translate = (value: string) => {
     const translations: Record<string, string> = language === 'ko' ? {
       'Completed stage': '완료된 단계', 'Official round': '공식 라운드', Festival: '축제', 'ITAEWON World Music Spirit Festival': 'ITAEWON World Music Spirit Festival', 'The second official round before the Seoul festival stage.': '서울 축제 무대 전 진행되는 두 번째 공식 라운드입니다.', 'Seoul, South Korea': '대한민국 서울', 'Final destination of the journey': '여정의 최종 목적지', Perform: '공연', Learn: '학습', Earn: '적립', Experience: '경험', 'Show your talent through the India pre-selection.': '인도 프리셀렉션을 통해 재능을 보여주세요.', 'Explore Korean culture, language and creative experiences.': '한국 문화, 언어와 창의적인 경험을 만나보세요.', 'Complete K-CUBE activities and earn points.': 'K-CUBE 활동을 완료하고 포인트를 적립하세요.', 'Follow the journey from India toward Korea.': '인도에서 한국으로 이어지는 여정을 따라가세요.',
