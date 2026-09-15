@@ -97,7 +97,7 @@ export const getEventAccess = async (req: AuthRequest, res: Response) => {
     `SELECT e.id, e.title, e.starts_at, e.ends_at, e.timezone, e.online_meeting_url, r.status
      FROM platform_events e
      JOIN platform_event_rsvps r ON r.event_id = e.id
-     WHERE e.id = ? AND r.user_id = ? AND r.status IN ('registered', 'checked_in')
+     WHERE e.id = ? AND e.status = 'published' AND r.user_id = ? AND r.status IN ('registered', 'checked_in')
      LIMIT 1`,
     [req.params.id, req.user.id],
   );
@@ -291,7 +291,7 @@ export const checkInEvent = async (req: AuthRequest, res: Response) => {
   let event: any;
   try {
     await connection.beginTransaction();
-    const [events] = await connection.query('SELECT id, points_reward, slug, status FROM platform_events WHERE id = ? LIMIT 1 FOR UPDATE', [req.params.id]);
+  const [events] = await connection.query('SELECT id, points_reward, slug, category, status FROM platform_events WHERE id = ? LIMIT 1 FOR UPDATE', [req.params.id]);
     event = (events as any[])[0];
     if (!event) {
       await connection.rollback();
@@ -328,7 +328,7 @@ export const checkInEvent = async (req: AuthRequest, res: Response) => {
   } finally {
     connection.release();
   }
-  const isKoreanClass = event.slug.startsWith('korean-language-culture-class-');
+  const isKoreanClass = event.category === 'korean_language' || event.slug.startsWith('korean-language-culture-class-');
   const points = isKoreanClass ? 100 : Number(req.body.points_reward ?? event.points_reward ?? 0);
   let balance;
   let pointsAwarded = 0;
@@ -353,7 +353,7 @@ export const checkInEvent = async (req: AuthRequest, res: Response) => {
        JOIN platform_events e ON e.id = r.event_id
        WHERE r.user_id = ?
          AND r.status = 'checked_in'
-         AND e.slug LIKE 'korean-language-culture-class-%'`,
+         AND (e.category = 'korean_language' OR e.slug LIKE 'korean-language-culture-class-%')`,
       [userId],
     );
     if (Number((attendanceRows as any[])[0]?.total || 0) >= 4) {

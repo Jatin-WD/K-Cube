@@ -10,6 +10,7 @@ type EventRow = {
   id: number;
   title: string;
   slug: string;
+  category: string;
   starts_at: string;
   ends_at: string;
   timezone: string;
@@ -94,7 +95,7 @@ const KoreanLanguageClassEventClean = () => {
       if (cancelled) return;
       const data = response.data?.data ?? response.data;
       const rows = Array.isArray(data) ? data : [];
-      const classEvents = rows.filter((event): event is EventRow => typeof event?.slug === 'string' && event.slug.startsWith('korean-language-culture-class-'));
+      const classEvents = rows.filter((event): event is EventRow => event?.category === 'korean_language' || (typeof event?.slug === 'string' && event.slug.startsWith('korean-language-culture-class-')));
       setEvents(classEvents);
       setEventsError(false);
       try { window.sessionStorage.setItem('kcube-korean-class-events', JSON.stringify(classEvents)); } catch { /* Optional browser cache. */ }

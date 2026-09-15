@@ -29,6 +29,7 @@ type FeaturedEvent = {
   capacity: number | null;
   points_reward: number;
   slug: string;
+  category: string;
   registration_status?: string;
 };
 
@@ -257,9 +258,9 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       .then((response) => {
         const data = response.data?.data ?? response.data;
         const event = Array.isArray(data)
-          ? data.filter((entry: FeaturedEvent) => entry.slug?.startsWith('korean-language-culture-class-')).find((entry: FeaturedEvent) => entry.registration_status === 'registration_open')
-            || data.filter((entry: FeaturedEvent) => entry.slug?.startsWith('korean-language-culture-class-')).find((entry: FeaturedEvent) => entry.registration_status !== 'completed')
-            || data.find((entry: FeaturedEvent) => entry.slug?.startsWith('korean-language-culture-class-'))
+          ? data.filter((entry: FeaturedEvent) => entry.category === 'korean_language' || entry.slug?.startsWith('korean-language-culture-class-')).find((entry: FeaturedEvent) => entry.registration_status === 'registration_open')
+            || data.filter((entry: FeaturedEvent) => entry.category === 'korean_language' || entry.slug?.startsWith('korean-language-culture-class-')).find((entry: FeaturedEvent) => entry.registration_status !== 'completed')
+            || data.find((entry: FeaturedEvent) => entry.category === 'korean_language' || entry.slug?.startsWith('korean-language-culture-class-'))
           : null;
         if (!cancelled) setFeaturedKoreanEvent(event || null);
       })

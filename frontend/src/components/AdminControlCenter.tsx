@@ -1364,7 +1364,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     [events, query],
   );
   const koreanClassEvents = useMemo(
-    () => events.filter((entry) => entry.slug.startsWith('korean-language-culture-class-')).sort((a, b) => a.starts_at.localeCompare(b.starts_at)),
+    () => events.filter((entry) => entry.category === 'korean_language' || entry.slug.startsWith('korean-language-culture-class-')).sort((a, b) => a.starts_at.localeCompare(b.starts_at)),
     [events],
   );
   const filteredRewards = useMemo(
