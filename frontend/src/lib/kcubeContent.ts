@@ -854,9 +854,9 @@ const koreanLanguageClassLink: MenuLink = {
   label: txt('Free Korean Language & Culture Class', 'Free Korean Language & Culture Class', 'Free Korean Language & Culture Class'),
   href: '/events/korean-language-culture-class',
   description: txt(
-    'Free four-week Korean language and culture classes every Tuesday in Gurugram.',
-    '구루그람에서 매주 화요일 진행되는 4주 무료 한국어 및 한국 문화 수업입니다.',
-    'Gurugram mein har Tuesday hone wali 4-week free Korean language aur culture class.',
+    'Free four-week Korean language and culture classes every Tuesday in Gurugram. Earn 100 points per attended session and a 100-point bonus after all four.',
+    '구루그람에서 매주 화요일 진행되는 4주 무료 한국어 및 한국 문화 수업입니다. 참석할 때마다 100포인트를 받고, 4회 모두 참석하면 100포인트 보너스를 받습니다.',
+    'Gurugram mein har Tuesday hone wali 4-week free Korean language aur culture class. Har attended session par 100 points aur chaaron sessions complete karne par 100 bonus points milenge.',
   ),
   featured: true,
   status: txt('NEW · 4 WEEKS', 'NEW · 4 WEEKS', 'NEW · 4 WEEKS'),

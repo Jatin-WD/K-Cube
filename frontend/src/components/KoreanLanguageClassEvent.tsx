@@ -77,6 +77,7 @@ const KoreanLanguageClassEvent = () => {
         <p className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em]"><SparkleIcon /> Featured event</p>
         <h1 className="mt-5 max-w-4xl text-4xl font-black leading-tight sm:text-6xl">Free Korean Language &amp; Culture Class</h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-[#dbeafe] sm:text-lg">A free four-week community class to learn practical Korean and explore Korean culture together.</p>
+        <p className="mt-4 max-w-3xl text-sm font-bold text-[#fff3b0]">Earn 100 points for every attended session · Complete all 4 sessions and earn a 100-point bonus · Total possible: 500 points.</p>
         <div className="mt-7 flex flex-wrap gap-3 text-sm font-bold text-[#e0ecff]"><span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2"><CalendarDays className="h-4 w-4" />Every Tuesday for 4 weeks</span><span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2"><Clock3 className="h-4 w-4" />3:00–4:00 PM IST</span><span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2"><MapPin className="h-4 w-4" />Gurugram</span></div>
       </div>
     </section>
@@ -85,6 +86,7 @@ const KoreanLanguageClassEvent = () => {
         <article className="rounded-[28px] border border-[#d8e1ee] bg-white p-6 shadow-[0_18px_50px_rgba(15,55,95,0.07)] sm:p-8">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-[#2457d6]">Class schedule</p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">Four Tuesdays. One welcoming classroom.</h2>
+          <p className="mt-3 rounded-xl border border-[#f1d98a] bg-[#fff9e5] p-3 text-sm font-bold text-[#806000]">Attendance reward: +100 points per session. Attend all four sessions for an extra +100 bonus (500 points total).</p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">{sessions.map((date, index) => <div key={date} className="rounded-2xl border border-[#d8e1ee] bg-[#f8fbff] p-4"><p className="text-xs font-black uppercase tracking-[0.16em] text-[#2457d6]">Week {index + 1}</p><p className="mt-2 text-lg font-black">{date}</p><p className="mt-1 text-sm text-[#64748b]">3:00–4:00 PM · Asia/Kolkata</p></div>)}</div>
           <div className="mt-6 rounded-2xl border border-[#b9d9d0] bg-[#effaf6] p-5"><p className="flex items-center gap-2 text-sm font-black text-[#087f52]"><MapPin className="h-4 w-4" />Korea Edge Cube - Gr</p><p className="mt-2 text-sm leading-6 text-[#486581]">Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p></div>
         </article>

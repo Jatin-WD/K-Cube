@@ -44,7 +44,7 @@ export const bootstrapDatabase = async () => {
     await pool.query(
       `INSERT IGNORE INTO platform_events
         (title, slug, description, category, starts_at, ends_at, timezone, location_name, location_address, points_reward, status, sync_status, created_at, updated_at)
-       VALUES (?, ?, ?, 'korean_language', ?, ?, 'Asia/Kolkata', ?, ?, 0, 'published', 'not_requested', NOW(), NOW())`,
+       VALUES (?, ?, ?, 'korean_language', ?, ?, 'Asia/Kolkata', ?, ?, 100, 'published', 'not_requested', NOW(), NOW())`,
       [
         title,
         slug,

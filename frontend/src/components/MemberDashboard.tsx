@@ -502,6 +502,7 @@ const MemberDashboard = () => {
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[#2457d6]">Korean learning &amp; culture</p>
               <h2 className="mt-2 text-2xl font-black">Free Korean Language &amp; Culture Class</h2>
               <p className="mt-2 text-sm leading-6 text-[#486581]">Choose one of the four Tuesday sessions and reserve your seat.</p>
+              <p className="mt-3 text-sm font-bold text-[#087f52]">Earn +100 points for each attended session, plus a +100 bonus after all 4 sessions (500 points total).</p>
             </div>
             <Link href="/events/korean-language-culture-class" className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-[#2457d6] px-4 py-2.5 text-sm font-black text-white">Choose a session <ArrowRight className="h-4 w-4" /></Link>
           </div>

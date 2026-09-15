@@ -30,7 +30,8 @@ const ensureKoreanClassSessions = async () => {
     await pool.query(
       `INSERT IGNORE INTO platform_events
         (title, slug, description, category, starts_at, ends_at, timezone, location_name, location_address, points_reward, status, sync_status, created_at, updated_at)
-       VALUES (?, ?, ?, 'korean_language', ?, ?, 'Asia/Kolkata', ?, ?, 0, 'published', 'not_requested', NOW(), NOW())`,
+       VALUES (?, ?, ?, 'korean_language', ?, ?, 'Asia/Kolkata', ?, ?, 100, 'published', 'not_requested', NOW(), NOW())
+       ON DUPLICATE KEY UPDATE points_reward = 100, status = 'published', updated_at = NOW()`,
       [
         `Free Korean Language & Culture Class - ${week}`,
         `korean-language-culture-class-${startsAt.slice(0, 10)}`,
@@ -171,8 +172,10 @@ export const checkInEvent = async (req: AuthRequest, res: Response) => {
      ON DUPLICATE KEY UPDATE status = 'checked_in', checked_in_at = NOW(), updated_at = NOW()`,
     [event.id, userId],
   );
-  const points = Number(req.body.points_reward ?? event.points_reward ?? 0);
+  const isKoreanClass = event.slug.startsWith('korean-language-culture-class-');
+  const points = isKoreanClass ? 100 : Number(req.body.points_reward ?? event.points_reward ?? 0);
   let balance;
+  let bonusPoints = 0;
   if (points > 0) {
     const award = await awardPoints({
       userId,
@@ -185,7 +188,31 @@ export const checkInEvent = async (req: AuthRequest, res: Response) => {
     });
     balance = award.balance;
   }
-  return ok(res, { event_id: event.id, user_id: userId, status: 'checked_in', points_awarded: points, balance });
+  if (isKoreanClass) {
+    const [attendanceRows] = await pool.query(
+      `SELECT COUNT(*) AS total
+       FROM platform_event_rsvps r
+       JOIN platform_events e ON e.id = r.event_id
+       WHERE r.user_id = ?
+         AND r.status = 'checked_in'
+         AND e.slug LIKE 'korean-language-culture-class-%'`,
+      [userId],
+    );
+    if (Number((attendanceRows as any[])[0]?.total || 0) >= 4) {
+      const bonus = await awardPoints({
+        userId,
+        sourceType: 'event',
+        sourceSlug: 'korean-language-culture-class-4-session-bonus',
+        points: 100,
+        metadata: { reason: 'Completed all four Korean Language & Culture Class sessions' },
+        createdBy: req.user?.id || null,
+        once: true,
+      });
+      balance = bonus.balance;
+      bonusPoints = 100;
+    }
+  }
+  return ok(res, { event_id: event.id, user_id: userId, status: 'checked_in', points_awarded: points, bonus_points_awarded: bonusPoints, balance });
 };
 
 export const syncEventToGoogleCalendar = async (req: AuthRequest, res: Response) => {
