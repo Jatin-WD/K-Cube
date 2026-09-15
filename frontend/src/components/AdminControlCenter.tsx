@@ -1344,6 +1344,10 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     () => events.filter((entry) => matchesQuery(query, [entry.title, entry.slug, entry.category, entry.status, entry.location_name, entry.location_address])),
     [events, query],
   );
+  const koreanClassEvents = useMemo(
+    () => events.filter((entry) => entry.slug.startsWith('korean-language-culture-class-')).sort((a, b) => a.starts_at.localeCompare(b.starts_at)),
+    [events],
+  );
   const filteredRewards = useMemo(
     () => rewards.filter((entry) => matchesQuery(query, [entry.name, entry.tier, entry.description, entry.active ? 'active' : 'inactive', entry.cost_points])),
     [query, rewards],
@@ -4909,7 +4913,23 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   };
 
   const renderEvents = () => (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+    <div className="space-y-5">
+      <SectionShell title="Korean Language & Culture Class" description="Dedicated four-session control view for schedule, attendance rewards and the 500-point completion journey." actions={<Link href="/events/korean-language-culture-class" target="_blank" className="text-sm font-bold text-[#ffc400]">Open public page ↗</Link>}>
+        <div className="rounded-2xl border border-[#ffc400]/25 bg-[#ffc400]/[0.06] p-4 text-sm leading-6 text-[#d4dbe7]">
+          <span className="font-black text-[#ffc400]">Reward rule:</span> Admin-verified attendance awards <span className="font-black text-white">+100 points per session</span>. After all four sessions are checked in, the member receives a one-time <span className="font-black text-white">+100 point bonus</span> — <span className="font-black text-white">500 points total</span>.
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {koreanClassEvents.map((entry, index) => (
+            <button key={entry.id} type="button" onClick={() => setEventForm({ id: String(entry.id), title: entry.title, slug: entry.slug, description: entry.description || '', category: entry.category, starts_at: entry.starts_at.slice(0, 16), ends_at: entry.ends_at.slice(0, 16), timezone: entry.timezone, location_name: entry.location_name || '', location_address: entry.location_address || '', online_meeting_url: entry.online_meeting_url || '', capacity: entry.capacity ? String(entry.capacity) : '', points_reward: entry.points_reward, status: entry.status })} className="rounded-2xl border border-white/10 bg-black/20 p-4 text-left transition hover:border-[#ffc400]/60">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#ffc400]">Week {index + 1}</p>
+              <p className="mt-2 text-sm font-black text-white">{new Date(entry.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+              <p className="mt-2 text-xs text-[#aab5c6]">+{entry.points_reward || 100} points on check-in</p>
+            </button>
+          ))}
+        </div>
+        {!koreanClassEvents.length ? <p className="mt-4 text-sm text-[#aab5c6]">Korean class sessions are not available yet. Refresh admin data after the backend publishes them.</p> : null}
+      </SectionShell>
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Event inventory" description="Create, edit and archive platform events from one place." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredEvents.length} records</span>}>
         <div className="space-y-3">
           <PaginatedList items={filteredEvents}>
@@ -5022,6 +5042,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
           </div>
         </div>
       </SectionShell>
+    </div>
     </div>
   );
 
