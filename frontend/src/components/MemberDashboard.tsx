@@ -117,7 +117,7 @@ const initialDashboardState = () => {
   const params = new URLSearchParams(window.location.search);
   const view = params.get('view');
   return {
-    view: view === 'submissions' || view === 'submissionHistory' || view === 'profile' ? view : 'overview' as DashboardView,
+    view: view === 'submissions' || view === 'submissionHistory' || view === 'profile' || view === 'events' ? view : 'overview' as DashboardView,
     category: uploadCategoryFromQuery(params.get('category')) || 'k_dance',
   };
 };
@@ -301,7 +301,7 @@ const MemberDashboard = () => {
       const data = response.data?.data ?? response.data;
       setEvents(Array.isArray(data) ? data : []);
     }).catch(() => setEvents([]));
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!user || activeView !== 'events') return;
