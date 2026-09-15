@@ -295,16 +295,16 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                 <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">{featuredText.title}</h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-[#e0ecff] sm:text-lg">{featuredText.description}</p>
                 <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-[#e0ecff] sm:text-sm">
-                  <span className="rounded-full bg-white/10 px-3 py-2">Every Tuesday · 3:00–4:00 PM</span>
+                  <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.schedule}</span>
                   <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.sessions}</span>
-                  <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.location}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-2">{featuredKoreanEvent?.location_name || featuredText.location}</span>
                 </div>
-                <p className="mt-4 text-sm font-bold text-[#fff3b0]">Attend each session for +100 points · Complete all 4 for 500 points total.</p>
+                <p className="mt-4 text-sm font-bold text-[#fff3b0]">{featuredText.reward}</p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-black text-[#0b4eae]">View class details <ArrowRight className="h-4 w-4" /></Link>
-                  <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-5 py-3 text-sm font-black text-white">Register for free <ArrowRight className="h-4 w-4" /></Link>
+                  <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-black text-[#0b4eae]">{featuredText.details} <ArrowRight className="h-4 w-4" /></Link>
+                  {featuredKoreanEvent?.registration_status === 'registration_open' ? <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-5 py-3 text-sm font-black text-white">{featuredText.register} <ArrowRight className="h-4 w-4" /></Link> : null}
                 </div>
-                {featuredKoreanEvent ? <p className="mt-4 text-xs text-[#cfe0fa]">Next session: {new Date(featuredKoreanEvent.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} · {featuredKoreanEvent.status === 'published' ? 'Registration available' : featuredKoreanEvent.status}</p> : <p className="mt-4 text-xs text-[#cfe0fa]">Session details are being prepared. Check the class page for the latest information.</p>}
+                {featuredKoreanEvent ? <p className="mt-4 text-xs text-[#cfe0fa]">{featuredText.next}: {new Date(featuredKoreanEvent.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} · {featuredKoreanEvent.registration_status === 'registration_open' ? featuredText.available : featuredKoreanEvent.registration_status || featuredKoreanEvent.status}</p> : <p className="mt-4 text-xs text-[#cfe0fa]">{featuredText.fallback}</p>}
               </div>
             </div>
             <div className="hidden">
