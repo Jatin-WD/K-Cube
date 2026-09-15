@@ -40,6 +40,16 @@ export const awardPoints = async ({
   try {
     await connection.beginTransaction();
 
+    // Serialize awards for the same member so the balance read, idempotency
+    // check, and ledger insert cannot race during duplicate check-in clicks.
+    const [userRows] = await connection.query(
+      'SELECT id FROM users WHERE id = ? LIMIT 1 FOR UPDATE',
+      [userId],
+    );
+    if (!(userRows as any[]).length) {
+      throw new Error('User not found');
+    }
+
     if (once) {
       const [existing] = await connection.query(
         'SELECT id FROM point_transactions WHERE user_id = ? AND source_type = ? AND source_slug = ? LIMIT 1 FOR UPDATE',

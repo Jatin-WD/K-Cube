@@ -6,6 +6,7 @@ import { copy, type DetailItem } from '@/lib/kcubeContent';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
 import { useEffect, useState } from 'react';
+import { repairMojibakeTree } from '@/lib/repairMojibake';
 
 interface DetailPageProps {
   item: DetailItem;
@@ -37,7 +38,7 @@ const DetailPage = ({ item }: DetailPageProps) => {
     };
   }, [item.category, item.slug]);
 
-  const activeItem = cmsItem;
+  const activeItem = repairMojibakeTree(cmsItem);
   const actionId = `${activeItem.category}-${activeItem.slug}`;
   const completed = completedActions.includes(actionId);
   const reviewSubmission = ['k-pop-missions', 'k-dance-covers', 'k-drama-culture', 'food-missions'].includes(activeItem.slug);

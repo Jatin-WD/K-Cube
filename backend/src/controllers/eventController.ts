@@ -13,6 +13,7 @@ const eventFields = `
 
 const publicEventFields = `${eventFields},
   CASE
+    WHEN status = 'cancelled' THEN 'cancelled'
     WHEN starts_at <= NOW() THEN 'completed'
     WHEN capacity IS NOT NULL AND (SELECT COUNT(*) FROM platform_event_rsvps r WHERE r.event_id = platform_events.id AND r.status = 'registered') >= capacity THEN 'full'
     ELSE 'registration_open'
@@ -89,7 +90,7 @@ export const listEventAttendees = async (req: AuthRequest, res: Response) => {
 };
 
 export const getEventBySlug = async (req: AuthRequest, res: Response) => {
-  const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events WHERE slug = ? AND status IN ('published','cancelled') LIMIT 1`, [req.params.slug]);
+  const [rows] = await pool.query(`SELECT ${publicEventFields} FROM platform_events WHERE slug = ? AND status IN ('published','cancelled') LIMIT 1`, [req.params.slug]);
   const event = (rows as any[])[0];
   if (!event) return fail(res, 404, 'NOT_FOUND', 'Event not found');
   return ok(res, event);
