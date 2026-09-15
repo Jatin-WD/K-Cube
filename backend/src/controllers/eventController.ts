@@ -29,6 +29,20 @@ const ensureSlug = (title: string, slug?: string) =>
     .replace(/^-+|-+$/g, '')
     .slice(0, 220);
 
+const EVENT_STATUSES = new Set(['draft', 'published', 'cancelled', 'archived']);
+
+const validateEventPayload = (body: any, partial = false) => {
+  if (!partial && (!String(body.title || '').trim() || !body.starts_at || !body.ends_at)) {
+    return 'Title, starts_at and ends_at are required';
+  }
+  if (body.title !== undefined && (!String(body.title).trim() || String(body.title).length > 255)) return 'Title must be between 1 and 255 characters';
+  if (body.status !== undefined && !EVENT_STATUSES.has(String(body.status))) return 'Invalid event status';
+  if (body.points_reward !== undefined && (!Number.isInteger(Number(body.points_reward)) || Number(body.points_reward) < 0)) return 'Points reward must be a non-negative whole number';
+  if (body.capacity !== undefined && body.capacity !== null && body.capacity !== '' && (!Number.isInteger(Number(body.capacity)) || Number(body.capacity) <= 0)) return 'Capacity must be a positive whole number';
+  if (body.starts_at !== undefined && body.ends_at !== undefined && new Date(body.ends_at).getTime() <= new Date(body.starts_at).getTime()) return 'End time must be after start time';
+  return null;
+};
+
 const ensureKoreanClassSessions = async () => {
   const sessions = [
     ['Week 1', '2026-09-22 15:00:00', '2026-09-22 16:00:00'],
@@ -100,7 +114,8 @@ export const getEventBySlug = async (req: AuthRequest, res: Response) => {
 
 export const createEvent = async (req: AuthRequest, res: Response) => {
   const body = req.body;
-  if (!body.title || !body.starts_at || !body.ends_at) return fail(res, 400, 'VALIDATION_ERROR', 'Title, starts_at and ends_at are required');
+  const validationError = validateEventPayload(body);
+  if (validationError) return fail(res, 400, 'VALIDATION_ERROR', validationError);
   const slug = ensureSlug(body.title, body.slug);
   const [result] = await pool.query(
     `INSERT INTO platform_events
@@ -138,9 +153,19 @@ export const createEvent = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateEvent = async (req: AuthRequest, res: Response) => {
+  const validationError = validateEventPayload(req.body, true);
+  if (validationError) return fail(res, 400, 'VALIDATION_ERROR', validationError);
   const allowed = ['title', 'slug', 'description', 'category', 'starts_at', 'ends_at', 'timezone', 'location_name', 'location_address', 'online_meeting_url', 'capacity', 'points_reward', 'status'];
   const updates = Object.entries(req.body).filter(([key]) => allowed.includes(key));
   if (!updates.length) return fail(res, 400, 'VALIDATION_ERROR', 'No valid event fields provided');
+  const nextValues = Object.fromEntries(updates);
+  if (nextValues.starts_at === undefined || nextValues.ends_at === undefined) {
+    const [currentRows] = await pool.query('SELECT starts_at, ends_at FROM platform_events WHERE id = ? LIMIT 1', [req.params.id]);
+    const current = (currentRows as any[])[0];
+    if (!current) return fail(res, 404, 'NOT_FOUND', 'Event not found');
+    const combinedError = validateEventPayload({ starts_at: nextValues.starts_at ?? current.starts_at, ends_at: nextValues.ends_at ?? current.ends_at }, true);
+    if (combinedError) return fail(res, 400, 'VALIDATION_ERROR', combinedError);
+  }
   const fields = updates.map(([key]) => `${key} = ?`).join(', ');
   await pool.query(`UPDATE platform_events SET ${fields}, sync_status = IF(google_calendar_event_id IS NULL, sync_status, 'pending'), updated_at = NOW() WHERE id = ?`, [
     ...updates.map(([, value]) => value),
@@ -230,16 +255,47 @@ export const cancelRsvp = async (req: AuthRequest, res: Response) => {
 export const checkInEvent = async (req: AuthRequest, res: Response) => {
   const userId = Number(req.body.user_id);
   if (!userId) return fail(res, 400, 'VALIDATION_ERROR', 'user_id is required');
-  const [events] = await pool.query('SELECT id, points_reward, slug, status FROM platform_events WHERE id = ? LIMIT 1', [req.params.id]);
-  const event = (events as any[])[0];
-  if (!event) return fail(res, 404, 'NOT_FOUND', 'Event not found');
-  if (event.status === 'cancelled') return fail(res, 409, 'EVENT_CANCELLED', 'Cancelled events cannot record attendance');
-  await pool.query(
-    `INSERT INTO platform_event_rsvps (event_id, user_id, status, checked_in_at, created_at, updated_at)
-     VALUES (?, ?, 'checked_in', NOW(), NOW(), NOW())
-     ON DUPLICATE KEY UPDATE status = 'checked_in', checked_in_at = NOW(), updated_at = NOW()`,
-    [event.id, userId],
-  );
+  const connection = await pool.getConnection();
+  let event: any;
+  try {
+    await connection.beginTransaction();
+    const [events] = await connection.query('SELECT id, points_reward, slug, status FROM platform_events WHERE id = ? LIMIT 1 FOR UPDATE', [req.params.id]);
+    event = (events as any[])[0];
+    if (!event) {
+      await connection.rollback();
+      return fail(res, 404, 'NOT_FOUND', 'Event not found');
+    }
+    if (event.status === 'cancelled') {
+      await connection.rollback();
+      return fail(res, 409, 'EVENT_CANCELLED', 'Cancelled events cannot record attendance');
+    }
+    const [rsvpRows] = await connection.query(
+      'SELECT status FROM platform_event_rsvps WHERE event_id = ? AND user_id = ? LIMIT 1 FOR UPDATE',
+      [event.id, userId],
+    );
+    const rsvpStatus = (rsvpRows as any[])[0]?.status;
+    if (!rsvpStatus) {
+      await connection.rollback();
+      return fail(res, 409, 'RSVP_REQUIRED', 'Only registered attendees can be checked in');
+    }
+    if (!['registered', 'checked_in'].includes(rsvpStatus)) {
+      await connection.rollback();
+      return fail(res, 409, 'RSVP_NOT_ACTIVE', 'This registration is not active');
+    }
+    if (rsvpStatus === 'registered') {
+      await connection.query(
+        `UPDATE platform_event_rsvps SET status = 'checked_in', checked_in_at = NOW(), updated_at = NOW()
+         WHERE event_id = ? AND user_id = ? AND status = 'registered'`,
+        [event.id, userId],
+      );
+    }
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
   const isKoreanClass = event.slug.startsWith('korean-language-culture-class-');
   const points = isKoreanClass ? 100 : Number(req.body.points_reward ?? event.points_reward ?? 0);
   let balance;

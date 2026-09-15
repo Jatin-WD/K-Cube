@@ -518,7 +518,11 @@ export const reviewAdminSubmission = async (req: any, res: Response) => {
 
   if (source === 'event_rsvp') {
     const status = decision === 'approved' ? 'registered' : 'cancelled';
-    const [result] = await pool.query('UPDATE platform_event_rsvps SET status = ?, updated_at = NOW() WHERE id = ?', [status, id]);
+    const [existingRows] = await pool.query('SELECT status FROM platform_event_rsvps WHERE id = ? LIMIT 1', [id]);
+    const existingStatus = (existingRows as any[])[0]?.status;
+    if (!existingStatus) return fail(res, 404, 'NOT_FOUND', 'Event RSVP not found');
+    if (existingStatus === 'checked_in') return fail(res, 409, 'ATTENDANCE_LOCKED', 'Checked-in registrations cannot be changed from submissions review');
+    const [result] = await pool.query('UPDATE platform_event_rsvps SET status = ?, updated_at = NOW() WHERE id = ? AND status IN (?, ?)', [status, id, 'registered', 'cancelled']);
     if (!(result as any).affectedRows) return fail(res, 404, 'NOT_FOUND', 'Event RSVP not found');
   } else if (source === 'learning_course') {
     const status = decision === 'approved' ? 'confirmed' : 'cancelled';
