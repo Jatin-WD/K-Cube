@@ -518,10 +518,24 @@ export const reviewAdminSubmission = async (req: any, res: Response) => {
 
   if (source === 'event_rsvp') {
     const status = decision === 'approved' ? 'registered' : 'cancelled';
-    const [existingRows] = await pool.query('SELECT status FROM platform_event_rsvps WHERE id = ? LIMIT 1', [id]);
+    const [existingRows] = await pool.query(`
+      SELECT rsvp.status, event.status AS event_status, event.starts_at, event.capacity,
+             (SELECT COUNT(*) FROM platform_event_rsvps active_rsvp
+              WHERE active_rsvp.event_id = rsvp.event_id AND active_rsvp.status = 'registered') AS registered_count
+      FROM platform_event_rsvps rsvp
+      JOIN platform_events event ON event.id = rsvp.event_id
+      WHERE rsvp.id = ?
+      LIMIT 1
+    `, [id]);
     const existingStatus = (existingRows as any[])[0]?.status;
     if (!existingStatus) return fail(res, 404, 'NOT_FOUND', 'Event RSVP not found');
     if (existingStatus === 'checked_in') return fail(res, 409, 'ATTENDANCE_LOCKED', 'Checked-in registrations cannot be changed from submissions review');
+    const event = (existingRows as any[])[0];
+    if (decision === 'approved') {
+      if (event.event_status !== 'published') return fail(res, 409, 'EVENT_NOT_OPEN', 'Only published events can accept registrations');
+      if (new Date(event.starts_at).getTime() <= Date.now()) return fail(res, 409, 'EVENT_COMPLETED', 'Registrations cannot be approved after the event starts');
+      if (event.capacity !== null && Number(event.registered_count) >= Number(event.capacity) && existingStatus !== 'registered') return fail(res, 409, 'EVENT_FULL', 'This event has reached capacity');
+    }
     const [result] = await pool.query('UPDATE platform_event_rsvps SET status = ?, updated_at = NOW() WHERE id = ? AND status IN (?, ?)', [status, id, 'registered', 'cancelled']);
     if (!(result as any).affectedRows) return fail(res, 404, 'NOT_FOUND', 'Event RSVP not found');
   } else if (source === 'learning_course') {
