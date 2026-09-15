@@ -135,8 +135,8 @@ const IndiaPreSelectionSection = () => {
                   {t.intro}
                 </p>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-2" aria-label="Latest announcements">
-                  <article className="relative overflow-hidden rounded-[22px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_70%)] p-4 shadow-[0_12px_28px_rgba(36,87,214,0.08)] sm:p-5">
+                <div className="mt-6 grid gap-3" aria-label="Festival selection update">
+                  <article className="hidden relative overflow-hidden rounded-[22px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_70%)] p-4 shadow-[0_12px_28px_rgba(36,87,214,0.08)] sm:p-5" aria-hidden="true">
                     <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#2457d6]/10" />
                     <div className="relative">
                       <span className="inline-flex items-center gap-2 rounded-full bg-[#2457d6] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
