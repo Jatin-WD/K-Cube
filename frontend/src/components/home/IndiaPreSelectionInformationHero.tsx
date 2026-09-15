@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, CalendarDays, CheckCircle2, Globe2, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Globe2 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 
 const heroCopy = {

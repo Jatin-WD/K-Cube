@@ -11,6 +11,13 @@ const eventFields = `
   created_at, updated_at
 `;
 
+const publicEventFields = `${eventFields},
+  CASE
+    WHEN starts_at <= NOW() THEN 'completed'
+    WHEN capacity IS NOT NULL AND (SELECT COUNT(*) FROM platform_event_rsvps r WHERE r.event_id = platform_events.id AND r.status = 'registered') >= capacity THEN 'full'
+    ELSE 'registration_open'
+  END AS registration_status`;
+
 const ensureSlug = (title: string, slug?: string) =>
   (slug || title)
     .toLowerCase()
@@ -47,7 +54,7 @@ const ensureKoreanClassSessions = async () => {
 
 export const listEvents = async (_req: AuthRequest, res: Response) => {
   await ensureKoreanClassSessions().catch((error) => console.error('Korean class session ensure failed:', error));
-  const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events WHERE status = 'published' ORDER BY starts_at ASC`);
+  const [rows] = await pool.query(`SELECT ${publicEventFields} FROM platform_events WHERE status = 'published' ORDER BY starts_at ASC`);
   return ok(res, rows);
 };
 

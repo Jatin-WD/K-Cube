@@ -693,7 +693,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
     setNotice('');
 
     try {
-      const payment = await startRazorpayCheckout({
+      await startRazorpayCheckout({
         amount: product.price,
         contextType: 'course',
         contextRef: product.id,

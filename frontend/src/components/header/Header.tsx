@@ -23,7 +23,7 @@ const Header = () => {
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
-  const [walletLoading, setWalletLoading] = useState(false);
+  const [walletLoading, setWalletLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const headerRef = useRef<HTMLElement | null>(null);
   const activeTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -106,12 +106,7 @@ const Header = () => {
 
   useEffect(() => {
     let cancelled = false;
-    if (!user) {
-      setWalletBalance(null);
-      setWalletLoading(false);
-      return () => { cancelled = true; };
-    }
-    setWalletLoading(true);
+    if (!user) return () => { cancelled = true; };
     api.get('/users/points-wallet')
       .then((response) => {
         if (!cancelled && typeof response.data?.data?.balance === 'number') setWalletBalance(response.data.data.balance);

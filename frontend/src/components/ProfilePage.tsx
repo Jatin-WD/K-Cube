@@ -6,7 +6,6 @@ import { ArrowLeft, CheckCircle2, MapPin, Save, ShieldCheck, UserRound } from 'l
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 import { memberCopy } from '@/lib/memberContent';
-import { memberUiCopy } from '@/lib/memberUiContent';
 
 type ProfileData = {
   id: number;
@@ -36,7 +35,6 @@ const ProfilePage = () => {
   const language = useAppStore((state) => state.language);
   const updateUser = useAppStore((state) => state.updateUser);
   const t = memberCopy[language];
-  const ui = memberUiCopy[language];
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
@@ -45,10 +43,7 @@ const ProfilePage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
     let cancelled = false;
     api.get('/users/profile')
       .then((response) => {

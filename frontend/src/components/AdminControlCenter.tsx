@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Activity,
   BarChart3,
@@ -985,7 +986,7 @@ const selectClass =
   'w-full rounded-[8px] border border-[#ccd9e6] bg-white px-3 py-2 text-sm text-[#102a43] outline-none transition focus:border-[#0b4eae] focus:ring-2 focus:ring-[#0b4eae]/10';
 
 type CmsEditorLocale = 'en' | 'ko' | 'hi';
-type EditableCmsContent = Record<string, any>;
+type EditableCmsContent = Record<string, unknown>;
 
 const parseEditableCmsContent = (value: string): EditableCmsContent => {
   try {
@@ -1057,7 +1058,7 @@ const CmsContentEditor = ({
           <input className={inputClass} value={textField('eyebrow')} onChange={(event) => update((next) => { next.eyebrow = setLocalizedValue(next.eyebrow, locale, event.target.value); })} placeholder="Activities" />
         </Field>
         <Field label="Points">
-          <input className={inputClass} type="number" value={content.points ?? ''} onChange={(event) => update((next) => { next.points = event.target.value ? Number(event.target.value) : undefined; })} placeholder="80" />
+          <input className={inputClass} type="number" value={String(content.points ?? '')} onChange={(event) => update((next) => { next.points = event.target.value ? Number(event.target.value) : undefined; })} placeholder="80" />
         </Field>
       </div>
       <Field label="Page title">
@@ -1092,7 +1093,7 @@ const CmsContentEditor = ({
           <button type="button" onClick={() => update((next) => { next.sections = [...(Array.isArray(next.sections) ? next.sections : []), { title: { en: '', ko: '', hi: '' }, content: [{ en: '', ko: '', hi: '' }] }]; })} className="rounded-lg border border-[#ffc400]/40 px-3 py-2 text-xs font-black text-[#ffc400]">+ Add section</button>
         </div>
         <div className="mt-4 space-y-4">
-          {sections.map((section: any, sectionIndex: number) => (
+          {sections.map((section: Record<string, unknown>, sectionIndex: number) => (
             <div key={`section-${sectionIndex}`} className="rounded-xl border border-white/10 p-4">
               <div className="flex items-start gap-2">
                 <Field label={`Section ${sectionIndex + 1} heading`}>
@@ -1157,6 +1158,7 @@ const PaginatedList = <T,>({
 };
 
 const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSection?: Extract<AdminSection, 'overview' | 'communityMap'> } = {}) => {
+  const router = useRouter();
   const user = useAppStore((state) => state.user);
   const [activeSection, setActiveSection] = useState<AdminSection>(initialSection);
   const [notice, setNotice] = useState('');
@@ -2089,7 +2091,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
       await api.post('/auth/logout');
     } finally {
       useAppStore.getState().signOut();
-      window.location.assign('/admin/login');
+      router.push('/admin/login');
     }
   };
 
@@ -2569,18 +2571,8 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   );
 
   const renderOverview = () => {
-    const workspaceItems = [
-      { id: 'submissions', label: 'Submissions', description: `${submissions.length} rows`, icon: FilePenLine },
-      { id: 'indiaPreSelection', label: 'India Pre-Selection', description: `${indiaApplications.length} submissions`, icon: Mic2 },
-      { id: 'uploads', label: 'Uploads', description: `${uploads.length} items`, icon: Clapperboard },
-      { id: 'kfood', label: 'K-Food', description: `${claims.length} claims`, icon: ShoppingBag },
-      { id: 'events', label: 'Events', description: `${events.length} events`, icon: CalendarDays },
-      { id: 'website', label: 'Website CMS', description: `${pages.length} pages`, icon: FilePenLine },
-      { id: 'analytics', label: 'Analytics', description: 'Usage summary', icon: BarChart3 },
-    ];
-    const workspacePageCount = Math.max(1, Math.ceil(workspaceItems.length / 6));
+    const workspacePageCount = 2;
     const safeWorkspacePage = Math.min(overviewWorkspacePage, workspacePageCount);
-    const visibleWorkspaceItems = workspaceItems.slice((safeWorkspacePage - 1) * 6, safeWorkspacePage * 6);
     const activityPageSize = 2;
     const activityPageCount = Math.max(1, Math.ceil(filteredRecentActions.length / activityPageSize));
     const safeActivityPage = Math.min(overviewActivityPage, activityPageCount);

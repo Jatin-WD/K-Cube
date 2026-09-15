@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, CalendarDays, Check, Coins, ExternalLink, MapPin, Plane, ShoppingBag, Star, UsersRound } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, Coins, ExternalLink, MapPin, Plane, Star, UsersRound } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
 import { maskedIndiaSecondRoundParticipants } from '@/lib/festival2026';
 import { repairMojibakeTree } from '@/lib/repairMojibake';
@@ -29,6 +29,7 @@ type FeaturedEvent = {
   capacity: number | null;
   points_reward: number;
   slug: string;
+  registration_status?: string;
 };
 
 const isExternal = (href: string) => href.startsWith('http');
@@ -227,20 +228,17 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const t = copy[language];
   const homeText = homeSectionCopy[language];
   const bannerText = repairMojibakeTree(homeBannerCopy[language]);
+  const featuredText = featuredHeroCopy[language];
   const visual = repairMojibakeTree(pageVisuals[pageKey]);
   const tickerLabel = pageKey === 'home' ? 'New event' : visual.accent;
   const rewardsText = repairMojibakeTree(rewardsUi[language]);
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
-  const [walletLoading, setWalletLoading] = useState(false);
+  const [walletLoading, setWalletLoading] = useState(true);
   const [featuredKoreanEvent, setFeaturedKoreanEvent] = useState<FeaturedEvent | null>(null);
 
   useEffect(() => {
-    if (pageKey !== 'rewards' || !user) {
-      setWallet(null);
-      return;
-    }
+    if (pageKey !== 'rewards' || !user) return;
     let cancelled = false;
-    setWalletLoading(true);
     api.get('/users/points-wallet')
       .then((response) => {
         if (!cancelled) setWallet(response.data?.data || null);
@@ -251,16 +249,15 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   }, [pageKey, user]);
 
   useEffect(() => {
-    if (pageKey !== 'home') {
-      setFeaturedKoreanEvent(null);
-      return;
-    }
+    if (pageKey !== 'home') return;
     let cancelled = false;
     api.get('/events')
       .then((response) => {
         const data = response.data?.data ?? response.data;
         const event = Array.isArray(data)
-          ? data.find((entry: FeaturedEvent) => entry.slug?.startsWith('korean-language-culture-class-'))
+          ? data.filter((entry: FeaturedEvent) => entry.slug?.startsWith('korean-language-culture-class-')).find((entry: FeaturedEvent) => entry.registration_status === 'registration_open')
+            || data.filter((entry: FeaturedEvent) => entry.slug?.startsWith('korean-language-culture-class-')).find((entry: FeaturedEvent) => entry.registration_status !== 'completed')
+            || data.find((entry: FeaturedEvent) => entry.slug?.startsWith('korean-language-culture-class-'))
           : null;
         if (!cancelled) setFeaturedKoreanEvent(event || null);
       })
@@ -294,13 +291,13 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
             <>
             <div className="relative overflow-hidden rounded-[24px] border border-white/20 bg-[linear-gradient(120deg,rgba(6,43,99,0.98),rgba(11,78,174,0.86)),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
               <div className="relative max-w-3xl">
-                <p className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#fff3b0]">Free community class</p>
-                <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">Free Korean Language &amp; Culture Class</h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-[#e0ecff] sm:text-lg">Discover the Korean language and explore Korean culture through an engaging, beginner-friendly class.</p>
+                <p className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#fff3b0]">{featuredText.eyebrow}</p>
+                <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">{featuredText.title}</h1>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-[#e0ecff] sm:text-lg">{featuredText.description}</p>
                 <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-[#e0ecff] sm:text-sm">
                   <span className="rounded-full bg-white/10 px-3 py-2">Every Tuesday · 3:00–4:00 PM</span>
-                  <span className="rounded-full bg-white/10 px-3 py-2">4 sessions</span>
-                  <span className="rounded-full bg-white/10 px-3 py-2">Gurugram</span>
+                  <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.sessions}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.location}</span>
                 </div>
                 <p className="mt-4 text-sm font-bold text-[#fff3b0]">Attend each session for +100 points · Complete all 4 for 500 points total.</p>
                 <div className="mt-6 flex flex-wrap gap-3">
@@ -717,5 +714,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
     </main>
   );
 };
+
+const featuredHeroCopy = repairMojibakeTree({
+  en: { eyebrow: 'Free community class', title: 'Free Korean Language & Culture Class', description: 'Discover the Korean language and explore Korean culture through an engaging, beginner-friendly class.', schedule: 'Every Tuesday · 3:00–4:00 PM', sessions: '4 sessions', location: 'Gurugram', reward: 'Attend each session for +100 points · Complete all 4 for 500 points total.', details: 'View class details', register: 'Register for free', next: 'Next session', available: 'Registration available', fallback: 'Session details are being prepared. Check the class page for the latest information.' },
+  ko: { eyebrow: '무료 커뮤니티 클래스', title: '무료 한국어·문화 클래스', description: '실용적인 한국어를 배우고 한국 문화를 알아가는 초급자 대상 클래스입니다.', schedule: '매주 화요일 · 오후 3:00–4:00', sessions: '4회 수업', location: '구루그람', reward: '각 세션 참석 시 +100포인트, 4회 모두 참석 시 총 500포인트를 받을 수 있습니다.', details: '클래스 상세 보기', register: '무료로 등록', next: '다음 세션', available: '등록 가능', fallback: '세션 상세 정보를 준비 중입니다. 클래스 페이지에서 최신 내용을 확인하세요.' },
+  hi: { eyebrow: 'मुफ़्त community class', title: 'मुफ़्त Korean Language & Culture Class', description: 'एक engaging, beginner-friendly class में Korean language सीखें और Korean culture को explore करें।', schedule: 'हर मंगलवार · 3:00–4:00 PM', sessions: '4 sessions', location: 'गुरुग्राम', reward: 'हर attended session पर +100 points · चारों sessions पूरे करने पर कुल 500 points।', details: 'Class details देखें', register: 'मुफ़्त register करें', next: 'अगला session', available: 'Registration available', fallback: 'Session details तैयार की जा रही हैं। Latest information के लिए class page देखें।' },
+});
 
 export default KCubePage;

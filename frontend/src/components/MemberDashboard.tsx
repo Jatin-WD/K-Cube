@@ -53,6 +53,7 @@ interface MemberEventRow {
   capacity: number | null;
   points_reward: number;
   status: string;
+  registration_status?: 'registration_open' | 'full' | 'completed' | string;
 }
 
 interface IndiaApplicationSummary {
@@ -280,7 +281,6 @@ const MemberDashboard = () => {
   useEffect(() => {
     if (!user || activeView !== 'submissionHistory') return;
     let cancelled = false;
-    setSubmissionsLoading(true);
     api.get('/engagement/uploads/me').then((response) => {
       const payload = response.data?.data ?? response.data;
       const rows = Array.isArray(payload) ? payload : Array.isArray(payload?.uploads) ? payload.uploads : [];
@@ -312,7 +312,6 @@ const MemberDashboard = () => {
 
   useEffect(() => {
     if (!user || activeView !== 'events') return;
-    setApplicationLoading(true);
     api.get('/india-pre-selection/applications/me').then((response) => {
       const data = response.data?.data ?? response.data;
       setIndiaApplication(data?.application || null);
@@ -355,8 +354,9 @@ const MemberDashboard = () => {
       await api.patch('/users/profile/password', passwordForm);
       setPasswordForm({ current_password: '', new_password: '', confirm_password: '' });
       setPasswordMessage('Password changed successfully.');
-    } catch (error: any) {
-      setPasswordError(error?.response?.data?.error?.message || error?.response?.data?.message || 'Password change nahi ho paya. Details check karein.');
+    } catch (error: unknown) {
+      const response = (error as { response?: { data?: { error?: { message?: string }; message?: string } } }).response;
+      setPasswordError(response?.data?.error?.message || response?.data?.message || 'Password change nahi ho paya. Details check karein.');
     } finally {
       setPasswordSaving(false);
     }
@@ -480,7 +480,7 @@ const MemberDashboard = () => {
           </div>
           <article className="rounded-xl border border-[#ffc400]/30 bg-[#111113] p-6 sm:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Featured event</p><h2 className="mt-2 text-2xl font-black sm:text-3xl">Itaewon World Music Spirit Festival 2026</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-[#aab5c6]">A music and culture festival journey for Indian singers and musical artists, connected to the K-CUBE India pre-selection.</p></div><span className="shrink-0 rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black text-[#ffc400]">Featured</span></div>
-            <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Festival dates</p><p className="mt-2 font-black">October 4-6, 2026</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Location</p><p className="mt-2 font-black">Itaewon, Seoul, Korea</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Main performance</p><p className="mt-2 font-black">October 6 · 7:00-9:30 PM</p></div></div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Festival dates</p><p className="mt-2 font-black">October 4–6, 2026</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Location</p><p className="mt-2 font-black">Itaewon, Seoul, Korea</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Main performance</p><p className="mt-2 font-black">October 6 · 7:00–9:30 PM</p></div></div>
             <div className="mt-6 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]"><div className="rounded-lg border border-white/10 bg-white/[0.03] p-5"><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">What to expect</p><ul className="mt-3 space-y-3 text-sm leading-6 text-[#d4dbe7]"><li>- Festival music and cultural programming in Seoul.</li><li>- A dedicated India pre-selection route for eligible performers.</li><li>- Application review and follow-up communication from the K-CUBE team.</li></ul></div><div className="rounded-lg border border-white/10 bg-[#ffc400]/[0.06] p-5"><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Your next step</p><ol className="mt-3 space-y-3 text-sm leading-6 text-[#d4dbe7]"><li><span className="font-black text-[#ffc400]">01</span> Read the festival information.</li><li><span className="font-black text-[#ffc400]">02</span> Submit your pre-selection application.</li><li><span className="font-black text-[#ffc400]">03</span> Wait for review and official updates.</li></ol></div></div>
             <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.03] p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Your application</p><h3 className="mt-2 text-lg font-black">{applicationLoading ? 'Checking submission status...' : indiaApplication ? 'India pre-selection submission found' : 'No submission yet'}</h3></div>{indiaApplication ? <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#ffc400]">{indiaApplication.status}</span> : null}</div>{indiaApplication ? <><div className="mt-4 grid gap-3 sm:grid-cols-3"><div><p className="text-xs font-bold text-[#98a4b1]">Performance category</p><p className="mt-1 font-black">{indiaApplication.performance_category}</p></div><div><p className="text-xs font-bold text-[#98a4b1]">Submitted</p><p className="mt-1 font-black">{indiaApplication.submitted_at ? new Date(indiaApplication.submitted_at).toLocaleDateString() : 'Not available'}</p></div><div><p className="text-xs font-bold text-[#98a4b1]">Points awarded</p><p className="mt-1 font-black text-[#ffc400]">{indiaApplication.points_awarded || 0}</p></div></div>{indiaApplication.review_note ? <p className="mt-4 border-l-2 border-[#ffc400] pl-3 text-sm leading-6 text-[#d4dbe7]"><span className="font-black">Review note:</span> {indiaApplication.review_note}</p> : <p className="mt-4 text-sm text-[#aab5c6]">Your application is saved. The K-CUBE team will update the status after review.</p>}</> : <p className="mt-3 text-sm leading-6 text-[#aab5c6]">Submit once to enter the review queue. Your status and any review note will appear here after submission.</p>}</div>
             <div className="mt-6 flex flex-wrap gap-3"><Link href="/india-pre-selection" className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">View full event brief</Link><Link href="/india-pre-selection/apply" className="rounded-lg border border-[#ffc400]/40 px-5 py-3 text-sm font-black text-[#ffc400]">{indiaApplication ? 'View my application' : 'Apply for pre-selection'}</Link></div>
@@ -490,7 +490,7 @@ const MemberDashboard = () => {
               <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">{event.category.replace(/_/g, ' ')}</p><h2 className="mt-2 text-xl font-black">{event.title}</h2></div>{event.points_reward ? <span className="rounded-full bg-[#ffc400]/10 px-3 py-1 text-xs font-black text-[#ffc400]">+{event.points_reward} pts</span> : null}</div>
               <p className="mt-3 text-sm leading-6 text-[#aab5c6]">{event.description || 'Join this K-CUBE community event and participate in a verified experience.'}</p>
               <div className="mt-4 space-y-2 text-sm text-[#d4dbe7]"><p><span className="font-bold text-[#98a4b1]">When:</span> {new Date(event.starts_at).toLocaleString()} - {new Date(event.ends_at).toLocaleString()}</p><p><span className="font-bold text-[#98a4b1]">Where:</span> {event.location_name || event.online_meeting_url || 'Details to be announced'}{event.location_address ? `, ${event.location_address}` : ''}</p>{event.capacity ? <p><span className="font-bold text-[#98a4b1]">Capacity:</span> {event.capacity} participants</p> : null}</div>
-              <button type="button" onClick={() => rsvpToEvent(event.id)} disabled={rsvpStatus[event.id] === 'registered'} className="mt-5 w-full rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909] disabled:cursor-not-allowed disabled:bg-[#4b431f] disabled:text-[#d4be55]">{rsvpStatus[event.id] === 'registered' ? 'RSVP confirmed' : 'RSVP to this event'}</button>
+              <button type="button" onClick={() => rsvpToEvent(event.id)} disabled={rsvpStatus[event.id] === 'registered' || rsvpStatus[event.id] === 'checked_in' || event.registration_status === 'completed' || event.registration_status === 'full'} className="mt-5 w-full rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909] disabled:cursor-not-allowed disabled:bg-[#4b431f] disabled:text-[#d4be55]">{rsvpStatus[event.id] === 'checked_in' ? 'Attendance verified' : rsvpStatus[event.id] === 'registered' ? 'RSVP confirmed' : event.registration_status === 'completed' ? 'Event completed' : event.registration_status === 'full' ? 'Registration full' : 'RSVP to this event'}</button>
             </article>
           )) : <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-6 text-sm leading-7 text-[#aab5c6] md:col-span-2">No additional published events are available right now. Check back here when the admin publishes the next event.</div>}</div>
           {eventMessage ? <p className="rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{eventMessage}</p> : null}
