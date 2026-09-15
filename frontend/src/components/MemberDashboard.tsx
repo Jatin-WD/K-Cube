@@ -300,9 +300,26 @@ const MemberDashboard = () => {
     if (!user) return;
     api.get('/events').then((eventsResponse) => {
       const data = eventsResponse.data?.data ?? eventsResponse.data;
-      setEvents(Array.isArray(data) ? data : []);
+      const eventRows = Array.isArray(data) ? data : [];
+      setEvents(eventRows);
+      if (typeof window !== 'undefined') {
+        try {
+          window.sessionStorage.setItem('kcube-member-events', JSON.stringify(eventRows));
+        } catch {
+          // Session storage may be unavailable in privacy-restricted browsers.
+        }
+      }
     }).catch(() => {
-      setEvents([]);
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = JSON.parse(window.sessionStorage.getItem('kcube-member-events') || '[]');
+          if (Array.isArray(cached)) setEvents(cached);
+        } catch {
+          setEvents([]);
+        }
+      } else {
+        setEvents([]);
+      }
     });
     api.get('/events/mine').then((rsvpResponse) => {
       const rsvps = rsvpResponse.data?.data ?? rsvpResponse.data;
