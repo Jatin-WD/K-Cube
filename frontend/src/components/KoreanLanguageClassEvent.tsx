@@ -34,12 +34,20 @@ const KoreanLanguageClassEvent = () => {
     api.get('/events').then((response) => {
       if (cancelled) return;
       const data = response.data?.data ?? response.data;
-      setEvents(Array.isArray(data) ? data.filter((event: EventRow) => event.slug.startsWith('korean-language-culture-class-')) : []);
+      const rows = Array.isArray(data) ? data : [];
+      setEvents(rows.filter((event): event is EventRow =>
+        typeof event?.slug === 'string' && event.slug.startsWith('korean-language-culture-class-'),
+      ));
     }).catch(() => {
       if (!cancelled) setEvents([]);
     }).finally(() => {
       if (!cancelled) setLoading(false);
     });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
     if (user) {
       api.get('/events/mine').then((response) => {
         if (cancelled) return;
