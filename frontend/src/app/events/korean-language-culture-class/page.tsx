@@ -1,4 +1,4 @@
-import KoreanLanguageClassEvent from '@/components/KoreanLanguageClassEvent';
+import KoreanLanguageClassEvent from '@/components/KoreanLanguageClassEventClean';
 
 export const dynamic = 'force-dynamic';
 
