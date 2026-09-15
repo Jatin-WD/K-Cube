@@ -60,6 +60,7 @@ type AdminSection =
   | 'indiaPreSelection'
   | 'kfood'
   | 'events'
+  | 'koreanClass'
   | 'rewards'
   | 'announcements'
   | 'calendar'
@@ -474,6 +475,7 @@ const adminNav = [
   { id: 'uploads', label: 'Uploads', icon: Clapperboard, description: 'Content moderation.', scope: 'content' },
   { id: 'kfood', label: 'K-Food', icon: ShoppingBag, description: 'Purchase claims and review.', scope: 'commerce' },
   { id: 'events', label: 'Events', icon: CalendarDays, description: 'Event builder and archive.', scope: 'events' },
+  { id: 'koreanClass', label: 'Korean Class', icon: BookOpen, description: 'Four sessions, attendance and rewards.', scope: 'events' },
   { id: 'rewards', label: 'Rewards', icon: Gift, description: 'Reward catalog control.', scope: 'commerce' },
   { id: 'announcements', label: 'Announcements', icon: Bell, description: 'CMS notices and broadcasts.', scope: 'content' },
   { id: 'calendar', label: 'Calendar', icon: Settings2, description: 'Google Calendar sync.', scope: 'events' },
@@ -482,7 +484,7 @@ const adminNav = [
 
 const adminSidebarGroups = [
   { title: 'Core', ids: ['overview', 'sendEmail', 'submissions', 'indiaPreSelection', 'website', 'learning'] },
-  { title: 'Operations', ids: ['users', 'communityMap', 'points', 'chapters', 'uploads', 'kfood', 'events', 'rewards'] },
+  { title: 'Operations', ids: ['users', 'communityMap', 'points', 'chapters', 'uploads', 'kfood', 'events', 'koreanClass', 'rewards'] },
   { title: 'System', ids: ['adminProfile', 'adminAccounts', 'announcements', 'calendar', 'analytics'] },
 ] as const;
 
@@ -5046,6 +5048,21 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     </div>
   );
 
+  const renderKoreanClass = () => (
+    <div className="space-y-5">
+      <SectionShell title="Korean Language & Culture Class" description="Dedicated management page for the four-session class, attendance rewards and completion bonus." actions={<Link href="/events/korean-language-culture-class" target="_blank" className="text-sm font-bold text-[#ffc400]">Open public page ↗</Link>}>
+        <div className="rounded-2xl border border-[#ffc400]/25 bg-[#ffc400]/[0.06] p-5 text-sm leading-7 text-[#d4dbe7]">
+          <p className="font-black text-white">Attendance reward policy</p>
+          <p className="mt-1">Admin-verified attendance awards <strong className="text-[#ffc400]">+100 points per session</strong>. When a member completes all 4 sessions, the system automatically awards a one-time <strong className="text-[#ffc400]">+100 completion bonus</strong> — 500 points total.</p>
+        </div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {koreanClassEvents.map((entry, index) => <button key={entry.id} type="button" onClick={() => { setEventForm({ id: String(entry.id), title: entry.title, slug: entry.slug, description: entry.description || '', category: entry.category, starts_at: entry.starts_at.slice(0, 16), ends_at: entry.ends_at.slice(0, 16), timezone: entry.timezone, location_name: entry.location_name || '', location_address: entry.location_address || '', online_meeting_url: entry.online_meeting_url || '', capacity: entry.capacity ? String(entry.capacity) : '', points_reward: entry.points_reward, status: entry.status }); setActiveSection('events'); }} className="rounded-2xl border border-white/10 bg-black/20 p-5 text-left hover:border-[#ffc400]/60"><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Week {index + 1}</p><p className="mt-2 font-black text-white">{new Date(entry.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p><p className="mt-2 text-xs text-[#aab5c6]">3:00–4:00 PM · +{entry.points_reward || 100} points</p><p className="mt-3 text-xs font-bold text-[#ffc400]">Edit in Events →</p></button>)}
+        </div>
+        {!koreanClassEvents.length ? <p className="mt-4 text-sm text-[#aab5c6]">No Korean class sessions found. Refresh the admin panel after the backend publishes them.</p> : null}
+      </SectionShell>
+    </div>
+  );
+
   const renderRewards = () => (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <SectionShell title="Reward catalog" description="Add, update or disable rewards from the same control center." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredRewards.length} records</span>}>
@@ -5425,6 +5442,8 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
         return renderKFoodPremium();
       case 'events':
         return renderEvents();
+      case 'koreanClass':
+        return renderKoreanClass();
       case 'rewards':
         return renderRewards();
       case 'announcements':
