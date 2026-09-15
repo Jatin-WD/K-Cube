@@ -35,6 +35,10 @@ type FeaturedEvent = {
 
 const isExternal = (href: string) => href.startsWith('http');
 const featuredShopProducts = shopProducts.slice(0, 3);
+const formatEventTime = (value: string, locale: string) => {
+  const [hour, minute] = value.slice(11, 16).split(':').map(Number);
+  return new Date(2000, 0, 1, hour, minute).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit', hour12: true });
+};
 
 const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string; accentHex: string }> = {
   home: {
@@ -238,6 +242,9 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
   const [featuredKoreanEvent, setFeaturedKoreanEvent] = useState<FeaturedEvent | null>(null);
+  const featuredSchedule = featuredKoreanEvent
+    ? `${language === 'ko' ? '매주 화요일' : language === 'hi' ? 'हर मंगलवार' : 'Every Tuesday'} · ${formatEventTime(featuredKoreanEvent.starts_at, language === 'ko' ? 'ko-KR' : language === 'hi' ? 'hi-IN' : 'en-IN')}–${formatEventTime(featuredKoreanEvent.ends_at, language === 'ko' ? 'ko-KR' : language === 'hi' ? 'hi-IN' : 'en-IN')}`
+    : featuredText.schedule;
 
   useEffect(() => {
     if (pageKey !== 'rewards' || !user) return;
@@ -298,7 +305,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                 <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">{featuredText.title}</h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-[#e0ecff] sm:text-lg">{featuredText.description}</p>
                 <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-[#e0ecff] sm:text-sm">
-                  <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.schedule}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-2">{featuredSchedule}</span>
                   <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.sessions}</span>
                   <span className="rounded-full bg-white/10 px-3 py-2">{featuredKoreanEvent?.location_name || featuredText.location}</span>
                 </div>
