@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, CheckCircle2, MapPin, Save, ShieldCheck, UserRound } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
@@ -111,7 +112,7 @@ const ProfilePage = () => {
           <div className="border-b border-white/10 bg-[linear-gradient(110deg,rgba(255,196,0,0.16),rgba(17,17,19,0.2)_48%,rgba(17,17,19,1))] p-6 sm:p-8">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                {profile?.profile_image ? <img src={profile.profile_image} alt="Profile" className="h-20 w-20 rounded-xl object-cover" /> : <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-[#ffc400] text-2xl font-black text-[#111]"><span>{initials}</span></div>}
+                {profile?.profile_image ? <Image src={profile.profile_image} alt="Profile" width={80} height={80} unoptimized className="h-20 w-20 rounded-xl object-cover" /> : <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-[#ffc400] text-2xl font-black text-[#111]"><span>{initials}</span></div>}
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.editProfile}</p>
                   <h1 className="mt-2 text-3xl font-black sm:text-4xl">{profile?.full_name || user.fullName}</h1>

@@ -18,6 +18,8 @@ const localizedCopy = {
   },
 } as const;
 
+void localizedCopy;
+
 const cleanLocalizedCopy = {
   en: { journey: 'Event journey', completed: 'Completed: India Pre-Selection', indiaSeoul: 'India to Seoul 2026', start: 'Your journey continues here', voice: 'Your voice. Your message. Your stage.', intro: 'The India pre-selection stage is complete. Follow official updates for the next round and the ITAEWON World Music Spirit Festival 2026.', updates: 'View Official Updates', details: 'View Event Details', officialArt: 'Official festival artwork and event message stay aligned with the timeline below.', dates: 'Important dates', timeline: 'One clear timeline', timelineIntro: 'The India pre-selection, official rounds, and final festival are presented as one continuous journey.', why: 'Why join K-CUBE?', reason: 'A compact reason to get involved', reasonText: 'Keep this section light and motivating so it supports the main timeline.' },
   ko: { journey: '이벤트 여정', completed: '완료: 인도 프리셀렉션', indiaSeoul: '인도에서 서울까지 2026', start: '여정은 여기서 시작됩니다', voice: '당신의 목소리. 당신의 메시지. 당신의 무대.', intro: '인도 프리셀렉션 단계가 완료되었습니다. 다음 라운드와 ITAEWON World Music Spirit Festival 2026의 공식 업데이트를 확인하세요.', updates: '공식 업데이트 보기', details: '이벤트 상세 보기', officialArt: '공식 페스티벌 아트워크와 이벤트 메시지는 아래 일정과 함께 안내됩니다.', dates: '주요 일정', timeline: '한눈에 보는 일정', timelineIntro: '인도 프리셀렉션, 공식 라운드와 최종 페스티벌을 하나의 여정으로 안내합니다.', why: '왜 K-CUBE에 참여하나요?', reason: '참여해야 하는 이유', reasonText: '주요 일정에 집중할 수 있도록 간결하고 유용한 정보만 안내합니다.' },
@@ -92,6 +94,8 @@ const benefits = [
   { title: 'Experience', text: 'Follow the journey from India toward Korea.' },
 ] as const;
 
+void benefits;
+
 const IndiaPreSelectionSection = () => {
   const language = useAppStore((state) => state.language);
   const t = repairMojibakeTree(cleanLocalizedCopy[language]);
@@ -105,6 +109,7 @@ const IndiaPreSelectionSection = () => {
     } : {};
     return translations[value] ?? value;
   };
+  void translate;
   return (
     <section aria-labelledby="kcube-india-preselection" className="px-3 py-10 sm:px-4 sm:py-14 lg:px-10 lg:py-16">
       <div
