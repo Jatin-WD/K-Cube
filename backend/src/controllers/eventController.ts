@@ -11,7 +11,9 @@ const eventFields = `
   created_at, updated_at
 `;
 
-const publicEventFields = `${eventFields},
+// Meeting URLs are admin/attendee data and must never be included in the
+// unauthenticated public event listing or slug response.
+const publicEventFields = `${eventFields.replace('online_meeting_url,', '')},
   CASE
     WHEN status = 'cancelled' THEN 'cancelled'
     WHEN starts_at <= NOW() THEN 'completed'
