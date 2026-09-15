@@ -843,7 +843,8 @@ export const adjustPoints = async (req: any, res: Response) => {
   const { user_id, points_delta, reason } = req.body;
   const userId = Number(user_id);
   const points = Number(points_delta);
-  if (!Number.isInteger(userId) || userId <= 0 || !Number.isFinite(points) || points === 0) return fail(res, 400, 'VALIDATION_ERROR', 'A valid user_id and non-zero points_delta are required');
+  const adjustmentReason = String(reason || '').trim();
+  if (!Number.isInteger(userId) || userId <= 0 || !Number.isInteger(points) || points === 0 || !adjustmentReason) return fail(res, 400, 'VALIDATION_ERROR', 'A valid user_id, whole-number points_delta and reason are required');
   const [userRows] = await pool.query('SELECT id FROM users WHERE id = ? LIMIT 1', [userId]);
   if (!(userRows as any[]).length) return fail(res, 404, 'NOT_FOUND', 'User not found');
   const award = await awardPoints({
@@ -852,7 +853,7 @@ export const adjustPoints = async (req: any, res: Response) => {
     sourceSlug: `admin-adjustment-${Date.now()}`,
     points,
     status: 'approved',
-    metadata: { reason: reason || 'Manual admin adjustment' },
+    metadata: { reason: adjustmentReason },
     createdBy: req.user?.id || null,
   });
   return ok(res, { user_id: userId, points_delta: points, balance: award.balance, status: 'approved' });

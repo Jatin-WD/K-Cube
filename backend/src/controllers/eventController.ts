@@ -39,7 +39,12 @@ const validateEventPayload = (body: any, partial = false) => {
   if (body.status !== undefined && !EVENT_STATUSES.has(String(body.status))) return 'Invalid event status';
   if (body.points_reward !== undefined && (!Number.isInteger(Number(body.points_reward)) || Number(body.points_reward) < 0)) return 'Points reward must be a non-negative whole number';
   if (body.capacity !== undefined && body.capacity !== null && body.capacity !== '' && (!Number.isInteger(Number(body.capacity)) || Number(body.capacity) <= 0)) return 'Capacity must be a positive whole number';
-  if (body.starts_at !== undefined && body.ends_at !== undefined && new Date(body.ends_at).getTime() <= new Date(body.starts_at).getTime()) return 'End time must be after start time';
+  if (body.starts_at !== undefined && body.ends_at !== undefined) {
+    const start = new Date(body.starts_at).getTime();
+    const end = new Date(body.ends_at).getTime();
+    if (!Number.isFinite(start) || !Number.isFinite(end)) return 'Start and end times must be valid dates';
+    if (end <= start) return 'End time must be after start time';
+  }
   return null;
 };
 
