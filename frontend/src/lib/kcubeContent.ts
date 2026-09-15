@@ -966,13 +966,13 @@ export const navItems: NavItem[] = [
         ],
       },
       {
-        title: txt('Featured event', '추천 이벤트', 'Featured event'),
+        title: txt('Festival journey', '페스티벌 여정', 'Festival journey'),
         links: [
           {
-            label: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
-            href: '/india-pre-selection',
-            description: txt('Dedicated submission page for the K-CUBE India Pre-Selection and singing video applications.', 'K-CUBE India 예선 및 노래 영상 지원 전용 페이지입니다.', 'Dedicated submission page for the K-CUBE India Pre-Selection and singing video applications.'),
-            featured: true,
+            label: txt('Itaewon World Music Spirit Festival 2026', '이태원 월드 뮤직 스피릿 페스티벌 2026', 'Itaewon World Music Spirit Festival 2026'),
+            href: '/india-pre-selection/information',
+            description: txt('Completed India pre-selection, official rounds and the festival journey.', '완료된 인도 프리셀렉션, 공식 라운드 및 페스티벌 여정입니다.', 'Completed India pre-selection, official rounds aur festival journey.'),
+            featured: false,
           },
         ],
       },
