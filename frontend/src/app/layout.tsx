@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://k-cube.store'),
   title: 'K-CUBE - Korean Culture Points Ecosystem',
   description: 'Korean activities, language learning, K-Food discovery, events, rewards, and Korea trip progression.',
 };
