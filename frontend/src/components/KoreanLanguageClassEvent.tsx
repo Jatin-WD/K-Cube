@@ -31,20 +31,24 @@ const KoreanLanguageClassEvent = () => {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    Promise.all([
-      api.get('/events'),
-      user ? api.get('/events/mine') : Promise.resolve(null),
-    ]).then(([eventsResponse, rsvpResponse]) => {
+    api.get('/events').then((response) => {
       if (cancelled) return;
-      const data = eventsResponse.data?.data ?? eventsResponse.data;
+      const data = response.data?.data ?? response.data;
       setEvents(Array.isArray(data) ? data.filter((event: EventRow) => event.slug.startsWith('korean-language-culture-class-')) : []);
-      const rsvps = rsvpResponse?.data?.data ?? rsvpResponse?.data ?? [];
-      setRegistered(Array.isArray(rsvps) ? Object.fromEntries(rsvps.map((rsvp: { event_id: number; status: string }) => [rsvp.event_id, rsvp.status === 'registered' || rsvp.status === 'checked_in'])) : {});
     }).catch(() => {
       if (!cancelled) setEvents([]);
     }).finally(() => {
       if (!cancelled) setLoading(false);
     });
+    if (user) {
+      api.get('/events/mine').then((response) => {
+        if (cancelled) return;
+        const rsvps = response.data?.data ?? response.data ?? [];
+        setRegistered(Array.isArray(rsvps) ? Object.fromEntries(rsvps.map((rsvp: { event_id: number; status: string }) => [rsvp.event_id, rsvp.status === 'registered' || rsvp.status === 'checked_in'])) : {});
+      }).catch(() => { if (!cancelled) setRegistered({}); });
+    } else {
+      setRegistered({});
+    }
     return () => { cancelled = true; };
   }, [user]);
 

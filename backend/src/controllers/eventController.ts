@@ -19,7 +19,33 @@ const ensureSlug = (title: string, slug?: string) =>
     .replace(/^-+|-+$/g, '')
     .slice(0, 220);
 
+const ensureKoreanClassSessions = async () => {
+  const sessions = [
+    ['Week 1', '2026-09-22 15:00:00', '2026-09-22 16:00:00'],
+    ['Week 2', '2026-09-29 15:00:00', '2026-09-29 16:00:00'],
+    ['Week 3', '2026-10-06 15:00:00', '2026-10-06 16:00:00'],
+    ['Week 4', '2026-10-13 15:00:00', '2026-10-13 16:00:00'],
+  ];
+  for (const [week, startsAt, endsAt] of sessions) {
+    await pool.query(
+      `INSERT IGNORE INTO platform_events
+        (title, slug, description, category, starts_at, ends_at, timezone, location_name, location_address, points_reward, status, sync_status, created_at, updated_at)
+       VALUES (?, ?, ?, 'korean_language', ?, ?, 'Asia/Kolkata', ?, ?, 0, 'published', 'not_requested', NOW(), NOW())`,
+      [
+        `Free Korean Language & Culture Class - ${week}`,
+        `korean-language-culture-class-${startsAt.slice(0, 10)}`,
+        'A free four-week Korean language and culture class for the K-CUBE community.',
+        startsAt,
+        endsAt,
+        'Korea Edge Cube - Gr',
+        'Plot 149, Sector 44 Rd, Gurugram, Haryana 122023',
+      ],
+    );
+  }
+};
+
 export const listEvents = async (_req: AuthRequest, res: Response) => {
+  await ensureKoreanClassSessions().catch((error) => console.error('Korean class session ensure failed:', error));
   const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events WHERE status = 'published' ORDER BY starts_at ASC`);
   return ok(res, rows);
 };
