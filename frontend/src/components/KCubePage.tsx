@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Coins, ExternalLink, Plane, ShoppingBag, Star } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, Coins, ExternalLink, MapPin, Plane, ShoppingBag, Star, UsersRound } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
@@ -286,13 +286,27 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                     </Link>
                   </div>
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    {bannerText.points.map((item) => (
-                      <div key={item.label} className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-3">
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#2457d6]">{item.value}</p>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-[#0f172a]">{item.label}</p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <article className="relative overflow-hidden rounded-[20px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(36,87,214,0.10)]">
+                      <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#2457d6]/10" />
+                      <div className="relative">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2457d6] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
+                        <h3 className="mt-3 text-lg font-black leading-tight text-[#0f172a]">Free Korean Language/Culture Class</h3>
+                        <p className="mt-2 text-sm font-black text-[#2457d6]">Every Tuesday · 3:00–4:00 PM</p>
+                        <p className="mt-1 text-xs font-semibold text-[#64748b]">22 Sep, 29 Sep, 6 Oct &amp; 13 Oct 2026</p>
+                        <p className="mt-3 flex items-start gap-1.5 text-xs leading-5 text-[#475569]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
                       </div>
-                    ))}
+                    </article>
+                    <article className="relative overflow-hidden rounded-[20px] border border-[#12a66a]/25 bg-[linear-gradient(135deg,#effbf6_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(18,166,106,0.10)]">
+                      <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#12a66a]/10" />
+                      <div className="relative">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#12a66a] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><UsersRound className="h-3.5 w-3.5" /> Selection update</span>
+                        <h3 className="mt-3 text-lg font-black leading-tight text-[#0f172a]">4 people selected for Round 2</h3>
+                        <p className="mt-2 text-sm font-black text-[#087f52]">India Pre-Selection</p>
+                        <p className="mt-1 text-xs font-semibold leading-5 text-[#64748b]">Selected participants will be contacted directly.</p>
+                        <p className="mt-3 text-xs leading-5 text-[#475569]">Names are kept private and will not be published in full.</p>
+                      </div>
+                    </article>
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3 border-t border-[#e6edf6] pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -302,7 +316,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
                       <Link
-                        href="/india-pre-selection/apply"
+                        href="/india-pre-selection/announcement"
                         className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2457d6] px-5 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(36,87,214,0.18)] transition hover:bg-[#1f4bb8]"
                       >
                         {bannerText.updates}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { ArrowRight, CalendarDays, Music4, Sparkles } from 'lucide-react';
+import { ArrowRight, CalendarDays, MapPin, Music4, Sparkles, UsersRound } from 'lucide-react';
 import { festival2026 } from '@/lib/festival2026';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -134,6 +134,29 @@ const IndiaPreSelectionSection = () => {
                 <p className="mt-5 max-w-xl text-sm leading-7 text-[#64748b] sm:text-sm sm:leading-7 lg:text-base">
                   {t.intro}
                 </p>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-2" aria-label="Latest announcements">
+                  <article className="relative overflow-hidden rounded-[22px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_70%)] p-4 shadow-[0_12px_28px_rgba(36,87,214,0.08)] sm:p-5">
+                    <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#2457d6]/10" />
+                    <div className="relative">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-[#2457d6] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
+                      <h3 className="mt-4 text-lg font-black leading-tight text-[#0f172a]">Free Korean Language/Culture Class</h3>
+                      <p className="mt-2 text-sm font-bold leading-6 text-[#2457d6]">Every Tuesday · 3:00–4:00 PM</p>
+                      <p className="mt-1 text-xs leading-5 text-[#64748b]">22 Sep, 29 Sep, 6 Oct &amp; 13 Oct 2026</p>
+                      <p className="mt-3 flex items-start gap-2 text-xs leading-5 text-[#475569]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram</p>
+                    </div>
+                  </article>
+                  <article className="relative overflow-hidden rounded-[22px] border border-[#12a66a]/25 bg-[linear-gradient(135deg,#effbf6_0%,#ffffff_70%)] p-4 shadow-[0_12px_28px_rgba(18,166,106,0.08)] sm:p-5">
+                    <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#12a66a]/10" />
+                    <div className="relative">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-[#12a66a] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white"><UsersRound className="h-3.5 w-3.5" /> Selection update</span>
+                      <h3 className="mt-4 text-lg font-black leading-tight text-[#0f172a]">4 people selected for Round 2</h3>
+                      <p className="mt-2 text-sm font-bold leading-6 text-[#087f52]">India Pre-Selection</p>
+                      <p className="mt-1 text-xs leading-5 text-[#64748b]">Selected participants will be contacted directly.</p>
+                      <p className="mt-3 text-xs leading-5 text-[#475569]">Names are kept private and will not be published in full.</p>
+                    </div>
+                  </article>
+                </div>
               </div>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
