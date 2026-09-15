@@ -216,9 +216,10 @@ export const cancelRsvp = async (req: AuthRequest, res: Response) => {
 export const checkInEvent = async (req: AuthRequest, res: Response) => {
   const userId = Number(req.body.user_id);
   if (!userId) return fail(res, 400, 'VALIDATION_ERROR', 'user_id is required');
-  const [events] = await pool.query('SELECT id, points_reward, slug FROM platform_events WHERE id = ? LIMIT 1', [req.params.id]);
+  const [events] = await pool.query('SELECT id, points_reward, slug, status FROM platform_events WHERE id = ? LIMIT 1', [req.params.id]);
   const event = (events as any[])[0];
   if (!event) return fail(res, 404, 'NOT_FOUND', 'Event not found');
+  if (event.status === 'cancelled') return fail(res, 409, 'EVENT_CANCELLED', 'Cancelled events cannot record attendance');
   await pool.query(
     `INSERT INTO platform_event_rsvps (event_id, user_id, status, checked_in_at, created_at, updated_at)
      VALUES (?, ?, 'checked_in', NOW(), NOW(), NOW())
