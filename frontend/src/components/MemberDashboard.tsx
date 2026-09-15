@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, CheckCircle2, Clapperboard, Copy, Gift, KeyRound, Plane, Trophy, UploadCloud, UserRound, Utensils } from 'lucide-react';
+import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clapperboard, Copy, Gift, KeyRound, MapPin, Plane, Trophy, UploadCloud, UserRound, Utensils } from 'lucide-react';
 import api from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 import { memberCopy } from '@/lib/memberContent';
@@ -161,6 +161,7 @@ const MemberDashboard = () => {
   const [submissionsLoading, setSubmissionsLoading] = useState(false);
   const [submissionsPage, setSubmissionsPage] = useState(1);
   const submissionsPerPage = 10;
+  const koreanClassEvents = events.filter((event) => event.slug.startsWith('korean-language-culture-class-'));
 
   const submitUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -489,6 +490,29 @@ const MemberDashboard = () => {
           {eventMessage ? <p className="rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{eventMessage}</p> : null}
         </section> : null}
         {activeView === 'overview' ? <section id="overview" className="px-0 py-0 sm:py-1">
+        <div className="mb-6 rounded-xl border border-[#2457d6]/30 bg-[linear-gradient(115deg,#eef6ff,#ffffff)] p-5 text-[#102a43] shadow-sm sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#2457d6]">Korean learning &amp; culture</p>
+              <h2 className="mt-2 text-2xl font-black">Free Korean Language &amp; Culture Class</h2>
+              <p className="mt-2 text-sm leading-6 text-[#486581]">Choose one of the four Tuesday sessions and reserve your seat.</p>
+            </div>
+            <Link href="/events/korean-language-culture-class" className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-[#2457d6] px-4 py-2.5 text-sm font-black text-white">Choose a session <ArrowRight className="h-4 w-4" /></Link>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {(koreanClassEvents.length ? koreanClassEvents : [
+              { id: 0, title: 'Week 1', starts_at: '2026-09-22T15:00:00', location_name: 'Korea Edge Cube - Gr' },
+              { id: 0, title: 'Week 2', starts_at: '2026-09-29T15:00:00', location_name: 'Korea Edge Cube - Gr' },
+              { id: 0, title: 'Week 3', starts_at: '2026-10-06T15:00:00', location_name: 'Korea Edge Cube - Gr' },
+              { id: 0, title: 'Week 4', starts_at: '2026-10-13T15:00:00', location_name: 'Korea Edge Cube - Gr' },
+            ]).map((event) => <Link key={`${event.title}-${event.starts_at}`} href="/events/korean-language-culture-class" className="rounded-lg border border-[#d8e1ee] bg-white p-4 transition hover:border-[#2457d6]">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2457d6]">{event.title.includes('Week') ? event.title.match(/Week \d+/)?.[0] || event.title : event.title}</p>
+              <p className="mt-2 text-sm font-black">{new Date(event.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+              <p className="mt-1 flex items-center gap-1 text-xs text-[#64748b]"><CalendarDays className="h-3 w-3" /> 3:00–4:00 PM</p>
+            </Link>)}
+          </div>
+          <p className="mt-4 flex items-start gap-1.5 text-xs text-[#486581]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
+        </div>
         <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[1fr_360px]">
           <div id="profile" className="col-span-full flex scroll-mt-24 flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
