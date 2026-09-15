@@ -63,6 +63,7 @@ export const listMyRsvps = async (req: AuthRequest, res: Response) => {
 };
 
 export const listAdminEvents = async (_req: AuthRequest, res: Response) => {
+  await ensureKoreanClassSessions().catch((error) => console.error('Korean class admin sync failed:', error));
   const [rows] = await pool.query(`SELECT ${eventFields} FROM platform_events ORDER BY updated_at DESC LIMIT 300`);
   return ok(res, rows);
 };
