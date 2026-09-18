@@ -867,8 +867,8 @@ const koreanLanguageClassLink: MenuLink = {
 };
 
 const buildEventsServiceLinks = (): MenuLink[] => [
-  itaewonSubmissionLink,
   koreanLanguageClassLink,
+  itaewonSubmissionLink,
   ...detailItems
     .filter((item) => item.category === 'events')
     .map((item) => ({
