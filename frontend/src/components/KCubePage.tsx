@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, CalendarDays, Check, Coins, ExternalLink, MapPin, Plane, Star, UsersRound } from 'lucide-react';
 import { actions, copy, pages, type PageKey } from '@/lib/kcubeContent';
 import { maskedIndiaSecondRoundParticipants } from '@/lib/festival2026';
-import { repairMojibakeTree } from '@/lib/repairMojibake';
+import { repairMojibake, repairMojibakeTree } from '@/lib/repairMojibake';
 import { useAppStore } from '@/store/useAppStore';
 import api from '@/lib/api';
 import IndiaPreSelectionSection from './home/IndiaPreSelectionSection';
@@ -235,13 +235,23 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const bannerText = repairMojibakeTree(homeBannerCopy[language]);
   const featuredText = repairMojibakeTree(featuredHeroCopy[language]);
   const visual = repairMojibakeTree(pageVisuals[pageKey]);
+  /*
+  const tickerLabel = pageKey === 'home' ? (language === 'ko' ? '추천 클래스' : language === 'hi' ? 'विशेष क्लास' : 'Featured class') : visual.accent;
+  */
   const tickerLabel = pageKey === 'home' ? (language === 'ko' ? '추천 클래스' : language === 'hi' ? 'विशेष क्लास' : 'Featured class') : visual.accent;
   const rewardsText = repairMojibakeTree(rewardsUi[language]);
+  const displayedTickerLabel = repairMojibake(tickerLabel);
   const marketplaceLabels = repairMojibakeTree(marketplaceTileLabels[language]);
   const marketplaceValues = repairMojibakeTree(marketplaceTileValues[language]);
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
   const [featuredKoreanEvent, setFeaturedKoreanEvent] = useState<FeaturedEvent | null>(null);
+  /*
+  const legacyFeaturedSchedule = featuredKoreanEvent
+    ? `${language === 'ko' ? '매주 화요일' : language === 'hi' ? 'हर मंगलवार' : 'Every Tuesday'} · ${formatEventTime(featuredKoreanEvent.starts_at, language === 'ko' ? 'ko-KR' : language === 'hi' ? 'hi-IN' : 'en-IN')}–${formatEventTime(featuredKoreanEvent.ends_at, language === 'ko' ? 'ko-KR' : language === 'hi' ? 'hi-IN' : 'en-IN')}`
+    : featuredText.schedule;
+  const displayedFeaturedSchedule = repairMojibake(featuredSchedule);
+  */
   const featuredSchedule = featuredKoreanEvent
     ? `${language === 'ko' ? '매주 화요일' : language === 'hi' ? 'हर मंगलवार' : 'Every Tuesday'} · ${formatEventTime(featuredKoreanEvent.starts_at, language === 'ko' ? 'ko-KR' : language === 'hi' ? 'hi-IN' : 'en-IN')}–${formatEventTime(featuredKoreanEvent.ends_at, language === 'ko' ? 'ko-KR' : language === 'hi' ? 'hi-IN' : 'en-IN')}`
     : featuredText.schedule;
@@ -299,13 +309,13 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
         <div className="mx-auto grid max-w-[1320px] gap-6 lg:grid-cols-1 lg:items-stretch">
           {pageKey === 'home' ? (
             <>
-            <div className="relative overflow-hidden rounded-[24px] border border-white/20 bg-[linear-gradient(120deg,rgba(6,43,99,0.98),rgba(11,78,174,0.86)),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+            <div className="relative overflow-hidden rounded-[24px] border border-white/25 bg-[linear-gradient(115deg,rgba(6,43,99,0.82)_0%,rgba(11,78,174,0.62)_48%,rgba(29,103,201,0.32)_100%),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
               <div className="relative max-w-3xl">
                 <p className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#fff3b0]">{featuredText.eyebrow}</p>
                 <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">{featuredText.title}</h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-[#e0ecff] sm:text-lg">{featuredText.description}</p>
                 <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-[#e0ecff] sm:text-sm">
-                  <span className="rounded-full bg-white/10 px-3 py-2">{featuredSchedule}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-2">{repairMojibake(featuredSchedule)}</span>
                   <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.sessions}</span>
                   <span className="rounded-full bg-white/10 px-3 py-2">{featuredKoreanEvent?.location_name || featuredText.location}</span>
                 </div>
