@@ -979,10 +979,6 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: txt('Shop', '샵', 'Shop'),
-    href: '/shop',
-  },
-  {
     label: txt('Activities', '활동', 'Activities'),
     href: '/activities',
     dropdown: [

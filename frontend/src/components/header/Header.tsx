@@ -481,7 +481,7 @@ const Header = () => {
               );
             })}
           </div>
-          <div className="hidden shrink-0 items-center gap-1.5 lg:flex" aria-label="Partner companies">
+          <div className="hidden shrink-0 items-center gap-1.5 lg:flex" aria-label="Online shops">
             <div
               className="relative"
               data-partner-menu
@@ -500,7 +500,7 @@ const Header = () => {
                 }`}
               >
                 <Store className="h-3.5 w-3.5 text-[#0b4eae]" aria-hidden="true" />
-                Partner Shops
+                Online Shop
                 <ChevronDown className={`h-3 w-3 transition ${partnerMenuOpen ? 'rotate-180' : ''}`} />
               </button>
               <div className={`absolute right-0 top-full z-[140] w-72 pt-2 transition ${partnerMenuOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'}`}>
@@ -510,11 +510,11 @@ const Header = () => {
                     <p className="mt-1 text-xs text-[#6b7c93]">Shop Korean food, lifestyle and beauty products.</p>
                   </div>
                   <a href={shopStores.koreanshop.url} target="_blank" rel="noreferrer" onClick={closeAllMenus} className="mt-2 flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[#eef5ff]">
-                    <span><span className="block text-sm font-black text-[#102a43]">Korean Shop</span><span className="mt-0.5 block text-[11px] text-[#6b7c93]">Korean food & lifestyle</span></span>
+                    <span><span className="block text-sm font-black text-[#102a43]">koreanshop</span><span className="mt-0.5 block text-[11px] text-[#6b7c93]">Korean food & lifestyle</span></span>
                     <ExternalLink className="h-4 w-4 shrink-0 text-[#0b4eae]" aria-hidden="true" />
                   </a>
                   <a href={shopStores.moa_beauty.url} target="_blank" rel="noreferrer" onClick={closeAllMenus} className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[#eef5ff]">
-                    <span><span className="block text-sm font-black text-[#102a43]">Moabeauty Shop</span><span className="mt-0.5 block text-[11px] text-[#6b7c93]">Korean skincare & cosmetics</span></span>
+                    <span><span className="block text-sm font-black text-[#102a43]">Cosmetic Shop</span><span className="mt-0.5 block text-[11px] text-[#6b7c93]">Korean skincare & cosmetics</span></span>
                     <ExternalLink className="h-4 w-4 shrink-0 text-[#0b4eae]" aria-hidden="true" />
                   </a>
                 </div>
