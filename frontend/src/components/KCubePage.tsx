@@ -309,7 +309,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
         <div className="mx-auto grid max-w-[1320px] gap-6 lg:grid-cols-1 lg:items-stretch">
           {pageKey === 'home' ? (
             <>
-            <div className="relative overflow-hidden rounded-[24px] border border-white/25 bg-[linear-gradient(115deg,rgba(6,43,99,0.82)_0%,rgba(11,78,174,0.62)_48%,rgba(29,103,201,0.32)_100%),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+            <div className="relative overflow-hidden rounded-[24px] border border-white/25 bg-[linear-gradient(115deg,rgba(6,43,99,0.94)_0%,rgba(11,78,174,0.82)_52%,rgba(29,103,201,0.56)_100%),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
               <div className="relative max-w-3xl">
                 <p className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#fff3b0]">{featuredText.eyebrow}</p>
                 <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">{featuredText.title}</h1>
