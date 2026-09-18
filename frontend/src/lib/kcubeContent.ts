@@ -922,7 +922,7 @@ export const allMenuCategories: AllMenuCategory[] = [
     services: buildKFoodServiceLinks(),
   },
   {
-    label: txt('Shop', '샵', 'Shop'),
+    label: txt('Online Shop', '온라인 쇼핑', 'Online Shop'),
     href: '/shop',
     description: txt('Discover Korean products and continue to the specialist store that sells them.', '한국 상품을 발견하고 전문 스토어에서 쇼핑하세요.', 'Korean products discover karke specialist store par shop karein.'),
     services: buildShopServiceLinks(),
