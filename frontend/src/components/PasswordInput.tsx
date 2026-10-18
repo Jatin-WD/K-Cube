@@ -20,7 +20,7 @@ const PasswordInput = ({ label = 'password', className = '', ...props }: Passwor
       <button
         type="button"
         onClick={() => setVisible((current) => !current)}
-        className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-3 text-[#7b8da3] transition hover:text-[#0b4eae] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#0b4eae]"
+        className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-3 text-[var(--kc-text-muted)] transition hover:text-[var(--kc-blue-700)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--kc-blue-700)]"
         aria-label={visible ? `Hide ${label}` : `Show ${label}`}
         title={visible ? `Hide ${label}` : `Show ${label}`}
       >

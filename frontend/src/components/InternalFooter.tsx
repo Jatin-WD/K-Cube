@@ -77,20 +77,20 @@ const InternalFooter = () => {
   }
 
   return (
-    <footer className="border-t border-[#1d67c9] bg-[#062b63] px-5 py-10 text-[#d8e7f9] lg:px-10">
+    <footer className="culture-footer border-t border-[var(--kc-blue-600)] bg-[var(--kc-blue-900)] px-5 py-10 text-[var(--kc-border-soft)] lg:px-10">
       <div className="mx-auto grid max-w-[1320px] gap-8 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-lg font-black text-[#0b4eae]">K</span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-lg font-black text-[var(--kc-blue-700)]">K</span>
             <div>
               <p className="text-xl font-black tracking-tight text-white">K-CUBE</p>
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#9fc4ef]">Korean Culture Ecosystem</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#dfbdce]">Korean Culture Ecosystem</p>
             </div>
           </div>
-          <p className="mt-4 max-w-sm text-sm leading-6 text-[#c4d8ee]">{t.line}</p>
+          <p className="mt-4 max-w-sm text-sm leading-6 text-[var(--kc-border)]">{t.line}</p>
         </div>
         <div className="space-y-3">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9fc4ef]">{t.platform}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#dfbdce]">{t.platform}</p>
           <Link href="/activities" className="block text-sm hover:text-white">{t.activities}</Link>
           <Link href="/learning" className="block text-sm hover:text-white">{t.learning}</Link>
           <Link href="/kfood" className="block text-sm hover:text-white">{t.kfood}</Link>
@@ -98,21 +98,21 @@ const InternalFooter = () => {
           <Link href="/rewards" className="block text-sm hover:text-white">{t.rewards}</Link>
         </div>
         <div className="space-y-3">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9fc4ef]">{t.support}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#dfbdce]">{t.support}</p>
           <Link href="/events" className="block text-sm hover:text-white">{t.events}</Link>
           <Link href="/about" className="block text-sm hover:text-white">{t.about}</Link>
           <Link href="/about#contact" className="block text-sm hover:text-white">{t.contact}</Link>
           <Link href="/apply-for-manpower" className="block text-sm hover:text-white">{t.manpower}</Link>
         </div>
         <div className="space-y-3">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9fc4ef]">{t.commerce}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#dfbdce]">{t.commerce}</p>
           <Link href="/shop" className="block text-sm hover:text-white">{t.shop}</Link>
           <Link href="/signin" className="block text-sm hover:text-white">{t.signIn}</Link>
           <Link href="/signup" className="block text-sm hover:text-white">{t.signUp}</Link>
           <Link href="/trip-to-korea" className="block text-sm hover:text-white">{t.trip}</Link>
         </div>
       </div>
-      <div className="mx-auto mt-8 max-w-[1320px] border-t border-white/15 pt-5 text-xs text-[#9fc4ef]">
+      <div className="mx-auto mt-8 max-w-[1320px] border-t border-white/15 pt-5 text-xs text-[#dfbdce]">
         © 2026 K-CUBE. {t.rights}
       </div>
     </footer>

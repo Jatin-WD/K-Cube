@@ -814,15 +814,15 @@ const itaewonSubmissionLink: MenuLink = {
   label: txt('Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026', 'Itaewon World Music Spirit 2026'),
   href: '/india-pre-selection',
   description: txt(
-    'Follow the 2026 India journey to the ITAEWON World Music Spirit Festival in Seoul.',
+    'The ITAEWON World Music Spirit Festival concluded on October 6, 2026. View the archived India-to-Seoul journey.',
     '서울 ITAEWON World Music Spirit Festival로 이어지는 2026년 인도의 여정을 확인하세요.',
     'Seoul ke ITAEWON World Music Spirit Festival tak India ki 2026 journey follow karein.',
   ),
   featured: true,
-  status: txt('2026 FESTIVAL · INDIA', '2026 FESTIVAL · INDIA', '2026 FESTIVAL · INDIA'),
+  status: txt('COMPLETED | 4-6 OCT 2026', 'COMPLETED | 4-6 OCT 2026', 'COMPLETED | 4-6 OCT 2026'),
   children: [
     {
-      label: txt('Festival Information', 'Festival Information', 'Festival Information'),
+      label: txt('Festival Archive', 'Festival Archive', 'Festival Archive'),
       href: '/india-pre-selection/information',
       description: txt(
         'Festival story, official India representation, dates and the India-to-Seoul journey.',
@@ -832,7 +832,7 @@ const itaewonSubmissionLink: MenuLink = {
       status: txt('Overview', 'Overview', 'Overview'),
     },
     {
-      label: txt('Official Updates', 'Official Updates', 'Official Updates'),
+      label: txt('Archived Announcements', 'Archived Announcements', 'Archived Announcements'),
       href: '/india-pre-selection/announcement',
       description: txt(
         'Selection updates, official rounds, participant notices and festival announcements.',
@@ -842,7 +842,7 @@ const itaewonSubmissionLink: MenuLink = {
       status: txt('Latest', 'Latest', 'Latest'),
     },
     {
-      label: txt('2026 Application', '2026 Application', '2026 Application'),
+      label: txt('2026 Applications Closed', '2026 Applications Closed', '2026 Applications Closed'),
       href: '/india-pre-selection/apply',
       description: txt(
         'India Pre-Selection applications closed on 30 August 2026.',
@@ -1134,7 +1134,7 @@ export const pages: Record<PageKey, PageContent> = {
       },
       {
         title: txt('K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection', 'K-CUBE India Pre-Selection'),
-        description: txt('Dedicated submission page for the ITAEWON World Music Spirit Festival 2026 with exact timeline and application details.', 'ITAEWON World Music Spirit Festival 2026을 위한 전용 신청 페이지입니다.', 'ITAEWON World Music Spirit Festival 2026 ke liye dedicated submission page.'),
+        description: txt('Archived 2026 festival participation details. The event has concluded and applications are closed.', 'ITAEWON World Music Spirit Festival 2026을 위한 전용 신청 페이지입니다.', 'ITAEWON World Music Spirit Festival 2026 ke liye dedicated submission page.'),
         href: '/india-pre-selection',
         cta: txt('Open dedicated page', '전용 페이지 열기', 'Dedicated page kholo'),
       },

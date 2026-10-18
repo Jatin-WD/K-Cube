@@ -68,35 +68,35 @@ const Footer = () => {
   const t = footerCopy[language];
 
   return (
-    <footer className="border-t border-[#d8e1ee] bg-white/90 px-5 py-12 text-[#5b6b7f] lg:px-10">
+    <footer className="border-t border-[var(--kc-border)] bg-white/90 px-5 py-12 text-[var(--kc-text-secondary)] lg:px-10">
       <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <p className="text-2xl font-black tracking-tight text-[#0f172a]">K-CUBE</p>
+          <p className="text-2xl font-black tracking-tight text-[var(--kc-text)]">K-CUBE</p>
           <p className="mt-3 max-w-sm text-sm leading-7">{t.line}</p>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#2457d6]">{t.platform}</p>
-          <Link href="/activities" className="block text-sm hover:text-[#2457d6]">{t.activities}</Link>
-          <Link href="/learning" className="block text-sm hover:text-[#2457d6]">{t.learning}</Link>
-          <Link href="/kfood" className="block text-sm hover:text-[#2457d6]">{t.kfood}</Link>
-          <Link href="/rewards" className="block text-sm hover:text-[#2457d6]">{t.rewards}</Link>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">{t.platform}</p>
+          <Link href="/activities" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.activities}</Link>
+          <Link href="/learning" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.learning}</Link>
+          <Link href="/kfood" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.kfood}</Link>
+          <Link href="/rewards" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.rewards}</Link>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#2457d6]">{t.support}</p>
-          <Link href="/events" className="block text-sm hover:text-[#2457d6]">{t.events}</Link>
-          <Link href="/about" className="block text-sm hover:text-[#2457d6]">{t.about}</Link>
-          <Link href="/about#contact" className="block text-sm hover:text-[#2457d6]">{t.contact}</Link>
-          <Link href="/apply-for-manpower" className="block text-sm hover:text-[#2457d6]">{t.manpower}</Link>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">{t.support}</p>
+          <Link href="/events" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.events}</Link>
+          <Link href="/about" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.about}</Link>
+          <Link href="/about#contact" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.contact}</Link>
+          <Link href="/apply-for-manpower" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.manpower}</Link>
         </div>
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#2457d6]">{t.commerce}</p>
-          <Link href="/shop" className="block text-sm hover:text-[#2457d6]">K-CUBE Shop</Link>
-          <Link href="/signin" className="block text-sm hover:text-[#2457d6]">{t.signIn}</Link>
-          <Link href="/signup" className="block text-sm hover:text-[#2457d6]">{t.signUp}</Link>
-          <Link href="/trip-to-korea" className="block text-sm hover:text-[#2457d6]">{t.trip}</Link>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">{t.commerce}</p>
+          <Link href="/shop" className="block text-sm hover:text-[var(--kc-blue-700)]">K-CUBE Shop</Link>
+          <Link href="/signin" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.signIn}</Link>
+          <Link href="/signup" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.signUp}</Link>
+          <Link href="/trip-to-korea" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.trip}</Link>
         </div>
       </div>
-      <div className="mx-auto mt-10 max-w-[1480px] border-t border-[#e6edf6] pt-6 text-sm text-[#7a8797]">
+      <div className="mx-auto mt-10 max-w-[1480px] border-t border-[var(--kc-border-soft)] pt-6 text-sm text-[var(--kc-text-muted)]">
         © 2026 K-CUBE. {t.rights}
       </div>
     </footer>

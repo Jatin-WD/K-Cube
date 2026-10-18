@@ -29,36 +29,36 @@ const SearchResults = ({ query }: { query: string }) => {
   });
 
   return (
-    <main className="min-h-[calc(100vh-1px)] bg-[#eef4f8] px-4 py-10 text-[#102a43] sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+    <main className="min-h-[calc(100vh-1px)] bg-[var(--kc-bg)] px-4 py-10 text-[var(--kc-text)] sm:px-6 sm:py-14 lg:px-10 lg:py-20">
       <div className="mx-auto max-w-[1180px]">
-        <section className="rounded-2xl border border-[#d8e4f0] bg-white p-7 shadow-[0_18px_50px_rgba(15,55,95,0.07)] sm:p-10">
+        <section className="rounded-2xl border border-[var(--kc-border)] bg-white p-7 shadow-[0_18px_50px_rgba(81,33,55,0.07)] sm:p-10">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[#b36a00]">{t.eyebrow}</p>
           <h1 className="mt-3 text-3xl font-black sm:text-5xl">{t.title}</h1>
-          <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#d8e4f0] bg-[#f7fafd] px-4 py-3 text-[#486581]">
-            <Search className="h-5 w-5 shrink-0 text-[#0b4eae]" aria-hidden="true" />
+          <div className="mt-6 flex items-center gap-3 rounded-xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 text-[var(--kc-text-secondary)]">
+            <Search className="h-5 w-5 shrink-0 text-[var(--kc-blue-700)]" aria-hidden="true" />
             <span className="min-w-0 truncate font-semibold">{query || '—'}</span>
           </div>
         </section>
 
         {results.length ? (
-          <section className="mt-6 rounded-2xl border border-[#d8e4f0] bg-white p-5 shadow-sm sm:p-7">
-            <p className="text-sm font-black text-[#0b4eae]">{results.length} {t.results}</p>
+          <section className="mt-6 rounded-2xl border border-[var(--kc-border)] bg-white p-5 shadow-sm sm:p-7">
+            <p className="text-sm font-black text-[var(--kc-blue-700)]">{results.length} {t.results}</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {results.map((item) => (
-                <Link key={`${item.category}-${item.slug}`} href={`/${item.category}/${item.slug}`} className="group rounded-xl border border-[#d8e4f0] bg-[#f8fbff] p-5 transition hover:-translate-y-0.5 hover:border-[#0b4eae] hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0b4eae]">
+                <Link key={`${item.category}-${item.slug}`} href={`/${item.category}/${item.slug}`} className="group rounded-xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--kc-blue-700)] hover:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--kc-blue-700)]">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#b36a00]">{item.category}</p>
                   <h2 className="mt-2 text-xl font-black">{item.title[language]}</h2>
-                  <p className="mt-2 text-sm leading-6 text-[#486581]">{item.summary[language]}</p>
-                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-black text-[#0b4eae]">{t.view}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+                  <p className="mt-2 text-sm leading-6 text-[var(--kc-text-secondary)]">{item.summary[language]}</p>
+                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-black text-[var(--kc-blue-700)]">{t.view}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
                 </Link>
               ))}
             </div>
           </section>
         ) : (
-          <section className="mt-6 rounded-2xl border border-dashed border-[#b8cce3] bg-white p-10 text-center sm:p-14">
+          <section className="mt-6 rounded-2xl border border-dashed border-[#dfbdce] bg-white p-10 text-center sm:p-14">
             <h2 className="text-2xl font-black">{t.empty}</h2>
-            <p className="mt-3 text-sm leading-6 text-[#486581]">{t.prompt}</p>
-            <Link href="/" className="mt-6 inline-flex rounded-lg bg-[#0b4eae] px-5 py-3 text-sm font-black text-white">Back to home</Link>
+            <p className="mt-3 text-sm leading-6 text-[var(--kc-text-secondary)]">{t.prompt}</p>
+            <Link href="/" className="mt-6 inline-flex rounded-lg bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-black text-white">Back to home</Link>
           </section>
         )}
       </div>

@@ -1,8 +1,8 @@
-import KCubePage from '@/components/KCubePage';
+import CultureHome from '@/components/home/CultureHome';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default function Home() {
-  return <KCubePage pageKey="home" />;
+  return <CultureHome />;
 }

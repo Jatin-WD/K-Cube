@@ -381,34 +381,34 @@ const MemberDashboard = () => {
 
   if (!user) {
     return (
-      <main className="bg-[#eef4f8] px-4 py-10 text-[#102a43] sm:px-6 sm:py-14 lg:px-10 lg:py-20">
-        <section className="mx-auto max-w-[1080px] overflow-hidden rounded-2xl border border-[#d8e4f0] bg-white shadow-[0_18px_50px_rgba(15,55,95,0.08)]">
+      <main className="bg-[var(--kc-bg)] px-4 py-10 text-[var(--kc-text)] sm:px-6 sm:py-14 lg:px-10 lg:py-20">
+        <section className="mx-auto max-w-[1080px] overflow-hidden rounded-2xl border border-[var(--kc-border)] bg-white shadow-[0_18px_50px_rgba(81,33,55,0.08)]">
           <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
             <div className="p-7 sm:p-10 lg:p-14">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eaf3ff] text-[#0b4eae]"><Gift className="h-6 w-6" aria-hidden="true" /></div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--kc-surface-blue)] text-[var(--kc-blue-700)]"><Gift className="h-6 w-6" aria-hidden="true" /></div>
               <p className="mt-7 text-xs font-black uppercase tracking-[0.28em] text-[#b36a00]">Member area</p>
-              <h1 className="mt-3 max-w-xl text-4xl font-black leading-tight text-[#102a43] sm:text-5xl">Your K-CUBE workspace starts here.</h1>
-              <p className="mt-5 max-w-xl text-base leading-7 text-[#486581]">Create an account or sign in to access your points, learning progress, submissions, referrals and festival participation.</p>
+              <h1 className="mt-3 max-w-xl text-4xl font-black leading-tight text-[var(--kc-text)] sm:text-5xl">Your K-CUBE workspace starts here.</h1>
+              <p className="mt-5 max-w-xl text-base leading-7 text-[var(--kc-text-secondary)]">Create an account or sign in to access your points, learning progress, submissions, referrals and festival participation.</p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/signup" className="rounded-lg bg-[#0b4eae] px-5 py-3 text-sm font-black text-white transition hover:bg-[#073a82]">Create account</Link>
-                <Link href="/signin" className="rounded-lg border border-[#b8cce3] bg-white px-5 py-3 text-sm font-bold text-[#102a43] transition hover:border-[#0b4eae] hover:text-[#0b4eae]">Sign in</Link>
+                <Link href="/signup" className="rounded-lg bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-black text-white transition hover:bg-[var(--kc-blue-800)]">Create account</Link>
+                <Link href="/signin" className="rounded-lg border border-[#dfbdce] bg-white px-5 py-3 text-sm font-bold text-[var(--kc-text)] transition hover:border-[var(--kc-blue-700)] hover:text-[var(--kc-blue-700)]">Sign in</Link>
               </div>
             </div>
-            <div className="border-t border-[#e3ebf3] bg-[#f7fafd] p-7 sm:p-10 lg:border-l lg:border-t-0 lg:p-12">
-              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">Inside your workspace</p>
+            <div className="border-t border-[var(--kc-border-soft)] bg-[var(--kc-surface-soft)] p-7 sm:p-10 lg:border-l lg:border-t-0 lg:p-12">
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">Inside your workspace</p>
               <div className="mt-6 space-y-3">
                 {[
                   ['Points & rewards', 'Track verified activity and reward progress.'],
                   ['Learning & culture', 'Practice Korean and explore K-CUBE content.'],
                   ['Submissions & events', 'Manage participation and follow updates.'],
                 ].map(([title, description]) => (
-                  <div key={title} className="rounded-xl border border-[#d8e4f0] bg-white p-4">
-                    <p className="font-black text-[#102a43]">{title}</p>
-                    <p className="mt-1 text-sm leading-6 text-[#486581]">{description}</p>
+                  <div key={title} className="rounded-xl border border-[var(--kc-border)] bg-white p-4">
+                    <p className="font-black text-[var(--kc-text)]">{title}</p>
+                    <p className="mt-1 text-sm leading-6 text-[var(--kc-text-secondary)]">{description}</p>
                   </div>
                 ))}
               </div>
-              <p className="mt-6 text-xs leading-5 text-[#6c8298]">Your personal dashboard is available after secure sign-in.</p>
+              <p className="mt-6 text-xs leading-5 text-[var(--kc-text-muted)]">Your personal dashboard is available after secure sign-in.</p>
             </div>
           </div>
         </section>
@@ -417,11 +417,11 @@ const MemberDashboard = () => {
   }
 
   return (
-    <main className="member-area-shell min-h-screen bg-[#eef4f8] text-[#102a43]">
+    <main className="member-area-shell min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
       <div className="mx-auto flex max-w-[1760px] flex-col gap-5 px-3 py-5 sm:px-5 sm:py-7 lg:flex-row lg:gap-6 lg:px-8">
         <aside className="w-full shrink-0 lg:w-64">
           <div className="rounded-xl border border-white/10 bg-[#111113] p-3 lg:sticky lg:top-24">
-            <div className="hidden border-b border-white/10 px-3 pb-4 lg:block"><p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.memberArea}</p><p className="mt-2 text-lg font-black">{t.workspace}</p><p className="mt-1 text-xs leading-5 text-[#aab5c6]">{t.workspaceDesc}</p></div>
+            <div className="hidden border-b border-white/10 px-3 pb-4 lg:block"><p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.memberArea}</p><p className="mt-2 text-lg font-black">{t.workspace}</p><p className="mt-1 text-xs leading-5 text-[#dfbdce]">{t.workspaceDesc}</p></div>
             <nav className="flex gap-2 overflow-x-auto lg:grid lg:gap-1.5 lg:overflow-visible lg:pt-3" aria-label="Member dashboard">
               {[
                 ['overview', t.overview],
@@ -432,9 +432,9 @@ const MemberDashboard = () => {
                 ['events', t.events],
                 ['referrals', t.referrals],
               ].map(([href, label]) => (
-                <button key={href} type="button" onClick={() => setActiveView(href as DashboardView)} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-bold transition lg:w-full ${activeView === href ? 'border-[#0b4eae]/25 bg-[#eaf3ff] text-[#0b4eae]' : 'border-transparent text-[#486581] hover:border-[#d8e4f0] hover:bg-[#f5f9fe] hover:text-[#102a43]'}`}>{label}</button>
+                <button key={href} type="button" onClick={() => setActiveView(href as DashboardView)} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-bold transition lg:w-full ${activeView === href ? 'border-[var(--kc-blue-700)]/25 bg-[var(--kc-surface-blue)] text-[var(--kc-blue-700)]' : 'border-transparent text-[var(--kc-text-secondary)] hover:border-[var(--kc-border)] hover:bg-[var(--kc-surface-soft)] hover:text-[var(--kc-text)]'}`}>{label}</button>
               ))}
-              <button type="button" onClick={() => setActiveView('profile')} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-black transition lg:w-full ${activeView === 'profile' ? 'border-[#0b4eae]/25 bg-[#eaf3ff] text-[#0b4eae]' : 'border-transparent text-[#486581] hover:border-[#d8e4f0] hover:bg-[#f5f9fe] hover:text-[#102a43]'}`}>{t.editProfile}</button>
+              <button type="button" onClick={() => setActiveView('profile')} className={`flex shrink-0 items-center rounded-lg border px-3 py-2.5 text-left text-sm font-black transition lg:w-full ${activeView === 'profile' ? 'border-[var(--kc-blue-700)]/25 bg-[var(--kc-surface-blue)] text-[var(--kc-blue-700)]' : 'border-transparent text-[var(--kc-text-secondary)] hover:border-[var(--kc-border)] hover:bg-[var(--kc-surface-soft)] hover:text-[var(--kc-text)]'}`}>{t.editProfile}</button>
             </nav>
           </div>
         </aside>
@@ -443,19 +443,19 @@ const MemberDashboard = () => {
         {activeView === 'profile' ? <section className="rounded-xl border border-white/10 bg-[#111113] p-6 sm:p-8">
           <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">My profile</p>
           <h1 className="mt-2 text-3xl font-black">{ui.accountDetails}</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#aab5c6]">{ui.profileDesc}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#dfbdce]">{ui.profileDesc}</p>
           <form onSubmit={saveDashboardProfile} className="mt-8 grid gap-4 sm:grid-cols-2">
             <label className="sm:col-span-2"><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Full name</span><input required value={profileForm.full_name} onChange={(event) => setProfileForm((current) => ({ ...current, full_name: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
             <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Phone</span><input value={profileForm.phone} onChange={(event) => setProfileForm((current) => ({ ...current, phone: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
             <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Country</span><input value={profileForm.country} onChange={(event) => setProfileForm((current) => ({ ...current, country: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
             <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">City</span><input value={profileForm.city} onChange={(event) => setProfileForm((current) => ({ ...current, city: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
             <label><span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">State</span><input value={profileForm.state} onChange={(event) => setProfileForm((current) => ({ ...current, state: event.target.value }))} className="w-full rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" /></label>
-            <div className="sm:col-span-2 grid gap-4 sm:grid-cols-2"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#98a4b1]">Email</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#aab5c6]">{user.email || user.phone}</p></div><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#98a4b1]">Referral code</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-black text-[#aab5c6]">{user.referralCode || 'Not available'}</p></div></div>
+            <div className="sm:col-span-2 grid gap-4 sm:grid-cols-2"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--kc-text-muted)]">Email</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#dfbdce]">{user.email || user.phone}</p></div><div><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--kc-text-muted)]">Referral code</p><p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-black text-[#dfbdce]">{user.referralCode || 'Not available'}</p></div></div>
             {profileMessage ? <p className="sm:col-span-2 text-sm font-bold text-[#9be7c2]">{profileMessage}</p> : null}
             <div className="sm:col-span-2 flex flex-wrap gap-3"><button disabled={profileSaving} className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909] disabled:opacity-60">{profileSaving ? ui.saving : ui.saveChanges}</button><Link href="/profile" className="rounded-lg border border-white/10 px-5 py-3 text-sm font-bold text-white">{ui.openProfile}</Link></div>
           </form>
           <section className="mt-6 rounded-xl border border-white/10 bg-[#111113] p-6 sm:p-8">
-            <div className="flex items-center gap-3"><KeyRound className="h-6 w-6 text-[#ffc400]" /><div><h2 className="text-2xl font-black">{ui.changePassword}</h2><p className="mt-1 text-sm text-[#aab5c6]">{ui.passwordDesc}</p></div></div>
+            <div className="flex items-center gap-3"><KeyRound className="h-6 w-6 text-[#ffc400]" /><div><h2 className="text-2xl font-black">{ui.changePassword}</h2><p className="mt-1 text-sm text-[#dfbdce]">{ui.passwordDesc}</p></div></div>
             <form onSubmit={changePassword} className="mt-6 grid gap-4 sm:grid-cols-3">
               <PasswordInput required minLength={8} value={passwordForm.current_password} onChange={(event) => setPasswordForm((current) => ({ ...current, current_password: event.target.value }))} placeholder={ui.currentPassword} aria-label={ui.currentPassword} label={ui.currentPassword} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
               <PasswordInput required minLength={8} value={passwordForm.new_password} onChange={(event) => setPasswordForm((current) => ({ ...current, new_password: event.target.value }))} placeholder={ui.newPassword} aria-label={ui.newPassword} label={ui.newPassword} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
@@ -465,27 +465,27 @@ const MemberDashboard = () => {
           </section>
         </section> : null}
         {activeView === 'submissions' || activeView === 'submissionHistory' ? <section className="mx-auto max-w-4xl space-y-5">
-          {activeView === 'submissionHistory' ? <div className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">My submissions</p><h1 className="mt-2 text-3xl font-black text-[#102a43]">Your submitted content</h1><p className="mt-3 text-sm leading-7 text-[#486581]">Review your submitted videos, their current status and any feedback from the K-CUBE team.</p></div><span className="rounded-full bg-[#eaf3ff] px-3 py-2 text-xs font-black text-[#0b4eae]">{mySubmissions.length} {mySubmissions.length === 1 ? 'submission' : 'submissions'}</span></div>
-            {submissionsLoading ? <p className="mt-6 rounded-lg bg-[#f7fafd] p-4 text-sm font-semibold text-[#486581]">Loading your submissions...</p> : mySubmissions.length ? <div className="mt-6 space-y-3">{mySubmissions.slice((submissionsPage - 1) * submissionsPerPage, submissionsPage * submissionsPerPage).map((submission) => <article key={submission.id} className="rounded-lg border border-[#d8e4f0] bg-[#f8fbff] p-4 sm:p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.16em] text-[#0b4eae]">{submission.category.replace(/_/g, ' ')}</p><h2 className="mt-1 truncate text-lg font-black text-[#102a43]">{submission.title}</h2></div><span className="rounded-full border border-[#d8e4f0] bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-[#486581]">{submission.status}</span></div><p className="mt-3 text-sm leading-6 text-[#486581]">{submission.description || 'No description provided.'}</p><div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-[#6c8298]"><span>Submitted {new Date(submission.created_at).toLocaleDateString()}</span><a href={submission.video_url} target="_blank" rel="noreferrer" className="font-black text-[#0b4eae] underline underline-offset-2">View submission</a></div>{submission.review_note ? <p className="mt-3 border-l-2 border-[#0b4eae] pl-3 text-sm text-[#486581]"><span className="font-black">Review note:</span> {submission.review_note}</p> : null}</article>)}</div> : <div className="mt-6 rounded-lg border border-dashed border-[#cbd9ea] bg-[#f8fbff] p-5 text-sm leading-7 text-[#486581]">You have not submitted any content yet. Your submitted videos will appear here after you send them for review.</div>}
-            {mySubmissions.length > submissionsPerPage ? <div className="mt-5 flex items-center justify-between border-t border-[#d8e4f0] pt-4"><span className="text-xs font-semibold text-[#6c8298]">Page {submissionsPage} of {Math.ceil(mySubmissions.length / submissionsPerPage)}</span><div className="flex gap-2"><button type="button" onClick={() => setSubmissionsPage((page) => Math.max(1, page - 1))} disabled={submissionsPage === 1} className="rounded-lg border border-[#cbd9ea] px-3 py-2 text-xs font-bold text-[#486581] disabled:opacity-40">Previous</button><button type="button" onClick={() => setSubmissionsPage((page) => Math.min(Math.ceil(mySubmissions.length / submissionsPerPage), page + 1))} disabled={submissionsPage >= Math.ceil(mySubmissions.length / submissionsPerPage)} className="rounded-lg border border-[#cbd9ea] px-3 py-2 text-xs font-bold text-[#486581] disabled:opacity-40">Next</button></div></div> : null}
+          {activeView === 'submissionHistory' ? <div className="rounded-xl border border-[var(--kc-border)] bg-white p-6 shadow-sm sm:p-8">
+            <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">My submissions</p><h1 className="mt-2 text-3xl font-black text-[var(--kc-text)]">Your submitted content</h1><p className="mt-3 text-sm leading-7 text-[var(--kc-text-secondary)]">Review your submitted videos, their current status and any feedback from the K-CUBE team.</p></div><span className="rounded-full bg-[var(--kc-surface-blue)] px-3 py-2 text-xs font-black text-[var(--kc-blue-700)]">{mySubmissions.length} {mySubmissions.length === 1 ? 'submission' : 'submissions'}</span></div>
+            {submissionsLoading ? <p className="mt-6 rounded-lg bg-[var(--kc-surface-soft)] p-4 text-sm font-semibold text-[var(--kc-text-secondary)]">Loading your submissions...</p> : mySubmissions.length ? <div className="mt-6 space-y-3">{mySubmissions.slice((submissionsPage - 1) * submissionsPerPage, submissionsPage * submissionsPerPage).map((submission) => <article key={submission.id} className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4 sm:p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--kc-blue-700)]">{submission.category.replace(/_/g, ' ')}</p><h2 className="mt-1 truncate text-lg font-black text-[var(--kc-text)]">{submission.title}</h2></div><span className="rounded-full border border-[var(--kc-border)] bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-[var(--kc-text-secondary)]">{submission.status}</span></div><p className="mt-3 text-sm leading-6 text-[var(--kc-text-secondary)]">{submission.description || 'No description provided.'}</p><div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-[var(--kc-text-muted)]"><span>Submitted {new Date(submission.created_at).toLocaleDateString()}</span><a href={submission.video_url} target="_blank" rel="noreferrer" className="font-black text-[var(--kc-blue-700)] underline underline-offset-2">View submission</a></div>{submission.review_note ? <p className="mt-3 border-l-2 border-[var(--kc-blue-700)] pl-3 text-sm text-[var(--kc-text-secondary)]"><span className="font-black">Review note:</span> {submission.review_note}</p> : null}</article>)}</div> : <div className="mt-6 rounded-lg border border-dashed border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-5 text-sm leading-7 text-[var(--kc-text-secondary)]">You have not submitted any content yet. Your submitted videos will appear here after you send them for review.</div>}
+            {mySubmissions.length > submissionsPerPage ? <div className="mt-5 flex items-center justify-between border-t border-[var(--kc-border)] pt-4"><span className="text-xs font-semibold text-[var(--kc-text-muted)]">Page {submissionsPage} of {Math.ceil(mySubmissions.length / submissionsPerPage)}</span><div className="flex gap-2"><button type="button" onClick={() => setSubmissionsPage((page) => Math.max(1, page - 1))} disabled={submissionsPage === 1} className="rounded-lg border border-[var(--kc-border)] px-3 py-2 text-xs font-bold text-[var(--kc-text-secondary)] disabled:opacity-40">Previous</button><button type="button" onClick={() => setSubmissionsPage((page) => Math.min(Math.ceil(mySubmissions.length / submissionsPerPage), page + 1))} disabled={submissionsPage >= Math.ceil(mySubmissions.length / submissionsPerPage)} className="rounded-lg border border-[var(--kc-border)] px-3 py-2 text-xs font-bold text-[var(--kc-text-secondary)] disabled:opacity-40">Next</button></div></div> : null}
           </div> : null}
           {activeView === 'submissions' ? <>
-          <div className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#0b4eae]">New submission</p>
-            <h1 className="mt-2 text-3xl font-black text-[#102a43]">{uploadCategoryFromQuery(upload.category) ? `Submit ${uploadCategories.find((category) => category.value === upload.category)?.label.replace(/^Korean |K-Drama \/ /, '') || 'Video'}` : ui.submitVideo}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#486581]">{ui.submitVideoDesc} Admin approval ke baad hi points award honge.</p>
+          <div className="rounded-xl border border-[var(--kc-border)] bg-white p-6 shadow-sm sm:p-8">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">New submission</p>
+            <h1 className="mt-2 text-3xl font-black text-[var(--kc-text)]">{uploadCategoryFromQuery(upload.category) ? `Submit ${uploadCategories.find((category) => category.value === upload.category)?.label.replace(/^Korean |K-Drama \/ /, '') || 'Video'}` : ui.submitVideo}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--kc-text-secondary)]">{ui.submitVideoDesc} Admin approval ke baad hi points award honge.</p>
           </div>
-          <form onSubmit={submitUpload} className="rounded-xl border border-[#d8e4f0] bg-white p-6 shadow-sm sm:p-8">
-            <div className="flex items-center gap-3"><div className="rounded-lg bg-[#eaf3ff] p-3"><Clapperboard className="h-6 w-6 text-[#0b4eae]" /></div><div><h2 className="text-xl font-black text-[#102a43]">{t.submissionDetails}</h2><p className="text-sm text-[#486581]">{t.reviewTeam}</p></div></div>
+          <form onSubmit={submitUpload} className="rounded-xl border border-[var(--kc-border)] bg-white p-6 shadow-sm sm:p-8">
+            <div className="flex items-center gap-3"><div className="rounded-lg bg-[var(--kc-surface-blue)] p-3"><Clapperboard className="h-6 w-6 text-[var(--kc-blue-700)]" /></div><div><h2 className="text-xl font-black text-[var(--kc-text)]">{t.submissionDetails}</h2><p className="text-sm text-[var(--kc-text-secondary)]">{t.reviewTeam}</p></div></div>
             <div className="mt-6 grid gap-4">
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.contentCategory}<select value={upload.category} onChange={(event) => setUpload((current) => ({ ...current, category: event.target.value }))} className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none focus:border-[#0b4eae]">{uploadCategories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}</select></label>
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.videoTitle}<input required value={upload.title} onChange={(event) => setUpload((current) => ({ ...current, title: event.target.value }))} placeholder="Give your submission a clear title" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.videoUrl}<input required type="url" value={upload.video_url} onChange={(event) => setUpload((current) => ({ ...current, video_url: event.target.value }))} placeholder="YouTube / Drive video URL" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.thumbnailUrl}<input type="url" value={upload.thumbnail_url} onChange={(event) => setUpload((current) => ({ ...current, thumbnail_url: event.target.value }))} placeholder="Optional thumbnail image URL" className="rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
-              <label className="grid gap-2 text-sm font-bold text-[#102a43]">{ui.shortDescription}<textarea required value={upload.description} onChange={(event) => setUpload((current) => ({ ...current, description: event.target.value }))} placeholder="Tell us briefly about your content" className="min-h-32 rounded-lg border border-[#ccd9e6] bg-white px-4 py-3 text-[#102a43] outline-none placeholder:text-[#829ab1] focus:border-[#0b4eae]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">{ui.contentCategory}<select value={upload.category} onChange={(event) => setUpload((current) => ({ ...current, category: event.target.value }))} className="rounded-lg border border-[var(--kc-border)] bg-white px-4 py-3 text-[var(--kc-text)] outline-none focus:border-[var(--kc-blue-700)]">{uploadCategories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}</select></label>
+              <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">{ui.videoTitle}<input required value={upload.title} onChange={(event) => setUpload((current) => ({ ...current, title: event.target.value }))} placeholder="Give your submission a clear title" className="rounded-lg border border-[var(--kc-border)] bg-white px-4 py-3 text-[var(--kc-text)] outline-none placeholder:text-[var(--kc-text-muted)] focus:border-[var(--kc-blue-700)]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">{ui.videoUrl}<input required type="url" value={upload.video_url} onChange={(event) => setUpload((current) => ({ ...current, video_url: event.target.value }))} placeholder="YouTube / Drive video URL" className="rounded-lg border border-[var(--kc-border)] bg-white px-4 py-3 text-[var(--kc-text)] outline-none placeholder:text-[var(--kc-text-muted)] focus:border-[var(--kc-blue-700)]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">{ui.thumbnailUrl}<input type="url" value={upload.thumbnail_url} onChange={(event) => setUpload((current) => ({ ...current, thumbnail_url: event.target.value }))} placeholder="Optional thumbnail image URL" className="rounded-lg border border-[var(--kc-border)] bg-white px-4 py-3 text-[var(--kc-text)] outline-none placeholder:text-[var(--kc-text-muted)] focus:border-[var(--kc-blue-700)]" /></label>
+              <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">{ui.shortDescription}<textarea required value={upload.description} onChange={(event) => setUpload((current) => ({ ...current, description: event.target.value }))} placeholder="Tell us briefly about your content" className="min-h-32 rounded-lg border border-[var(--kc-border)] bg-white px-4 py-3 text-[var(--kc-text)] outline-none placeholder:text-[var(--kc-text-muted)] focus:border-[var(--kc-blue-700)]" /></label>
             </div>
-            <button className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-[#0b4eae] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#073a82]"><UploadCloud className="h-4 w-4" /> Submit for review</button>
+            <button className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[var(--kc-blue-800)]"><UploadCloud className="h-4 w-4" /> Submit for review</button>
           </form>
           </> : null}
         </section> : null}
@@ -493,35 +493,35 @@ const MemberDashboard = () => {
           <div className="rounded-xl border border-[#ffc400]/20 bg-[linear-gradient(110deg,rgba(255,196,0,0.12),rgba(17,17,19,1)_62%)] p-6 sm:p-8">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">{ui.memberEvents}</p>
             <h1 className="mt-2 text-3xl font-black sm:text-4xl">{ui.eventsTitle}</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#aab5c6]">{ui.eventsDesc}</p>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#dfbdce]">{ui.eventsDesc}</p>
           </div>
           <article className="rounded-xl border border-[#ffc400]/30 bg-[#111113] p-6 sm:p-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Past festival journey</p><h2 className="mt-2 text-2xl font-black sm:text-3xl">Itaewon World Music Spirit Festival 2026</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-[#aab5c6]">Follow the completed festival journey and official updates connected to the K-CUBE India pre-selection.</p></div><span className="shrink-0 rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black text-[#ffc400]">Completed</span></div>
-            <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Festival dates</p><p className="mt-2 font-black">October 4–6, 2026</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Location</p><p className="mt-2 font-black">Itaewon, Seoul, Korea</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[#98a4b1]">Main performance</p><p className="mt-2 font-black">October 6 · 7:00–9:30 PM</p></div></div>
-            <div className="mt-6 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]"><div className="rounded-lg border border-white/10 bg-white/[0.03] p-5"><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">What to expect</p><ul className="mt-3 space-y-3 text-sm leading-6 text-[#d4dbe7]"><li>- Festival music and cultural programming in Seoul.</li><li>- A dedicated India pre-selection route for eligible performers.</li><li>- Application review and follow-up communication from the K-CUBE team.</li></ul></div><div className="rounded-lg border border-white/10 bg-[#ffc400]/[0.06] p-5"><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Your next step</p><ol className="mt-3 space-y-3 text-sm leading-6 text-[#d4dbe7]"><li><span className="font-black text-[#ffc400]">01</span> Read the festival information.</li><li><span className="font-black text-[#ffc400]">02</span> Submit your pre-selection application.</li><li><span className="font-black text-[#ffc400]">03</span> Wait for review and official updates.</li></ol></div></div>
-            <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.03] p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Your application</p><h3 className="mt-2 text-lg font-black">{applicationLoading ? 'Checking submission status...' : indiaApplication ? 'India pre-selection submission found' : 'No submission yet'}</h3></div>{indiaApplication ? <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#ffc400]">{indiaApplication.status}</span> : null}</div>{indiaApplication ? <><div className="mt-4 grid gap-3 sm:grid-cols-3"><div><p className="text-xs font-bold text-[#98a4b1]">Performance category</p><p className="mt-1 font-black">{indiaApplication.performance_category}</p></div><div><p className="text-xs font-bold text-[#98a4b1]">Submitted</p><p className="mt-1 font-black">{indiaApplication.submitted_at ? new Date(indiaApplication.submitted_at).toLocaleDateString() : 'Not available'}</p></div><div><p className="text-xs font-bold text-[#98a4b1]">Points awarded</p><p className="mt-1 font-black text-[#ffc400]">{indiaApplication.points_awarded || 0}</p></div></div>{indiaApplication.review_note ? <p className="mt-4 border-l-2 border-[#ffc400] pl-3 text-sm leading-6 text-[#d4dbe7]"><span className="font-black">Review note:</span> {indiaApplication.review_note}</p> : <p className="mt-4 text-sm text-[#aab5c6]">Your application is saved. The K-CUBE team will update the status after review.</p>}</> : <p className="mt-3 text-sm leading-6 text-[#aab5c6]">Submit once to enter the review queue. Your status and any review note will appear here after submission.</p>}</div>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">Past festival journey</p><h2 className="mt-2 text-2xl font-black sm:text-3xl">Itaewon World Music Spirit Festival 2026</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-[#dfbdce]">Follow the completed festival journey and official updates connected to the K-CUBE India pre-selection.</p></div><span className="shrink-0 rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black text-[#ffc400]">Completed</span></div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[var(--kc-text-muted)]">Festival dates</p><p className="mt-2 font-black">October 4–6, 2026</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[var(--kc-text-muted)]">Location</p><p className="mt-2 font-black">Itaewon, Seoul, Korea</p></div><div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs font-bold text-[var(--kc-text-muted)]">Main performance</p><p className="mt-2 font-black">October 6 · 7:00–9:30 PM</p></div></div>
+            <div className="mt-6 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]"><div className="rounded-lg border border-white/10 bg-white/[0.03] p-5"><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">What to expect</p><ul className="mt-3 space-y-3 text-sm leading-6 text-[var(--kc-border)]"><li>- Festival music and cultural programming in Seoul.</li><li>- A dedicated India pre-selection route for eligible performers.</li><li>- Application review and follow-up communication from the K-CUBE team.</li></ul></div><div className="rounded-lg border border-white/10 bg-[#ffc400]/[0.06] p-5"><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Your next step</p><ol className="mt-3 space-y-3 text-sm leading-6 text-[var(--kc-border)]"><li><span className="font-black text-[#ffc400]">01</span> Read the festival information.</li><li><span className="font-black text-[#ffc400]">02</span> Submit your pre-selection application.</li><li><span className="font-black text-[#ffc400]">03</span> Wait for review and official updates.</li></ol></div></div>
+            <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.03] p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">Your application</p><h3 className="mt-2 text-lg font-black">{applicationLoading ? 'Checking submission status...' : indiaApplication ? 'India pre-selection submission found' : 'No submission yet'}</h3></div>{indiaApplication ? <span className="rounded-full border border-[#ffc400]/30 bg-[#ffc400]/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#ffc400]">{indiaApplication.status}</span> : null}</div>{indiaApplication ? <><div className="mt-4 grid gap-3 sm:grid-cols-3"><div><p className="text-xs font-bold text-[var(--kc-text-muted)]">Performance category</p><p className="mt-1 font-black">{indiaApplication.performance_category}</p></div><div><p className="text-xs font-bold text-[var(--kc-text-muted)]">Submitted</p><p className="mt-1 font-black">{indiaApplication.submitted_at ? new Date(indiaApplication.submitted_at).toLocaleDateString() : 'Not available'}</p></div><div><p className="text-xs font-bold text-[var(--kc-text-muted)]">Points awarded</p><p className="mt-1 font-black text-[#ffc400]">{indiaApplication.points_awarded || 0}</p></div></div>{indiaApplication.review_note ? <p className="mt-4 border-l-2 border-[#ffc400] pl-3 text-sm leading-6 text-[var(--kc-border)]"><span className="font-black">Review note:</span> {indiaApplication.review_note}</p> : <p className="mt-4 text-sm text-[#dfbdce]">Your application is saved. The K-CUBE team will update the status after review.</p>}</> : <p className="mt-3 text-sm leading-6 text-[#dfbdce]">Submit once to enter the review queue. Your status and any review note will appear here after submission.</p>}</div>
             <div className="mt-6 flex flex-wrap gap-3"><Link href="/india-pre-selection" className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">View festival brief</Link><Link href="/india-pre-selection/announcement" className="rounded-lg border border-[#ffc400]/40 px-5 py-3 text-sm font-black text-[#ffc400]">{indiaApplication ? 'View my application' : 'View official updates'}</Link></div>
           </article>
           <div className="grid gap-5 md:grid-cols-2">{events.length ? events.map((event) => (
             <article key={event.id} className="rounded-xl border border-white/10 bg-[#111113] p-6">
               <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffc400]">{event.category.replace(/_/g, ' ')}</p><h2 className="mt-2 text-xl font-black">{event.title}</h2></div>{event.points_reward ? <span className="rounded-full bg-[#ffc400]/10 px-3 py-1 text-xs font-black text-[#ffc400]">+{event.points_reward} pts</span> : null}</div>
-              <p className="mt-3 text-sm leading-6 text-[#aab5c6]">{event.description || 'Join this K-CUBE community event and participate in a verified experience.'}</p>
-              <div className="mt-4 space-y-2 text-sm text-[#d4dbe7]"><p><span className="font-bold text-[#98a4b1]">When:</span> {new Date(event.starts_at).toLocaleString()} - {new Date(event.ends_at).toLocaleString()}</p><p><span className="font-bold text-[#98a4b1]">Where:</span> {event.location_name || event.online_meeting_url || 'Details to be announced'}{event.location_address ? `, ${event.location_address}` : ''}</p>{event.capacity ? <p><span className="font-bold text-[#98a4b1]">Capacity:</span> {event.capacity} participants</p> : null}</div>
+              <p className="mt-3 text-sm leading-6 text-[#dfbdce]">{event.description || 'Join this K-CUBE community event and participate in a verified experience.'}</p>
+              <div className="mt-4 space-y-2 text-sm text-[var(--kc-border)]"><p><span className="font-bold text-[var(--kc-text-muted)]">When:</span> {new Date(event.starts_at).toLocaleString()} - {new Date(event.ends_at).toLocaleString()}</p><p><span className="font-bold text-[var(--kc-text-muted)]">Where:</span> {event.location_name || event.online_meeting_url || 'Details to be announced'}{event.location_address ? `, ${event.location_address}` : ''}</p>{event.capacity ? <p><span className="font-bold text-[var(--kc-text-muted)]">Capacity:</span> {event.capacity} participants</p> : null}</div>
               <button type="button" onClick={() => rsvpToEvent(event.id)} disabled={rsvpStatus[event.id] === 'registered' || rsvpStatus[event.id] === 'checked_in' || event.registration_status === 'completed' || event.registration_status === 'full'} className="mt-5 w-full rounded-lg bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909] disabled:cursor-not-allowed disabled:bg-[#4b431f] disabled:text-[#d4be55]">{rsvpStatus[event.id] === 'checked_in' ? 'Attendance verified' : rsvpStatus[event.id] === 'registered' ? 'RSVP confirmed' : event.registration_status === 'completed' ? 'Event completed' : event.registration_status === 'full' ? 'Registration full' : 'RSVP to this event'}</button>
             </article>
-          )) : <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-6 text-sm leading-7 text-[#aab5c6] md:col-span-2">No additional published events are available right now. Check back here when the admin publishes the next event.</div>}</div>
-          {eventMessage ? <p className="rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{eventMessage}</p> : null}
+          )) : <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-6 text-sm leading-7 text-[#dfbdce] md:col-span-2">No additional published events are available right now. Check back here when the admin publishes the next event.</div>}</div>
+          {eventMessage ? <p className="rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[var(--kc-border)]">{eventMessage}</p> : null}
         </section> : null}
         {activeView === 'overview' ? <section id="overview" className="px-0 py-0 sm:py-1">
-        <div className="mb-6 rounded-xl border border-[#2457d6]/30 bg-[linear-gradient(115deg,#eef6ff,#ffffff)] p-5 text-[#102a43] shadow-sm sm:p-6">
+        <div className="mb-6 rounded-xl border border-[var(--kc-blue-700)]/30 bg-[linear-gradient(115deg,var(--kc-surface-soft),#ffffff)] p-5 text-[var(--kc-text)] shadow-sm sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#2457d6]">Korean learning &amp; culture</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--kc-blue-700)]">Korean learning &amp; culture</p>
               <h2 className="mt-2 text-2xl font-black">Free Korean Language &amp; Culture Class</h2>
-              <p className="mt-2 text-sm leading-6 text-[#486581]">Choose one of the four Tuesday sessions and reserve your seat.</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--kc-text-secondary)]">Choose one of the four Tuesday sessions and reserve your seat.</p>
               <p className="mt-3 text-sm font-bold text-[#087f52]">Earn +100 points for each attended session, plus a +100 bonus after all 4 sessions (500 points total).</p>
             </div>
-            <Link href="/events/korean-language-culture-class" className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-[#2457d6] px-4 py-2.5 text-sm font-black text-white">Choose a session <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/events/korean-language-culture-class" className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-4 py-2.5 text-sm font-black text-white">Choose a session <ArrowRight className="h-4 w-4" /></Link>
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {(koreanClassEvents.length ? koreanClassEvents : [
@@ -529,42 +529,42 @@ const MemberDashboard = () => {
               { id: 0, title: 'Week 2', starts_at: '2026-09-29T15:00:00', location_name: 'Korea Edge Cube - Gr' },
               { id: 0, title: 'Week 3', starts_at: '2026-10-06T15:00:00', location_name: 'Korea Edge Cube - Gr' },
               { id: 0, title: 'Week 4', starts_at: '2026-10-13T15:00:00', location_name: 'Korea Edge Cube - Gr' },
-            ]).map((event) => <Link key={`${event.title}-${event.starts_at}`} href="/events/korean-language-culture-class" className="rounded-lg border border-[#d8e1ee] bg-white p-4 transition hover:border-[#2457d6]">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2457d6]">{event.title.includes('Week') ? event.title.match(/Week \d+/)?.[0] || event.title : event.title}</p>
+            ]).map((event) => <Link key={`${event.title}-${event.starts_at}`} href="/events/korean-language-culture-class" className="rounded-lg border border-[var(--kc-border)] bg-white p-4 transition hover:border-[var(--kc-blue-700)]">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--kc-blue-700)]">{event.title.includes('Week') ? event.title.match(/Week \d+/)?.[0] || event.title : event.title}</p>
               <p className="mt-2 text-sm font-black">{new Date(event.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-              <p className="mt-1 flex items-center gap-1 text-xs text-[#64748b]"><CalendarDays className="h-3 w-3" /> 3:00–4:00 PM</p>
+              <p className="mt-1 flex items-center gap-1 text-xs text-[var(--kc-text-muted)]"><CalendarDays className="h-3 w-3" /> 3:00–4:00 PM</p>
             </Link>)}
           </div>
-          <p className="mt-4 flex items-start gap-1.5 text-xs text-[#486581]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
+          <p className="mt-4 flex items-start gap-1.5 text-xs text-[var(--kc-text-secondary)]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
         </div>
         <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[1fr_360px]">
           <div id="profile" className="col-span-full flex scroll-mt-24 flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#ffc400] text-lg font-black text-[#111]">{(user.fullName || 'K').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()}</div>
-              <div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">{t.account}</p><p className="truncate text-lg font-black">{user.fullName}</p><p className="truncate text-sm text-[#aab5c6]">{user.email || user.phone || t.workspace}</p></div>
+              <div className="min-w-0"><p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">{t.account}</p><p className="truncate text-lg font-black">{user.fullName}</p><p className="truncate text-sm text-[#dfbdce]">{user.email || user.phone || t.workspace}</p></div>
             </div>
-            <div className="flex flex-wrap items-center gap-3"><span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-[#d4dbe7]">{user.referralCode ? `${t.referral}: ${user.referralCode}` : t.locationPrompt}</span><button type="button" onClick={() => setActiveView('profile')} className="inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/40 px-4 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]"><UserRound className="h-4 w-4" /> {t.viewEditProfile}</button></div>
+            <div className="flex flex-wrap items-center gap-3"><span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-[var(--kc-border)]">{user.referralCode ? `${t.referral}: ${user.referralCode}` : t.locationPrompt}</span><button type="button" onClick={() => setActiveView('profile')} className="inline-flex items-center gap-2 rounded-lg border border-[#ffc400]/40 px-4 py-2.5 text-sm font-black text-[#ffc400] transition hover:bg-[#ffc400] hover:text-[#111]"><UserRound className="h-4 w-4" /> {t.viewEditProfile}</button></div>
           </div>
           <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111113]">
             <div className="p-6 sm:p-8 lg:p-10">
                 <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{ui.memberCommand}</p>
                 <h1 className="mt-4 max-w-4xl text-3xl font-black leading-[1.08] sm:text-4xl lg:text-5xl">{ui.dashboardHeading}</h1>
-                <p className="mt-5 max-w-2xl text-sm leading-7 text-[#aab5c6]">{ui.dashboardIntro}</p>
+                <p className="mt-5 max-w-2xl text-sm leading-7 text-[#dfbdce]">{ui.dashboardIntro}</p>
                 <div className="mt-8 grid gap-3 sm:grid-cols-3">
                   <div className="rounded-lg border border-[#ffc400]/25 bg-[#ffc400]/10 p-4">
                     <Trophy className="h-5 w-5 text-[#ffc400]" />
                     <p className="mt-3 text-3xl font-black text-[#ffc400]">{points}</p>
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#d4dbe7]">{t.totalPoints}</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--kc-border)]">{t.totalPoints}</p>
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                     <Plane className="h-5 w-5 text-[#ffc400]" />
                     <p className="mt-3 text-3xl font-black">{Math.min(Math.round(points / 20), 100)}%</p>
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">{t.tripMeter}</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#dfbdce]">{t.tripMeter}</p>
                   </div>
                   <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                     <Gift className="h-5 w-5 text-[#ffc400]" />
                     <p className="mt-3 text-sm font-black text-[#ffc400]">{t.signupRewards}</p>
-                    <p className="mt-2 text-xs leading-5 text-[#aab5c6]">{t.welcomePoints}</p>
+                    <p className="mt-2 text-xs leading-5 text-[#dfbdce]">{t.welcomePoints}</p>
                   </div>
                 </div>
             </div>
@@ -579,7 +579,7 @@ const MemberDashboard = () => {
 
           <aside className="rounded-xl border border-white/10 bg-[#111113] p-6">
             <h2 className="text-2xl font-black">{ui.ranking}</h2>
-            <p className="mt-3 text-sm leading-7 text-[#aab5c6]">{ui.rankingDesc}</p>
+            <p className="mt-3 text-sm leading-7 text-[#dfbdce]">{ui.rankingDesc}</p>
             <div className="mt-6 h-3 overflow-hidden rounded-full bg-white/10">
               <div className="h-full rounded-full bg-[#ffc400]" style={{ width: `${Math.min(points / 20, 100)}%` }} />
             </div>
@@ -590,16 +590,16 @@ const MemberDashboard = () => {
             <div id="referrals" className="mt-6 scroll-mt-24 rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-5">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">{ui.invite}</p>
               <h3 className="mt-2 text-xl font-black text-white">{ui.earn30}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#d4dbe7]">{ui.referralDesc}</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--kc-border)]">{ui.referralDesc}</p>
               <div className="mt-4 rounded-lg border border-white/10 bg-[#070708] px-4 py-3">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">{ui.referralCode}</p>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#dfbdce]">{ui.referralCode}</p>
                 <p className="mt-1 break-all text-lg font-black text-white">{user.referralCode ?? 'Loading...'}</p>
               </div>
               <button type="button" onClick={copyReferralLink} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#ffc400]/40 bg-[#ffc400] px-4 py-3 text-sm font-black text-[#090909]">
                 <Copy className="h-4 w-4" />
                 {ui.copyInvite}
               </button>
-              {referralMessage ? <p className="mt-3 text-sm leading-6 text-[#d4dbe7]">{referralMessage}</p> : null}
+              {referralMessage ? <p className="mt-3 text-sm leading-6 text-[var(--kc-border)]">{referralMessage}</p> : null}
             </div>
           </aside>
         </div>
@@ -610,7 +610,7 @@ const MemberDashboard = () => {
           <form id="submissions" onSubmit={submitUpload} className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <Clapperboard className="h-7 w-7 text-[#ffc400]" />
             <h2 className="mt-4 text-2xl font-black">Submit Korean culture video</h2>
-            <p className="mt-2 text-sm leading-6 text-[#aab5c6]">Dance, song, drama review or culture content submit karein. Admin approve karke points assign karega.</p>
+            <p className="mt-2 text-sm leading-6 text-[#dfbdce]">Dance, song, drama review or culture content submit karein. Admin approve karke points assign karega.</p>
             <div className="mt-5 grid gap-3">
               <select value={upload.category} onChange={(event) => setUpload((current) => ({ ...current, category: event.target.value }))} className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white">
                 {uploadCategories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}
@@ -628,14 +628,14 @@ const MemberDashboard = () => {
           <section id="learning" className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <BookOpen className="h-7 w-7 text-[#ffc400]" />
             <h2 className="mt-4 text-2xl font-black">{ui.dailyLearning}</h2>
-            <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{ui.dailyDesc}</p>
+            <p className="mt-2 text-sm leading-6 text-[#dfbdce]">{ui.dailyDesc}</p>
             <div className="mt-5 grid gap-3">
               {lessons.map((lesson) => (
                 <article key={lesson.id} className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-black">{lesson.title}</h3>
-                      <p className="mt-1 text-sm leading-6 text-[#aab5c6]">{lesson.detail}</p>
+                      <p className="mt-1 text-sm leading-6 text-[#dfbdce]">{lesson.detail}</p>
                     </div>
                     <span className="rounded-full bg-[#ffc400]/10 px-3 py-1 text-sm font-black text-[#ffc400]">+{lesson.points}</span>
                   </div>
@@ -650,7 +650,7 @@ const MemberDashboard = () => {
           <form id="kfood" onSubmit={submitPurchaseClaim} className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <Utensils className="h-7 w-7 text-[#ffc400]" />
             <h2 className="mt-4 text-2xl font-black">{ui.claimFood}</h2>
-            <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{ui.claimFoodDesc}</p>
+            <p className="mt-2 text-sm leading-6 text-[#dfbdce]">{ui.claimFoodDesc}</p>
             <div className="mt-5 grid gap-3">
               <input value={purchase.order_id} onChange={(event) => setPurchase((current) => ({ ...current, order_id: event.target.value }))} placeholder="K-Food order ID" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
               <input value={purchase.order_total} onChange={(event) => setPurchase((current) => ({ ...current, order_total: event.target.value }))} placeholder="Order total" className="rounded-lg border border-white/10 bg-[#070708] px-4 py-3 text-white outline-none focus:border-[#ffc400]" />
@@ -669,9 +669,9 @@ const MemberDashboard = () => {
             <div>
               <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{ui.savedProgress}</p>
               <h2 className="mt-2 text-2xl font-black">{ui.history}</h2>
-              <p className="mt-2 text-sm leading-6 text-[#aab5c6]">{ui.persistence}</p>
+              <p className="mt-2 text-sm leading-6 text-[#dfbdce]">{ui.persistence}</p>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-[#d4dbe7]">
+            <div className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-[var(--kc-border)]">
               {learningLoading ? ui.loadingProgress : `${learningProgress.length} ${ui.trackedPaths}`}
             </div>
           </div>
@@ -684,19 +684,19 @@ const MemberDashboard = () => {
                   <h3 className="mt-2 text-xl font-black">{track.trackTitle}</h3>
                   <div className="mt-4 grid grid-cols-3 gap-3 text-center">
                     <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
-                      <p className="text-xs font-bold text-[#aab5c6]">{ui.current}</p>
+                      <p className="text-xs font-bold text-[#dfbdce]">{ui.current}</p>
                       <p className="mt-1 text-2xl font-black" style={{ color: track.accent }}>{track.currentStreak}</p>
                     </div>
                     <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
-                      <p className="text-xs font-bold text-[#aab5c6]">{ui.best}</p>
+                      <p className="text-xs font-bold text-[#dfbdce]">{ui.best}</p>
                       <p className="mt-1 text-2xl font-black">{track.bestStreak}</p>
                     </div>
                     <div className="rounded-lg border border-white/10 bg-[#0a0a0b] p-3">
-                      <p className="text-xs font-bold text-[#aab5c6]">{ui.sessions}</p>
+                      <p className="text-xs font-bold text-[#dfbdce]">{ui.sessions}</p>
                       <p className="mt-1 text-2xl font-black">{track.totalSessions}</p>
                     </div>
                   </div>
-                  <div className="mt-4 space-y-2 text-sm text-[#d4dbe7]">
+                  <div className="mt-4 space-y-2 text-sm text-[var(--kc-border)]">
                     <p className="flex justify-between gap-4"><span>{ui.totalCorrect}</span><span className="font-black">{track.totalCorrect}</span></p>
                     <p className="flex justify-between gap-4"><span>{ui.totalPoints}</span><span className="font-black">{track.totalPoints}</span></p>
                     <p className="flex justify-between gap-4"><span>{ui.lastCompleted}</span><span className="font-black">{track.lastCompletedAt ? new Date(track.lastCompletedAt).toLocaleString() : ui.notYet}</span></p>
@@ -704,7 +704,7 @@ const MemberDashboard = () => {
                 </article>
               ))
             ) : (
-              <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-[#aab5c6] lg:col-span-3">
+              <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-[#dfbdce] lg:col-span-3">
                 {ui.noProgress}
               </div>
             )}
@@ -716,7 +716,7 @@ const MemberDashboard = () => {
                 <p className="text-sm font-black uppercase tracking-[0.2em] text-[#ffc400]">{ui.recentSessions}</p>
                 <h3 className="mt-2 text-xl font-black">{ui.latestCompletions}</h3>
               </div>
-              <span className="text-sm text-[#aab5c6]">{learningSessions.length} {ui.records}</span>
+              <span className="text-sm text-[#dfbdce]">{learningSessions.length} {ui.records}</span>
             </div>
             <div className="mt-4 grid gap-3">
               {learningSessions.length ? (
@@ -724,7 +724,7 @@ const MemberDashboard = () => {
                   <article key={session.id} className="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="font-black text-white">{session.trackTitle}</p>
-                      <p className="mt-1 text-sm text-[#aab5c6]">{session.totalQuestions} questions · {session.correctAnswers} correct · {session.accuracy}% accuracy</p>
+                      <p className="mt-1 text-sm text-[#dfbdce]">{session.totalQuestions} questions · {session.correctAnswers} correct · {session.accuracy}% accuracy</p>
                     </div>
                     <div className="flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.16em]">
                       <span className="rounded-full bg-[#ffc400]/10 px-3 py-1 text-[#ffc400]">+{session.sessionPoints} pts</span>
@@ -734,7 +734,7 @@ const MemberDashboard = () => {
                   </article>
                 ))
               ) : (
-                <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-[#aab5c6]">
+                <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-[#dfbdce]">
                   {ui.noSessions}
                 </div>
               )}
@@ -748,14 +748,14 @@ const MemberDashboard = () => {
         <div className="mx-auto max-w-3xl rounded-xl border border-[#ffc400]/20 bg-[#ffc400]/10 p-6 sm:p-8">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ffc400]">{ui.invite}</p>
           <h2 className="mt-3 text-3xl font-black">{ui.earn30}</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d4dbe7]">{ui.referralDesc}</p>
-          <div className="mt-6 rounded-lg border border-white/10 bg-[#070708] px-4 py-4"><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#aab5c6]">{ui.referralCode}</p><p className="mt-2 text-2xl font-black tracking-[0.12em]">{user.referralCode ?? 'Loading...'}</p></div>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--kc-border)]">{ui.referralDesc}</p>
+          <div className="mt-6 rounded-lg border border-white/10 bg-[#070708] px-4 py-4"><p className="text-xs font-bold uppercase tracking-[0.16em] text-[#dfbdce]">{ui.referralCode}</p><p className="mt-2 text-2xl font-black tracking-[0.12em]">{user.referralCode ?? 'Loading...'}</p></div>
           <button type="button" onClick={copyReferralLink} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]"><Copy className="h-4 w-4" /> {ui.copyInvite}</button>
-          {referralMessage ? <p className="mt-3 text-sm font-bold text-[#d4dbe7]">{referralMessage}</p> : null}
+          {referralMessage ? <p className="mt-3 text-sm font-bold text-[var(--kc-border)]">{referralMessage}</p> : null}
         </div>
       </section> : null}
 
-      {message ? <p className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[#d4dbe7]">{message}</p> : null}
+      {message ? <p className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[var(--kc-border)]">{message}</p> : null}
         </div>
       </div>
     </main>

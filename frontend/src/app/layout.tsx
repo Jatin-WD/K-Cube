@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full bg-transparent text-[#111827]">
+      <body className="min-h-full bg-transparent text-[var(--kc-text)]">
         <Providers>
           <Header />
           <main className="min-h-[calc(100vh-1px)]">{children}</main>

@@ -1,10 +1,7 @@
-import IndiaPreSelectionApplyPage from '@/components/IndiaPreSelectionApplyPage';
+import FestivalArchive from '@/components/FestivalArchive';
 
-export const metadata = {
-  title: 'Apply | ITAEWON World Music Spirit Festival 2026',
-  description: 'Application page for India pre-selection with login-gated submission form and supporting guidance.',
-};
+export const metadata = { title: '2026 Applications Closed | K-CUBE' };
 
 export default function ApplyPage() {
-  return <IndiaPreSelectionApplyPage />;
+  return <FestivalArchive />;
 }

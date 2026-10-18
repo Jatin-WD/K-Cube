@@ -72,34 +72,34 @@ const formatTitle = (question: QuizRound) => `${question.tag} · ${question.poin
 const LearningPreview = ({ title, intro, accent, overview, loginCopy, bankSize, rewardPoints, slug, language }: LearningTrackConfig & { language: keyof typeof learningUi }) => {
   const ui = learningUi[language];
   return (
-  <article className="overflow-hidden rounded-xl border border-[#dce6f0] bg-white p-6 shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
+  <article className="overflow-hidden rounded-xl border border-[var(--kc-border)] bg-white p-6 shadow-[0_6px_20px_rgba(81,33,55,0.07)]">
     <p className="text-xs font-black uppercase tracking-[0.3em]" style={{ color: accent }}>{title}</p>
-    <h2 className="mt-3 text-2xl font-bold text-[#102a43]">{title}</h2>
-    <p className="mt-4 max-w-3xl text-sm leading-7 text-[#486581]">{intro}</p>
+    <h2 className="mt-3 text-2xl font-bold text-[var(--kc-text)]">{title}</h2>
+    <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--kc-text-secondary)]">{intro}</p>
     <div className="mt-6 flex flex-wrap gap-3">
       {overview.map((item) => (
-        <span key={item} className="rounded-md border border-[#dce6f0] bg-[#f7fafd] px-4 py-2 text-sm font-semibold text-[#486581]">
+        <span key={item} className="rounded-md border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-2 text-sm font-semibold text-[var(--kc-text-secondary)]">
           {item}
         </span>
       ))}
     </div>
     <div className="mt-6 grid gap-4 sm:grid-cols-3">
-      <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
-      <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">{ui.questionBank}</p>
-        <p className="mt-2 text-2xl font-bold text-[#0b4eae]">{bankSize}</p>
+      <div className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4">
+      <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--kc-text-muted)]">{ui.questionBank}</p>
+        <p className="mt-2 text-2xl font-bold text-[var(--kc-blue-700)]">{bankSize}</p>
       </div>
-      <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">{ui.sessionSize}</p>
-        <p className="mt-2 text-2xl font-bold text-[#0b4eae]">10 {ui.questions}</p>
+      <div className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--kc-text-muted)]">{ui.sessionSize}</p>
+        <p className="mt-2 text-2xl font-bold text-[var(--kc-blue-700)]">10 {ui.questions}</p>
       </div>
-      <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#9fb2bd]">{ui.reward}</p>
+      <div className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--kc-text-muted)]">{ui.reward}</p>
         <p className="mt-2 text-2xl font-bold text-[#b77900]">+{rewardPoints} pts</p>
       </div>
     </div>
     <div className="mt-6 grid gap-3 md:grid-cols-2">
       {loginCopy.map((line) => (
-        <div key={line} className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4 text-sm leading-7 text-[#486581]">
+        <div key={line} className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4 text-sm leading-7 text-[var(--kc-text-secondary)]">
           {line}
         </div>
       ))}
@@ -403,15 +403,15 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
               key={`${question.id}-${card.korean}`}
               type="button"
               onClick={() => setSelected(card.korean)}
-              className={`min-h-56 rounded-3xl border-2 p-5 text-left transition ${selected === card.korean ? 'border-[#ffcf86] bg-[#1b2b30]' : 'border-[#2c4049] bg-[#0f1d22] hover:bg-[#13242a]'}`}
+              className={`min-h-56 rounded-3xl border-2 p-5 text-left transition ${selected === card.korean ? 'border-[#ffcf86] bg-[#382635]' : 'border-[#382635] bg-[#382635] hover:bg-[#382635]'}`}
             >
               <span className="flex h-24 items-center justify-center text-6xl">{visualIcons[card.visual] || '📘'}</span>
               <span className="mt-5 flex items-end justify-between">
                 <span>
                   <span className="block text-3xl font-black">{card.korean}</span>
-                  <span className="mt-1 block text-sm font-bold text-[#9fb2bd]">{card.label}</span>
+                  <span className="mt-1 block text-sm font-bold text-[var(--kc-text-muted)]">{card.label}</span>
                 </span>
-                <span className="rounded-full border border-white/10 px-3 py-1 text-xs font-black text-[#9fb2bd]">{index + 1}</span>
+                <span className="rounded-full border border-white/10 px-3 py-1 text-xs font-black text-[var(--kc-text-muted)]">{index + 1}</span>
               </span>
             </button>
           ))}
@@ -427,7 +427,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
               key={`${question.id}-${option}`}
               type="button"
               onClick={() => setSelected(option)}
-              className={`min-h-16 rounded-2xl border-2 px-5 py-4 text-left text-lg font-black transition ${selected === option ? 'border-[#ffcf86] bg-[#1b2b30]' : 'border-[#2c4049] bg-[#0f1d22] hover:bg-[#13242a]'}`}
+              className={`min-h-16 rounded-2xl border-2 px-5 py-4 text-left text-lg font-black transition ${selected === option ? 'border-[#ffcf86] bg-[#382635]' : 'border-[#382635] bg-[#382635] hover:bg-[#382635]'}`}
             >
               {option}
             </button>
@@ -439,7 +439,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
     if (question.type === 'arrange') {
       return (
         <div className="grid gap-5">
-          <div className="min-h-24 rounded-2xl border-2 border-dashed border-[#2c4049] bg-[#0f1d22] p-4">
+          <div className="min-h-24 rounded-2xl border-2 border-dashed border-[#382635] bg-[#382635] p-4">
             {builtWords.length ? (
               <div className="flex flex-wrap gap-3">
                 {builtWords.map((word, index) => (
@@ -447,14 +447,14 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                     key={`${word}-${index}`}
                     type="button"
                     onClick={() => setBuiltWords((words) => words.filter((_, wordIndex) => wordIndex !== index))}
-                    className="rounded-xl bg-[#ffcf86] px-4 py-3 text-lg font-black text-[#111827]"
+                    className="rounded-xl bg-[#ffcf86] px-4 py-3 text-lg font-black text-[var(--kc-text)]"
                   >
                     {word}
                   </button>
                 ))}
               </div>
             ) : (
-              <p className="text-sm font-bold text-[#708995]">{ui.arrange}</p>
+              <p className="text-sm font-bold text-[var(--kc-text-muted)]">{ui.arrange}</p>
             )}
           </div>
           <div className="flex flex-wrap gap-3">
@@ -464,7 +464,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                 type="button"
                 disabled={builtWords.includes(word)}
                 onClick={() => setBuiltWords((words) => [...words, word])}
-                className="rounded-xl border-2 border-[#2c4049] bg-[#12232a] px-4 py-3 text-lg font-black disabled:opacity-35"
+                className="rounded-xl border-2 border-[#382635] bg-[#382635] px-4 py-3 text-lg font-black disabled:opacity-35"
               >
                 {word}
               </button>
@@ -487,7 +487,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                 onClick={() =>
                   setMatched((items) => (active ? items.filter((item) => item !== token) : [...items, token]))
                 }
-                className={`flex items-center justify-between rounded-2xl border-2 px-5 py-4 text-lg font-black ${active ? 'border-[#19c37d] bg-[#123c31] text-[#7cf0b6]' : 'border-[#2c4049] bg-[#0f1d22]'}`}
+                className={`flex items-center justify-between rounded-2xl border-2 px-5 py-4 text-lg font-black ${active ? 'border-[#19c37d] bg-[#123c31] text-[#7cf0b6]' : 'border-[#382635] bg-[#382635]'}`}
               >
                 <span className="text-2xl">{pair.korean}</span>
                 <span>{pair.label}</span>
@@ -502,7 +502,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
       <button
         type="button"
         onClick={() => setSelected('spoken')}
-        className="inline-flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-[#2c4049] bg-[#0f1d22] px-5 py-6 text-lg font-black"
+        className="inline-flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-[#382635] bg-[#382635] px-5 py-6 text-lg font-black"
       >
         <Mic className="h-7 w-7 text-[#ffcf86]" /> {ui.speak}
       </button>
@@ -511,10 +511,10 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
 
   if (!signedIn) {
     return (
-      <main className="kc-learning-surface min-h-screen bg-[#eef4f8] text-[#102a43]">
+      <main className="kc-learning-surface min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
         <section className="border-b border-white/10 px-4 py-4 sm:px-6 lg:px-10">
           <div className="mx-auto flex max-w-[1500px] items-center justify-between">
-            <Link href="/learning" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-[#d8e5eb]">
+            <Link href="/learning" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-[var(--kc-border)]">
               <ArrowLeft className="h-4 w-4" /> Back to learning
             </Link>
             <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-[#ffcf86]">
@@ -534,10 +534,10 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   if (!question) return null;
 
   return (
-    <main className="kc-learning-surface min-h-screen bg-[#eef4f8] text-[#102a43]">
-      <section className="bg-[#101f24] px-4 py-5 text-white sm:px-6 lg:px-10">
+    <main className="kc-learning-surface min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
+      <section className="bg-[#382635] px-4 py-5 text-white sm:px-6 lg:px-10">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-3">
-          <Link href="/learning" className="inline-flex items-center gap-2 rounded-xl border border-[#35505d] px-3 py-2 text-sm font-black text-[#9fb2bd] hover:text-white">
+          <Link href="/learning" className="inline-flex items-center gap-2 rounded-xl border border-[var(--kc-text-secondary)] px-3 py-2 text-sm font-black text-[var(--kc-text-muted)] hover:text-white">
             <ArrowLeft className="h-4 w-4" />
             {ui.back}
           </Link>
@@ -546,17 +546,17 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
             <h1 className="text-lg font-black leading-tight sm:text-2xl">{track.title}</h1>
           </div>
           <div className="ml-auto flex flex-wrap gap-2 text-sm font-black">
-            <span className="inline-flex items-center gap-1 rounded-xl bg-[#142f36] px-3 py-2 text-[#ff4b4b]"><Heart className="h-4 w-4 fill-current" /> {hearts}</span>
-            <span className="inline-flex items-center gap-1 rounded-xl bg-[#142f36] px-3 py-2 text-[#1cb0f6]"><Zap className="h-4 w-4" /> {xp}</span>
-            <span className="inline-flex items-center gap-1 rounded-xl bg-[#142f36] px-3 py-2 text-[#ff9600]"><Flame className="h-4 w-4" /> {streak}</span>
-            <span className="inline-flex items-center gap-1 rounded-xl bg-[#142f36] px-3 py-2 text-[#ffcf86]"><Trophy className="h-4 w-4" /> {currentWalletPoints}</span>
+            <span className="inline-flex items-center gap-1 rounded-xl bg-[#382635] px-3 py-2 text-[#ff4b4b]"><Heart className="h-4 w-4 fill-current" /> {hearts}</span>
+            <span className="inline-flex items-center gap-1 rounded-xl bg-[#382635] px-3 py-2 text-[var(--kc-blue-700)]"><Zap className="h-4 w-4" /> {xp}</span>
+            <span className="inline-flex items-center gap-1 rounded-xl bg-[#382635] px-3 py-2 text-[#ff9600]"><Flame className="h-4 w-4" /> {streak}</span>
+            <span className="inline-flex items-center gap-1 rounded-xl bg-[#382635] px-3 py-2 text-[#ffcf86]"><Trophy className="h-4 w-4" /> {currentWalletPoints}</span>
           </div>
         </div>
       </section>
 
       <section className="px-4 py-8 sm:px-6 lg:px-10">
         <div className="mx-auto grid max-w-[1500px] gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <section className="rounded-[28px] bg-[#101f24] p-5 text-white shadow-[0_24px_70px_rgba(0,0,0,0.2)]">
+          <section className="rounded-[28px] bg-[#382635] p-5 text-white shadow-[0_24px_70px_rgba(0,0,0,0.2)]">
             <div className="flex items-center gap-5">
               <button
                 type="button"
@@ -569,12 +569,12 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                   setNotice('');
                   setAttempts([]);
                 }}
-                className="text-[#708995]"
+                className="text-[var(--kc-text-muted)]"
                 aria-label={ui.restart}
               >
                 <RotateCcw className="h-6 w-6" />
               </button>
-              <div className="h-4 flex-1 overflow-hidden rounded-full bg-[#35505d]">
+              <div className="h-4 flex-1 overflow-hidden rounded-full bg-[var(--kc-text-secondary)]">
                 <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: track.accent }} />
               </div>
               <span className="inline-flex items-center gap-2 text-lg font-black text-[#ff4b4b]"><Heart className="h-6 w-6 fill-current" /> {hearts}</span>
@@ -585,10 +585,10 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                 <Sparkles className="h-5 w-5 fill-current" /> {formatTitle(question)}
               </div>
               <h2 className="mt-4 text-2xl font-black leading-tight sm:text-4xl lg:text-5xl">{question.prompt}</h2>
-              <div className="mt-7 rounded-3xl bg-[#142a31] p-5 text-center">
+              <div className="mt-7 rounded-3xl bg-[#382635] p-5 text-center">
                 <p className="text-4xl font-black sm:text-6xl lg:text-7xl">{question.korean}</p>
                 {(question.type === 'listen' || question.type === 'speak') ? (
-                  <button type="button" onClick={speak} className="mt-5 inline-flex items-center gap-2 rounded-xl border-2 border-[#35505d] px-4 py-3 text-sm font-black text-[#ffcf86]">
+                  <button type="button" onClick={speak} className="mt-5 inline-flex items-center gap-2 rounded-xl border-2 border-[var(--kc-text-secondary)] px-4 py-3 text-sm font-black text-[#ffcf86]">
                     <Volume2 className="h-5 w-5" /> {ui.play}
                   </button>
                 ) : null}
@@ -599,14 +599,14 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                   <p className="font-black">{notice}</p>
                 </div>
               ) : null}
-              <div className="mt-7 flex flex-col-reverse gap-3 border-t border-[#35505d] pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-7 flex flex-col-reverse gap-3 border-t border-[var(--kc-text-secondary)] pt-5 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={() => {
                     setHearts((value) => Math.max(0, value - 1));
                     nextQuestion();
                   }}
-                  className="rounded-xl border-2 border-[#35505d] px-6 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#708995]"
+                  className="rounded-xl border-2 border-[var(--kc-text-secondary)] px-6 py-3 text-sm font-black uppercase tracking-[0.1em] text-[var(--kc-text-muted)]"
                 >
                   {ui.skip}
                 </button>
@@ -624,7 +624,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                     type="button"
                     onClick={checkQuestion}
                     disabled={!currentAnswer()}
-                    className="rounded-xl bg-[#1cb0f6] px-8 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#06232f] shadow-[0_5px_0_#0b75a5] disabled:bg-[#354b58] disabled:text-[#708995] disabled:shadow-none"
+                    className="rounded-xl bg-[var(--kc-blue-700)] px-8 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#382635] shadow-[0_5px_0_var(--kc-text-secondary)] disabled:bg-[#382635] disabled:text-[var(--kc-text-muted)] disabled:shadow-none"
                   >
                     {ui.check}
                   </button>
@@ -634,39 +634,39 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
           </section>
 
           <aside className="grid gap-5 self-start">
-            <div className="rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm">
+            <div className="rounded-[28px] border border-[var(--kc-border)] bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <Trophy className="h-6 w-6 text-[#ff9600]" />
                 <h2 className="text-xl font-black">{ui.points}</h2>
               </div>
-              <div className="mt-4 grid gap-3 text-sm font-bold text-[#565959]">
-                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>{ui.solve}</span><span>+{question.points}</span></p>
-                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>{ui.completion}</span><span>+{track.rewardPoints}</span></p>
-                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>{ui.sessionSize}</span><span>{sessionQuestions.length} {ui.questions}</span></p>
-                <p className="flex justify-between rounded-xl bg-[#f7fafa] p-3"><span>{ui.remaining}</span><span>{remainingQuestions}</span></p>
+              <div className="mt-4 grid gap-3 text-sm font-bold text-[var(--kc-text-secondary)]">
+                <p className="flex justify-between rounded-xl bg-[var(--kc-surface-soft)] p-3"><span>{ui.solve}</span><span>+{question.points}</span></p>
+                <p className="flex justify-between rounded-xl bg-[var(--kc-surface-soft)] p-3"><span>{ui.completion}</span><span>+{track.rewardPoints}</span></p>
+                <p className="flex justify-between rounded-xl bg-[var(--kc-surface-soft)] p-3"><span>{ui.sessionSize}</span><span>{sessionQuestions.length} {ui.questions}</span></p>
+                <p className="flex justify-between rounded-xl bg-[var(--kc-surface-soft)] p-3"><span>{ui.remaining}</span><span>{remainingQuestions}</span></p>
               </div>
             </div>
-            <div className="rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm">
+            <div className="rounded-[28px] border border-[var(--kc-border)] bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
-                <BookOpen className="h-6 w-6 text-[#007185]" />
+                <BookOpen className="h-6 w-6 text-[var(--kc-blue-700)]" />
                 <h2 className="text-xl font-black">{ui.summary}</h2>
               </div>
-              <p className="mt-3 text-sm font-bold leading-7 text-[#565959]">{track.intro}</p>
+              <p className="mt-3 text-sm font-bold leading-7 text-[var(--kc-text-secondary)]">{track.intro}</p>
               <div className="mt-4 grid gap-2">
                 {track.overview.map((item) => (
-                  <div key={item} className="rounded-xl bg-[#f7fafa] p-3 text-sm font-bold text-[#374151]">
+                  <div key={item} className="rounded-xl bg-[var(--kc-surface-soft)] p-3 text-sm font-bold text-[#382635]">
                     {item}
                   </div>
                 ))}
               </div>
             </div>
-            <div className="rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm">
+            <div className="rounded-[28px] border border-[var(--kc-border)] bg-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <ChevronRight className="h-6 w-6 text-[#b12704]" />
                 <h2 className="text-xl font-black">{ui.state}</h2>
               </div>
-              <p className="mt-3 text-sm font-bold text-[#565959]">{completed ? ui.completed : ui.progress}</p>
-              <p className="mt-2 text-sm font-bold text-[#565959]">{ui.earned}: {sessionPoints}</p>
+              <p className="mt-3 text-sm font-bold text-[var(--kc-text-secondary)]">{completed ? ui.completed : ui.progress}</p>
+              <p className="mt-2 text-sm font-bold text-[var(--kc-text-secondary)]">{ui.earned}: {sessionPoints}</p>
             </div>
           </aside>
         </div>

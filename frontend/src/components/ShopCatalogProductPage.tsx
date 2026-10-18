@@ -17,12 +17,12 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
   const relatedProducts = getRelatedShopProducts(product.id, product.categoryKey);
 
   return (
-    <main className="min-h-screen bg-[#f4f0e8] px-4 py-8 text-[#111827] lg:px-10">
+    <main className="min-h-screen bg-[#f4f0e8] px-4 py-8 text-[var(--kc-text)] lg:px-10">
       <div className="mx-auto max-w-[1760px] space-y-6">
-        <div className="rounded-[2rem] border border-[#d5d9d9] bg-white p-5 shadow-[0_20px_40px_rgba(0,0,0,0.08)] sm:p-8">
+        <div className="rounded-[2rem] border border-[var(--kc-border)] bg-white p-5 shadow-[0_20px_40px_rgba(0,0,0,0.08)] sm:p-8">
           <p className="text-sm font-semibold text-[#7a838f]">{t.breadcrumb}</p>
           <div className="mt-5 grid gap-6 lg:grid-cols-[0.95fr_1.05fr_340px]">
-            <div className="overflow-hidden rounded-[1.75rem] border border-[#d5d9d9] bg-[#f7fafa]">
+            <div className="overflow-hidden rounded-[1.75rem] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)]">
               <div className="h-[320px] bg-cover bg-center sm:h-[480px]" style={{ backgroundImage: `url(${product.image})` }} />
             </div>
 
@@ -37,7 +37,7 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
 
               <div className="mt-6 flex flex-wrap gap-2">
                 {product.badges.map((badge) => (
-                  <span key={badge.en} className="rounded-full border border-[#d5d9d9] bg-[#f7fafa] px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#5d646d]">
+                  <span key={badge.en} className="rounded-full border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#5d646d]">
                     {badge[language]}
                   </span>
                 ))}
@@ -45,27 +45,27 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
 
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 {product.includes.map((item) => (
-                  <div key={item.en} className="rounded-[1.5rem] border border-[#d5d9d9] bg-[#f7fafa] p-4 text-sm font-semibold leading-6 text-[#3e4651]">
+                  <div key={item.en} className="rounded-[1.5rem] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4 text-sm font-semibold leading-6 text-[var(--kc-text-secondary)]">
                     {item[language]}
                   </div>
                 ))}
               </div>
             </section>
 
-            <aside className="rounded-[1.75rem] border border-[#d9e4ef] bg-[#f7fafd] p-5 text-[#102a43]">
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#0b4eae]">SHOPPING DESTINATION</p>
+            <aside className="rounded-[1.75rem] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-5 text-[var(--kc-text)]">
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[var(--kc-blue-700)]">SHOPPING DESTINATION</p>
               <p className="mt-4 text-2xl font-black">{store.name}</p>
-              <p className="mt-4 text-sm leading-6 text-[#486581]">Price and availability may change. Confirm the current details on the destination store.</p>
+              <p className="mt-4 text-sm leading-6 text-[var(--kc-text-secondary)]">Price and availability may change. Confirm the current details on the destination store.</p>
               <p className="mt-5 text-3xl font-black">Rs. {product.price}</p>
               {product.compareAtPrice ? <p className="mt-2 text-lg font-bold text-[#9ca3af] line-through">Rs. {product.compareAtPrice}</p> : null}
-              <div className="mt-5 space-y-2 text-sm leading-6 text-[#486581]">
-                <p><span className="font-black text-[#102a43]">{t.sku}:</span> {product.sku}</p>
+              <div className="mt-5 space-y-2 text-sm leading-6 text-[var(--kc-text-secondary)]">
+                <p><span className="font-black text-[var(--kc-text)]">{t.sku}:</span> {product.sku}</p>
               </div>
-              <p className="mt-4 text-sm leading-6 text-[#486581]">K-CUBE currently provides product discovery; no automatic external-store reward is promised here.</p>
+              <p className="mt-4 text-sm leading-6 text-[var(--kc-text-secondary)]">K-CUBE currently provides product discovery; no automatic external-store reward is promised here.</p>
 
               <div className="mt-6 space-y-3">
-                <a href={product.externalProductUrl ?? store.url} target="_blank" rel="noopener noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0b4eae] px-5 py-4 text-sm font-black text-white">Shop on {store.name} <ExternalLink className="h-4 w-4" /></a>
-                <Link href="/shop" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#c8d6e5] px-5 py-4 text-sm font-bold text-[#102a43]">Back to shopping hub</Link>
+                <a href={product.externalProductUrl ?? store.url} target="_blank" rel="noopener noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-5 py-4 text-sm font-black text-white">Shop on {store.name} <ExternalLink className="h-4 w-4" /></a>
+                <Link href="/shop" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[var(--kc-border)] px-5 py-4 text-sm font-bold text-[var(--kc-text)]">Back to shopping hub</Link>
               </div>
 
               <Link href="/shop" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#f3a847]">
@@ -76,13 +76,13 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
           </div>
         </div>
 
-        <section className="rounded-[2rem] border border-[#d5d9d9] bg-white p-6 shadow-[0_18px_40px_rgba(0,0,0,0.08)] sm:p-8">
+        <section className="rounded-[2rem] border border-[var(--kc-border)] bg-white p-6 shadow-[0_18px_40px_rgba(0,0,0,0.08)] sm:p-8">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">{t.discoverMore}</p>
               <h2 className="mt-2 text-3xl font-black">{t.relatedProducts}</h2>
             </div>
-            <Link href="/shop" className="inline-flex items-center gap-2 rounded-full border border-[#d5d9d9] px-5 py-3 text-sm font-bold text-[#111827]">
+            <Link href="/shop" className="inline-flex items-center gap-2 rounded-full border border-[var(--kc-border)] px-5 py-3 text-sm font-bold text-[var(--kc-text)]">
               {t.backToShop}
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -90,7 +90,7 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
 
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {relatedProducts.map((related) => (
-              <article key={related.id} className="overflow-hidden rounded-[1.5rem] border border-[#d5d9d9] bg-[#f9fafb]">
+              <article key={related.id} className="overflow-hidden rounded-[1.5rem] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)]">
                 <div className="h-52 bg-cover bg-center" style={{ backgroundImage: `url(${related.image})` }} />
                 <div className="p-4">
                   <p className="text-xs font-black uppercase tracking-[0.16em] text-[#b12704]">{related.category[language]}</p>
@@ -98,9 +98,9 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
                   <p className="mt-2 text-sm leading-6 text-[#5d646d]">{related.subtitle[language]}</p>
                   <div className="mt-4 flex items-center justify-between gap-3">
                     <p className="text-lg font-black">Rs. {related.price}</p>
-                    <span className="text-xs font-bold text-[#718096]">{getStoreMeta(related.store ?? 'koreanshop').name}</span>
+                    <span className="text-xs font-bold text-[var(--kc-text-muted)]">{getStoreMeta(related.store ?? 'koreanshop').name}</span>
                   </div>
-                  <Link href={`/shop/${related.slug}`} className="mt-4 inline-flex items-center gap-2 text-sm font-black text-[#111827]">
+                  <Link href={`/shop/${related.slug}`} className="mt-4 inline-flex items-center gap-2 text-sm font-black text-[var(--kc-text)]">
                     {t.viewDetails}
                     <ArrowRight className="h-4 w-4" />
                   </Link>

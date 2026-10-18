@@ -40,11 +40,11 @@ export default function FestivalVideoPlayer() {
         type="button"
         onClick={togglePlayback}
         aria-label={isPaused ? 'Play festival video' : 'Pause festival video'}
-        className="absolute bottom-4 right-4 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/60 bg-[#07101b]/75 text-white opacity-0 shadow-lg backdrop-blur-sm transition group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white"
+        className="absolute bottom-4 right-4 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/60 bg-[#382635]/75 text-white opacity-0 shadow-lg backdrop-blur-sm transition group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white"
       >
         {isPaused ? <Play className="h-5 w-5" /> : <Pause className="h-5 w-5" />}
       </button>
-      <span className="pointer-events-none absolute left-4 top-4 rounded-full bg-[#07101b]/70 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-white opacity-0 backdrop-blur-sm transition group-hover:opacity-100">
+      <span className="pointer-events-none absolute left-4 top-4 rounded-full bg-[#382635]/70 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-white opacity-0 backdrop-blur-sm transition group-hover:opacity-100">
         Hover for controls
       </span>
     </div>

@@ -44,7 +44,7 @@ const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string
   home: {
     hero: '/assets/k-cube-banner.png',
     strip: 'Free Korean Language & Culture Class · Tuesdays, 3–4 PM · Starts 22 September · Gurugram',
-    accent: 'Featured class', accentHex: '#2563eb',
+    accent: 'Featured class', accentHex: 'var(--kc-blue-700)',
   },
   activities: {
     hero: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1800&q=80',
@@ -69,7 +69,7 @@ const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string
   studyAbroad: {
     hero: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1800&q=80',
     strip: 'Study abroad guidance, partner colleges, visa support and intake tracking',
-    accent: 'Study Abroad', accentHex: '#0891b2',
+    accent: 'Study Abroad', accentHex: 'var(--kc-text-secondary)',
   },
   events: {
     hero: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1800&q=80',
@@ -79,7 +79,7 @@ const pageVisuals: Record<PageKey, { hero: string; strip: string; accent: string
   about: {
     hero: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?auto=format&fit=crop&w=1800&q=80',
     strip: 'A Korean business ecosystem built in India',
-    accent: 'About K-CUBE', accentHex: '#4f46e5',
+    accent: 'About K-CUBE', accentHex: 'var(--kc-blue-700)',
   },
   apply: {
     hero: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1800&q=80',
@@ -193,8 +193,8 @@ const homeBannerCopy = {
   },
 } as const;
 
-const tileAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8'];
-const cardAccents = ['#0b4eae', '#12a66a', '#f59e0b', '#7356d8', '#1d67c9', '#12a66a'];
+const tileAccents = ['var(--kc-blue-700)', '#12a66a', '#f59e0b', '#7356d8'];
+const cardAccents = ['var(--kc-blue-700)', '#12a66a', '#f59e0b', '#7356d8', 'var(--kc-blue-600)', '#12a66a'];
 
 const rewardsUi = {
   en: {
@@ -286,73 +286,73 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   }, [pageKey]);
 
   return (
-    <main className="mx-auto min-h-screen max-w-[1320px] overflow-hidden bg-white text-[#111827] shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
+    <main className="mx-auto min-h-screen max-w-[1320px] overflow-hidden bg-white text-[var(--kc-text)] shadow-[0_6px_20px_rgba(81,33,55,0.07)]">
 
-      <section className="border-b border-[#d8e1ee] bg-white px-3 py-2 text-xs text-[#0f172a] sm:px-4 sm:py-3 sm:text-sm lg:px-10">
+      <section className="border-b border-[var(--kc-border)] bg-white px-3 py-2 text-xs text-[var(--kc-text)] sm:px-4 sm:py-3 sm:text-sm lg:px-10">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
-          <span className="rounded-full px-3 py-1 font-black text-white shadow-[0_10px_20px_rgba(15,23,42,0.14)]" style={{ backgroundColor: visual.accentHex }}>{tickerLabel}</span>
-          <span className="font-semibold leading-5 text-[#475569]">{pageKey === 'home' ? bannerText.strip : visual.strip}</span>
-          <Link href="/dashboard" className="hidden items-center gap-2 rounded-full border border-[#d8e1ee] px-3 py-1 font-bold text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6] sm:ml-auto sm:inline-flex">
+          <span className="rounded-full px-3 py-1 font-black text-white shadow-[0_10px_20px_rgba(48,37,45,0.14)]" style={{ backgroundColor: visual.accentHex }}>{tickerLabel}</span>
+          <span className="font-semibold leading-5 text-[var(--kc-text-secondary)]">{pageKey === 'home' ? bannerText.strip : visual.strip}</span>
+          <Link href="/dashboard" className="hidden items-center gap-2 rounded-full border border-[var(--kc-border)] px-3 py-1 font-bold text-[var(--kc-text)] transition hover:border-[var(--kc-blue-700)] hover:text-[var(--kc-blue-700)] sm:ml-auto sm:inline-flex">
             {homeText.dashboard} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
 
       <section
-        className="relative overflow-hidden border-b border-[#d8e1ee] bg-cover bg-center px-3 py-4 sm:px-4 sm:py-6 lg:px-10 lg:py-8"
+        className="relative overflow-hidden border-b border-[var(--kc-border)] bg-cover bg-center px-3 py-4 sm:px-4 sm:py-6 lg:px-10 lg:py-8"
         style={{
           backgroundImage: pageKey === 'home'
             ? `linear-gradient(120deg, rgb(6 43 99) 0%, rgb(11 78 174 / 75%) 52%, rgb(29 103 201 / 0%) 100%), url(${visual.hero})`
-            : `linear-gradient(90deg, rgba(247,251,255,0.92) 0%, rgba(247,251,255,0.78) 32%, rgba(36,87,214,0.48) 68%, rgba(8,35,94,0.82) 100%), url(${visual.hero})`,
+            : `linear-gradient(90deg, rgba(247,251,255,0.92) 0%, rgba(247,251,255,0.78) 32%, rgba(211,27,103,0.48) 68%, rgba(74,25,52,0.82) 100%), url(${visual.hero})`,
         }}
       >
         <div className="mx-auto grid max-w-[1320px] gap-6 lg:grid-cols-1 lg:items-stretch">
           {pageKey === 'home' ? (
             <>
-            <div className="relative overflow-hidden rounded-[24px] border border-white/25 bg-[linear-gradient(115deg,rgba(6,43,99,0.94)_0%,rgba(11,78,174,0.82)_52%,rgba(29,103,201,0.56)_100%),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+            <div className="relative overflow-hidden rounded-[24px] border border-white/25 bg-[linear-gradient(115deg,rgba(6,43,99,0.94)_0%,rgba(211,27,103,0.82)_52%,rgba(29,103,201,0.56)_100%),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
               <div className="relative max-w-3xl">
                 <p className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#fff3b0]">{featuredText.eyebrow}</p>
                 <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">{featuredText.title}</h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-[#e0ecff] sm:text-lg">{featuredText.description}</p>
-                <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-[#e0ecff] sm:text-sm">
+                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--kc-border-soft)] sm:text-lg">{featuredText.description}</p>
+                <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-[var(--kc-border-soft)] sm:text-sm">
                   <span className="rounded-full bg-white/10 px-3 py-2">{repairMojibake(featuredSchedule)}</span>
                   <span className="rounded-full bg-white/10 px-3 py-2">{featuredText.sessions}</span>
                   <span className="rounded-full bg-white/10 px-3 py-2">{featuredKoreanEvent?.location_name || featuredText.location}</span>
                 </div>
                 <p className="mt-4 text-sm font-bold text-[#fff3b0]">{featuredText.reward}</p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-black text-[#0b4eae]">{featuredText.details} <ArrowRight className="h-4 w-4" /></Link>
+                  <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-black text-[var(--kc-blue-700)]">{featuredText.details} <ArrowRight className="h-4 w-4" /></Link>
                   {featuredKoreanEvent?.registration_status === 'registration_open' ? <Link href="/events/korean-language-culture-class" className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-5 py-3 text-sm font-black text-white">{featuredText.register} <ArrowRight className="h-4 w-4" /></Link> : null}
                 </div>
-                {featuredKoreanEvent ? <p className="mt-4 text-xs text-[#cfe0fa]">{featuredText.next}: {new Date(featuredKoreanEvent.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} · {featuredKoreanEvent.registration_status === 'registration_open' ? featuredText.available : featuredKoreanEvent.registration_status || featuredKoreanEvent.status}</p> : <p className="mt-4 text-xs text-[#cfe0fa]">{featuredText.fallback}</p>}
+                {featuredKoreanEvent ? <p className="mt-4 text-xs text-[var(--kc-border)]">{featuredText.next}: {new Date(featuredKoreanEvent.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} · {featuredKoreanEvent.registration_status === 'registration_open' ? featuredText.available : featuredKoreanEvent.registration_status || featuredKoreanEvent.status}</p> : <p className="mt-4 text-xs text-[var(--kc-border)]">{featuredText.fallback}</p>}
               </div>
             </div>
             <div className="hidden">
-                <div className="inline-flex max-w-full items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white shadow-[0_4px_18px_rgba(15,55,95,0.12)] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.18em]">
+                <div className="inline-flex max-w-full items-center gap-2 rounded-md border border-white/35 bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white shadow-[0_4px_18px_rgba(81,33,55,0.12)] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.18em]">
                   <span className="h-2 w-2 rounded-full bg-[#f59e0b]" />
                   {bannerText.festival}
                 </div>
                 <h1 className="mt-3 max-w-none text-3xl font-bold leading-[1.05] tracking-tight text-white drop-shadow-xl sm:mt-4 sm:text-4xl lg:text-5xl xl:text-[3.4rem]">
                   {bannerText.title}
                 </h1>
-                <p className="mt-2 max-w-3xl text-base font-medium leading-7 text-[#d8e7f9] sm:text-lg">
+                <p className="mt-2 max-w-3xl text-base font-medium leading-7 text-[var(--kc-border-soft)] sm:text-lg">
                   {bannerText.subtitle}
                 </p>
                 <div className="mt-3 inline-flex items-center gap-2 rounded-md border border-[#12a66a]/40 bg-[#effbf6] px-3 py-2 text-xs font-bold text-[#087f52]">
                   <Check className="h-4 w-4" /> {bannerText.completed}
                 </div>
-                <div className="mt-4 max-w-6xl rounded-[22px] border border-[#d8e1ee] bg-white/95 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-5">
+                <div className="mt-4 max-w-6xl rounded-[22px] border border-[var(--kc-border)] bg-white/95 p-4 shadow-[0_18px_50px_rgba(48,37,45,0.08)] backdrop-blur-sm sm:p-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div className="max-w-2xl">
-                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#2457d6]">Festival updates</p>
+                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">Festival updates</p>
                       <span className="mt-2 inline-flex items-center gap-2 rounded-md border border-[#12a66a]/30 bg-[#effbf6] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#087f52]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#12a66a]" /> {bannerText.status}
                       </span>
-                      <h2 className="mt-2 text-xl font-black leading-tight text-[#0f172a] sm:text-2xl">{bannerText.stages}</h2>
+                      <h2 className="mt-2 text-xl font-black leading-tight text-[var(--kc-text)] sm:text-2xl">{bannerText.stages}</h2>
                     </div>
                     <Link
                       href="/india-pre-selection/announcement"
-                      className="inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full border border-[#d8e1ee] bg-[#f8fbff] px-4 py-2.5 text-sm font-black text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6]"
+                      className="inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-2.5 text-sm font-black text-[var(--kc-text)] transition hover:border-[var(--kc-blue-700)] hover:text-[var(--kc-blue-700)]"
                     >
                       {bannerText.announcement}
                       <ArrowRight className="h-4 w-4" />
@@ -360,61 +360,61 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   </div>
 
                   <div className="mt-4">
-                    {false && (<article className="relative overflow-hidden rounded-[20px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(36,87,214,0.10)]" aria-hidden="true">
-                      <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#2457d6]/10" />
+                    {false && (<article className="relative overflow-hidden rounded-[20px] border border-[var(--kc-blue-700)]/20 bg-[linear-gradient(135deg,var(--kc-surface-blue)_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(211,27,103,0.10)]" aria-hidden="true">
+                      <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[var(--kc-blue-700)]/10" />
                       <div className="relative">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2457d6] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
-                        <h3 className="mt-3 text-lg font-black leading-tight text-[#0f172a]">Free Korean Language/Culture Class</h3>
-                        <p className="mt-2 text-sm font-black text-[#2457d6]">Every Tuesday · 3:00–4:00 PM</p>
-                        <p className="mt-1 text-xs font-semibold text-[#64748b]">22 Sep, 29 Sep, 6 Oct &amp; 13 Oct 2026</p>
-                        <p className="mt-3 flex items-start gap-1.5 text-xs leading-5 text-[#475569]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--kc-blue-700)] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
+                        <h3 className="mt-3 text-lg font-black leading-tight text-[var(--kc-text)]">Free Korean Language/Culture Class</h3>
+                        <p className="mt-2 text-sm font-black text-[var(--kc-blue-700)]">Every Tuesday · 3:00–4:00 PM</p>
+                        <p className="mt-1 text-xs font-semibold text-[var(--kc-text-muted)]">22 Sep, 29 Sep, 6 Oct &amp; 13 Oct 2026</p>
+                        <p className="mt-3 flex items-start gap-1.5 text-xs leading-5 text-[var(--kc-text-secondary)]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
                       </div>
                     </article>)}
                     <article className="relative overflow-hidden rounded-[20px] border border-[#12a66a]/25 bg-[linear-gradient(135deg,#effbf6_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(18,166,106,0.10)]">
                       <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[#12a66a]/10" />
                       <div className="relative">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-[#12a66a] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><UsersRound className="h-3.5 w-3.5" /> Selection update</span>
-                        <h3 className="mt-3 text-lg font-black leading-tight text-[#0f172a]">4 Participants Selected for Round 2</h3>
+                        <h3 className="mt-3 text-lg font-black leading-tight text-[var(--kc-text)]">4 Participants Selected for Round 2</h3>
                         <p className="mt-2 text-sm font-black text-[#087f52]">India Pre-Selection</p>
-                        <p className="mt-1 text-xs font-semibold leading-5 text-[#64748b]">Selected participants will be contacted directly.</p>
+                        <p className="mt-1 text-xs font-semibold leading-5 text-[var(--kc-text-muted)]">Selected participants will be contacted directly.</p>
                       <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#087f52]">Selected participants</p>
                       <div className="mt-2 flex flex-wrap gap-1.5">
-                        {maskedIndiaSecondRoundParticipants.map((name) => <span key={name} className="rounded-full border border-[#12a66a]/20 bg-white/80 px-2.5 py-1 text-xs font-bold text-[#334155]">{name}</span>)}
+                        {maskedIndiaSecondRoundParticipants.map((name) => <span key={name} className="rounded-full border border-[#12a66a]/20 bg-white/80 px-2.5 py-1 text-xs font-bold text-[var(--kc-text-secondary)]">{name}</span>)}
                       </div>
                       </div>
                     </article>
                   </div>
 
-                  <div className="mt-4 rounded-[20px] border border-[#2457d6]/20 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(36,87,214,0.08)]">
+                  <div className="mt-4 rounded-[20px] border border-[var(--kc-blue-700)]/20 bg-[linear-gradient(135deg,var(--kc-surface-blue)_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(211,27,103,0.08)]">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#2457d6]">Community &amp; Learning Updates</p>
-                        <h3 className="mt-2 text-lg font-black leading-tight text-[#0f172a]">Free Korean Language &amp; Culture Class</h3>
-                        <p className="mt-1 text-sm font-black text-[#2457d6]">Every Tuesday · 3:00–4:00 PM · 22 Sep–13 Oct 2026</p>
-                        <p className="mt-2 flex items-start gap-1.5 text-xs leading-5 text-[#475569]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--kc-blue-700)]">Community &amp; Learning Updates</p>
+                        <h3 className="mt-2 text-lg font-black leading-tight text-[var(--kc-text)]">Free Korean Language &amp; Culture Class</h3>
+                        <p className="mt-1 text-sm font-black text-[var(--kc-blue-700)]">Every Tuesday · 3:00–4:00 PM · 22 Sep–13 Oct 2026</p>
+                        <p className="mt-2 flex items-start gap-1.5 text-xs leading-5 text-[var(--kc-text-secondary)]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
                       </div>
-                      <Link href="/events/korean-language-culture-class" className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-[#2457d6] bg-white px-4 py-2.5 text-sm font-black text-[#0b4eae] transition hover:bg-[#eef5ff]">
+                      <Link href="/events/korean-language-culture-class" className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-[var(--kc-blue-700)] bg-white px-4 py-2.5 text-sm font-black text-[var(--kc-blue-700)] transition hover:bg-[var(--kc-surface-blue)]">
                         View Class Details <ArrowRight className="h-4 w-4" />
                       </Link>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex flex-col gap-3 border-t border-[#e6edf6] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex flex-col gap-1 text-sm text-[#64748b]">
-                      <p className="font-semibold text-[#0f172a]">{bannerText.closed}</p>
+                  <div className="mt-4 flex flex-col gap-3 border-t border-[var(--kc-border-soft)] pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-1 text-sm text-[var(--kc-text-muted)]">
+                      <p className="font-semibold text-[var(--kc-text)]">{bannerText.closed}</p>
                       <p>{bannerText.notice}</p>
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
                       <Link
                         href="/india-pre-selection/announcement"
-                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2457d6] px-5 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(36,87,214,0.18)] transition hover:bg-[#1f4bb8]"
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(211,27,103,0.18)] transition hover:bg-[var(--kc-blue-800)]"
                       >
                         {bannerText.updates}
                         <ArrowRight className="h-4 w-4" />
                       </Link>
                       <Link
                         href="/india-pre-selection"
-                        className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d8e1ee] bg-white px-5 py-3 text-sm font-bold text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6]"
+                        className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--kc-border)] bg-white px-5 py-3 text-sm font-bold text-[var(--kc-text)] transition hover:border-[var(--kc-blue-700)] hover:text-[var(--kc-blue-700)]"
                       >
                         {bannerText.details}
                       </Link>
@@ -426,88 +426,88 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
           ) : (
             <>
               <div className="py-3 sm:min-h-[420px] sm:py-8">
-                <p className="inline-flex rounded-full border border-[#2457d6]/15 bg-[#2457d6] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-white sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.2em]">
+                <p className="inline-flex rounded-full border border-[var(--kc-blue-700)]/15 bg-[var(--kc-blue-700)] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-white sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.2em]">
                   {page.badge[language]}
                 </p>
-                <h1 className="mt-4 max-w-5xl text-2xl font-black leading-tight tracking-tight text-[#0f172a] drop-shadow-xl sm:mt-6 sm:text-5xl lg:text-6xl">
+                <h1 className="mt-4 max-w-5xl text-2xl font-black leading-tight tracking-tight text-[var(--kc-text)] drop-shadow-xl sm:mt-6 sm:text-5xl lg:text-6xl">
                   {pageKey === 'rewards' ? rewardsText.title : page.title[language]}
                 </h1>
-                <p className="mt-4 max-w-3xl text-sm leading-6 text-[#334155] sm:mt-5 sm:text-lg sm:leading-8">{pageKey === 'rewards' ? rewardsText.subtitle : page.subtitle[language]}</p>
-                <p className="mt-3 max-w-3xl text-xs leading-6 text-[#64748b] sm:mt-4 sm:text-sm sm:leading-7">{pageKey === 'rewards' ? rewardsText.description : page.description[language]}</p>
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--kc-text-secondary)] sm:mt-5 sm:text-lg sm:leading-8">{pageKey === 'rewards' ? rewardsText.subtitle : page.subtitle[language]}</p>
+                <p className="mt-3 max-w-3xl text-xs leading-6 text-[var(--kc-text-muted)] sm:mt-4 sm:text-sm sm:leading-7">{pageKey === 'rewards' ? rewardsText.description : page.description[language]}</p>
                 <div className="mt-5 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-3">
                   {isExternal(page.primaryHref) ? (
                     <a
                       href={page.primaryHref}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2457d6] px-5 py-3 text-sm font-black text-white shadow hover:bg-[#1f4bb8]"
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-black text-white shadow hover:bg-[var(--kc-blue-800)]"
                     >
                       {page.primaryCta[language]} <ArrowRight className="h-4 w-4" />
                     </a>
                   ) : (
                     <Link
                       href={page.primaryHref}
-                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2457d6] px-5 py-3 text-sm font-black text-white shadow hover:bg-[#1f4bb8]"
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-black text-white shadow hover:bg-[var(--kc-blue-800)]"
                     >
                       {page.primaryCta[language]} <ArrowRight className="h-4 w-4" />
                     </Link>
                   )}
                   <Link
                     href="/rewards"
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d8e1ee] bg-white px-5 py-3 text-sm font-bold text-[#0f172a] transition hover:border-[#2457d6] hover:text-[#2457d6]"
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--kc-border)] bg-white px-5 py-3 text-sm font-bold text-[var(--kc-text)] transition hover:border-[var(--kc-blue-700)] hover:text-[var(--kc-blue-700)]"
                   >
                     {t.koreaTrip}
                   </Link>
                 </div>
               </div>
 
-              <aside className="rounded-[24px] border border-[#d8e1ee] bg-white p-4 text-[#111827] shadow-[0_12px_30px_rgba(15,23,42,0.08)] sm:p-5">
+              <aside className="rounded-[24px] border border-[var(--kc-border)] bg-white p-4 text-[var(--kc-text)] shadow-[0_12px_30px_rgba(48,37,45,0.08)] sm:p-5">
                 {pageKey === 'rewards' ? (
                   <>
-                    <div className="flex items-start justify-between gap-4 border-b border-[#e6edf6] pb-5">
+                    <div className="flex items-start justify-between gap-4 border-b border-[var(--kc-border-soft)] pb-5">
                       <div>
-                        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">{rewardsText.wallet}</p>
-                        <p className="mt-2 text-4xl font-black text-[#2457d6]" aria-live="polite">
-                          {walletLoading ? <span className="inline-block h-9 w-24 animate-pulse rounded bg-[#e8f0ff]" aria-label="Loading points" /> : wallet ? `${wallet.balance} pts` : '—'}
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--kc-blue-700)]">{rewardsText.wallet}</p>
+                        <p className="mt-2 text-4xl font-black text-[var(--kc-blue-700)]" aria-live="polite">
+                          {walletLoading ? <span className="inline-block h-9 w-24 animate-pulse rounded bg-[var(--kc-surface-blue)]" aria-label="Loading points" /> : wallet ? `${wallet.balance} pts` : '—'}
                         </p>
                       </div>
-                      <Coins className="h-8 w-8 text-[#2457d6]" aria-hidden="true" />
+                      <Coins className="h-8 w-8 text-[var(--kc-blue-700)]" aria-hidden="true" />
                     </div>
                     {wallet ? (
                       <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                         {[[rewardsText.lifetime, wallet.summary.lifetime_earned], [rewardsText.redeemed, wallet.summary.redeemed], [rewardsText.pending, wallet.summary.pending]].map(([label, value]) => (
-                          <div key={String(label)} className="rounded-xl bg-[#f8fbff] p-2">
-                            <p className="text-[10px] font-bold text-[#64748b]">{label}</p>
-                            <p className="mt-1 text-sm font-black text-[#0f172a]">{value}</p>
+                          <div key={String(label)} className="rounded-xl bg-[var(--kc-surface-soft)] p-2">
+                            <p className="text-[10px] font-bold text-[var(--kc-text-muted)]">{label}</p>
+                            <p className="mt-1 text-sm font-black text-[var(--kc-text)]">{value}</p>
                           </div>
                         ))}
                       </div>
                     ) : null}
-                    <Link href="/dashboard" className="mt-4 inline-flex text-sm font-black text-[#2457d6]">{rewardsText.viewWallet} →</Link>
-                    <div className="mt-5 border-t border-[#e6edf6] pt-4">
+                    <Link href="/dashboard" className="mt-4 inline-flex text-sm font-black text-[var(--kc-blue-700)]">{rewardsText.viewWallet} →</Link>
+                    <div className="mt-5 border-t border-[var(--kc-border-soft)] pt-4">
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-[#d97706]">{rewardsText.trip}</p>
-                      <p className="mt-2 text-sm leading-6 text-[#64748b]">{rewardsText.tripCopy}</p>
-                      <Link href="/trip-to-korea" className="mt-3 inline-flex text-sm font-black text-[#2457d6]">{t.koreaTrip} →</Link>
+                      <p className="mt-2 text-sm leading-6 text-[var(--kc-text-muted)]">{rewardsText.tripCopy}</p>
+                      <Link href="/trip-to-korea" className="mt-3 inline-flex text-sm font-black text-[var(--kc-blue-700)]">{t.koreaTrip} →</Link>
                     </div>
                   </>
                 ) : null}
                 {pageKey !== 'rewards' ? <>
-                <div className="flex items-center justify-between gap-4 border-b border-[#e6edf6] pb-5">
+                <div className="flex items-center justify-between gap-4 border-b border-[var(--kc-border-soft)] pb-5">
                   <div>
-                    <p className="text-sm font-bold text-[#64748b]">{t.pointsWallet}</p>
-                    <p className="mt-1 text-4xl font-black text-[#2457d6]">{user ? points : '--'}</p>
+                    <p className="text-sm font-bold text-[var(--kc-text-muted)]">{t.pointsWallet}</p>
+                    <p className="mt-1 text-4xl font-black text-[var(--kc-blue-700)]">{user ? points : '--'}</p>
                   </div>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2457d6] text-white">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--kc-blue-700)] text-white">
                     <Coins className="h-7 w-7" />
                   </div>
                 </div>
                 <div className="mt-5">
-                  <div className="rounded-[18px] border border-[#d8e1ee] bg-[#f8fbff] p-4">
+                  <div className="rounded-[18px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4">
                     <div className="flex items-center gap-3">
-                      <Plane className="h-5 w-5 text-[#2457d6]" />
-                      <p className="text-sm font-bold text-[#0f172a]">{t.koreaTrip}</p>
+                      <Plane className="h-5 w-5 text-[var(--kc-blue-700)]" />
+                      <p className="text-sm font-bold text-[var(--kc-text)]">{t.koreaTrip}</p>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-[#64748b]">{t.tripLine}</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--kc-text-muted)]">{t.tripLine}</p>
                   </div>
                 </div>
                 </> : null}
@@ -518,32 +518,32 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       </section>
 
       {pageKey === 'rewards' && user ? (
-        <section className="border-b border-[#d8e1ee] bg-[#f8fbff] px-3 py-6 sm:px-4 lg:px-10">
+        <section className="border-b border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-3 py-6 sm:px-4 lg:px-10">
           <div className="mx-auto grid max-w-[1320px] gap-4 lg:grid-cols-[1.35fr_1fr]">
-            <div className="rounded-2xl border border-[#d8e1ee] bg-white p-5">
+            <div className="rounded-2xl border border-[var(--kc-border)] bg-white p-5">
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-[#d97706]">{rewardsText.activity}</p>
-                  <h2 className="mt-2 text-xl font-black text-[#0f172a]">{wallet?.transactions.length ? `${wallet.transactions.length} recent records` : rewardsText.activity}</h2>
+                  <h2 className="mt-2 text-xl font-black text-[var(--kc-text)]">{wallet?.transactions.length ? `${wallet.transactions.length} recent records` : rewardsText.activity}</h2>
                 </div>
-                {wallet?.transactions.length ? <span className="text-xs font-bold text-[#64748b]">Verified ledger</span> : null}
+                {wallet?.transactions.length ? <span className="text-xs font-bold text-[var(--kc-text-muted)]">Verified ledger</span> : null}
               </div>
-              {walletLoading ? <div className="mt-4 h-14 animate-pulse rounded-xl bg-[#eef4fb]" aria-label="Loading point activity" /> : wallet?.transactions.length ? (
-                <div className="mt-4 divide-y divide-[#edf2f7]">
+              {walletLoading ? <div className="mt-4 h-14 animate-pulse rounded-xl bg-[var(--kc-surface-soft)]" aria-label="Loading point activity" /> : wallet?.transactions.length ? (
+                <div className="mt-4 divide-y divide-[var(--kc-border-soft)]">
                   {wallet.transactions.slice(0, 5).map((transaction) => (
                     <div key={transaction.id} className="flex items-center justify-between gap-3 py-3">
-                      <div><p className="text-sm font-bold capitalize text-[#0f172a]">{transaction.source_type.replace(/_/g, ' ')}</p><p className="text-xs text-[#64748b]">{new Date(transaction.created_at).toLocaleDateString()}</p></div>
+                      <div><p className="text-sm font-bold capitalize text-[var(--kc-text)]">{transaction.source_type.replace(/_/g, ' ')}</p><p className="text-xs text-[var(--kc-text-muted)]">{new Date(transaction.created_at).toLocaleDateString()}</p></div>
                       <span className={`text-sm font-black ${transaction.points_delta >= 0 ? 'text-[#087f52]' : 'text-[#b12704]'}`}>{transaction.points_delta >= 0 ? '+' : ''}{transaction.points_delta} pts</span>
                     </div>
                   ))}
                 </div>
-              ) : <p className="mt-4 rounded-xl bg-[#f8fbff] p-4 text-sm text-[#64748b]">{rewardsText.noActivity}</p>}
+              ) : <p className="mt-4 rounded-xl bg-[var(--kc-surface-soft)] p-4 text-sm text-[var(--kc-text-muted)]">{rewardsText.noActivity}</p>}
             </div>
-            <div className="rounded-2xl border border-[#d8e1ee] bg-[#eef5ff] p-5">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">Wallet guidance</p>
-              <h2 className="mt-2 text-xl font-black text-[#0f172a]">Your balance stays tied to verified activity.</h2>
-              <p className="mt-3 text-sm leading-6 text-[#64748b]">Pending reviews and approved rewards are kept separate in the points ledger. No points are added by visiting this page.</p>
-              <Link href="/dashboard" className="mt-4 inline-flex rounded-full bg-[#2457d6] px-4 py-2.5 text-sm font-black text-white">View wallet details <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            <div className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-blue)] p-5">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--kc-blue-700)]">Wallet guidance</p>
+              <h2 className="mt-2 text-xl font-black text-[var(--kc-text)]">Your balance stays tied to verified activity.</h2>
+              <p className="mt-3 text-sm leading-6 text-[var(--kc-text-muted)]">Pending reviews and approved rewards are kept separate in the points ledger. No points are added by visiting this page.</p>
+              <Link href="/dashboard" className="mt-4 inline-flex rounded-full bg-[var(--kc-blue-700)] px-4 py-2.5 text-sm font-black text-white">View wallet details <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </div>
           </div>
         </section>
@@ -554,11 +554,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       <section className="px-3 pb-7 sm:px-4 sm:pb-8 lg:px-10">
         <div className="mx-auto grid max-w-[1320px] auto-cols-[78%] grid-flow-col gap-3 overflow-x-auto pb-1 sm:auto-cols-auto sm:grid-flow-row sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
           {marketplaceTiles.map((tile, index) => (
-            <article key={tile.title} className="overflow-hidden rounded-[24px] border border-[#d8e1ee] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
+            <article key={tile.title} className="overflow-hidden rounded-[24px] border border-[var(--kc-border)] bg-white shadow-[0_12px_30px_rgba(48,37,45,0.06)]">
               <div className="h-1" style={{ backgroundColor: tileAccents[index] }} />
               <div className="p-4">
-                  <h2 className="text-lg font-black text-[#0f172a] sm:text-xl">{marketplaceLabels[index]}</h2>
-              <div className="mt-3 h-28 rounded-[16px] bg-cover bg-center sm:h-36" style={{ backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.2)), url(${tile.image})` }} />
+                  <h2 className="text-lg font-black text-[var(--kc-text)] sm:text-xl">{marketplaceLabels[index]}</h2>
+              <div className="mt-3 h-28 rounded-[16px] bg-cover bg-center sm:h-36" style={{ backgroundImage: `linear-gradient(180deg, rgba(48,37,45,0.02), rgba(48,37,45,0.2)), url(${tile.image})` }} />
               <p className="mt-3 text-sm font-bold" style={{ color: tileAccents[index] }}>{marketplaceValues[index]}</p>
               </div>
             </article>
@@ -567,23 +567,23 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       </section>
 
       <section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
-        <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[#d5d9d9] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+        <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[var(--kc-border)] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em]" style={{ color: visual.accentHex }}>{pageKey === 'home' ? homeText.next : visual.accent}</p>
-              <h2 className="text-xl font-black text-[#111827] sm:text-2xl">{homeText.explore}</h2>
+              <h2 className="text-xl font-black text-[var(--kc-text)] sm:text-2xl">{homeText.explore}</h2>
             </div>
-            <span className="hidden items-center gap-1 text-sm font-bold text-[#007185] sm:inline-flex">
+            <span className="hidden items-center gap-1 text-sm font-bold text-[var(--kc-blue-700)] sm:inline-flex">
               <Star className="h-4 w-4 fill-[#ffa41c] text-[#ffa41c]" /> {homeText.curated}
             </span>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {page.cards.map((card, index) => (
-              <article key={card.title.en} className="overflow-hidden rounded-[28px] border border-[#d8e1ee] bg-white shadow-[0_14px_34px_rgba(15,23,42,0.07)] transition hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(36,87,214,0.14)]">
+              <article key={card.title.en} className="overflow-hidden rounded-[28px] border border-[var(--kc-border)] bg-white shadow-[0_14px_34px_rgba(48,37,45,0.07)] transition hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(211,27,103,0.14)]">
                 <div className="grid grid-rows-[220px_1fr] sm:grid-rows-[240px_1fr]">
                   <div
                     className="relative bg-cover bg-center"
-                    style={{ backgroundImage: `linear-gradient(180deg, rgba(36,87,214,0.02), rgba(8,35,94,0.62)), url(${cardImages[index % cardImages.length]})` }}
+                    style={{ backgroundImage: `linear-gradient(180deg, rgba(211,27,103,0.02), rgba(74,25,52,0.62)), url(${cardImages[index % cardImages.length]})` }}
                   >
                     <span className="absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white shadow-lg" style={{ backgroundColor: cardAccents[index % cardAccents.length] }}>
                       {pageKey === 'home' ? homeText.next : visual.accent}
@@ -591,14 +591,14 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   </div>
                   <div className="p-5 sm:p-6">
                     <p className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: visual.accentHex }}>{pageKey === 'home' ? homeText.next : visual.accent}</p>
-                    <h3 className="mt-3 text-xl font-black text-[#111827] sm:text-2xl">{card.title[language]}</h3>
-                    <p className="mt-2 text-sm leading-7 text-[#565959]">{card.description[language]}</p>
+                    <h3 className="mt-3 text-xl font-black text-[var(--kc-text)] sm:text-2xl">{card.title[language]}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[var(--kc-text-secondary)]">{card.description[language]}</p>
                     {isExternal(card.href) ? (
-                        <a href={card.href} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[#2457d6] hover:text-[#1f4bb8]">
+                        <a href={card.href} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[var(--kc-blue-700)] hover:text-[var(--kc-blue-800)]">
                         {card.cta[language]} <ArrowRight className="h-4 w-4" />
                       </a>
                     ) : (
-                      <Link href={card.href} className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[#2457d6] hover:text-[#1f4bb8]">
+                      <Link href={card.href} className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[var(--kc-blue-700)] hover:text-[var(--kc-blue-800)]">
                         {card.cta[language]} <ArrowRight className="h-4 w-4" />
                       </Link>
                     )}
@@ -611,7 +611,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       </section>
 
       {false && (<section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
-        <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[#d8e1ee] bg-white p-4 text-[#0f172a] shadow-[0_6px_20px_rgba(15,55,95,0.07)] sm:p-5 lg:p-6">
+        <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[var(--kc-border)] bg-white p-4 text-[var(--kc-text)] shadow-[0_6px_20px_rgba(81,33,55,0.07)] sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f08a24]">{homeText.spotlight}</p>
@@ -623,21 +623,21 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {featuredShopProducts.map((product) => (
-              <article key={product.id} className="overflow-hidden rounded-[26px] border border-[#d8e1ee] bg-[#f8fbff] shadow-sm">
-                <div className="h-44 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(180deg, rgba(36,87,214,0.02), rgba(8,35,94,0.5)), url(${product.image})` }} />
+              <article key={product.id} className="overflow-hidden rounded-[26px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] shadow-sm">
+                <div className="h-44 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(180deg, rgba(211,27,103,0.02), rgba(74,25,52,0.5)), url(${product.image})` }} />
                 <div className="p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2457d6]">{product.category[language]}</p>
-                    <span className="rounded-full bg-[#eaf3ff] px-3 py-1 text-xs font-black text-[#2457d6]">Partner store</span>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--kc-blue-700)]">{product.category[language]}</p>
+                    <span className="rounded-full bg-[var(--kc-surface-blue)] px-3 py-1 text-xs font-black text-[var(--kc-blue-700)]">Partner store</span>
                   </div>
-                  <h3 className="mt-3 text-lg font-black text-[#0f172a]">{product.title[language]}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#64748b]">{product.subtitle[language]}</p>
+                  <h3 className="mt-3 text-lg font-black text-[var(--kc-text)]">{product.title[language]}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--kc-text-muted)]">{product.subtitle[language]}</p>
                   <div className="mt-4 flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-bold text-[#f3a847]">₹{product.price}</p>
                       {product.compareAtPrice ? <p className="text-xs text-[#9ca3af] line-through">₹{product.compareAtPrice}</p> : null}
                     </div>
-                    <a href={getStoreMeta(product.store ?? 'koreanshop').url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#2457d6] px-4 py-2 text-sm font-black text-white">
+                    <a href={getStoreMeta(product.store ?? 'koreanshop').url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-4 py-2 text-sm font-black text-white">
                       Visit store <ExternalLink className="h-4 w-4" />
                     </a>
                   </div>
@@ -650,32 +650,32 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
       {pageKey === 'about' ? (
         <section id="contact" className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
-          <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[#d8e1ee] bg-white p-4 text-[#0f172a] shadow-sm sm:p-5">
+          <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[var(--kc-border)] bg-white p-4 text-[var(--kc-text)] shadow-sm sm:p-5">
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2457d6]">Contact</p>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--kc-blue-700)]">Contact</p>
                 <h2 className="mt-2 text-xl font-black sm:text-2xl">Contact K-CUBE</h2>
               </div>
-              <p className="max-w-2xl text-sm leading-6 text-[#64748b]">
+              <p className="max-w-2xl text-sm leading-6 text-[var(--kc-text-muted)]">
                 For partnership, support, festival coordination, or study abroad inquiries, reach the K-CUBE team directly.
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <article className="rounded-[22px] border border-[#d8e1ee] bg-[#f8fbff] p-4 sm:p-5">
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#2457d6]">Email</p>
-                <a href="mailto:kcubeadm@gmail.com" className="mt-2 block text-lg font-black text-[#0f172a] transition hover:text-[#2457d6] sm:text-xl">
+              <article className="rounded-[22px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4 sm:p-5">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--kc-blue-700)]">Email</p>
+                <a href="mailto:kcubeadm@gmail.com" className="mt-2 block text-lg font-black text-[var(--kc-text)] transition hover:text-[var(--kc-blue-700)] sm:text-xl">
                   kcubeadm@gmail.com
                 </a>
-                <p className="mt-2 text-sm leading-6 text-[#64748b]">
+                <p className="mt-2 text-sm leading-6 text-[var(--kc-text-muted)]">
                   Primary contact mailbox for admin coordination and business inquiries.
                 </p>
               </article>
-              <article className="rounded-[22px] border border-[#d8e1ee] bg-[#fffaf3] p-4 sm:p-5">
+              <article className="rounded-[22px] border border-[var(--kc-border)] bg-[#fffaf3] p-4 sm:p-5">
                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#f08a24]">Phone</p>
-                <a href="tel:+919810097323" className="mt-2 block text-lg font-black text-[#0f172a] transition hover:text-[#f08a24] sm:text-xl">
+                <a href="tel:+919810097323" className="mt-2 block text-lg font-black text-[var(--kc-text)] transition hover:text-[#f08a24] sm:text-xl">
                   9810097323
                 </a>
-                <p className="mt-2 text-sm leading-6 text-[#64748b]">
+                <p className="mt-2 text-sm leading-6 text-[var(--kc-text-muted)]">
                   Mr. Tae Hwan Lim
                 </p>
               </article>
@@ -686,30 +686,30 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
       {showActions ? (
         <section id="point-actions" className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10">
-          <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[#d5d9d9] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+          <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[var(--kc-border)] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
             <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704] sm:text-sm sm:tracking-[0.24em]">{t.earnPoints}</p>
-                <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">{homeText.actions}</h2>
+                <h2 className="mt-2 text-2xl font-black text-[var(--kc-text)] sm:text-3xl">{homeText.actions}</h2>
               </div>
-              <p className="max-w-2xl text-sm leading-6 text-[#565959]">
+              <p className="max-w-2xl text-sm leading-6 text-[var(--kc-text-secondary)]">
                 {homeText.actionsDesc}
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {actions.slice(0, 6).map((action, index) => {
                 return (
-                  <article key={action.id} className="rounded-[24px] border border-[#d8e1ee] bg-[#f8fbff] p-4 sm:p-5" style={{ borderTop: `4px solid ${cardAccents[index % cardAccents.length]}` }}>
+                  <article key={action.id} className="rounded-[24px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4 sm:p-5" style={{ borderTop: `4px solid ${cardAccents[index % cardAccents.length]}` }}>
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#2457d6] sm:text-xs sm:tracking-[0.22em]">{action.category[language]}</p>
-                        <h3 className="mt-2 text-lg font-black text-[#111827] sm:mt-3 sm:text-xl">{action.title[language]}</h3>
+                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--kc-blue-700)] sm:text-xs sm:tracking-[0.22em]">{action.category[language]}</p>
+                        <h3 className="mt-2 text-lg font-black text-[var(--kc-text)] sm:mt-3 sm:text-xl">{action.title[language]}</h3>
                       </div>
-                      <span className="rounded-full bg-[#e8f0ff] px-3 py-1 text-sm font-black text-[#2457d6]">
+                      <span className="rounded-full bg-[var(--kc-surface-blue)] px-3 py-1 text-sm font-black text-[var(--kc-blue-700)]">
                         +{action.points}
                       </span>
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-[#565959] sm:min-h-[52px]">{action.description[language]}</p>
+                    <p className="mt-3 text-sm leading-6 text-[var(--kc-text-secondary)] sm:min-h-[52px]">{action.description[language]}</p>
                     <button
                       type="button"
                       onClick={() => { window.location.href = user ? `/${action.id.replace('-', '/')}` : '/signin'; }}
@@ -723,7 +723,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
               })}
             </div>
             <div className="mt-6 flex justify-center">
-              <Link href="/rewards#point-actions" className="inline-flex items-center gap-2 rounded-sm border border-[#d5d9d9] bg-white px-5 py-3 text-sm font-black text-[#111827] transition hover:border-[#f3a847] hover:text-[#b12704]">
+              <Link href="/rewards#point-actions" className="inline-flex items-center gap-2 rounded-sm border border-[var(--kc-border)] bg-white px-5 py-3 text-sm font-black text-[var(--kc-text)] transition hover:border-[#f3a847] hover:text-[#b12704]">
                 {homeText.allActions}
                 <ArrowRight className="h-4 w-4" />
               </Link>

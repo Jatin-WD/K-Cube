@@ -206,7 +206,7 @@ const tracks: Record<string, LearningTrack> = {
     title: 'Korean Vocabulary Streaks',
     eyebrow: 'Daily word retention',
     intro: 'Practice themed Korean words every day. Streaks reward consistency and make vocabulary useful for K-Food, events, and Korean culture tasks.',
-    accent: '#1cb0f6',
+    accent: 'var(--kc-blue-700)',
     rewardPoints: 45,
     startXp: 0,
     outcomes: ['Daily word streaks', 'K-Food vocabulary', 'Memory review loops', 'Consistent practice milestones'],
@@ -738,15 +738,15 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
             <button
               key={card.korean}
               onClick={() => setSelected(card.korean)}
-              className={`min-h-64 rounded-lg border-2 p-5 text-left transition ${selected === card.korean ? 'border-[#1cb0f6] bg-[#203d46]' : 'border-[#35505d] bg-[#101f24] hover:bg-[#142a31]'}`}
+              className={`min-h-64 rounded-lg border-2 p-5 text-left transition ${selected === card.korean ? 'border-[var(--kc-blue-700)] bg-[#382635]' : 'border-[var(--kc-text-secondary)] bg-[#382635] hover:bg-[#382635]'}`}
             >
               <span className="flex h-28 items-center justify-center text-7xl">{visualIcons[card.visual] || '📘'}</span>
               <span className="mt-5 flex items-end justify-between">
                 <span>
                   <span className="block text-3xl">{card.korean}</span>
-                  <span className="mt-1 block text-sm font-bold capitalize text-[#9fb2bd]">{card.label}</span>
+                  <span className="mt-1 block text-sm font-bold capitalize text-[var(--kc-text-muted)]">{card.label}</span>
                 </span>
-                <span className="rounded-lg border-2 border-[#35505d] px-3 py-1 text-[#708995]">{index + 1}</span>
+                <span className="rounded-lg border-2 border-[var(--kc-text-secondary)] px-3 py-1 text-[var(--kc-text-muted)]">{index + 1}</span>
               </span>
             </button>
           ))}
@@ -761,7 +761,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
             <button
               key={option}
               onClick={() => setSelected(option)}
-              className={`min-h-16 rounded-lg border-2 px-5 py-4 text-left text-lg font-black transition ${selected === option ? 'border-[#1cb0f6] bg-[#203d46]' : 'border-[#35505d] bg-[#101f24] hover:bg-[#142a31]'}`}
+              className={`min-h-16 rounded-lg border-2 px-5 py-4 text-left text-lg font-black transition ${selected === option ? 'border-[var(--kc-blue-700)] bg-[#382635]' : 'border-[var(--kc-text-secondary)] bg-[#382635] hover:bg-[#382635]'}`}
             >
               {option}
             </button>
@@ -773,20 +773,20 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
     if (round.type === 'arrange') {
       return (
         <div className="grid gap-5">
-          <div className="min-h-24 rounded-lg border-2 border-dashed border-[#35505d] bg-[#101f24] p-4">
+          <div className="min-h-24 rounded-lg border-2 border-dashed border-[var(--kc-text-secondary)] bg-[#382635] p-4">
             {builtWords.length ? (
               <div className="flex flex-wrap gap-3">
                 {builtWords.map((word, index) => (
-                  <button key={`${word}-${index}`} onClick={() => setBuiltWords((words) => words.filter((_, wordIndex) => wordIndex !== index))} className="rounded-lg bg-[#1cb0f6] px-4 py-3 text-lg font-black text-[#06232f]">
+                  <button key={`${word}-${index}`} onClick={() => setBuiltWords((words) => words.filter((_, wordIndex) => wordIndex !== index))} className="rounded-lg bg-[var(--kc-blue-700)] px-4 py-3 text-lg font-black text-[#382635]">
                     {word}
                   </button>
                 ))}
               </div>
-            ) : <p className="text-sm font-bold text-[#708995]">Tap words to build the answer.</p>}
+            ) : <p className="text-sm font-bold text-[var(--kc-text-muted)]">Tap words to build the answer.</p>}
           </div>
           <div className="flex flex-wrap gap-3">
             {wordBank.map((word) => (
-              <button key={word} disabled={builtWords.includes(word)} onClick={() => setBuiltWords((words) => [...words, word])} className="rounded-lg border-2 border-[#35505d] bg-[#142a31] px-4 py-3 text-lg font-black disabled:opacity-35">
+              <button key={word} disabled={builtWords.includes(word)} onClick={() => setBuiltWords((words) => [...words, word])} className="rounded-lg border-2 border-[var(--kc-text-secondary)] bg-[#382635] px-4 py-3 text-lg font-black disabled:opacity-35">
                 {word}
               </button>
             ))}
@@ -802,7 +802,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
             const token = `${pair.korean}:${pair.label}`;
             const active = matched.includes(token);
             return (
-              <button key={token} onClick={() => setMatched((items) => active ? items.filter((item) => item !== token) : [...items, token])} className={`flex items-center justify-between rounded-lg border-2 px-5 py-4 text-lg font-black ${active ? 'border-[#19c37d] bg-[#123c31] text-[#7cf0b6]' : 'border-[#35505d] bg-[#101f24]'}`}>
+              <button key={token} onClick={() => setMatched((items) => active ? items.filter((item) => item !== token) : [...items, token])} className={`flex items-center justify-between rounded-lg border-2 px-5 py-4 text-lg font-black ${active ? 'border-[#19c37d] bg-[#123c31] text-[#7cf0b6]' : 'border-[var(--kc-text-secondary)] bg-[#382635]'}`}>
                 <span className="text-2xl">{pair.korean}</span>
                 <span>{pair.label}</span>
               </button>
@@ -813,42 +813,42 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
     }
 
     return (
-      <button onClick={() => setSelected('spoken')} className="inline-flex w-full items-center justify-center gap-3 rounded-lg border-2 border-[#35505d] bg-[#101f24] px-5 py-6 text-lg font-black">
-        <Mic className="h-7 w-7 text-[#1cb0f6]" /> I completed the speaking attempt
+      <button onClick={() => setSelected('spoken')} className="inline-flex w-full items-center justify-center gap-3 rounded-lg border-2 border-[var(--kc-text-secondary)] bg-[#382635] px-5 py-6 text-lg font-black">
+        <Mic className="h-7 w-7 text-[var(--kc-blue-700)]" /> I completed the speaking attempt
       </button>
     );
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f7fa] text-[#111827]">
-      <section className="bg-[#101f24] px-4 py-8 text-white sm:px-5 lg:px-10">
+    <main className="min-h-screen bg-[var(--kc-surface-soft)] text-[var(--kc-text)]">
+      <section className="bg-[#382635] px-4 py-8 text-white sm:px-5 lg:px-10">
         <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[1fr_360px]">
           <div>
-            <Link href="/learning" className="inline-flex items-center gap-2 text-sm font-black text-[#9fb2bd] hover:text-white">
+            <Link href="/learning" className="inline-flex items-center gap-2 text-sm font-black text-[var(--kc-text-muted)] hover:text-white">
               <ChevronRight className="h-4 w-4 rotate-180" /> Korean Learning
             </Link>
             <p className="mt-8 text-sm font-black uppercase tracking-[0.22em]" style={{ color: track.accent }}>{track.eyebrow}</p>
             <h1 className="mt-3 max-w-4xl text-3xl font-black leading-tight sm:text-5xl lg:text-6xl">{track.title}</h1>
-            <p className="mt-5 max-w-3xl text-base leading-7 text-[#d8e5eb] sm:text-lg sm:leading-8">{track.intro}</p>
+            <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--kc-border)] sm:text-lg sm:leading-8">{track.intro}</p>
             <div className="mt-7 flex flex-wrap gap-3">
               {track.outcomes.map((outcome) => (
-                <span key={outcome} className="rounded-full border border-[#35505d] bg-[#142a31] px-4 py-2 text-sm font-bold text-[#d8e5eb]">
+                <span key={outcome} className="rounded-full border border-[var(--kc-text-secondary)] bg-[#382635] px-4 py-2 text-sm font-bold text-[var(--kc-border)]">
                   {outcome}
                 </span>
               ))}
             </div>
           </div>
-          <aside className="rounded-lg border border-[#35505d] bg-[#142a31] p-5">
+          <aside className="rounded-lg border border-[var(--kc-text-secondary)] bg-[#382635] p-5">
             <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="rounded-lg bg-[#101f24] p-3">
+              <div className="rounded-lg bg-[#382635] p-3">
                 <Heart className="mx-auto h-5 w-5 fill-[#ff4b4b] text-[#ff4b4b]" />
                 <p className="mt-1 text-2xl font-black">{hearts}</p>
               </div>
-              <div className="rounded-lg bg-[#101f24] p-3">
-                <Zap className="mx-auto h-5 w-5 text-[#1cb0f6]" />
+              <div className="rounded-lg bg-[#382635] p-3">
+                <Zap className="mx-auto h-5 w-5 text-[var(--kc-blue-700)]" />
                 <p className="mt-1 text-2xl font-black">{xp}</p>
               </div>
-              <div className="rounded-lg bg-[#101f24] p-3">
+              <div className="rounded-lg bg-[#382635] p-3">
                 <Flame className="mx-auto h-5 w-5 text-[#ff9600]" />
                 <p className="mt-1 text-2xl font-black">{streak}</p>
               </div>
@@ -859,12 +859,12 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
 
       <section className="px-4 py-8 sm:px-5 lg:px-10">
         <div className="mx-auto grid max-w-[1480px] gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <section className="rounded-lg bg-[#101f24] p-5 text-white">
+          <section className="rounded-lg bg-[#382635] p-5 text-white">
             <div className="flex items-center gap-5">
-              <button onClick={restartTrack} className="text-[#708995]" aria-label="Restart track">
+              <button onClick={restartTrack} className="text-[var(--kc-text-muted)]" aria-label="Restart track">
                 <X className="h-7 w-7" />
               </button>
-              <div className="h-4 flex-1 overflow-hidden rounded-full bg-[#35505d]">
+              <div className="h-4 flex-1 overflow-hidden rounded-full bg-[var(--kc-text-secondary)]">
                 <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: track.accent }} />
               </div>
               <span className="inline-flex items-center gap-2 text-lg font-black text-[#ff4b4b]"><Heart className="h-6 w-6 fill-current" /> {hearts}</span>
@@ -875,10 +875,10 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                 <Sparkles className="h-5 w-5 fill-current" /> {round.tag}
               </div>
               <h2 className="mt-4 text-2xl font-black leading-tight sm:text-4xl lg:text-5xl">{round.prompt}</h2>
-              <div className="mt-7 rounded-lg bg-[#142a31] p-5 text-center">
+              <div className="mt-7 rounded-lg bg-[#382635] p-5 text-center">
                 <p className="text-4xl font-black sm:text-6xl lg:text-7xl">{round.korean}</p>
                 {(round.type === 'listen' || round.type === 'speak') ? (
-                  <button onClick={speak} className="mt-5 inline-flex items-center gap-2 rounded-lg border-2 border-[#35505d] px-4 py-3 text-sm font-black text-[#1cb0f6]">
+                  <button onClick={speak} className="mt-5 inline-flex items-center gap-2 rounded-lg border-2 border-[var(--kc-text-secondary)] px-4 py-3 text-sm font-black text-[var(--kc-blue-700)]">
                     <Volume2 className="h-5 w-5" /> Play Korean audio
                   </button>
                 ) : null}
@@ -889,8 +889,8 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                   <p className="font-black">{notice}</p>
                 </div>
               ) : null}
-              <div className="mt-7 flex flex-col-reverse gap-3 border-t border-[#35505d] pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <button onClick={() => { setHearts((value) => Math.max(0, value - 1)); nextRound(); }} className="rounded-lg border-2 border-[#35505d] px-6 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#708995]">
+              <div className="mt-7 flex flex-col-reverse gap-3 border-t border-[var(--kc-text-secondary)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <button onClick={() => { setHearts((value) => Math.max(0, value - 1)); nextRound(); }} className="rounded-lg border-2 border-[var(--kc-text-secondary)] px-6 py-3 text-sm font-black uppercase tracking-[0.1em] text-[var(--kc-text-muted)]">
                   Skip
                 </button>
                 {feedback === 'correct' ? (
@@ -898,7 +898,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                     Continue
                   </button>
                 ) : (
-                  <button onClick={checkRound} disabled={!currentAnswer()} className="rounded-lg bg-[#1cb0f6] px-8 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#06232f] shadow-[0_5px_0_#0b75a5] disabled:bg-[#354b58] disabled:text-[#708995] disabled:shadow-none">
+                  <button onClick={checkRound} disabled={!currentAnswer()} className="rounded-lg bg-[var(--kc-blue-700)] px-8 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#382635] shadow-[0_5px_0_var(--kc-text-secondary)] disabled:bg-[#382635] disabled:text-[var(--kc-text-muted)] disabled:shadow-none">
                     Check
                   </button>
                 )}
@@ -907,22 +907,22 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
           </section>
 
           <aside className="grid gap-5 self-start">
-            <div className="rounded-lg border border-[#d5d9d9] bg-white p-5">
+            <div className="rounded-lg border border-[var(--kc-border)] bg-white p-5">
               <div className="flex items-center gap-3">
                 <Trophy className="h-6 w-6 text-[#ff9600]" />
                 <h2 className="text-xl font-black">Practice progress</h2>
               </div>
-              <div className="mt-4 grid gap-3 text-sm font-bold text-[#565959]">
-                <p className="rounded-lg bg-[#f7fafa] p-3">Complete lessons to build your Korean practice progress.</p>
-                <p className="rounded-lg bg-[#f7fafa] p-3">Use the guides, quizzes and course materials to keep learning.</p>
+              <div className="mt-4 grid gap-3 text-sm font-bold text-[var(--kc-text-secondary)]">
+                <p className="rounded-lg bg-[var(--kc-surface-soft)] p-3">Complete lessons to build your Korean practice progress.</p>
+                <p className="rounded-lg bg-[var(--kc-surface-soft)] p-3">Use the guides, quizzes and course materials to keep learning.</p>
               </div>
             </div>
-            <div className="rounded-lg border border-[#d5d9d9] bg-white p-5">
+            <div className="rounded-lg border border-[var(--kc-border)] bg-white p-5">
               <div className="flex items-center gap-3">
                 <ShoppingCart className="h-6 w-6 text-[#b12704]" />
                 <h2 className="text-xl font-black">Cart</h2>
               </div>
-              <p className="mt-3 text-sm font-bold text-[#565959]">{cart.length ? `${cart.length} course selected` : 'No course selected yet.'}</p>
+              <p className="mt-3 text-sm font-bold text-[var(--kc-text-secondary)]">{cart.length ? `${cart.length} course selected` : 'No course selected yet.'}</p>
             </div>
           </aside>
         </div>
@@ -932,49 +932,49 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
         <div className="mx-auto max-w-[1480px]">
           <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-[#007185]">Guide books</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-[var(--kc-blue-700)]">Guide books</p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">Download-ready learning guides</h2>
-              <p className="mt-2 max-w-2xl text-sm font-bold leading-6 text-[#565959]">
+              <p className="mt-2 max-w-2xl text-sm font-bold leading-6 text-[var(--kc-text-secondary)]">
                 Each option now has a real study book, chapter plan, practice outcome, and next action instead of an empty material label.
               </p>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-lg border border-[#d5d9d9] bg-white px-4 py-3 text-sm font-black text-[#111827]">
-              <Layers className="h-4 w-4 text-[#007185]" /> {track.guideBooks.length} curated guides
+            <div className="inline-flex items-center gap-2 rounded-lg border border-[var(--kc-border)] bg-white px-4 py-3 text-sm font-black text-[var(--kc-text)]">
+              <Layers className="h-4 w-4 text-[var(--kc-blue-700)]" /> {track.guideBooks.length} curated guides
             </div>
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
             {track.guideBooks.map((guideBook) => (
-              <article key={guideBook.id} className="rounded-lg border border-[#d5d9d9] bg-white p-5 shadow-sm">
+              <article key={guideBook.id} className="rounded-lg border border-[var(--kc-border)] bg-white p-5 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <div className="inline-flex items-center gap-2 rounded-sm bg-[#e8f3ff] px-2 py-1 text-xs font-black text-[#007185]">
+                    <div className="inline-flex items-center gap-2 rounded-sm bg-[var(--kc-surface-soft)] px-2 py-1 text-xs font-black text-[var(--kc-blue-700)]">
                       <FileText className="h-3.5 w-3.5" /> {guideBook.format}
                     </div>
                     <h3 className="mt-4 text-2xl font-black">{guideBook.title}</h3>
-                    <p className="mt-2 text-sm font-bold text-[#565959]">{guideBook.summary}</p>
+                    <p className="mt-2 text-sm font-bold text-[var(--kc-text-secondary)]">{guideBook.summary}</p>
                   </div>
-                  <div className="rounded-lg bg-[#f7fafa] px-4 py-3 text-right">
-                    <p className="text-xs font-black uppercase tracking-[0.12em] text-[#565959]">{guideBook.level}</p>
+                  <div className="rounded-lg bg-[var(--kc-surface-soft)] px-4 py-3 text-right">
+                    <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--kc-text-secondary)]">{guideBook.level}</p>
                     <p className="mt-1 text-2xl font-black text-[#b12704]">{guideBook.pages} pages</p>
                   </div>
                 </div>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-lg border border-[#d5d9d9] bg-[#f7fafa] p-4">
-                    <p className="text-sm font-black uppercase tracking-[0.14em] text-[#565959]">Chapters</p>
+                  <div className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4">
+                    <p className="text-sm font-black uppercase tracking-[0.14em] text-[var(--kc-text-secondary)]">Chapters</p>
                     <div className="mt-3 grid gap-2">
                       {guideBook.chapters.map((chapter) => (
-                        <p key={chapter} className="flex items-center gap-2 text-sm font-bold text-[#374151]">
+                        <p key={chapter} className="flex items-center gap-2 text-sm font-bold text-[#382635]">
                           <Check className="h-4 w-4 text-[#15803d]" /> {chapter}
                         </p>
                       ))}
                     </div>
                   </div>
-                  <div className="rounded-lg border border-[#d5d9d9] bg-[#f7fafa] p-4">
-                    <p className="text-sm font-black uppercase tracking-[0.14em] text-[#565959]">Outcomes</p>
+                  <div className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4">
+                    <p className="text-sm font-black uppercase tracking-[0.14em] text-[var(--kc-text-secondary)]">Outcomes</p>
                     <div className="mt-3 grid gap-2">
                       {guideBook.outcomes.map((outcome) => (
-                        <p key={outcome} className="flex items-center gap-2 text-sm font-bold text-[#374151]">
+                        <p key={outcome} className="flex items-center gap-2 text-sm font-bold text-[#382635]">
                           <Sparkles className="h-4 w-4 text-[#ce82ff]" /> {outcome}
                         </p>
                       ))}
@@ -983,10 +983,10 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
                 </div>
 
                 <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                  <button onClick={() => previewGuideBook(guideBook)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827]">
+                  <button onClick={() => previewGuideBook(guideBook)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffd814] px-4 py-3 text-sm font-black text-[var(--kc-text)]">
                     <Download className="h-4 w-4" /> Preview guide
                   </button>
-                  <button onClick={() => setNotice(`${guideBook.title} added to your learning plan.`)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#d5d9d9] px-4 py-3 text-sm font-black text-[#111827]">
+                  <button onClick={() => setNotice(`${guideBook.title} added to your learning plan.`)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--kc-border)] px-4 py-3 text-sm font-black text-[var(--kc-text)]">
                     <BookOpen className="h-4 w-4" /> Add to plan
                   </button>
                 </div>
@@ -1003,47 +1003,47 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
               <p className="text-sm font-black uppercase tracking-[0.2em] text-[#b12704]">Buy a course</p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">Course packages and trial classes</h2>
             </div>
-            <Link href="/dashboard" className="inline-flex items-center gap-2 rounded-lg border border-[#d5d9d9] bg-white px-4 py-3 text-sm font-black text-[#111827]">
+            <Link href="/dashboard" className="inline-flex items-center gap-2 rounded-lg border border-[var(--kc-border)] bg-white px-4 py-3 text-sm font-black text-[var(--kc-text)]">
               My page <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
             {track.products.map((product) => (
-              <article key={product.id} className="rounded-lg border border-[#d5d9d9] bg-white p-5 shadow-sm">
+              <article key={product.id} className="rounded-lg border border-[var(--kc-border)] bg-white p-5 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap gap-2">
                       <span className="rounded-sm bg-[#fff4cc] px-2 py-1 text-xs font-black text-[#b12704]">{product.badge}</span>
-                      {product.trial ? <span className="rounded-sm bg-[#e9f8ef] px-2 py-1 text-xs font-black text-[#15803d]">TRIAL CLASS</span> : <span className="rounded-sm bg-[#e8f3ff] px-2 py-1 text-xs font-black text-[#007185]">PACKAGE COURSE</span>}
+                      {product.trial ? <span className="rounded-sm bg-[#e9f8ef] px-2 py-1 text-xs font-black text-[#15803d]">TRIAL CLASS</span> : <span className="rounded-sm bg-[var(--kc-surface-soft)] px-2 py-1 text-xs font-black text-[var(--kc-blue-700)]">PACKAGE COURSE</span>}
                     </div>
                     <h3 className="mt-4 text-2xl font-black">{product.title}</h3>
-                    <p className="mt-2 text-sm font-bold text-[#565959]">{product.teacher}</p>
+                    <p className="mt-2 text-sm font-bold text-[var(--kc-text-secondary)]">{product.teacher}</p>
                   </div>
                 </div>
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  <p className="rounded-lg bg-[#f7fafa] p-3 text-sm font-bold text-[#565959]"><BookOpen className="mb-2 h-5 w-5 text-[#007185]" /> {product.lessons} lessons</p>
-                  <p className="rounded-lg bg-[#f7fafa] p-3 text-sm font-bold text-[#565959]"><Clock3 className="mb-2 h-5 w-5 text-[#007185]" /> {product.duration}</p>
-                  <p className="rounded-lg bg-[#f7fafa] p-3 text-sm font-bold text-[#565959]"><CalendarDays className="mb-2 h-5 w-5 text-[#007185]" /> {product.schedule}</p>
+                  <p className="rounded-lg bg-[var(--kc-surface-soft)] p-3 text-sm font-bold text-[var(--kc-text-secondary)]"><BookOpen className="mb-2 h-5 w-5 text-[var(--kc-blue-700)]" /> {product.lessons} lessons</p>
+                  <p className="rounded-lg bg-[var(--kc-surface-soft)] p-3 text-sm font-bold text-[var(--kc-text-secondary)]"><Clock3 className="mb-2 h-5 w-5 text-[var(--kc-blue-700)]" /> {product.duration}</p>
+                  <p className="rounded-lg bg-[var(--kc-surface-soft)] p-3 text-sm font-bold text-[var(--kc-text-secondary)]"><CalendarDays className="mb-2 h-5 w-5 text-[var(--kc-blue-700)]" /> {product.schedule}</p>
                 </div>
-                <div className="mt-5 rounded-lg border border-[#d5d9d9] bg-[#f7fafa] p-4">
-                  <p className="text-sm font-black uppercase tracking-[0.14em] text-[#565959]">Study materials</p>
+                <div className="mt-5 rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4">
+                  <p className="text-sm font-black uppercase tracking-[0.14em] text-[var(--kc-text-secondary)]">Study materials</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {product.materials.map((material) => (
-                      <span key={material} className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#565959]">{material}</span>
+                      <span key={material} className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[var(--kc-text-secondary)]">{material}</span>
                     ))}
                   </div>
                 </div>
                 <div className="mt-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                   <div>
-                    <p className="text-sm font-bold text-[#565959]">Price</p>
+                    <p className="text-sm font-bold text-[var(--kc-text-secondary)]">Price</p>
                     <p className="mt-1 text-sm text-[#8f95a3] line-through">{formatPrice(product.oldPrice)}</p>
                     <p className="text-3xl font-black text-[#b12704]">{formatPrice(product.price)} <span className="text-sm text-[#15803d]">({product.discount}% off)</span></p>
                   </div>
                   <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
-                    <button onClick={() => addToCart(product)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#d5d9d9] px-4 py-3 text-sm font-black text-[#111827]">
+                    <button onClick={() => addToCart(product)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--kc-border)] px-4 py-3 text-sm font-black text-[var(--kc-text)]">
                       <ShoppingCart className="h-4 w-4" /> Add to Cart
                     </button>
-                    <button disabled={isPurchasing} onClick={() => buyNow(product)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffd814] px-4 py-3 text-sm font-black text-[#111827] disabled:cursor-not-allowed disabled:bg-[#c9b64d]">
+                    <button disabled={isPurchasing} onClick={() => buyNow(product)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffd814] px-4 py-3 text-sm font-black text-[var(--kc-text)] disabled:cursor-not-allowed disabled:bg-[#c9b64d]">
                       <Play className="h-4 w-4" /> {isPurchasing ? 'Processing...' : product.trial ? 'Book Trial' : 'Buy Now'}
                     </button>
                   </div>

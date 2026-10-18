@@ -63,14 +63,14 @@ const KoreanLearningHub = () => {
   }, []);
 
   return (
-    <main className="kc-learning-surface min-h-screen bg-[#eef4f8] text-[#102a43]">
+    <main className="kc-learning-surface min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
       <section className="border-b border-white/10 px-4 py-4 sm:px-6 lg:px-10">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-3">
           <div>
             <p className="kc-eyebrow">{language === 'en' ? 'Learning Gateway' : language === 'ko' ? '학습 게이트웨이' : 'लर्निंग गेटवे'}</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{language === 'en' ? 'Korean learning, points, and login-gated progress' : language === 'ko' ? '한국어 학습, 포인트 및 로그인 기반 진행' : 'Korean learning, पॉइंट्स और लॉगिन आधारित प्रोग्रेस'}</h1>
           </div>
-          <div className="hidden rounded-md border border-[#dce6f0] bg-white px-4 py-2 text-sm font-semibold text-[#486581]">
+          <div className="hidden rounded-md border border-[var(--kc-border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--kc-text-secondary)]">
             {user ? `${t.points}: ${points}` : `${t.signIn} ${language === 'ko' ? '전 미리보기' : language === 'hi' ? 'से पहले प्रीव्यू' : 'to preview'}`}
           </div>
         </div>
@@ -78,32 +78,32 @@ const KoreanLearningHub = () => {
 
       <section className="px-4 py-8 sm:px-6 lg:px-10">
         <div className="mx-auto grid max-w-[1320px] gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <article className="overflow-hidden rounded-xl border border-[#dce6f0] bg-white p-6 shadow-[0_6px_20px_rgba(15,55,95,0.07)] sm:p-8">
+          <article className="overflow-hidden rounded-xl border border-[var(--kc-border)] bg-white p-6 shadow-[0_6px_20px_rgba(81,33,55,0.07)] sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="max-w-3xl">
-                <div className="inline-flex items-center gap-2 rounded-md border border-[#0b4eae]/20 bg-[#eaf3ff] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#0b4eae]">
+                <div className="inline-flex items-center gap-2 rounded-md border border-[var(--kc-blue-700)]/20 bg-[var(--kc-surface-blue)] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[var(--kc-blue-700)]">
                   <Sparkles className="h-4 w-4" /> Adaptive Korean academy
                 </div>
-                  <h2 className="mt-5 text-3xl font-bold leading-tight text-[#102a43] sm:text-4xl">{language === 'en' ? 'Beginner to class-content learning, all inside a protected points system.' : language === 'ko' ? '초급부터 수업 콘텐츠까지, 안전한 포인트 시스템 안에서 학습하세요.' : 'शुरुआत से class-content learning तक, सुरक्षित पॉइंट्स सिस्टम में।'}</h2>
-                <p className="mt-4 max-w-3xl text-base leading-7 text-[#486581] sm:text-lg">
+                  <h2 className="mt-5 text-3xl font-bold leading-tight text-[var(--kc-text)] sm:text-4xl">{language === 'en' ? 'Beginner to class-content learning, all inside a protected points system.' : language === 'ko' ? '초급부터 수업 콘텐츠까지, 안전한 포인트 시스템 안에서 학습하세요.' : 'शुरुआत से class-content learning तक, सुरक्षित पॉइंट्स सिस्टम में।'}</h2>
+                <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--kc-text-secondary)] sm:text-lg">
                   {language === 'en' ? 'Guests can read the overview, but the actual practice flow is locked until login. Once signed in, the app shuffles a fresh learning set from 100+ questions in each track.' : language === 'ko' ? '게스트는 개요를 볼 수 있지만 실제 학습은 로그인 후 이용할 수 있습니다. 로그인하면 각 트랙의 100개 이상의 문제에서 새로운 세트가 제공됩니다.' : 'Guest overview देख सकते हैं, लेकिन असली practice login के बाद खुलती है। Login करने पर हर track के 100+ questions में से नया set मिलता है।'}
                 </p>
               </div>
-              <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] px-5 py-4 text-right">
+              <div className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-5 py-4 text-right">
                 <p className="kc-eyebrow">System</p>
-                <p className="mt-2 text-2xl font-bold text-[#0b4eae]">{remoteTracks.length} tracks</p>
-                <p className="mt-1 text-sm text-[#486581]">Adaptive sessions</p>
+                <p className="mt-2 text-2xl font-bold text-[var(--kc-blue-700)]">{remoteTracks.length} tracks</p>
+                <p className="mt-1 text-sm text-[var(--kc-text-secondary)]">Adaptive sessions</p>
               </div>
             </div>
 
             {!user ? (
               <div className="mt-8 grid gap-4 lg:grid-cols-2">
-                <div className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-5">
+                <div className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-5">
                   <div className="flex items-center gap-3">
-                    <Lock className="h-5 w-5 text-[#0b4eae]" />
-                    <h3 className="text-xl font-bold text-[#102a43]">Login required</h3>
+                    <Lock className="h-5 w-5 text-[var(--kc-blue-700)]" />
+                    <h3 className="text-xl font-bold text-[var(--kc-text)]">Login required</h3>
                   </div>
-                  <p className="mt-3 text-sm leading-7 text-[#486581]">
+                  <p className="mt-3 text-sm leading-7 text-[var(--kc-text-secondary)]">
                     Sign in to access the full lesson practice, question shuffle, and saved progress. Before that, users see basic service information and track summaries.
                   </p>
                   <div className="mt-5 flex flex-wrap gap-3">
@@ -122,10 +122,10 @@ const KoreanLearningHub = () => {
                     { title: 'Guest mode', value: 'Preview', detail: 'Only high-level learning info is visible.' },
                     { title: 'Pool size', value: '100+', detail: 'Each track has a large question bank.' },
                   ].map((item) => (
-                    <div key={item.title} className="rounded-lg border border-[#dce6f0] bg-white p-4">
+                    <div key={item.title} className="rounded-lg border border-[var(--kc-border)] bg-white p-4">
                       <p className="kc-eyebrow">{item.title}</p>
-                      <p className="mt-2 text-2xl font-bold text-[#0b4eae]">{item.value}</p>
-                      <p className="mt-2 text-sm leading-6 text-[#486581]">{item.detail}</p>
+                      <p className="mt-2 text-2xl font-bold text-[var(--kc-blue-700)]">{item.value}</p>
+                      <p className="mt-2 text-sm leading-6 text-[var(--kc-text-secondary)]">{item.detail}</p>
                     </div>
                   ))}
                 </div>
@@ -136,7 +136,7 @@ const KoreanLearningHub = () => {
                   <Link
                     key={track.slug}
                     href={`/learning/${track.slug}`}
-                    className="group rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-5 transition hover:-translate-y-0.5 hover:border-[#0b4eae]/40 hover:bg-[#eaf3ff]"
+                    className="group rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--kc-blue-700)]/40 hover:bg-[var(--kc-surface-blue)]"
                   >
                   <div className="flex items-start justify-between gap-4">
                       <div>
@@ -144,10 +144,10 @@ const KoreanLearningHub = () => {
                         <h3 className="mt-2 text-2xl font-black">{track.title}</h3>
                       </div>
                     </div>
-                    <p className="mt-4 text-sm leading-7 text-[#486581]">{track.intro}</p>
-                    <div className="mt-5 flex items-center justify-between text-sm font-bold text-[#486581]">
+                    <p className="mt-4 text-sm leading-7 text-[var(--kc-text-secondary)]">{track.intro}</p>
+                    <div className="mt-5 flex items-center justify-between text-sm font-bold text-[var(--kc-text-secondary)]">
                       <span>{track.bankSize} questions</span>
-                      <span className="inline-flex items-center gap-2 text-[#0b4eae]">
+                      <span className="inline-flex items-center gap-2 text-[var(--kc-blue-700)]">
                         Open track <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                       </span>
                     </div>
@@ -158,33 +158,33 @@ const KoreanLearningHub = () => {
           </article>
 
           <aside className="grid gap-6">
-            <div className="rounded-xl border border-[#dce6f0] bg-white p-6 shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
+            <div className="rounded-xl border border-[var(--kc-border)] bg-white p-6 shadow-[0_6px_20px_rgba(81,33,55,0.07)]">
               <div className="flex items-center gap-3">
-                <Trophy className="h-6 w-6 text-[#0b4eae]" />
-                <h2 className="text-2xl font-bold text-[#102a43]">What unlocked users get</h2>
+                <Trophy className="h-6 w-6 text-[var(--kc-blue-700)]" />
+                <h2 className="text-2xl font-bold text-[var(--kc-text)]">What unlocked users get</h2>
               </div>
               <div className="mt-5 grid gap-4">
                 {[
                   ...remoteTracks.slice(0, 4).map((track) => `${track.title}: ${track.bankSize}+ adaptive questions`),
                 ].map((line) => (
-                  <div key={line} className="rounded-lg border border-[#dce6f0] bg-[#f7fafd] p-4 text-sm leading-7 text-[#486581]">
+                  <div key={line} className="rounded-lg border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4 text-sm leading-7 text-[var(--kc-text-secondary)]">
                     {line}
                   </div>
                 ))}
               </div>
             </div>
-            <div className="rounded-xl border border-[#dce6f0] bg-white p-6 shadow-[0_6px_20px_rgba(15,55,95,0.07)]">
+            <div className="rounded-xl border border-[var(--kc-border)] bg-white p-6 shadow-[0_6px_20px_rgba(81,33,55,0.07)]">
               <div className="flex items-center gap-3">
-                <BookOpen className="h-6 w-6 text-[#0b4eae]" />
-                <h2 className="text-2xl font-bold text-[#102a43]">Learning design notes</h2>
+                <BookOpen className="h-6 w-6 text-[var(--kc-blue-700)]" />
+                <h2 className="text-2xl font-bold text-[var(--kc-text)]">Learning design notes</h2>
               </div>
-              <ul className="mt-5 space-y-3 text-sm leading-7 text-[#486581]">
+              <ul className="mt-5 space-y-3 text-sm leading-7 text-[var(--kc-text-secondary)]">
                 <li>Fresh session order is derived from the login seed, so every sign-in can feel different.</li>
                 <li>Learning progress is saved for practice and revision.</li>
                 <li>Guests can inspect the structure, but not the playable quiz content.</li>
                 <li>The class-content track is original, book-inspired practice and not copied textbook text.</li>
               </ul>
-              <div className="mt-6 inline-flex items-center gap-2 rounded-md border border-[#0b4eae]/20 bg-[#eaf3ff] px-4 py-2 text-sm font-bold text-[#0b4eae]">
+              <div className="mt-6 inline-flex items-center gap-2 rounded-md border border-[var(--kc-blue-700)]/20 bg-[var(--kc-surface-blue)] px-4 py-2 text-sm font-bold text-[var(--kc-blue-700)]">
                 Adaptive practice sessions
               </div>
             </div>

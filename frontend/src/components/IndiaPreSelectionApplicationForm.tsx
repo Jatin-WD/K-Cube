@@ -323,20 +323,20 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
           <ShieldCheck className="h-4 w-4" />
           Internal application
         </p>
-        <h2 className="mt-4 text-2xl font-black text-[#111827]">Sign in to apply inside K-CUBE</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-[#565959]">
+        <h2 className="mt-4 text-2xl font-black text-[var(--kc-text)]">Sign in to apply inside K-CUBE</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--kc-text-secondary)]">
           Your application is saved directly inside the platform. Once you are signed in, you can submit the form, keep your record in one place, and earn the application points automatically.
         </p>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <Link
             href="/signin?returnTo=/india-pre-selection/apply"
-            className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
+            className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[var(--kc-text)] transition hover:bg-[#f7ca00]"
           >
             Sign in to apply
           </Link>
           <Link
             href="/signup?returnTo=/india-pre-selection/apply"
-            className="inline-flex items-center justify-center gap-2 rounded-sm border border-[#d5d9d9] bg-white px-5 py-3 text-sm font-bold text-[#111827] transition hover:border-[#f3a847] hover:text-[#b12704]"
+            className="inline-flex items-center justify-center gap-2 rounded-sm border border-[var(--kc-border)] bg-white px-5 py-3 text-sm font-bold text-[var(--kc-text)] transition hover:border-[#f3a847] hover:text-[#b12704]"
           >
             Create account
           </Link>
@@ -347,7 +347,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
 
   if (!loading && submittedApplication) {
     return (
-      <div className={`${compact ? '' : 'mt-8'} rounded-[28px] border border-[#d5d9d9] bg-[#0b1220] p-5 text-white shadow-sm sm:p-6 lg:p-8`}>
+      <div className={`${compact ? '' : 'mt-8'} rounded-[28px] border border-[var(--kc-border)] bg-[#382635] p-5 text-white shadow-sm sm:p-6 lg:p-8`}>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">
             <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-[#f3a847]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#f3a847]">
@@ -355,12 +355,12 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
               Submission received
             </p>
             <h2 className="mt-4 text-2xl font-black text-white sm:text-3xl">Your application is already saved</h2>
-            <p className="mt-3 text-sm leading-7 text-[#d5d9d9]">
+            <p className="mt-3 text-sm leading-7 text-[var(--kc-border)]">
               We have stored your India pre-selection submission inside your K-CUBE account. You do not need to submit the same form again.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full border border-[#f3a847]/40 bg-[#fff8df] px-3 py-1 text-xs font-black text-[#111827]">
+            <span className="rounded-full border border-[#f3a847]/40 bg-[#fff8df] px-3 py-1 text-xs font-black text-[var(--kc-text)]">
               {submittedApplication.status || 'submitted'}
             </span>
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-white">
@@ -379,17 +379,17 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
           <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Submitted by</p>
             <p className="mt-2 text-sm font-bold text-white">{submittedApplication.full_name}</p>
-            <p className="mt-1 text-sm text-[#d5d9d9]">{submittedApplication.email}</p>
+            <p className="mt-1 text-sm text-[var(--kc-border)]">{submittedApplication.email}</p>
           </div>
           <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Performance category</p>
             <p className="mt-2 text-sm font-bold text-white">{submittedApplication.performance_category}</p>
-            <p className="mt-1 text-sm text-[#d5d9d9]">{submittedApplication.current_city || 'Current city not added'}</p>
+            <p className="mt-1 text-sm text-[var(--kc-border)]">{submittedApplication.current_city || 'Current city not added'}</p>
           </div>
           <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Submitted at</p>
             <p className="mt-2 text-sm font-bold text-white">{formatDateTime(submittedApplication.submitted_at) || 'Just now'}</p>
-            <p className="mt-1 text-sm text-[#d5d9d9]">The application is now locked to your account.</p>
+            <p className="mt-1 text-sm text-[var(--kc-border)]">The application is now locked to your account.</p>
           </div>
           <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Video link</p>
@@ -408,13 +408,13 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
         <div className="mt-5 grid gap-3 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Next step</p>
-            <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">
+            <p className="mt-2 text-sm leading-7 text-[var(--kc-border)]">
               Keep checking Announcement for live updates. If the review team adds feedback, it will appear in your account.
             </p>
           </div>
           <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">Review note</p>
-            <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">
+            <p className="mt-2 text-sm leading-7 text-[var(--kc-border)]">
               {reviewNote || 'Your submission is waiting for admin review.'}
             </p>
           </div>
@@ -423,7 +423,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <Link
             href="/india-pre-selection/announcement"
-            className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
+            className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[var(--kc-text)] transition hover:bg-[#f7ca00]"
           >
             Check announcement
           </Link>
@@ -437,7 +437,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
 
         {successVisible ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm">
-            <div className="w-full max-w-lg rounded-[28px] border border-white/10 bg-[#0b1220] p-5 text-white shadow-2xl sm:p-6">
+            <div className="w-full max-w-lg rounded-[28px] border border-white/10 bg-[#382635] p-5 text-white shadow-2xl sm:p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-[#f3a847]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#f3a847]">
@@ -455,12 +455,12 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <p className="mt-3 text-sm leading-7 text-[#d5d9d9]">
+              <p className="mt-3 text-sm leading-7 text-[var(--kc-border)]">
                 Your application is now stored in K-CUBE and linked to your account. The same form will not appear again for this account.
               </p>
               <div className="mt-5 rounded-[22px] border border-white/10 bg-white/[0.03] p-4">
                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f3a847]">What happens next</p>
-                <p className="mt-2 text-sm leading-7 text-[#d5d9d9]">
+                <p className="mt-2 text-sm leading-7 text-[var(--kc-border)]">
                   We will keep the data in your account, and if Google Sheets sync is enabled on the backend, the same submission will also be pushed into the team spreadsheet.
                 </p>
               </div>
@@ -468,7 +468,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 <button
                   type="button"
                   onClick={() => setSuccessVisible(false)}
-                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00]"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[var(--kc-text)] transition hover:bg-[#f7ca00]"
                 >
                   Continue
                 </button>
@@ -487,39 +487,39 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
   }
 
   return (
-    <div id="application" className={`${compact ? '' : 'mt-8'} rounded-[28px] border border-[#d5d9d9] bg-white p-5 shadow-sm sm:p-6 lg:p-8`}>
+    <div id="application" className={`${compact ? '' : 'mt-8'} rounded-[28px] border border-[var(--kc-border)] bg-white p-5 shadow-sm sm:p-6 lg:p-8`}>
       {compact ? null : (
         <>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704]">Application form</p>
-              <h2 className="mt-2 text-2xl font-black text-[#111827] sm:text-3xl">Apply inside K-CUBE</h2>
+              <h2 className="mt-2 text-2xl font-black text-[var(--kc-text)] sm:text-3xl">Apply inside K-CUBE</h2>
             </div>
             <div className="flex flex-wrap gap-2">
-              <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[#111827]">Up to 200 points after approval</span>
-              <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">Saved to your account</span>
-              <span className="rounded-full bg-[#f7fafa] px-3 py-1 text-xs font-black text-[#5d646d]">{status || 'Not submitted yet'}</span>
+              <span className="rounded-full bg-[#fff2c2] px-3 py-1 text-xs font-black text-[var(--kc-text)]">Up to 200 points after approval</span>
+              <span className="rounded-full bg-[var(--kc-surface-soft)] px-3 py-1 text-xs font-black text-[#5d646d]">Saved to your account</span>
+              <span className="rounded-full bg-[var(--kc-surface-soft)] px-3 py-1 text-xs font-black text-[#5d646d]">{status || 'Not submitted yet'}</span>
             </div>
           </div>
 
-          <p className="mt-3 max-w-4xl text-sm leading-7 text-[#565959]">
+          <p className="mt-3 max-w-4xl text-sm leading-7 text-[var(--kc-text-secondary)]">
             This form keeps the full application inside K-CUBE instead of sending it by email. Submit once, edit later if needed, and points are added only after an admin approves your application.
           </p>
 
           {(status || reviewNote) ? (
-            <div className="mt-5 grid gap-3 rounded-[24px] border border-[#d5d9d9] bg-[#f7fafa] p-4 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 rounded-[24px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4 sm:grid-cols-3">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Current status</p>
-                <p className="mt-2 text-sm font-bold text-[#111827]">{status || 'Not submitted yet'}</p>
+                <p className="mt-2 text-sm font-bold text-[var(--kc-text)]">{status || 'Not submitted yet'}</p>
               </div>
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Reviewed by</p>
-                <p className="mt-2 text-sm font-bold text-[#111827]">{reviewedBy || 'Awaiting admin review'}</p>
-                {reviewedAt ? <p className="mt-1 text-xs text-[#565959]">{reviewedAt}</p> : null}
+                <p className="mt-2 text-sm font-bold text-[var(--kc-text)]">{reviewedBy || 'Awaiting admin review'}</p>
+                {reviewedAt ? <p className="mt-1 text-xs text-[var(--kc-text-secondary)]">{reviewedAt}</p> : null}
               </div>
               <div className="sm:col-span-1">
                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8b95a1]">Review note</p>
-                <p className="mt-2 text-sm leading-6 text-[#565959]">
+                <p className="mt-2 text-sm leading-6 text-[var(--kc-text-secondary)]">
                   {reviewNote || 'Your application is saved. Once the admin reviews it, the note will appear here.'}
                 </p>
               </div>
@@ -529,7 +529,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
       )}
 
       {loading ? (
-        <div className="mt-6 flex items-center gap-3 rounded-[22px] border border-[#d5d9d9] bg-[#f7fafa] px-4 py-4 text-sm font-semibold text-[#565959]">
+        <div className="mt-6 flex items-center gap-3 rounded-[22px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-4 text-sm font-semibold text-[var(--kc-text-secondary)]">
           <Loader2 className="h-4 w-4 animate-spin text-[#b12704]" />
           Loading your application profile...
         </div>
@@ -548,7 +548,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
           ) : null}
 
           <div className="grid gap-4 md:grid-cols-2">
-            <label className="grid gap-2 text-sm font-bold text-[#111827]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">
               Full name
               <input
                 required
@@ -556,11 +556,11 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 maxLength={100}
                 value={form.full_name}
                 onChange={(event) => updateField('full_name', event.target.value)}
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
               <FieldError message={validationErrors.full_name} />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">
               Email address
               <input
                 required
@@ -569,11 +569,11 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 onChange={(event) => updateField('email', event.target.value)}
                 readOnly
                 title="This must match your verified K-CUBE account email"
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
               <FieldError message={validationErrors.email} />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">
               Phone or WhatsApp
               <input
                 required
@@ -582,46 +582,46 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 placeholder="+91 9876543210"
                 value={form.phone}
                 onChange={(event) => updateField('phone', event.target.value)}
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
               <FieldError message={validationErrors.phone} />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">
               Nationality
               <input
                 value={form.nationality}
                 onChange={(event) => updateField('nationality', event.target.value)}
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
               <FieldError message={validationErrors.nationality} />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">
               Current city
               <input
                 value={form.current_city}
                 onChange={(event) => updateField('current_city', event.target.value)}
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
               <FieldError message={validationErrors.current_city} />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827]">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)]">
               Date of birth
               <input
                 type="date"
                 required
                 value={form.date_of_birth}
                 onChange={(event) => updateField('date_of_birth', event.target.value)}
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition focus:border-[#f3a847] focus:bg-white"
               />
               <FieldError message={validationErrors.date_of_birth} />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)] md:col-span-2">
               Performance category
               <select
                 required
                 value={form.performance_category}
                 onChange={(event) => updateField('performance_category', event.target.value)}
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition focus:border-[#f3a847] focus:bg-white"
               >
                 <option value="">Select a category</option>
                 {categoryOptions.map((option) => (
@@ -632,7 +632,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
               </select>
               <FieldError message={validationErrors.performance_category} />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)] md:col-span-2">
               Short biography
               <textarea
                 required
@@ -642,11 +642,11 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 value={form.biography}
                 onChange={(event) => updateField('biography', event.target.value)}
                 placeholder="Tell us about your background, style, and stage experience."
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition placeholder:text-[#8b95a1] focus:border-[#f3a847] focus:bg-white"
               />
               <FieldError message={validationErrors.biography} />
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)] md:col-span-2">
               Performance video link
               <input
                 required
@@ -658,33 +658,33 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
                 onBlur={() => setVideoLinkTouched(true)}
                 placeholder="https://drive.google.com/... or public video URL"
                 aria-invalid={videoLinkTouched && !isValidVideoLink(form.video_link)}
-                className={`rounded-2xl border bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:bg-white ${videoLinkTouched && !isValidVideoLink(form.video_link) ? 'border-red-500 focus:border-red-500' : 'border-[#d5d9d9] focus:border-[#f3a847]'}`}
+                className={`rounded-2xl border bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition placeholder:text-[#8b95a1] focus:bg-white ${videoLinkTouched && !isValidVideoLink(form.video_link) ? 'border-red-500 focus:border-red-500' : 'border-[var(--kc-border)] focus:border-[#f3a847]'}`}
               />
-              <p className={`text-xs font-medium leading-5 ${videoLinkTouched && !isValidVideoLink(form.video_link) ? 'text-red-600' : 'text-[#565959]'}`}>
+              <p className={`text-xs font-medium leading-5 ${videoLinkTouched && !isValidVideoLink(form.video_link) ? 'text-red-600' : 'text-[var(--kc-text-secondary)]'}`}>
                 {videoLinkTouched && !isValidVideoLink(form.video_link)
                   ? validationErrors.video_link || 'Enter a proper public video link.'
                   : 'Use a public Google Drive or video URL. YouTube links are not accepted.'}
               </p>
             </label>
-            <label className="grid gap-2 text-sm font-bold text-[#111827] md:col-span-2">
+            <label className="grid gap-2 text-sm font-bold text-[var(--kc-text)] md:col-span-2">
               Message to the K-CUBE team
               <textarea
                 rows={4}
                 value={form.message}
                 onChange={(event) => updateField('message', event.target.value)}
                 placeholder="Share any extra context, group size, or scheduling note."
-                className="rounded-2xl border border-[#d5d9d9] bg-[#f7fafa] px-4 py-3 font-medium text-[#111827] outline-none transition placeholder:text-[#8b95a1] focus:border-[#f3a847] focus:bg-white"
+                className="rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-3 font-medium text-[var(--kc-text)] outline-none transition placeholder:text-[#8b95a1] focus:border-[#f3a847] focus:bg-white"
               />
               <FieldError message={validationErrors.message} />
             </label>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-[24px] border border-[#d5d9d9] bg-[#f7fafa] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-[24px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
               <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-[#b12704]" />
               <div>
-                <p className="text-sm font-bold text-[#111827]">Submission stays inside K-CUBE</p>
-                <p className="mt-1 text-sm leading-6 text-[#565959]">
+                <p className="text-sm font-bold text-[var(--kc-text)]">Submission stays inside K-CUBE</p>
+                <p className="mt-1 text-sm leading-6 text-[var(--kc-text-secondary)]">
                   No email submission is needed. Your saved application can be updated later, but the first successful submission is what earns the points.
                 </p>
               </div>
@@ -692,7 +692,7 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] transition hover:bg-[#f7ca00] disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[var(--kc-text)] transition hover:bg-[#f7ca00] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
               {submitting ? 'Submitting...' : 'Submit application'}
@@ -703,12 +703,12 @@ const IndiaPreSelectionApplicationForm = ({ compact = false }: IndiaPreSelection
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm" role="alertdialog" aria-modal="true">
               <div className="w-full max-w-md rounded-[24px] border border-[#f3a847]/40 bg-white p-6 shadow-2xl">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b12704]">Check your details</p>
-                <h3 className="mt-2 text-2xl font-black text-[#111827]">Submission needs correction</h3>
-                <p className="mt-3 text-sm leading-6 text-[#565959]">{validationWarning}</p>
+                <h3 className="mt-2 text-2xl font-black text-[var(--kc-text)]">Submission needs correction</h3>
+                <p className="mt-3 text-sm leading-6 text-[var(--kc-text-secondary)]">{validationWarning}</p>
                 <button
                   type="button"
                   onClick={() => setValidationWarning('')}
-                  className="mt-5 inline-flex w-full items-center justify-center rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[#111827] hover:bg-[#f7ca00]"
+                  className="mt-5 inline-flex w-full items-center justify-center rounded-sm bg-[#ffd814] px-5 py-3 text-sm font-black text-[var(--kc-text)] hover:bg-[#f7ca00]"
                 >
                   Fix highlighted fields
                 </button>

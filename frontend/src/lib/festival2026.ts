@@ -25,8 +25,8 @@ export const festival2026 = {
     title: 'Official Second Round',
     date: 'September 30, 2026',
     dateTime: '2026-09-30',
-    status: 'upcoming',
-    description: 'The next official stage before the main festival.',
+    status: 'completed',
+    description: 'The official second-round date was September 30, 2026. This stage is archived.',
   } satisfies FestivalStage,
   mainFestival: {
     id: 'main-festival',
@@ -34,8 +34,8 @@ export const festival2026 = {
     date: 'October 4-6, 2026',
     dateTime: '2026-10-04',
     location: 'Itaewon, Seoul, Korea',
-    status: 'main-festival',
-    description: 'The main festival program in Itaewon, Seoul.',
+    status: 'completed',
+    description: 'The festival took place on October 4-6, 2026 in Itaewon, Seoul and has concluded.',
   } satisfies FestivalStage,
 } as const;
 

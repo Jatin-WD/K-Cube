@@ -62,9 +62,9 @@ export default function VerifyEmailClient() {
             Email verification
           </p>
           <h1 className="mt-6 text-3xl font-black text-white sm:text-4xl">Confirming your account</h1>
-          <p className="mt-4 text-base leading-7 text-[#d4dbe7]">{message}</p>
+          <p className="mt-4 text-base leading-7 text-[var(--kc-border)]">{message}</p>
           {state === 'success' && verifiedEmail ? (
-            <p className="mt-4 text-sm text-[#aab5c6]">Verified email: {verifiedEmail}</p>
+            <p className="mt-4 text-sm text-[#dfbdce]">Verified email: {verifiedEmail}</p>
           ) : null}
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/signin" className="rounded-lg bg-[#ffc400] px-5 py-3 text-sm font-black text-[#090909]">

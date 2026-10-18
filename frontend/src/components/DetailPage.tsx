@@ -49,33 +49,33 @@ const DetailPage = ({ item }: DetailPageProps) => {
   const toAnchor = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
   return (
-    <main className="min-h-screen bg-[#eef4f8] text-[#102a43]">
-      <section className="border-b border-[#dce6f0] bg-[#073a82] px-4 py-3 text-sm text-white lg:px-8">
+    <main className="min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
+      <section className="border-b border-[var(--kc-border)] bg-[var(--kc-blue-800)] px-4 py-3 text-sm text-white lg:px-8">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
-          <span className="rounded-md bg-[#0b4eae] px-3 py-1 font-bold text-white">K-CUBE Detail</span>
+          <span className="rounded-md bg-[var(--kc-blue-700)] px-3 py-1 font-bold text-white">K-CUBE Detail</span>
           <span className="font-semibold">{activeItem.eyebrow[language]}</span>
         </div>
       </section>
 
       <section className="px-4 py-6 sm:py-8 lg:px-10">
         <div className="mx-auto grid max-w-[1320px] gap-5 lg:grid-cols-[minmax(360px,0.92fr)_1fr_320px]">
-          <div className="overflow-hidden rounded-[10px] border border-[#dce6f0] bg-white p-3 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
+          <div className="overflow-hidden rounded-[10px] border border-[var(--kc-border)] bg-white p-3 shadow-[0_3px_12px_rgba(81,33,55,0.05)]">
             <div className="h-64 bg-cover bg-center sm:h-[420px]" style={{ backgroundImage: `url(${image})` }} />
           </div>
 
-          <div className="rounded-[10px] border border-[#dce6f0] bg-white p-6 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
-          <p className="inline-flex rounded-md border border-[#0b4eae]/20 bg-[#eaf3ff] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0b4eae]">
+          <div className="rounded-[10px] border border-[var(--kc-border)] bg-white p-6 shadow-[0_3px_12px_rgba(81,33,55,0.05)]">
+          <p className="inline-flex rounded-md border border-[var(--kc-blue-700)]/20 bg-[var(--kc-surface-blue)] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--kc-blue-700)]">
             {activeItem.eyebrow[language]}
           </p>
-          <h1 className="mt-5 text-3xl font-black leading-tight text-[#111827] sm:text-4xl lg:text-5xl">{activeItem.title[language]}</h1>
-          <p className="mt-5 max-w-4xl text-base leading-7 text-[#486581] sm:text-lg sm:leading-8">{activeItem.summary[language]}</p>
+          <h1 className="mt-5 text-3xl font-black leading-tight text-[var(--kc-text)] sm:text-4xl lg:text-5xl">{activeItem.title[language]}</h1>
+          <p className="mt-5 max-w-4xl text-base leading-7 text-[var(--kc-text-secondary)] sm:text-lg sm:leading-8">{activeItem.summary[language]}</p>
           <div className="mt-5 flex items-center gap-1 text-[#ffa41c]">
             {Array.from({ length: 5 }).map((_, index) => <span key={index}>★</span>)}
-            <span className="ml-2 text-sm font-bold text-[#007185]">Verified point activity</span>
+            <span className="ml-2 text-sm font-bold text-[var(--kc-blue-700)]">Verified point activity</span>
           </div>
-          <div className="mt-6 flex flex-wrap gap-3 text-sm text-[#565959]">
-            <span className="inline-flex items-center gap-2 rounded-sm border border-[#d5d9d9] bg-[#f7fafa] px-4 py-2">
-              <SearchCheck className="h-4 w-4 text-[#007185]" />
+          <div className="mt-6 flex flex-wrap gap-3 text-sm text-[var(--kc-text-secondary)]">
+            <span className="inline-flex items-center gap-2 rounded-sm border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-4 py-2">
+              <SearchCheck className="h-4 w-4 text-[var(--kc-blue-700)]" />
               SEO: {activeItem.seo}
             </span>
             {activeItem.points && !reviewSubmission && !nonRewardLearning ? (
@@ -87,9 +87,9 @@ const DetailPage = ({ item }: DetailPageProps) => {
           </div>
           </div>
 
-          <aside className="rounded-[10px] border border-[#dce6f0] bg-white p-6 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
-            <h2 className="text-2xl font-black text-[#111827]">{reviewSubmission ? 'Submit for review' : nonRewardLearning ? 'Practice Korean' : t.earnPoints}</h2>
-            <p className="mt-3 text-sm leading-6 text-[#565959]">
+          <aside className="rounded-[10px] border border-[var(--kc-border)] bg-white p-6 shadow-[0_3px_12px_rgba(81,33,55,0.05)]">
+            <h2 className="text-2xl font-black text-[var(--kc-text)]">{reviewSubmission ? 'Submit for review' : nonRewardLearning ? 'Practice Korean' : t.earnPoints}</h2>
+            <p className="mt-3 text-sm leading-6 text-[var(--kc-text-secondary)]">
               {reviewSubmission ? 'Submit your video first. K-CUBE will review it and award eligible points only after approval.' : nonRewardLearning ? 'Use these lessons and exercises as normal Korean practice. Learning activities do not award points.' : activeItem.protectedAction ? t.loginRequired : t.tripLine}
             </p>
             {reviewSubmission ? (
@@ -100,12 +100,12 @@ const DetailPage = ({ item }: DetailPageProps) => {
             ) : null}
             {reviewSubmission ? (
               user ? (
-                <Link href={submissionHref} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#073a82]">
+                <Link href={submissionHref} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-bold text-white transition hover:bg-[var(--kc-blue-800)]">
                   <UploadCloud className="h-4 w-4" />
                   Submit video for review
                 </Link>
               ) : (
-                <Link href="/signin" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#073a82]">
+                <Link href="/signin" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-bold text-white transition hover:bg-[var(--kc-blue-800)]">
                   <Lock className="h-4 w-4" />
                   {t.signIn} to submit
                 </Link>
@@ -116,13 +116,13 @@ const DetailPage = ({ item }: DetailPageProps) => {
                   type="button"
                   disabled={completed}
                   onClick={() => awardPoints(actionId, activeItem.points ?? 0)}
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#073a82] disabled:cursor-not-allowed disabled:bg-[#eaf3ff] disabled:text-[#0b4eae]"
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-bold text-white transition hover:bg-[var(--kc-blue-800)] disabled:cursor-not-allowed disabled:bg-[var(--kc-surface-blue)] disabled:text-[var(--kc-blue-700)]"
                 >
                   {completed ? <Check className="h-4 w-4" /> : <Coins className="h-4 w-4" />}
                   {completed ? t.completed : `${t.applyNow} (+${activeItem.points})`}
                 </button>
               ) : (
-                <Link href="/signin" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#0b4eae] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#073a82]">
+                <Link href="/signin" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-bold text-white transition hover:bg-[var(--kc-blue-800)]">
                   <Lock className="h-4 w-4" />
                   {t.signIn}
                 </Link>
@@ -134,12 +134,12 @@ const DetailPage = ({ item }: DetailPageProps) => {
 
       <section className="px-4 pb-12 lg:px-10">
         <div className="mx-auto max-w-[1320px]">
-          <article className="rounded-[10px] border border-[#dce6f0] bg-white p-6 shadow-[0_3px_12px_rgba(15,55,95,0.05)]">
-            <h2 className="text-2xl font-black text-[#111827]">Detailed content</h2>
+          <article className="rounded-[10px] border border-[var(--kc-border)] bg-white p-6 shadow-[0_3px_12px_rgba(81,33,55,0.05)]">
+            <h2 className="text-2xl font-black text-[var(--kc-text)]">Detailed content</h2>
             <div className="mt-5 grid gap-4">
               {activeItem.bullets.map((bullet) => (
-                <div key={bullet.en} className="rounded-sm border border-[#d5d9d9] bg-[#f7fafa] p-4">
-                  <p className="text-sm leading-7 text-[#565959]">{bullet[language]}</p>
+                <div key={bullet.en} className="rounded-sm border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-4">
+                  <p className="text-sm leading-7 text-[var(--kc-text-secondary)]">{bullet[language]}</p>
                 </div>
               ))}
             </div>
@@ -147,8 +147,8 @@ const DetailPage = ({ item }: DetailPageProps) => {
               <div className="mt-10 space-y-10">
                 {activeItem.sections.map((section) => (
                   <div key={section.title.en} id={toAnchor(section.title.en)}>
-                    <h3 className="text-2xl font-black text-[#111827]">{section.title[language]}</h3>
-                    <div className="mt-4 space-y-4 text-sm leading-7 text-[#565959]">
+                    <h3 className="text-2xl font-black text-[var(--kc-text)]">{section.title[language]}</h3>
+                    <div className="mt-4 space-y-4 text-sm leading-7 text-[var(--kc-text-secondary)]">
                       {section.content.map((paragraph) => (
                         <p key={paragraph.en}>{paragraph[language]}</p>
                       ))}
