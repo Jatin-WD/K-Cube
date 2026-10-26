@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt, { Secret } from 'jsonwebtoken';
 import pool from '../db/pool';
 import { awardPoints } from '../services/pointsService';
+import { findCountry, findState } from '../services/geography';
 import { created, fail, ok } from '../lib/apiResponse';
 import { JWT_SECRET, JWT_REFRESH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_AUTH_REDIRECT_URI, GOOGLE_ALLOWED_WORKSPACE_DOMAIN, NODE_ENV } from '../config';
 import { buildVerificationUrl, createVerificationToken, hashVerificationToken, sendUserRegistrationNotificationEmail, sendVerificationEmail } from '../services/mailer';
@@ -224,6 +225,12 @@ export const register = async (req: Request, res: Response) => {
   const normalizedUsername = normalizeUsername(username);
   const normalizedFullName = normalizeName(full_name);
   const normalizedPhone = String(phone || '').trim();
+  const country = findCountry(req.body.country);
+  const state = country ? findState(country.name, req.body.state) : undefined;
+  const city = String(req.body.city || '').trim();
+  if (!country || !city || city.length > 100 || String(req.body.state || '').length > 100) {
+    return fail(res, 400, 'VALIDATION_ERROR', 'A valid country and city are required; location fields must be under 100 characters');
+  }
   const categoryAccess = category_access || 'category_c';
   if (!normalizedEmail || !password || !normalizedUsername || !normalizedFullName || !normalizedPhone) {
     return fail(res, 400, 'VALIDATION_ERROR', 'Full name, username, mobile number, email and password are required');
@@ -241,9 +248,9 @@ export const register = async (req: Request, res: Response) => {
   }
   const userReferralCode = await generateUniqueReferralCode(normalizedUsername);
   const result = await pool.query(
-    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, referred_by, created_at, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'pending')`,
-    [normalizedFullName, normalizedUsername, normalizedEmail, normalizedPhone, passwordHash, 'member', categoryAccess, userReferralCode, referralCode || null]
+    `INSERT INTO users (full_name, username, email, phone, password_hash, role, category_access, referral_code, referred_by, country, state, city, created_at, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'pending')`,
+    [normalizedFullName, normalizedUsername, normalizedEmail, normalizedPhone, passwordHash, 'member', categoryAccess, userReferralCode, referralCode || null, country.name, state?.name || String(req.body.state || '').trim() || null, city]
   );
   const userId = (result as any)[0].insertId;
   await pool.query(
@@ -268,6 +275,9 @@ export const register = async (req: Request, res: Response) => {
       username: normalizedUsername,
       phone: normalizedPhone,
       full_name: normalizedFullName,
+      country: country.name,
+      state: state?.name || String(req.body.state || '').trim() || null,
+      city,
       role: 'member',
       category_access: categoryAccess,
       referral_code: userReferralCode,

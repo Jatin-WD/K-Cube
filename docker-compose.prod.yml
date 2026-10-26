@@ -10,9 +10,12 @@ services:
       PORT: 4000
       NODE_ENV: production
       API_PREFIX: /api/v1
+      KCUBE_SHOP_DATA_DIR: /app/data
       APP_URL: https://k-cube.store
       RATE_LIMIT_WINDOW_MS: 60000
       RATE_LIMIT_MAX: 100
+    volumes:
+      - shop_data:/app/data
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
       interval: 10s
@@ -25,11 +28,13 @@ services:
       context: ./frontend
       args:
         NEXT_PUBLIC_API_URL: /api/v1
+        KCUBE_API_ORIGIN: http://backend:4000
     container_name: kcube-frontend
     restart: unless-stopped
     environment:
       NODE_ENV: production
       __NEXT_PRIVATE_ORIGIN: https://k-cube.store
+      KCUBE_API_ORIGIN: http://backend:4000
     depends_on:
       backend:
         condition: service_healthy
@@ -55,3 +60,6 @@ services:
         condition: service_healthy
       backend:
         condition: service_healthy
+
+volumes:
+  shop_data:

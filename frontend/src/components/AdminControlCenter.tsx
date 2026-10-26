@@ -4,6 +4,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import ProductMediaEditor from '@/components/ProductMediaEditor';
+import PointsManager from '@/components/PointsManager';
+import WebsitePageEditor from '@/components/WebsitePageEditor';
+import ManpowerManager from '@/components/ManpowerManager';
 import { useRouter } from 'next/navigation';
 import {
   Activity,
@@ -49,6 +52,11 @@ import CommunityMapPanel, { type CommunityMapLocation } from '@/components/Commu
 
 type AdminSection =
   | 'overview'
+  | 'explore'
+  | 'activities'
+  | 'cosmetics'
+  | 'about'
+  | 'manpower'
   | 'sendEmail'
   | 'adminProfile'
   | 'adminAccounts'
@@ -485,6 +493,11 @@ type SentEmailRow = {
 };
 
 const adminNav = [
+  { id: 'manpower', label: 'Apply for Manpower', icon: Users, description: 'Applications and opportunities.', scope: 'submissions' },
+  { id: 'explore', label: 'Explore', icon: LayoutDashboard, description: 'Website discovery and content.', scope: 'content' },
+  { id: 'activities', label: 'Activities', icon: Activity, description: 'Missions, content and moderation.', scope: 'content' },
+  { id: 'cosmetics', label: 'Cosmetics', icon: ShoppingBag, description: 'Beauty products, images and stock.', scope: 'commerce' },
+  { id: 'about', label: 'About', icon: FileText, description: 'Brand story and page content.', scope: 'content' },
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Live metrics and shortcuts.', scope: 'analytics' },
   { id: 'sendEmail', label: 'Send Email', icon: Mail, description: 'Bulk and individual email delivery.', scope: 'analytics' },
   { id: 'adminProfile', label: 'Profile', icon: UserCog, description: 'Your admin identity and security.', scope: null },
@@ -508,9 +521,10 @@ const adminNav = [
 ] as const;
 
 const adminSidebarGroups = [
-  { title: 'Core', ids: ['overview', 'sendEmail', 'submissions', 'indiaPreSelection', 'website', 'learning'] },
-  { title: 'Operations', ids: ['users', 'communityMap', 'points', 'chapters', 'uploads', 'kfood', 'events', 'koreanClass', 'rewards'] },
-  { title: 'System', ids: ['adminProfile', 'adminAccounts', 'announcements', 'calendar', 'analytics'] },
+  { title: 'Daily workspace', ids: ['overview', 'sendEmail', 'submissions', 'manpower', 'users', 'points', 'communityMap'] },
+  { title: 'Website flow', ids: ['explore', 'events', 'activities', 'kfood', 'cosmetics', 'rewards', 'learning', 'about'] },
+  { title: 'Programs & content', ids: ['indiaPreSelection', 'koreanClass', 'chapters', 'uploads', 'website', 'announcements'] },
+  { title: 'Settings & reports', ids: ['calendar', 'analytics', 'adminProfile', 'adminAccounts'] },
 ] as const;
 
 const emptyTrackForm = {
@@ -1185,10 +1199,11 @@ const PaginatedList = <T,>({
   );
 };
 
-const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSection?: Extract<AdminSection, 'overview' | 'communityMap'> } = {}) => {
+const AdminControlCenter = ({ initialSection = 'overview' }: { initialSection?: Extract<AdminSection, 'overview' | 'communityMap'> } = {}) => {
   const router = useRouter();
   const user = useAppStore((state) => state.user);
   const [activeSection, setActiveSection] = useState<AdminSection>(initialSection);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notice, setNotice] = useState('');
   const [reviewSuccess, setReviewSuccess] = useState('');
   const [userSuccess, setUserSuccess] = useState('');
@@ -1370,8 +1385,8 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     [adminAccounts, query],
   );
   const filteredKFoodProducts = useMemo(
-    () => kfoodProducts.filter((entry) => matchesQuery(query, [entry.slug, entry.sku, entry.title.en, entry.subtitle.en, entry.category.en, entry.categoryKey, entry.inStock ? 'in stock' : 'out of stock'])),
-    [kfoodProducts, query],
+    () => kfoodProducts.filter((entry) => (activeSection === 'cosmetics' ? entry.categoryKey === 'beauty' : activeSection === 'kfood' ? entry.categoryKey !== 'beauty' : true) && matchesQuery(query, [entry.slug, entry.sku, entry.title.en, entry.subtitle.en, entry.category.en, entry.categoryKey, entry.inStock ? 'in stock' : 'out of stock'])),
+    [activeSection, kfoodProducts, query],
   );
   const filteredChapters = useMemo(
     () => chapters.filter((entry) => matchesQuery(query, [entry.name, entry.slug, entry.city, entry.state, entry.country, entry.status, entry.leader_name, entry.leader_email])),
@@ -1501,12 +1516,20 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
       () => api.get('/admin/email/sent'),
       () => api.get('/admin/email/recipients'),
     ];
+    const requestScopes: (AdminScope | null)[] = ['analytics', 'analytics', 'user_management', null, 'super_admin', 'content', 'india_pre_selection', 'commerce', 'commerce', 'commerce', 'commerce', 'commerce', 'submissions', 'content', 'content', 'content', 'content', 'events', 'events', 'commerce', 'content', 'events', 'analytics', 'analytics', 'analytics'];
     const requests: Awaited<ReturnType<typeof Promise.allSettled>> = [];
     // Keep the admin dashboard useful without opening 25 database-backed
     // requests at the exact same time on every refresh.
     for (let index = 0; index < requestFactories.length; index += 6) {
-      const batch = await Promise.allSettled(requestFactories.slice(index, index + 6).map((request) => request()));
+      const batch = await Promise.allSettled(requestFactories.slice(index, index + 6).map((request, offset) => canAccess(requestScopes[index + offset]) ? request() : Promise.reject(new Error('Workspace not assigned'))));
       requests.push(...batch);
+      const throttled = batch.find((result) => result.status === 'rejected' &&
+        result.reason?.response?.status === 429);
+      if (throttled?.status === 'rejected') {
+        const seconds = Number(throttled.reason.response.headers?.['retry-after']) || 60;
+        setNotice(`Admin requests are temporarily rate limited. Wait ${seconds} seconds, then refresh. Your data has not been deleted.`);
+        return;
+      }
     }
 
     const dashboardPayload = readPayload<Record<string, unknown>>(requests[0], {});
@@ -1640,11 +1663,13 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     if (!selectedPageId && pageRows.length) {
       setSelectedPageId(pageRows[0].id);
     }
-    if (!selectedKFoodProductSlug && kfoodProductRows.length) {
-      setSelectedKFoodProductSlug(kfoodProductRows[0].slug);
-      setKFoodProductForm(formFromKFoodProduct(kfoodProductRows[0]));
-    }
   };
+
+  useEffect(() => {
+    if (activeSection !== 'kfood' && activeSection !== 'cosmetics') return;
+    setSelectedKFoodProductSlug('');
+    setKFoodProductForm(activeSection === 'cosmetics' ? { ...emptyKFoodProductForm, categoryKey: 'beauty' } : emptyKFoodProductForm);
+  }, [activeSection]);
 
   useEffect(() => {
     if (!user || user.role !== 'admin') return;
@@ -1656,13 +1681,6 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
       setActiveSection((visibleAdminNav[0]?.id || 'adminProfile') as AdminSection);
     }
   }, [activeSection, adminScope]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (!selectedKFoodProductSlug && kfoodProducts.length) {
-      setSelectedKFoodProductSlug(kfoodProducts[0].slug);
-      setKFoodProductForm(formFromKFoodProduct(kfoodProducts[0]));
-    }
-  }, [kfoodProducts, selectedKFoodProductSlug]);
 
   useEffect(() => {
     if (!selectedKFoodProduct) return;
@@ -2304,8 +2322,10 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   const resetKFoodProductForm = () => {
     if (productUploading) return;
     setSelectedKFoodProductSlug('');
-    setKFoodProductForm(emptyKFoodProductForm);
+    setKFoodProductForm(activeSection === 'cosmetics' ? { ...emptyKFoodProductForm, categoryKey: 'beauty' } : emptyKFoodProductForm);
   };
+
+
 
   const saveKFoodProduct = async () => {
     if (productSaving || productUploading) return;
@@ -3681,6 +3701,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
 
   const renderPoints = () => (
     <>
+      <PointsManager onChanged={loadAdminData} />
       <SectionShell title="Points ledger" description="Review every point transaction and adjust any user directly from the list." actions={<span className="text-sm font-bold text-[#ffc400]">{filteredPoints.length} records</span>}>
         <PaginatedList items={filteredPoints}>
           {(visiblePointPage, pointOffset) => (
@@ -4106,7 +4127,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     const counts = {
       total: filteredSubmissions.length,
       pending: filteredSubmissions.filter((entry) => ['submitted', 'pending', 'reviewing'].includes(entry.status)).length,
-      reviewed: filteredSubmissions.filter((entry) => ['approved', 'selected', 'shortlisted', 'delivered', 'published'].includes(entry.status)).length,
+      reviewed: filteredSubmissions.filter((entry) => ['approved', 'accepted', 'selected', 'shortlisted', 'delivered', 'published'].includes(entry.status)).length,
       sources: new Set(filteredSubmissions.map((entry) => entry.source_label)).size,
       india: filteredSubmissions.filter((entry) => entry.source_type === 'india_pre_selection').length,
       other: filteredSubmissions.filter((entry) => entry.source_type !== 'india_pre_selection').length,
@@ -4169,6 +4190,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
                     key={`${entry.source_type}-${entry.id}`}
                     type="button"
                      onClick={() => {
+                       if (entry.source_type === 'manpower') { setActiveSection('manpower'); return; }
                        setSelectedSubmissionKey(submissionKey(entry));
                        if (entry.source_type === 'india_pre_selection') {
                          setSelectedIndiaApplicationId(entry.id);
@@ -4510,7 +4532,8 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   };
 
   const renderKFoodPremium = () => {
-    const productSummary = kfoodOverview?.productSummary;
+    const workspaceProducts = kfoodProducts.filter(product => activeSection === 'cosmetics' ? product.categoryKey === 'beauty' : product.categoryKey !== 'beauty');
+    const productSummary = { totalProducts: workspaceProducts.length, inStockProducts: workspaceProducts.filter(product => product.inStock).length };
     const paymentSummary = kfoodOverview?.paymentSummary || [];
     const weeklyReport = kfoodOverview?.weeklyReport || [];
     const monthlyReport = kfoodOverview?.monthlyReport || [];
@@ -4524,9 +4547,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
           {[
             { label: 'Products', value: productSummary?.totalProducts ?? kfoodProducts.length },
             { label: 'In stock', value: productSummary?.inStockProducts ?? kfoodProducts.filter((product) => product.inStock).length },
-            { label: 'Orders', value: orders.length || filteredClaims.length },
-            { label: 'Fulfillments', value: fulfillments.length },
-            { label: 'Pending dispatch', value: pendingFulfillments },
+            ...(activeSection === 'cosmetics' ? [] : [{ label: 'Orders', value: orders.length || filteredClaims.length }, { label: 'Fulfillments', value: fulfillments.length }, { label: 'Pending dispatch', value: pendingFulfillments }]),
           ].map((item) => (
             <article key={item.label} className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-[#98a4b1]">{item.label}</p>
@@ -4537,7 +4558,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(360px,420px)]">
           <SectionShell
-            title="K-Food product manager"
+            title={activeSection === 'cosmetics' ? 'Cosmetics product manager' : 'K-Food product manager'}
             description="Click any product to edit it, review live stock status, or create a new item from the sticky editor."
             actions={<span className="text-sm font-bold text-[#ffc400]">{filteredKFoodProducts.length} products</span>}
           >
@@ -4589,7 +4610,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
               })}
               {!filteredKFoodProducts.length ? (
                 <div className="rounded-3xl border border-dashed border-white/15 bg-black/20 p-6 text-sm text-[#aab5c6]">
-                  No K-Food products found. Add one from the editor or import WooCommerce links below.
+                  No products in this workspace. Create a product with the matching category from the editor.
                 </div>
               ) : null}
             </div>
@@ -4753,6 +4774,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
           </div>
         </div>
 
+        {activeSection !== 'cosmetics' ? <>
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
           <SectionShell title="Fulfillment desk" description="Dispatch, tracking, shipping and delivery are first-class records now." actions={<span className="text-sm font-bold text-[#ffc400]">{fulfillments.length} records</span>}>
             <div className="overflow-x-auto">
@@ -5004,6 +5026,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
             )}
           </SectionShell>
         </div>
+        </> : null}
       </div>
     );
   };
@@ -5517,6 +5540,16 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
 
   const sectionBody = () => {
     switch (activeSection) {
+      case 'manpower':
+        return <div className="space-y-5"><ManpowerManager />{canAccess('content') ? <WebsitePageEditor pageKey="apply" href="/apply-for-manpower" /> : null}</div>;
+      case 'explore':
+        return renderWebsite();
+      case 'activities':
+        return <div className="space-y-5"><WebsitePageEditor pageKey="activities" href="/activities" /><SectionShell title="Activity content & moderation" description="Manage mission detail pages and review participant uploads."><div className="flex flex-wrap gap-3"><button onClick={() => { setCmsPageSearch('activity'); setActiveSection('website'); }} className="rounded-lg border px-4 py-3 font-bold">Edit activity pages</button><button onClick={() => setActiveSection('uploads')} className="rounded-lg border px-4 py-3 font-bold">Review activity uploads</button></div></SectionShell></div>;
+      case 'about':
+        return <WebsitePageEditor pageKey="about" href="/about" />;
+      case 'cosmetics':
+        return renderKFoodPremium();
       case 'sendEmail':
         return renderSendEmail();
       case 'adminProfile':
@@ -5528,7 +5561,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
       case 'website':
         return renderWebsite();
       case 'learning':
-        return renderLearning();
+        return <div className="space-y-5">{renderLearning()}<WebsitePageEditor pageKey="learning" href="/learning" /></div>;
       case 'users':
         return renderUsers();
       case 'communityMap':
@@ -5542,13 +5575,13 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
       case 'indiaPreSelection':
         return renderIndiaPreSelection();
       case 'kfood':
-        return renderKFoodPremium();
+        return <div className="space-y-5">{renderKFoodPremium()}{canAccess('content') ? <WebsitePageEditor pageKey="kfood" href="/kfood" /> : null}</div>;
       case 'events':
-        return renderEvents();
+        return <div className="space-y-5">{renderEvents()}{canAccess('content') ? <WebsitePageEditor pageKey="events" href="/events" /> : null}</div>;
       case 'koreanClass':
         return renderKoreanClass();
       case 'rewards':
-        return renderRewards();
+        return <div className="space-y-5">{renderRewards()}{canAccess('content') ? <WebsitePageEditor pageKey="rewards" href="/rewards" /> : null}</div>;
       case 'announcements':
         return renderAnnouncements();
       case 'calendar':
@@ -5566,18 +5599,18 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
       <div className="flex min-h-screen flex-col">
         <header className="fixed inset-x-0 top-0 z-40 flex h-[72px] items-center border-b border-[#dce6f0] bg-white px-4 shadow-[0_2px_8px_rgba(15,55,95,0.04)]">
           <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
-            <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3"><button type="button" aria-expanded={mobileNavOpen} aria-controls="admin-navigation" onClick={() => setMobileNavOpen(value => !value)} className="rounded-lg border border-[#ccd9e6] px-2 py-2 text-xs font-bold lg:hidden">{mobileNavOpen ? 'Close' : 'Menu'}</button>
               <div className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-[#0b4eae] text-lg font-black text-white">
                 K
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] font-black uppercase tracking-[0.42em] text-[#0b4eae]">Admin Panel</p>
                 <h1 className="truncate text-lg font-black leading-tight text-[#102a43]">K-CUBE control center</h1>
-                <p className="mt-0.5 text-xs text-[#486581]">Compact workspace for content, users, rewards, events, and commerce.</p>
+                <p className="mt-0.5 hidden text-xs text-[#486581] xl:block">Compact workspace for content, users, rewards, events, and commerce.</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">{canAccess('submissions') ? <button type="button" onClick={() => setActiveSection('manpower')} className="hidden rounded-lg border border-[#ccd9e6] bg-white px-3 py-2 text-xs font-bold text-[#0b4eae] md:inline-block">Manpower</button> : null}
               <div className="hidden items-center gap-1 rounded-full border border-[#3c434a] bg-[#23282d] px-1 py-1 text-[11px] font-bold text-[#b4b9be] md:flex">
                 <button type="button" className="rounded-full px-3 py-1 transition hover:bg-[#2c3338] hover:text-[#f0f0f1]">
                   Screen Options
@@ -5626,8 +5659,8 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
         </header>
 
         <div className="grid min-h-0 flex-1 overflow-x-hidden pt-[72px] lg:grid-cols-[240px_minmax(0,1fr)]">
-          <aside
-            className={`border-b border-[#dce6f0] bg-white lg:fixed lg:left-0 lg:top-[72px] lg:z-30 lg:block lg:h-[calc(100vh-72px)] lg:w-[240px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
+          <aside id="admin-navigation" aria-label="Admin navigation"
+            className={`${mobileNavOpen ? 'fixed inset-x-0 top-[72px] z-30 block h-[calc(100dvh-72px)]' : 'hidden'} border-b border-[#dce6f0] bg-white lg:fixed lg:left-0 lg:top-[72px] lg:z-30 lg:block lg:h-[calc(100vh-72px)] lg:w-[240px] lg:border-b-0 lg:border-r lg:overflow-hidden ${
               sidebarOpen ? 'w-full' : 'w-full'
             }`}
           >
@@ -5636,7 +5669,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
                 <div className="space-y-1.5">
                   {adminSidebarGroups.map((group) => (
                     <div key={group.title} className="space-y-1">
-                      <p className="sr-only">{group.title}</p>
+                    <p className="px-3 pb-1 pt-3 text-[10px] font-black uppercase tracking-widest text-[#486581]">{group.title}</p>
                       <div className="space-y-1">
                         {group.ids.map((id) => {
                           const item = adminNav.find((entry) => entry.id === id);
@@ -5650,9 +5683,12 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
                               type="button"
                               onClick={() => {
                                 setActiveSection(item.id as AdminSection);
+                                setMobileNavOpen(false);
                                 if (item.id === 'communityMap' && window.location.pathname !== '/admin/community-map') window.history.pushState({}, '', '/admin/community-map');
+                                if (item.id !== 'communityMap' && window.location.pathname === '/admin/community-map') window.history.pushState({}, '', '/admin');
                               }}
                               title={item.label}
+                              aria-current={active ? 'page' : undefined}
                               className={`flex w-full items-center rounded-lg border px-2 py-1.5 text-left transition ${
                                 sidebarOpen ? 'gap-3' : 'justify-center'
                               } ${
@@ -5695,7 +5731,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
                 <div>
                   <p className="text-sm font-black uppercase tracking-[0.26em] text-[#0b4eae]">Admin Dashboard</p>
                   <h2 className="mt-1 text-2xl font-black text-[#102a43]">Full website control, all in one place.</h2>
-                  <p className="mt-1 max-w-none text-sm leading-5 text-[#486581] lg:whitespace-nowrap">
+                  <p className="mt-1 max-w-none text-sm leading-5 text-[#486581] ">
                     Edit pages, learning content, users, points, rewards, events, announcements and integrations from a single admin workspace.
                   </p>
                   {notice ? <p className="mt-4 text-sm font-bold text-[#ffcf86]">{notice}</p> : null}
@@ -5719,6 +5755,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
               </div>
             </section> : null}
 
+            {activeSection === 'communityMap' && notice ? <p role="status" className="rounded-lg border bg-white p-3 text-sm font-bold">{notice}</p> : null}
             {sectionBody()}
           </div>
         </div>

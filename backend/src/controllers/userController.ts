@@ -138,7 +138,7 @@ export const listUsers = async (req: Request, res: Response) => {
          LIMIT 1
        )
      ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-     ORDER BY u.created_at DESC LIMIT 300`,
+     ORDER BY u.created_at DESC`,
     values,
   );
   return ok(res, rows);

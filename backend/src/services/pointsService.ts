@@ -20,6 +20,7 @@ interface AwardPointsInput {
   metadata?: Record<string, unknown>;
   createdBy?: number | null;
   once?: boolean;
+  requireSufficientBalance?: boolean;
 }
 
 export const awardPoints = async ({
@@ -31,6 +32,7 @@ export const awardPoints = async ({
   metadata = {},
   createdBy = null,
   once = false,
+  requireSufficientBalance = false,
 }: AwardPointsInput) => {
   if (!Number.isFinite(points) || points === 0) {
     throw new Error('Points must be a non-zero number');
@@ -43,11 +45,14 @@ export const awardPoints = async ({
     // Serialize awards for the same member so the balance read, idempotency
     // check, and ledger insert cannot race during duplicate check-in clicks.
     const [userRows] = await connection.query(
-      'SELECT id FROM users WHERE id = ? LIMIT 1 FOR UPDATE',
+      'SELECT id, points FROM users WHERE id = ? LIMIT 1 FOR UPDATE',
       [userId],
     );
     if (!(userRows as any[]).length) {
       throw new Error('User not found');
+    }
+    if (requireSufficientBalance && points < 0 && Number((userRows as any[])[0].points) + points < 0) {
+      throw Object.assign(new Error('Deduction exceeds the current points balance'), { code: 'INSUFFICIENT_POINTS' });
     }
 
     if (once) {

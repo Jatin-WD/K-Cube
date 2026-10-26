@@ -48,7 +48,7 @@ export default function OfficialRepresentationSection() {
         </div>
         <div className="flex flex-col items-center justify-center rounded-[18px] border border-[var(--kc-border-soft)] bg-[#faf9f5] p-4 sm:p-6">
           <button type="button" onClick={() => setOpen(true)} className="group block w-full max-w-[410px] cursor-zoom-in rounded-[10px] border border-[#d8d0c2] bg-white p-2 shadow-[0_16px_32px_rgba(81,33,55,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--kc-blue-700)] focus-visible:ring-offset-2" aria-label={labels.open}>
-            <Image src={certificateSrc} alt={certificateAlt} width={1060} height={1500} sizes="(min-width: 1024px) 410px, 85vw" className="h-auto w-full transition group-hover:opacity-90" priority={false} />
+            <Image src={certificateSrc} alt={certificateAlt} width={1060} height={1500} sizes="(min-width: 640px) 394px, calc(100vw - 80px)" className="h-auto w-full transition group-hover:opacity-90" priority={false} />
           </button>
           <p className="mt-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-[var(--kc-text-muted)]">Official appointment · India · 2026</p>
         </div>

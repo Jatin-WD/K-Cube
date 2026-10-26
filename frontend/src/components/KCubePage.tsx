@@ -1,4 +1,5 @@
 "use client";
+import { usePageSettings, safePageHref } from '@/lib/usePageSettings';
 
 import { contact } from '@/lib/contact';
 
@@ -232,17 +233,21 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   const user = useAppStore((state) => state.user);
   const points = useAppStore((state) => state.points);
   const page = repairMojibakeTree(pages[pageKey]);
+  const managed = usePageSettings(pageKey === 'learning' ? 'korean-learning' : pageKey, language);
+  for (const key of ['badge', 'title', 'subtitle', 'description', 'primaryCta'] as const) {
+    if (managed[key]) page[key] = { ...page[key], [language]: managed[key] };
+  }
+  if (managed.primaryHref) page.primaryHref = safePageHref(managed.primaryHref);
+  if (managed.cards) page.cards = managed.cards.map(card => ({ title: { en: card.title, ko: card.title, hi: card.title }, description: { en: card.description, ko: card.description, hi: card.description }, cta: { en: card.cta, ko: card.cta, hi: card.cta }, href: safePageHref(card.href) }));
   const t = repairMojibakeTree(copy[language]);
   const homeText = repairMojibakeTree(homeSectionCopy[language]);
   const bannerText = repairMojibakeTree(homeBannerCopy[language]);
   const featuredText = repairMojibakeTree(featuredHeroCopy[language]);
   const visual = repairMojibakeTree(pageVisuals[pageKey]);
+  const tickerLabel = pageKey === 'home' ? (language === 'ko' ? '추천 클래스' : language === 'hi' ? 'विशेष क्लास' : 'Featured class') : visual.accent;
   /*
-  const tickerLabel = pageKey === 'home' ? (language === 'ko' ? '추천 클래스' : language === 'hi' ? 'विशेष क्लास' : 'Featured class') : visual.accent;
   */
-  const tickerLabel = pageKey === 'home' ? (language === 'ko' ? '추천 클래스' : language === 'hi' ? 'विशेष क्लास' : 'Featured class') : visual.accent;
   const rewardsText = repairMojibakeTree(rewardsUi[language]);
-  const displayedTickerLabel = repairMojibake(tickerLabel);
   const marketplaceLabels = repairMojibakeTree(marketplaceTileLabels[language]);
   const marketplaceValues = repairMojibakeTree(marketplaceTileValues[language]);
   const [wallet, setWallet] = useState<{ balance: number; summary: { lifetime_earned: number; redeemed: number; pending: number }; transactions: Array<{ id: number; source_type: string; points_delta: number; status: string; created_at: string }> } | null>(null);
@@ -432,10 +437,10 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   {page.badge[language]}
                 </p>
                 <h1 className="mt-4 max-w-5xl text-2xl font-black leading-tight tracking-tight text-[var(--kc-text)] drop-shadow-xl sm:mt-6 sm:text-5xl lg:text-6xl">
-                  {pageKey === 'rewards' ? rewardsText.title : page.title[language]}
+                  {managed.title || (pageKey === 'rewards' ? rewardsText.title : page.title[language])}
                 </h1>
-                <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--kc-text-secondary)] sm:mt-5 sm:text-lg sm:leading-8">{pageKey === 'rewards' ? rewardsText.subtitle : page.subtitle[language]}</p>
-                <p className="mt-3 max-w-3xl text-xs leading-6 text-[var(--kc-text-muted)] sm:mt-4 sm:text-sm sm:leading-7">{pageKey === 'rewards' ? rewardsText.description : page.description[language]}</p>
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--kc-text-secondary)] sm:mt-5 sm:text-lg sm:leading-8">{managed.subtitle || (pageKey === 'rewards' ? rewardsText.subtitle : page.subtitle[language])}</p>
+                <p className="mt-3 max-w-3xl text-xs leading-6 text-[var(--kc-text-muted)] sm:mt-4 sm:text-sm sm:leading-7">{managed.description || (pageKey === 'rewards' ? rewardsText.description : page.description[language])}</p>
                 <div className="mt-5 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-3">
                   {isExternal(page.primaryHref) ? (
                     <a

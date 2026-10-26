@@ -1,6 +1,18 @@
 import pool from './pool';
 
 export const bootstrapDatabase = async () => {
+  await pool.query(`CREATE TABLE IF NOT EXISTS manpower_applications (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    role_interest VARCHAR(100) NOT NULL,
+    experience TEXT NOT NULL,
+    status VARCHAR(24) NOT NULL DEFAULT 'submitted',
+    review_note TEXT NULL,
+    reviewed_by BIGINT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_manpower_user (user_id), INDEX idx_manpower_status (status)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
   // Existing MySQL volumes do not rerun database/schema.sql. Keep required
   // tables self-healing so older installations can use the learning APIs.
   await pool.query(`

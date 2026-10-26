@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
 import pool from '../db/pool';
 import { fail, ok } from '../lib/apiResponse';
+import { databaseFailure } from '../lib/databaseFailure';
+import { geographicCoordinates, inferredState, findCountry, findState } from '../services/geography';
 
 type MapLevel = 'country' | 'state' | 'city' | 'unknown';
 
 type CommunityUser = {
   id: number;
   full_name: string;
+  email: string;
+  phone: string | null;
   status: string;
   points: number;
   city: string | null;
@@ -136,12 +140,13 @@ const coordinatesFor = (country: string | null, state: string | null, city: stri
     : level === 'state'
       ? stateCoordinates[`${countryKey}|${stateKey}`]
       : countryCoordinates[countryKey];
-  return coords ? { latitude: coords[0], longitude: coords[1], bounds: level === 'country' ? countryBounds[countryKey] || null : null, mapped: true } : { latitude: null, longitude: null, bounds: null, mapped: false };
+  const resolvedCoords = coords || geographicCoordinates(country, state, city, level);
+  return resolvedCoords ? { latitude: resolvedCoords[0], longitude: resolvedCoords[1], bounds: level === 'country' ? countryBounds[countryKey] || null : null, mapped: true } : { latitude: null, longitude: null, bounds: null, mapped: false };
 };
 
 // City is preferred over state. For known cities, infer the state only for hierarchy/map context.
 // Missing location data remains unmapped; no permanent location is fabricated.
-const effectiveState = (user: CommunityUser) => normalizePart(user.state) || knownStateForCity(user.country, user.state, user.city);
+const effectiveState = (user: CommunityUser) => normalizePart(user.state) || knownStateForCity(user.country, user.state, user.city) || inferredState(user.country, user.city);
 
 const locationLevel = (user: CommunityUser): MapLevel => {
   const state = effectiveState(user);
@@ -190,11 +195,9 @@ const aggregate = (users: CommunityUser[], level: MapLevel, monthStart: number) 
     const resolved = locationLevel(user);
     const groupLevel: MapLevel | null = level === 'unknown'
       ? (resolved === 'unknown' ? 'unknown' : null)
-      : level === 'city'
-        ? (resolved === 'city' ? 'city' : null)
-        : resolved === 'unknown'
-          ? 'unknown'
-          : level;
+      : level === 'city' ? (normalizePart(user.city) ? 'city' : null)
+        : level === 'state' ? (effectiveState(user) ? 'state' : null)
+          : normalizePart(user.country) ? 'country' : null;
     if (!groupLevel) return;
     const summary = buildLocation(user, groupLevel);
     const existing = groups.get(summary.key) || summary;
@@ -217,20 +220,17 @@ const queryUsers = async (req: Request) => {
     where.push('u.status = ?');
     values.push(status);
   }
-  if (country) { where.push('LOWER(TRIM(u.country)) = LOWER(TRIM(?))'); values.push(country); }
-  if (state) { where.push('LOWER(TRIM(u.state)) = LOWER(TRIM(?))'); values.push(state); }
-  if (city) { where.push('LOWER(TRIM(u.city)) = LOWER(TRIM(?))'); values.push(city); }
   if (dateFrom) { where.push('u.created_at >= ?'); values.push(dateFrom); }
   if (dateTo) { where.push('u.created_at < DATE_ADD(?, INTERVAL 1 DAY)'); values.push(dateTo); }
   if (pointsMin !== undefined && pointsMin !== '') { where.push('u.points >= ?'); values.push(Number(pointsMin)); }
   if (pointsMax !== undefined && pointsMax !== '') { where.push('u.points <= ?'); values.push(Number(pointsMax)); }
   const [rows] = await pool.query(
-    `SELECT u.id, u.full_name, u.status, u.points, u.city, u.state, u.country, u.created_at, u.last_login,
+    `SELECT u.id, u.full_name, u.email, u.phone, u.status, u.points, u.city, u.state, u.country, u.created_at, u.last_login,
       COALESCE(MAX(CASE WHEN ai.verified = TRUE THEN 1 ELSE 0 END), 0) AS verified
      FROM users u
      LEFT JOIN auth_identities ai ON ai.user_id = u.id
      WHERE ${where.join(' AND ')}
-     GROUP BY u.id, u.full_name, u.status, u.points, u.city, u.state, u.country, u.created_at, u.last_login
+     GROUP BY u.id, u.full_name, u.email, u.phone, u.status, u.points, u.city, u.state, u.country, u.created_at, u.last_login
      ORDER BY u.created_at DESC, u.id DESC`,
     values,
   );
@@ -239,7 +239,10 @@ const queryUsers = async (req: Request) => {
 
 export const getCommunityMap = async (req: Request, res: Response) => {
   try {
-    const users = await queryUsers(req);
+    const users = (await queryUsers(req)).map(user => {
+      const country = findCountry(user.country)?.name || user.country;
+      return { ...user, country, state: findState(country, user.state)?.name || user.state };
+    }).filter(user => (!req.query.country || keyPart(user.country) === keyPart(findCountry(String(req.query.country))?.name || req.query.country)) && (!req.query.state || keyPart(effectiveState(user)) === keyPart(req.query.state)) && (!req.query.city || keyPart(user.city) === keyPart(req.query.city)));
     const monthStart = new Date();
     monthStart.setDate(1);
     monthStart.setHours(0, 0, 0, 0);
@@ -250,8 +253,7 @@ export const getCommunityMap = async (req: Request, res: Response) => {
     const selectedCity = normalizePart(req.query.selectedCity);
     const selectedUsers = users
       .filter((user) => (!selectedCountry || keyPart(user.country) === keyPart(selectedCountry)) && (!selectedState || keyPart(effectiveState(user)) === keyPart(selectedState)) && (!selectedCity || keyPart(user.city) === keyPart(selectedCity)))
-      .slice(0, 100)
-      .map(({ id, full_name, status, points, city, state, country, created_at, last_login }) => ({ id, full_name, status, points, city, state, country, created_at, last_login }));
+      .map(({ id, full_name, email, phone, status, points, city, state, country, created_at, last_login }) => ({ id, full_name, email, phone, status, points, city, state, country, created_at, last_login }));
     const metrics = {
       totalUsers: users.length,
       mappedUsers: mappedUsers.length,
@@ -274,7 +276,8 @@ export const getCommunityMap = async (req: Request, res: Response) => {
       selectedUsers,
     });
   } catch (error) {
-    console.error('Community map query failed', error);
-    return fail(res, 500, 'COMMUNITY_MAP_ERROR', 'Community map data could not be loaded');
+    const failure = databaseFailure(error);
+    console.error('Community map query failed', { code: (error as { code?: string }).code || 'UNKNOWN' });
+    return fail(res, failure.status, failure.code, failure.message);
   }
 };

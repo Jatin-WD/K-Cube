@@ -43,6 +43,7 @@ export const MYSQL_USER = process.env.MYSQL_USER || 'root';
 export const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD || '';
 export const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS || 60000);
 export const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX || 100);
+export const ADMIN_READ_RATE_LIMIT_MAX = Number(process.env.ADMIN_READ_RATE_LIMIT_MAX || 600);
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 export const GOOGLE_AUTH_REDIRECT_URI = process.env.GOOGLE_AUTH_REDIRECT_URI || '';

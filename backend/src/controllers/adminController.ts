@@ -497,7 +497,14 @@ export const listAdminSubmissions = async (_req: Request, res: Response) => {
     ),
   ]);
 
+  const manpower = await safeQuery('manpower', `SELECT a.id, 'manpower' AS source_type, 'Manpower application' AS source_label,
+    a.role_interest AS submission_kind, a.role_interest AS title, a.experience AS description,
+    a.status, a.review_note, 0 AS points_reward, a.created_at AS submitted_at, a.updated_at AS reviewed_at,
+    u.full_name AS applicant_name, u.email AS applicant_email, u.phone AS applicant_phone,
+    JSON_OBJECT('city', u.city, 'state', u.state, 'country', u.country) AS payload
+    FROM manpower_applications a JOIN users u ON u.id = a.user_id ORDER BY a.created_at DESC`);
   const rows = [
+    ...(manpower as any[]),
     ...(uploads as any[]),
     ...(india as any[]),
     ...(events as any[]),
@@ -864,12 +871,14 @@ export const adjustPoints = async (req: any, res: Response) => {
   const userId = Number(user_id);
   const points = Number(points_delta);
   const adjustmentReason = String(reason || '').trim();
-  if (!Number.isInteger(userId) || userId <= 0 || !Number.isInteger(points) || points === 0 || !adjustmentReason) return fail(res, 400, 'VALIDATION_ERROR', 'A valid user_id, whole-number points_delta and reason are required');
+  if (!Number.isSafeInteger(userId) || userId <= 0 || !Number.isSafeInteger(points) || points === 0 || !adjustmentReason || adjustmentReason.length > 1000) return fail(res, 400, 'VALIDATION_ERROR', 'A valid user_id, whole-number points_delta and reason under 1000 characters are required');
   const [userRows] = await pool.query('SELECT id FROM users WHERE id = ? LIMIT 1', [userId]);
   if (!(userRows as any[]).length) return fail(res, 404, 'NOT_FOUND', 'User not found');
+  try {
   const award = await awardPoints({
     userId,
     sourceType: 'admin_adjustment',
+    requireSufficientBalance: true,
     sourceSlug: `admin-adjustment-${Date.now()}`,
     points,
     status: 'approved',
@@ -877,6 +886,10 @@ export const adjustPoints = async (req: any, res: Response) => {
     createdBy: req.user?.id || null,
   });
   return ok(res, { user_id: userId, points_delta: points, balance: award.balance, status: 'approved' });
+  } catch (error) {
+    if ((error as { code?: string }).code === 'INSUFFICIENT_POINTS') return fail(res, 409, 'INSUFFICIENT_POINTS', 'Deduction exceeds the current points balance');
+    throw error;
+  }
 };
 
 export const listKFoodClaims = async (_req: Request, res: Response) => {

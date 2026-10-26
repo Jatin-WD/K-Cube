@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from 'react';
+import LocationFields from '@/components/LocationFields';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Check, Eye, EyeOff, Lock } from 'lucide-react';
@@ -166,6 +167,9 @@ const AuthExperience = ({
     email: '',
     password: '',
     phone: '',
+    country: '',
+    state: '',
+    city: '',
     otp: '',
     referralCode: referralParam || '',
   });
@@ -209,6 +213,9 @@ const AuthExperience = ({
           full_name: form.fullName,
           username: form.username,
           phone: form.phone.trim(),
+          country: form.country,
+          state: form.state,
+          city: form.city,
           email: form.email,
           password: form.password,
           referral_code: form.referralCode.trim() || undefined,
@@ -381,6 +388,7 @@ const AuthExperience = ({
                 </div>
               ) : null}
 
+              {mode === 'signup' ? <LocationFields value={form} onChange={location => setForm(current => ({ ...current, ...location }))} /> : null}
               <button type="submit" disabled={isSubmitting} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-5 py-4 text-sm font-black text-white transition hover:bg-[var(--kc-blue-800)] disabled:cursor-not-allowed disabled:opacity-70">
                 <Lock className="h-4 w-4" />
                 {isSubmitting ? 'Please wait...' : mode === 'admin' ? t.submitAdmin : mode === 'signup' ? t.submitSignup : t.submitSignin}

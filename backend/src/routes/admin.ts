@@ -59,10 +59,14 @@ import {
 } from '../controllers/eventController';
 import { getAdminEmailRecipientCount, listSentAdminEmails, sendAdminEmailMessage } from '../controllers/adminEmailController';
 import { getCommunityMap } from '../controllers/communityMapController';
+import { listPointBalances } from '../controllers/pointsWorkspaceController';
+import { listManpower, reviewManpower } from '../controllers/manpowerController';
 
 const router = Router();
 
 router.use(requireAuth(['admin']));
+router.get('/manpower', requireAdminScope(['submissions']), listManpower);
+router.patch('/manpower/:id', requireAdminScope(['submissions']), reviewManpower);
 router.get('/dashboard', requireAdminScope(['analytics']), getAdminDashboard);
 router.get('/recent-actions', requireAdminScope(['analytics']), listRecentAdminActions);
 router.get('/email/sent', requireAdminScope(['analytics']), listSentAdminEmails);
@@ -91,6 +95,7 @@ router.get('/community-map', requireAdminScope(['user_management']), getCommunit
 router.get('/uploads', requireAdminScope(['content']), listContentUploads);
 router.patch('/uploads/:id/review', requireAdminScope(['content']), reviewContentUpload);
 router.get('/points', requireAdminScope(['commerce']), listPointTransactions);
+router.get('/points/users', requireAdminScope(['commerce']), listPointBalances);
 router.post('/points/adjust', requireAdminScope(['commerce']), adjustPoints);
 router.get('/kfood/claims', requireAdminScope(['commerce']), listKFoodClaims);
 router.patch('/kfood/claims/:id/review', requireAdminScope(['commerce']), reviewKFoodClaim);

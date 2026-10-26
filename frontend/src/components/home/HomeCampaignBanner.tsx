@@ -64,7 +64,7 @@ export default function HomeCampaignBanner() {
         const text = campaign[language];
         const active = index === i;
         return <div key={campaign.theme} className={`kc-campaign-slide ${campaign.theme}${active ? ' is-active' : ''}`} aria-hidden={!active} inert={!active} role="group" aria-roledescription="slide" aria-label={`${i + 1} / ${campaigns.length}`}>
-          <Image className="kc-campaign-art" src={campaign.image} alt="" width={2172} height={724} sizes="(max-width: 1050px) 100vw, 68vw" loading={i === 0 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : 'low'} />
+          <Image className="kc-campaign-art" src={campaign.image} alt="" width={2172} height={724} quality={70} sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 1050px) calc(100vw - 64px), (min-width: 1384px) 897px, calc(68.75vw - 55px)" loading={i === 0 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : 'low'} />
           <div className="kc-campaign-copy"><span className="kc-campaign-eyebrow"><Sparkles size={14} />{text.tag}</span><h2 className="kc-campaign-title">{text.title[0]}<br /><em>{text.title[1]}</em></h2><p>{text.text}</p><div className="kc-campaign-actions"><Link className="kc-campaign-button" href={campaign.href}>{text.action}<ArrowRight size={18} /></Link><Link className="kc-campaign-secondary" href={campaign.secondaryHref}>{text.secondary}<ArrowRight size={14} /></Link></div></div>
         </div>;
       })}

@@ -17,6 +17,9 @@ import integrationRoutes from './routes/integrations';
 import shopRoutes from './routes/shop';
 import paymentRoutes from './routes/payments';
 import bootstrapDatabase from './db/bootstrap';
+import { locationOptions } from './services/geography';
+import { applyForManpower } from './controllers/manpowerController';
+import { requireAuth } from './middleware/auth';
 import { API_PREFIX, APP_URL, CORS_ORIGINS, KCUBE_SERVE_FRONTEND, NODE_ENV } from './config';
 
 export const app = express();
@@ -86,6 +89,11 @@ app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(cookieParser());
 
 app.use(API_PREFIX, rateLimit);
+app.post(`${API_PREFIX}/manpower/apply`, requireAuth(), applyForManpower);
+app.get(`${API_PREFIX}/locations`, (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.json({ data: locationOptions(String(req.query.country || ''), String(req.query.state || '')) });
+});
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/map`, mapRoutes);

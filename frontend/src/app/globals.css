@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
 
 :root {
   --kc-blue-900: #062b63;
@@ -560,6 +559,15 @@ body:not(:has(.admin-control-center)):not(.learning-game-mode) button:disabled[c
 
 .admin-control-center [class~="text-white"] {
   color: var(--kc-text) !important;
+}
+
+.admin-control-center button[class~="bg-[#0b4eae]"] {
+  color: #ffffff !important;
+}
+
+.admin-control-center :is(button, a, input, textarea, select):focus-visible {
+  outline: 3px solid #2979e8;
+  outline-offset: 3px;
 }
 
 .admin-control-center [class*="text-[#aab5c6]"],
