@@ -1,0 +1,45 @@
+/* One public layout contract. Content is capped; page backgrounds may bleed full width.
+   Form/dialog widths below 1180px are intentionally not part of this system. */
+body:not(:has(.admin-control-center)):not(.learning-game-mode) {
+  --kc-content-max: 1320px;
+  --kc-page-gutter: clamp(16px, 3vw, 32px);
+  --kc-shell-max: calc(var(--kc-content-max) + 2 * var(--kc-page-gutter));
+  --kc-content-width: min(var(--kc-content-max), calc(100% - 2 * var(--kc-page-gutter)));
+}
+body:not(:has(.admin-control-center)):not(.learning-game-mode) :is(.kc-content,.kc-shell,.kc-page-frame) {
+  box-sizing:border-box; width:100%; min-width:0; margin-inline:auto;
+}
+body:not(:has(.admin-control-center)):not(.learning-game-mode) .kc-content {max-width:var(--kc-content-max)!important}
+body:not(:has(.admin-control-center)):not(.learning-game-mode) :is(.kc-shell,.kc-page-frame) {max-width:var(--kc-shell-max)!important}
+body:not(:has(.admin-control-center)):not(.learning-game-mode) .kc-shell {padding-inline:var(--kc-page-gutter)!important}
+body:not(:has(.admin-control-center)):not(.learning-game-mode) :is(main,section,div,footer):not(.kc-content):not(.kc-shell):has(>.kc-content) {padding-inline:var(--kc-page-gutter)!important}
+body:not(:has(.admin-control-center)):not(.learning-game-mode) :is(.kc-content,.kc-shell,.kc-page-frame)>* {min-width:0}
+.culture-home .culture-section {width:100%;max-width:var(--kc-shell-max);padding-inline:var(--kc-page-gutter)!important;box-sizing:border-box}
+.culture-home :is(.kc-hero-layout,.culture-community,.culture-values) {width:var(--kc-content-width)!important;max-width:var(--kc-content-max)!important;margin-inline:auto!important;box-sizing:border-box}
+.culture-home .culture-values {padding-inline:0}
+.culture-home .culture-official>section {padding-inline:var(--kc-page-gutter)!important}
+.culture-home .culture-official .kc-content {max-width:var(--kc-content-max)!important}
+.kc-header-container {width:100%;max-width:var(--kc-shell-max);padding-inline:var(--kc-page-gutter)!important;box-sizing:border-box}
+.culture-header .kc-mobile-menu {max-height:calc(100dvh - 160px);overflow-y:auto;overscroll-behavior:contain}
+.culture-header .culture-nav .kc-nav-link {padding-inline:11px;font-size:12px}
+.kc-content :is(img,video) {max-width:100%}
+.kc-content :is(input,select,textarea) {min-width:0;max-width:100%}
+.kc-content :is(h1,h2,h3,p,a) {overflow-wrap:break-word}
+.kc-product-layout>* {min-width:0}
+
+/* Three-column details need more width than an ordinary two-column tablet page. */
+@media(min-width:1024px) and (max-width:1279px) {
+  .kc-detail-page .kc-detail-layout {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kc-product-layout {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kc-product-layout>aside,.kc-detail-layout>aside {grid-column:1 / -1}
+}
+@media(max-width:767px) {
+  .culture-home .culture-journey {gap:26px;padding:24px}
+  .culture-home .culture-community-copy {padding:26px}
+  .culture-home .culture-section-heading {flex-wrap:wrap;align-items:start}
+  .culture-home .culture-section-heading>a {min-height:36px}
+}
+@media(min-width:1920px) {
+  /* Deliberately cap long lines and card widths rather than stretching to the monitor. */
+  .culture-header .culture-nav .kc-nav-link {font-size:13px}
+}

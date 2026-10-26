@@ -268,7 +268,7 @@ const AuthExperience = ({
 
   return (
     <main className="min-h-screen bg-[var(--kc-bg)] px-4 py-10 text-[var(--kc-text)] sm:px-5 sm:py-14 lg:px-10 lg:py-20">
-      <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+      <div className="mx-auto grid kc-content gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
         <section>
           <p className="inline-flex rounded-full border border-[var(--kc-blue-700)]/20 bg-[var(--kc-surface-blue)] px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[var(--kc-blue-700)]">
             {mode === 'admin' ? global.admin : mode === 'signup' ? global.signUp : global.signIn}

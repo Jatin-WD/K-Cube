@@ -42,10 +42,10 @@ export default function FestivalArchive({ compact = false, announcements = false
   const language = useAppStore((state) => state.language);
   const t = festivalArchiveCopy[language];
   const Heading = compact ? 'h2' : 'h1';
-  return <section className="bg-[var(--kc-bg)] px-4 py-8 text-[var(--kc-text)] sm:py-10 lg:px-8">
-    <div className="mx-auto max-w-[1256px] overflow-hidden rounded-xl border border-[var(--kc-border)] bg-white">
+  return <section className="kc-festival-archive bg-[var(--kc-bg)] px-4 py-8 text-[var(--kc-text)] sm:py-10 lg:px-8">
+    <div className="mx-auto kc-content overflow-hidden rounded-xl border border-[var(--kc-border)] bg-white">
       <div className="p-6 sm:p-8">
-        <p className="inline-flex items-center gap-2 rounded-full border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-3 py-1.5 text-xs font-bold text-[var(--kc-blue-700)]"><CheckCircle2 size={15} />{t.badge}</p>
+        <p className="inline-flex items-center gap-2 rounded-full border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-3 py-1.5 text-xs font-bold kc-festival-status"><CheckCircle2 size={15} />{t.badge}</p>
         <p className="mt-5 text-xs font-bold uppercase tracking-widest text-[var(--kc-text-muted)]">{announcements ? t.announcements : t.archive}</p>
         <Heading className="mt-2 max-w-4xl text-2xl font-extrabold leading-tight sm:text-4xl">{t.title}</Heading>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--kc-text-secondary)]">{t.intro}</p>
@@ -53,7 +53,7 @@ export default function FestivalArchive({ compact = false, announcements = false
         <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--kc-text-secondary)]">{t.closed}</p>
         <div className="mt-5 flex flex-wrap gap-3"><Link href="/india-pre-selection/information" className="kc-button kc-button-primary">{t.information}<ArrowRight size={16} /></Link><Link href={announcements ? '/events' : '/india-pre-selection/announcement'} className="kc-button kc-button-secondary">{announcements ? t.events : t.announcements}<ArrowRight size={16} /></Link></div>
       </div>
-      <div className="border-t border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-6 sm:p-8"><h2 className="text-sm font-bold">{t.timeline}</h2><div className="mt-4 grid gap-3 md:grid-cols-3">{t.stages.map((stage, index) => <article key={stage} className="rounded-lg border border-[var(--kc-border)] bg-white p-4"><p className="flex items-center gap-2 text-xs font-bold text-[var(--kc-blue-700)]"><CalendarDays size={14} />{t.dates[index]}</p><h3 className="mt-3 text-sm font-bold">{stage}</h3><p className="mt-2 flex items-center gap-1 text-xs text-[var(--kc-text-secondary)]"><CheckCircle2 size={13} />{t.complete}</p></article>)}</div></div>
+      <div className="border-t border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-6 sm:p-8"><h2 className="text-sm font-bold">{t.timeline}</h2><div className="mt-4 grid gap-3 md:grid-cols-3">{t.stages.map((stage, index) => <article key={stage} className="rounded-lg border border-[var(--kc-border)] bg-white p-4"><p className="flex items-center gap-2 text-xs font-bold text-[var(--kc-blue-700)]"><CalendarDays className="kc-brand-icon" size={14} />{t.dates[index]}</p><h3 className="mt-3 text-sm font-bold">{stage}</h3><p className="mt-2 flex items-center gap-1 text-xs text-[var(--kc-text-secondary)]"><CheckCircle2 size={13} />{t.complete}</p></article>)}</div></div>
       {!compact && <div className="p-6 sm:p-8">{announcements && <div className="mb-7"><h2 className="text-lg font-bold">{t.participants}</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--kc-text-secondary)]">{t.privacy}</p><div className="mt-3 flex flex-wrap gap-2">{maskedIndiaSecondRoundParticipants.map((name) => <span key={name} className="rounded-full border border-[var(--kc-border)] px-3 py-2 text-sm font-semibold">{name}</span>)}</div></div>}<h2 className="text-lg font-bold">{t.future}</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--kc-text-secondary)]">{t.futureText}</p><Link href="/events" className="kc-link mt-4">{t.events}<ArrowRight size={16} /></Link></div>}
     </div>
   </section>;

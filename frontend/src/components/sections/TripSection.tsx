@@ -1,6 +1,6 @@
 const TripSection = () => {
   return (
-    <section className="mx-auto max-w-[1600px] py-12 lg:px-12">
+    <section className="mx-auto kc-shell py-12 lg:px-12">
       <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] xl:gap-10">
         <div className="rounded-[2rem] border border-white/10 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/30">
           <p className="text-sm uppercase tracking-[0.3em] text-amber-300">Win a Trip to Seoul</p>

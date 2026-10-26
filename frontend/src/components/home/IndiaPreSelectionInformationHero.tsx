@@ -18,7 +18,7 @@ export default function IndiaPreSelectionInformationHero() {
   const t = { ...heroCopy[language], status: archive.badge, detail: archive.intro, announcements: archive.announcements };
   return (
     <section className="px-3 py-6 sm:px-4 sm:py-8 lg:px-10 lg:py-10">
-      <div className="mx-auto grid max-w-[1320px] overflow-hidden rounded-[28px] border border-[var(--kc-border)] bg-[#382635] text-white shadow-[0_24px_65px_rgba(81,33,55,0.18)] lg:grid-cols-[1.02fr_0.98fr]">
+      <div className="mx-auto grid kc-content overflow-hidden rounded-[28px] border border-[var(--kc-border)] bg-[#382635] text-white shadow-[0_24px_65px_rgba(81,33,55,0.18)] lg:grid-cols-[1.02fr_0.98fr]">
         <article className="relative flex flex-col justify-center overflow-hidden px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
           <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[var(--kc-blue-700)]/20 blur-3xl" aria-hidden="true" />
           <div className="relative z-10">

@@ -1,30 +1,29 @@
 "use client";
 
 import Link from 'next/link';
+import ProductGallery from '@/components/ProductGallery';
 import { ArrowRight, ExternalLink, Sparkles } from 'lucide-react';
 import type { ShopProduct } from '@/lib/shopCatalog';
-import { getRelatedShopProducts, getStoreMeta, shopCopy } from '@/lib/shopCatalog';
+import { getStoreMeta, shopCopy } from '@/lib/shopCatalog';
 import { useAppStore } from '@/store/useAppStore';
 
 interface ShopCatalogProductPageProps {
   product: ShopProduct;
+  relatedProducts?: ShopProduct[];
 }
 
-const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
+const ShopCatalogProductPage = ({ product, relatedProducts = [] }: ShopCatalogProductPageProps) => {
   const language = useAppStore((state) => state.language);
   const t = shopCopy[language];
   const store = getStoreMeta(product.store ?? 'koreanshop');
-  const relatedProducts = getRelatedShopProducts(product.id, product.categoryKey);
 
   return (
     <main className="min-h-screen bg-[#f4f0e8] px-4 py-8 text-[var(--kc-text)] lg:px-10">
-      <div className="mx-auto max-w-[1760px] space-y-6">
+      <div className="mx-auto kc-content space-y-6">
         <div className="rounded-[2rem] border border-[var(--kc-border)] bg-white p-5 shadow-[0_20px_40px_rgba(0,0,0,0.08)] sm:p-8">
           <p className="text-sm font-semibold text-[#7a838f]">{t.breadcrumb}</p>
-          <div className="mt-5 grid gap-6 lg:grid-cols-[0.95fr_1.05fr_340px]">
-            <div className="overflow-hidden rounded-[1.75rem] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)]">
-              <div className="h-[320px] bg-cover bg-center sm:h-[480px]" style={{ backgroundImage: `url(${product.image})` }} />
-            </div>
+          <div className="kc-product-layout mt-5 grid gap-6 lg:grid-cols-[0.95fr_1.05fr_340px]">
+            <ProductGallery key={`${product.slug}:${product.image}:${(product.gallery || []).join('|')}`} image={product.image} gallery={product.gallery} title={product.title[language]} />
 
             <section>
               <p className="inline-flex items-center gap-2 rounded-full bg-[#fff4cc] px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#b12704]">
@@ -56,7 +55,7 @@ const ShopCatalogProductPage = ({ product }: ShopCatalogProductPageProps) => {
               <p className="text-sm font-black uppercase tracking-[0.22em] text-[var(--kc-blue-700)]">SHOPPING DESTINATION</p>
               <p className="mt-4 text-2xl font-black">{store.name}</p>
               <p className="mt-4 text-sm leading-6 text-[var(--kc-text-secondary)]">Price and availability may change. Confirm the current details on the destination store.</p>
-              <p className="mt-5 text-3xl font-black">Rs. {product.price}</p>
+              <p className="mt-5 text-3xl font-black">Rs. {product.price}</p><p className="mt-2 text-sm font-bold">{product.inStock ? product.stockLabel[language] : 'Out of stock'}</p>
               {product.compareAtPrice ? <p className="mt-2 text-lg font-bold text-[#9ca3af] line-through">Rs. {product.compareAtPrice}</p> : null}
               <div className="mt-5 space-y-2 text-sm leading-6 text-[var(--kc-text-secondary)]">
                 <p><span className="font-black text-[var(--kc-text)]">{t.sku}:</span> {product.sku}</p>

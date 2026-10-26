@@ -126,7 +126,7 @@ const ShopPage = () => {
   return (
     <main className="min-h-screen bg-[#f4f0e8] text-[var(--kc-text)]">
       <section className="border-b border-[var(--kc-border)] bg-[#382635] px-4 py-4 text-white lg:px-10">
-        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-3">
+        <div className="mx-auto flex kc-content flex-wrap items-center gap-3">
           <span className="rounded-sm bg-[#f3a847] px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-[var(--kc-text)]">
             {t.badge}
           </span>
@@ -139,7 +139,7 @@ const ShopPage = () => {
       </section>
 
       <section className="px-4 py-8 lg:px-10 lg:py-10">
-        <div className="mx-auto grid max-w-[1760px] gap-6 lg:grid-cols-[1.25fr_380px]">
+        <div className="mx-auto grid kc-content gap-6 lg:grid-cols-[1.25fr_380px]">
           <div className="space-y-6">
             <div className="rounded-[2rem] border border-[var(--kc-border)] bg-white p-6 shadow-[0_20px_40px_rgba(0,0,0,0.08)] sm:p-8">
               <p className="inline-flex items-center gap-2 rounded-full bg-[#fff4cc] px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-[#b12704]">

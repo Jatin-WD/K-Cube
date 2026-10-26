@@ -237,12 +237,12 @@ const discoverProductLinks = (html: string, baseUrl: string) => {
 
 export const listPublicShopProducts = async (_req: Request, res: Response) => {
   const products = await listShopProducts();
-  return ok(res, products);
+  return ok(res, products.filter((product) => product.status === 'published'));
 };
 
 export const getPublicShopProduct = async (req: Request, res: Response) => {
   const product = await getShopProductBySlug(String(req.params.slug || ''));
-  if (!product) return fail(res, 404, 'NOT_FOUND', 'Product not found');
+  if (!product || product.status !== 'published') return fail(res, 404, 'NOT_FOUND', 'Product not found');
   return ok(res, product);
 };
 

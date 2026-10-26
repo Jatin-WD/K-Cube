@@ -1,6 +1,6 @@
 const CuisineSection = () => {
   return (
-    <section className="mx-auto max-w-[1600px] py-12 lg:px-12">
+    <section className="mx-auto kc-shell py-12 lg:px-12">
       <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="rounded-[2rem] border border-white/10 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/30">
           <p className="text-sm uppercase tracking-[0.3em] text-amber-300">Taste Korean Cuisine</p>

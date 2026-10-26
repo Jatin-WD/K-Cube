@@ -418,7 +418,7 @@ const MemberDashboard = () => {
 
   return (
     <main className="member-area-shell min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
-      <div className="mx-auto flex max-w-[1760px] flex-col gap-5 px-3 py-5 sm:px-5 sm:py-7 lg:flex-row lg:gap-6 lg:px-8">
+      <div className="mx-auto flex kc-shell flex-col gap-5 px-3 py-5 sm:px-5 sm:py-7 lg:flex-row lg:gap-6 lg:px-8">
         <aside className="w-full shrink-0 lg:w-64">
           <div className="rounded-xl border border-white/10 bg-[#111113] p-3 lg:sticky lg:top-24">
             <div className="hidden border-b border-white/10 px-3 pb-4 lg:block"><p className="text-xs font-black uppercase tracking-[0.24em] text-[#ffc400]">{t.memberArea}</p><p className="mt-2 text-lg font-black">{t.workspace}</p><p className="mt-1 text-xs leading-5 text-[#dfbdce]">{t.workspaceDesc}</p></div>
@@ -537,7 +537,7 @@ const MemberDashboard = () => {
           </div>
           <p className="mt-4 flex items-start gap-1.5 text-xs text-[var(--kc-text-secondary)]"><MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#12a66a]" />Korea Edge Cube - Gr, Plot 149, Sector 44 Rd, Gurugram, Haryana 122023</p>
         </div>
-        <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[1fr_360px]">
+        <div className="mx-auto grid kc-content gap-6 lg:grid-cols-[1fr_360px]">
           <div id="profile" className="col-span-full flex scroll-mt-24 flex-col gap-4 rounded-xl border border-white/10 bg-[#111113] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#ffc400] text-lg font-black text-[#111]">{(user.fullName || 'K').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()}</div>
@@ -606,7 +606,7 @@ const MemberDashboard = () => {
       </section> : null}
 
       {activeView === 'actions' ? <section id="actions" className="px-0 pb-12 sm:pb-5">
-        <div className="mx-auto grid max-w-[1480px] gap-6 xl:grid-cols-3">
+        <div className="mx-auto grid kc-content gap-6 xl:grid-cols-3">
           <form id="submissions" onSubmit={submitUpload} className="scroll-mt-24 rounded-xl border border-white/10 bg-[#111113] p-6">
             <Clapperboard className="h-7 w-7 text-[#ffc400]" />
             <h2 className="mt-4 text-2xl font-black">Submit Korean culture video</h2>
@@ -664,7 +664,7 @@ const MemberDashboard = () => {
       </section> : null}
 
       {activeView === 'learning' ? <section id="learning-history" className="px-0 pb-12 sm:pb-5">
-        <div className="mx-auto max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] p-6">
+        <div className="mx-auto kc-content rounded-xl border border-white/10 bg-[#111113] p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.24em] text-[#ffc400]">{ui.savedProgress}</p>
@@ -755,7 +755,7 @@ const MemberDashboard = () => {
         </div>
       </section> : null}
 
-      {message ? <p className="mx-auto mt-6 max-w-[1480px] rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[var(--kc-border)]">{message}</p> : null}
+      {message ? <p className="mx-auto mt-6 kc-shell rounded-xl border border-white/10 bg-[#111113] px-5 py-4 text-sm font-bold text-[var(--kc-border)]">{message}</p> : null}
         </div>
       </div>
     </main>

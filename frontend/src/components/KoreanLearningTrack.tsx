@@ -513,7 +513,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
     return (
       <main className="kc-learning-surface min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
         <section className="border-b border-white/10 px-4 py-4 sm:px-6 lg:px-10">
-          <div className="mx-auto flex max-w-[1500px] items-center justify-between">
+          <div className="mx-auto flex kc-content items-center justify-between">
             <Link href="/learning" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-[var(--kc-border)]">
               <ArrowLeft className="h-4 w-4" /> Back to learning
             </Link>
@@ -523,7 +523,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
           </div>
         </section>
         <section className="px-4 py-8 sm:px-6 lg:px-10">
-          <div className="mx-auto max-w-[1500px]">
+          <div className="mx-auto kc-content">
             <LearningPreview {...track} language={language} />
           </div>
         </section>
@@ -536,7 +536,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   return (
     <main className="kc-learning-surface min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
       <section className="bg-[#382635] px-4 py-5 text-white sm:px-6 lg:px-10">
-        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-3">
+        <div className="mx-auto flex kc-content flex-wrap items-center gap-3">
           <Link href="/learning" className="inline-flex items-center gap-2 rounded-xl border border-[var(--kc-text-secondary)] px-3 py-2 text-sm font-black text-[var(--kc-text-muted)] hover:text-white">
             <ArrowLeft className="h-4 w-4" />
             {ui.back}
@@ -555,7 +555,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
       </section>
 
       <section className="px-4 py-8 sm:px-6 lg:px-10">
-        <div className="mx-auto grid max-w-[1500px] gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="mx-auto grid kc-content gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
           <section className="rounded-[28px] bg-[#382635] p-5 text-white shadow-[0_24px_70px_rgba(0,0,0,0.2)]">
             <div className="flex items-center gap-5">
               <button

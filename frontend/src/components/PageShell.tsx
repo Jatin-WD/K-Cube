@@ -12,7 +12,7 @@ interface PageShellProps {
 const PageShell = ({ title, subtitle, description, children, badge }: PageShellProps) => {
   return (
     <section className="min-h-screen bg-[var(--kc-bg)] py-7 text-[var(--kc-text)] sm:py-10 lg:py-14">
-      <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto kc-shell px-4 sm:px-6 lg:px-8">
         <div className="mb-7 border border-[var(--kc-border)] bg-white p-5 shadow-[0_6px_20px_rgba(81,33,55,0.07)] sm:mb-10 sm:p-7 lg:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-3xl">

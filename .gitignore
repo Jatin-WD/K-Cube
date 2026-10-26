@@ -43,3 +43,6 @@ screencapture.png
 
 # generated document intermediates
 docs/**/*.html
+
+# Product uploads are runtime data; persist and back up on the host.
+backend/data/product-media/

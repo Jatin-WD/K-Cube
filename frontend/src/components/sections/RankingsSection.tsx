@@ -2,7 +2,7 @@ import { ArrowUpRight, Users, BarChart3 } from 'lucide-react';
 
 const RankingsSection = () => {
   return (
-    <section className="mx-auto max-w-[1600px] py-12 lg:px-12">
+    <section className="mx-auto kc-shell py-12 lg:px-12">
       <div className="grid gap-8 lg:grid-cols-[1.3fr_0.9fr]">
         <div className="rounded-[2rem] border border-white/10 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/30">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">

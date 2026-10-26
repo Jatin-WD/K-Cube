@@ -14,7 +14,7 @@ const HeroSection = () => {
   return (
     <section className="relative overflow-hidden px-6 pb-20 pt-10 lg:px-12">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(248,113,113,0.08),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(125,211,252,0.12),_transparent_28%)]" />
-      <div className="relative mx-auto max-w-[1600px]">
+      <div className="relative mx-auto kc-content">
         <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="space-y-8">
             <div className="inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-sm uppercase tracking-[0.3em] text-amber-300 ring-1 ring-amber-300/20 shadow-sm shadow-amber-300/10">

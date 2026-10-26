@@ -30,7 +30,7 @@ const SearchResults = ({ query }: { query: string }) => {
 
   return (
     <main className="min-h-[calc(100vh-1px)] bg-[var(--kc-bg)] px-4 py-10 text-[var(--kc-text)] sm:px-6 sm:py-14 lg:px-10 lg:py-20">
-      <div className="mx-auto max-w-[1180px]">
+      <div className="mx-auto kc-content">
         <section className="rounded-2xl border border-[var(--kc-border)] bg-white p-7 shadow-[0_18px_50px_rgba(81,33,55,0.07)] sm:p-10">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[#b36a00]">{t.eyebrow}</p>
           <h1 className="mt-3 text-3xl font-black sm:text-5xl">{t.title}</h1>

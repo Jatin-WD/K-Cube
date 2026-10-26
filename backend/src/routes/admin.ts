@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import { Router, raw } from 'express';
+import { uploadProductMedia, listProductMedia, deleteProductMedia } from '../controllers/productMediaController';
 import { requireAdminScope, requireAuth } from '../middleware/auth';
 import {
   getAdminDashboard,
@@ -93,6 +94,9 @@ router.get('/points', requireAdminScope(['commerce']), listPointTransactions);
 router.post('/points/adjust', requireAdminScope(['commerce']), adjustPoints);
 router.get('/kfood/claims', requireAdminScope(['commerce']), listKFoodClaims);
 router.patch('/kfood/claims/:id/review', requireAdminScope(['commerce']), reviewKFoodClaim);
+router.post('/kfood/media', requireAdminScope(['commerce']), raw({ type: ['image/png', 'image/jpeg', 'image/webp'], limit: '5mb' }), uploadProductMedia);
+router.get('/kfood/media', requireAdminScope(['commerce']), listProductMedia);
+router.delete('/kfood/media/:filename', requireAdminScope(['commerce']), deleteProductMedia);
 router.get('/kfood/products', requireAdminScope(['commerce']), listKFoodProducts);
 router.post('/kfood/products', requireAdminScope(['commerce']), createKFoodProduct);
 router.patch('/kfood/products/:slug', requireAdminScope(['commerce']), updateKFoodProduct);

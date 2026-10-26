@@ -5,11 +5,12 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 process.env.API_PREFIX = process.env.API_PREFIX || '/api/v1';
 process.env.KCUBE_SERVE_FRONTEND = process.env.KCUBE_SERVE_FRONTEND || 'true';
 
-const next = require('next');
+// Use the same Next runtime that compiled the frontend (important in this monorepo).
+const frontendDir = path.join(__dirname, 'frontend');
+const next = require(require.resolve('next', { paths: [frontendDir] }));
 const backendModule = require('./backend/dist/app.js');
 const app = backendModule.default || backendModule.app;
 
-const frontendDir = path.join(__dirname, 'frontend');
 const nextApp = next({ dev: false, dir: frontendDir });
 const handle = nextApp.getRequestHandler();
 const port = Number(process.env.PORT || 4000);

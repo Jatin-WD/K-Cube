@@ -50,7 +50,7 @@ const ItaewonSubServicePage = ({
   return (
     <main className="min-h-screen bg-[#e7e7e7] text-[var(--kc-text)]">
       <section className="px-3 py-8 sm:px-4 sm:py-10 lg:px-10 lg:py-12">
-        <div className="mx-auto grid max-w-[1760px] gap-5 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="mx-auto grid kc-content gap-5 lg:grid-cols-[1.05fr_0.95fr]">
           <article className="rounded-[30px] border border-[var(--kc-border)] bg-[linear-gradient(180deg,var(--kc-text)_0%,#382635_100%)] p-6 text-white shadow-[0_30px_80px_rgba(0,0,0,0.22)] sm:p-8 lg:p-10">
             <p className="inline-flex items-center gap-2 rounded-sm border border-[#f3a847]/30 bg-[#f3a847]/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.26em] text-[#f3a847]">
               <Sparkles className="h-4 w-4" />

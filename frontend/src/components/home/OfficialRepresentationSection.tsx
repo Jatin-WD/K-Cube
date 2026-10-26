@@ -33,15 +33,15 @@ export default function OfficialRepresentationSection() {
 
   return (
     <section id="official-india-representation" className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="representation-heading">
-      <div className="mx-auto grid max-w-[1320px] gap-8 rounded-[24px] border border-[var(--kc-border)] bg-white p-5 shadow-[0_12px_35px_rgba(81,33,55,0.07)] sm:p-7 lg:grid-cols-[1fr_0.8fr] lg:items-center lg:p-9">
+      <div className="mx-auto grid kc-content gap-8 rounded-[24px] border border-[var(--kc-border)] bg-white p-5 shadow-[0_12px_35px_rgba(81,33,55,0.07)] sm:p-7 lg:grid-cols-[1fr_0.8fr] lg:items-center lg:p-9">
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#b77900]">{labels.eyebrow}</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.24em] kc-brand-label">{labels.eyebrow}</p>
           <h2 id="representation-heading" className="mt-2 max-w-xl text-3xl font-black leading-tight tracking-tight text-[var(--kc-text)] sm:text-4xl">{labels.heading}</h2>
           <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--kc-text-secondary)]">Mr. Taewhan Lim has been appointed as the International Director representing India for the ITAEWON World Music Spirit Festival.</p>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--kc-text-secondary)]">The appointment recognizes leadership and commitment to cultural exchange, music, global harmony, and the festival&apos;s core values of Tribute, Healing, Unity and Vision.</p>
           <div className="mt-7 grid max-w-xl gap-4 sm:grid-cols-2">
-            <div className="border-l-2 border-[var(--kc-blue-700)] pl-4"><p className="text-lg font-black text-[var(--kc-text)]">Mr. Taewhan Lim</p><p className="mt-1 text-sm text-[var(--kc-text-secondary)]">International Director<br />Representing India</p></div>
-            <div className="border-l-2 border-[#d29b24] pl-4"><p className="text-xs font-black uppercase tracking-[0.16em] text-[#b77900]">ITAEWON World Music Spirit Festival</p><p className="mt-2 flex items-center gap-2 text-sm font-bold text-[var(--kc-text)]"><CalendarDays className="h-4 w-4 text-[var(--kc-blue-700)]" />Appointment date: 01 August 2026</p></div>
+            <div className="border-l-2 kc-brand-marker pl-4"><p className="text-lg font-black text-[var(--kc-text)]">Mr. Taewhan Lim</p><p className="mt-1 text-sm text-[var(--kc-text-secondary)]">International Director<br />Representing India</p></div>
+            <div className="border-l-2 kc-brand-marker pl-4"><p className="text-xs font-black uppercase tracking-[0.16em] kc-brand-label">ITAEWON World Music Spirit Festival</p><p className="mt-2 flex items-center gap-2 text-sm font-bold text-[var(--kc-text)]"><CalendarDays className="h-4 w-4 kc-brand-icon" />Appointment date: 01 August 2026</p></div>
           </div>
           <div className="mt-6 flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#8d4f00]"><span>Tribute</span><span aria-hidden="true">·</span><span>Healing</span><span aria-hidden="true">·</span><span>Unity</span><span aria-hidden="true">·</span><span>Vision</span></div>
           <button type="button" onClick={() => setOpen(true)} className="kc-button kc-button-primary mt-7"><Award className="h-4 w-4" />{labels.certificate}</button>

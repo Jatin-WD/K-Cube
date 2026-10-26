@@ -1,23 +1,13 @@
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import ShopCatalogProductPage from '@/components/ShopCatalogProductPage';
-import { findShopProduct, type ShopProduct } from '@/lib/shopCatalog';
-import { fetchLiveShopProduct } from '@/lib/shopApi';
+import type { ShopProduct } from '@/lib/shopCatalog';
+import { shopServerBase } from '@/lib/shopServer';
+import { fetchLiveShopProduct, fetchLiveShopProducts } from '@/lib/shopApi';
 
 export const dynamic = 'force-dynamic';
 
-const resolveRequestBaseUrl = async () => {
-  const headerStore = await headers();
-  const host = headerStore.get('x-forwarded-host') || headerStore.get('host');
-  const proto = headerStore.get('x-forwarded-proto') || (process.env.NODE_ENV === 'production' ? 'https' : 'http');
-
-  if (host) return `${proto}://${host}`;
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-};
-
 const resolveProduct = async (slug: string): Promise<ShopProduct | null> => {
-  const liveProduct = await fetchLiveShopProduct(slug, await resolveRequestBaseUrl());
-  return liveProduct || findShopProduct(slug) || null;
+  return fetchLiveShopProduct(slug, await shopServerBase());
 };
 
 export const generateMetadata = async ({ params }: { params: Promise<{ slug: string }> }) => {
@@ -31,7 +21,8 @@ const ShopProductRoute = async ({ params }: { params: Promise<{ slug: string }> 
   const product = await resolveProduct(resolvedParams.slug);
   if (!product) notFound();
 
-  return <ShopCatalogProductPage product={product} />;
+  const related = (await fetchLiveShopProducts(await shopServerBase())).filter((item) => item.id !== product.id && item.categoryKey === product.categoryKey).slice(0, 4);
+  return <ShopCatalogProductPage product={product} relatedProducts={related} />;
 };
 
 export default ShopProductRoute;

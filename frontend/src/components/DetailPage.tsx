@@ -49,16 +49,16 @@ const DetailPage = ({ item }: DetailPageProps) => {
   const toAnchor = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
   return (
-    <main className="min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
+    <main className="kc-detail-page min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
       <section className="border-b border-[var(--kc-border)] bg-[var(--kc-blue-800)] px-4 py-3 text-sm text-white lg:px-8">
-        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
+        <div className="mx-auto flex kc-content flex-wrap items-center gap-3">
           <span className="rounded-md bg-[var(--kc-blue-700)] px-3 py-1 font-bold text-white">K-CUBE Detail</span>
           <span className="font-semibold">{activeItem.eyebrow[language]}</span>
         </div>
       </section>
 
       <section className="px-4 py-6 sm:py-8 lg:px-10">
-        <div className="mx-auto grid max-w-[1320px] gap-5 lg:grid-cols-[minmax(360px,0.92fr)_1fr_320px]">
+        <div className="kc-detail-layout mx-auto grid kc-content gap-5 lg:grid-cols-[minmax(360px,0.92fr)_1fr_320px]">
           <div className="overflow-hidden rounded-[10px] border border-[var(--kc-border)] bg-white p-3 shadow-[0_3px_12px_rgba(81,33,55,0.05)]">
             <div className="h-64 bg-cover bg-center sm:h-[420px]" style={{ backgroundImage: `url(${image})` }} />
           </div>
@@ -133,7 +133,7 @@ const DetailPage = ({ item }: DetailPageProps) => {
       </section>
 
       <section className="px-4 pb-12 lg:px-10">
-        <div className="mx-auto max-w-[1320px]">
+        <div className="mx-auto kc-content">
           <article className="rounded-[10px] border border-[var(--kc-border)] bg-white p-6 shadow-[0_3px_12px_rgba(81,33,55,0.05)]">
             <h2 className="text-2xl font-black text-[var(--kc-text)]">Detailed content</h2>
             <div className="mt-5 grid gap-4">

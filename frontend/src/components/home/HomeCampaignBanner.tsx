@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, Gift, Music2, Pause, Play, Sparkles, Utensils } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
@@ -33,12 +34,26 @@ export default function HomeCampaignBanner() {
   const [paused, setPaused] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
   useEffect(() => {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (paused || hovered || focused || reducedMotion.matches) return;
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updateMotion = () => setReducedMotion(preference.matches);
+    const updateVisibility = () => setPageVisible(!document.hidden);
+    updateMotion();
+    updateVisibility();
+    preference.addEventListener('change', updateMotion);
+    document.addEventListener('visibilitychange', updateVisibility);
+    return () => {
+      preference.removeEventListener('change', updateMotion);
+      document.removeEventListener('visibilitychange', updateVisibility);
+    };
+  }, []);
+  useEffect(() => {
+    if (paused || hovered || focused || reducedMotion || !pageVisible) return;
     const timer = window.setInterval(() => setIndex((previous) => (previous + 1) % campaigns.length), 6500);
     return () => window.clearInterval(timer);
-  }, [paused, hovered, focused, index]);
+  }, [paused, hovered, focused, index, reducedMotion, pageVisible]);
 
   const select = (next: number) => setIndex((next + campaigns.length) % campaigns.length);
   const controls = { en: { previous: 'Previous banner', next: 'Next banner', pause: 'Pause slideshow', play: 'Play slideshow', label: 'K-CUBE featured collections' }, hi: { previous: 'पिछला बैनर', next: 'अगला बैनर', pause: 'स्लाइडशो रोकें', play: 'स्लाइडशो चलाएँ', label: 'K-CUBE की खास कलेक्शन' }, ko: { previous: '이전 배너', next: '다음 배너', pause: '슬라이드쇼 일시 정지', play: '슬라이드쇼 재생', label: 'K-CUBE 추천 컬렉션' } }[language];
@@ -49,11 +64,11 @@ export default function HomeCampaignBanner() {
         const text = campaign[language];
         const active = index === i;
         return <div key={campaign.theme} className={`kc-campaign-slide ${campaign.theme}${active ? ' is-active' : ''}`} aria-hidden={!active} inert={!active} role="group" aria-roledescription="slide" aria-label={`${i + 1} / ${campaigns.length}`}>
-          <img className="kc-campaign-art" src={campaign.image} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />
-          <div className="kc-campaign-copy"><span className="kc-campaign-eyebrow"><Sparkles size={14} />{text.tag}</span><h1>{text.title[0]}<br /><em>{text.title[1]}</em></h1><p>{text.text}</p><div className="kc-campaign-actions"><Link className="kc-campaign-button" href={campaign.href}>{text.action}<ArrowRight size={18} /></Link><Link className="kc-campaign-secondary" href={campaign.secondaryHref}>{text.secondary}<ArrowRight size={14} /></Link></div></div>
+          <Image className="kc-campaign-art" src={campaign.image} alt="" width={2172} height={724} sizes="(max-width: 1050px) 100vw, 68vw" loading={i === 0 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : 'low'} />
+          <div className="kc-campaign-copy"><span className="kc-campaign-eyebrow"><Sparkles size={14} />{text.tag}</span><h2 className="kc-campaign-title">{text.title[0]}<br /><em>{text.title[1]}</em></h2><p>{text.text}</p><div className="kc-campaign-actions"><Link className="kc-campaign-button" href={campaign.href}>{text.action}<ArrowRight size={18} /></Link><Link className="kc-campaign-secondary" href={campaign.secondaryHref}>{text.secondary}<ArrowRight size={14} /></Link></div></div>
         </div>;
       })}
-      <div className="kc-campaign-controls"><button onClick={() => select(index - 1)} aria-label={controls.previous}><ChevronLeft size={18} /></button><span>0{index + 1} <span>/ 0{campaigns.length}</span></span><button onClick={() => select(index + 1)} aria-label={controls.next}><ChevronRight size={18} /></button><span className="kc-campaign-control-divider" /><button onClick={() => setPaused((previous) => !previous)} aria-label={paused ? controls.play : controls.pause}>{paused ? <Play size={14} /> : <Pause size={14} />}</button></div>
+      <div className="kc-campaign-controls"><button onClick={() => select(index - 1)} aria-label={controls.previous}><ChevronLeft size={18} /></button><span>0{index + 1} <span>/ 0{campaigns.length}</span></span><button onClick={() => select(index + 1)} aria-label={controls.next}><ChevronRight size={18} /></button><span className="kc-campaign-control-divider" /><button onClick={() => setPaused((previous) => !previous)} aria-pressed={paused} aria-label={paused ? controls.play : controls.pause}>{paused ? <Play size={14} /> : <Pause size={14} />}</button></div>
     </div>
     <div className="kc-campaign-tabs">{campaigns.map((campaign, i) => <button key={campaign.theme} aria-pressed={index === i} onClick={() => select(i)} className={index === i ? 'is-active' : ''}><span className="kc-campaign-tab-number">0{i + 1}</span>{i === 0 ? <Utensils size={17} /> : <Sparkles size={17} />}<span>{campaign[language].tab}</span><ArrowRight size={16} /></button>)}</div>
   </section>

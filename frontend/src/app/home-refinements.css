@@ -1,0 +1,284 @@
+/* Homepage refinement layer: scoped to public discovery surfaces.
+   Retains the established grids and assets; admin/game styling is independent. */
+.culture-home {
+  --kc-motion-card: 240ms;
+  --kc-ease: cubic-bezier(.2,.7,.2,1);
+  color: var(--kc-cocoa);
+}
+.culture-home [lang="ko"] {font-family: Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif}
+.culture-home :is(.culture-category,.culture-product,.culture-feature,.culture-journey)>* {min-width:0}
+.culture-home .culture-kicker {font-size:11px;line-height:1.6}
+.culture-home .culture-kicker>span.culture-editorial-korean {width:auto;height:auto;background:none;border-radius:0;letter-spacing:0;font-size:13px}
+.culture-home .culture-kicker>span[aria-hidden] {width:auto;height:auto;background:none;color:var(--kc-muted)}
+.culture-home .culture-section-heading h2::before {content:"";display:inline-block;width:7px;height:7px;margin:0 10px 5px 1px;background:var(--kc-brand-orange);transform:rotate(45deg)}
+.culture-home :is(.culture-category,.culture-product,.culture-feature) {transition:transform var(--kc-motion-card) var(--kc-ease),box-shadow var(--kc-motion-card) var(--kc-ease)}
+.culture-home :is(.culture-round-arrow,.culture-product-arrow,.culture-text-link svg,.kc-hero-feature-action svg) {transition:transform var(--kc-motion-card) var(--kc-ease)}
+.culture-home .culture-category-mark {transition:transform var(--kc-motion-card) var(--kc-ease)}
+.culture-home :is(.culture-category,.culture-product,.culture-feature):focus-visible {outline:3px solid var(--kc-action-deep);outline-offset:4px}
+.culture-home .culture-product-photo {height:auto;aspect-ratio:1/1;background:var(--kc-surface-soft)}
+.culture-home .culture-product-photo img {object-fit:cover}
+.culture-home .culture-product-image-fallback {position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--kc-copy);background:var(--kc-surface-soft);padding:20px;text-align:center}
+.culture-home .culture-product-image-fallback>span {font-size:12px;line-height:1.5}
+.culture-home .culture-product-photo>span:first-of-type {max-width:calc(100% - 24px);background:#fffaf5;font-size:11px;line-height:1.4}
+.culture-home .culture-product h3 {font-size:15px;line-height:1.55;overflow-wrap:anywhere}
+.culture-home .culture-product-price {flex-wrap:wrap;gap:6px 12px;font-size:17px;line-height:1.5}
+.culture-home .culture-product-price>span {font-size:12px}
+.culture-home .culture-product-reward {font-size:12px;line-height:1.6}
+.culture-home .culture-product-arrow {display:grid;place-items:center;min-width:34px;min-height:34px;color:var(--kc-action-deep)}
+.culture-home .kc-campaign-copy>p {line-height:1.8;font-size:14px}
+.culture-home .kc-campaign-eyebrow {font-size:10px;line-height:1.6}
+.culture-home .kc-campaign-controls {gap:6px}
+.culture-home .kc-campaign-controls button {width:36px;height:36px;min-width:36px;min-height:36px;color:var(--kc-action-deep)}
+.culture-home .kc-campaign-tabs button {min-height:48px;font-size:12px}
+.culture-home :is(.culture-cta,.kc-campaign-button) {min-height:44px;font-size:13px}
+.culture-home :is(.culture-text-link,.kc-campaign-secondary,.kc-hero-feature-action) {min-height:36px;font-size:12px}
+.culture-home .kc-hero-feature-links a {min-height:32px;font-size:11px}
+.culture-home .kc-hero-feature-kicker {font-size:10px;line-height:1.6}
+.culture-home .kc-hero-feature>p {font-size:13px;line-height:1.8}
+.culture-home .culture-community-art>div {transition:transform 300ms var(--kc-ease)}
+.culture-home .culture-community p {font-size:14px;line-height:1.8}
+.culture-home .culture-community-art small {font-size:10px;line-height:1.6}
+.culture-home .culture-journey p {font-size:14px;line-height:1.8}
+.culture-home .culture-boarding a {min-height:36px;font-size:12px}
+.culture-home .culture-values>span {font-size:12px;line-height:1.6}
+.culture-home .kc-festival-archive article {position:relative;border-top:2px solid var(--kc-brand-orange)}
+.culture-home .kc-festival-archive article>p:first-child {font-size:13px;line-height:1.6}
+.culture-home .kc-festival-archive article>h3 {line-height:1.6}
+.culture-header #header-search {font-size:16px}
+.culture-header :is(button,a) {touch-action:manipulation}
+.culture-footer address a {min-height:32px}
+
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  .culture-home .culture-category:hover {transform:translateY(-4px);box-shadow:0 8px 20px #4935340b}
+  .culture-home .culture-category:hover .culture-category-mark {transform:translateY(-3px) rotate(-5deg)}
+  .culture-home :is(.culture-category,.culture-feature):hover .culture-round-arrow,
+  .culture-home :is(.culture-feature,.culture-product):hover :is(.culture-text-link svg,.culture-product-arrow) {transform:translate(2px,-2px)}
+  .culture-home .culture-product:hover {transform:translateY(-3px)}
+  .culture-home .culture-community-art:hover>div {transform:rotate(-6deg) scale(1.02)}
+}
+@media(max-width:1050px) and (min-width:701px) {
+  .culture-home .kc-hero-feature>p {max-width:80%}
+  .culture-home .kc-hero-feature {padding:22px;min-height:260px}
+}
+@media(max-width:700px) {
+  .culture-home .kc-campaign-stage {height:610px}
+  .culture-home .kc-campaign-copy {padding-top:24px}
+  .culture-home .kc-campaign-copy .kc-campaign-title {font-size:clamp(34px,9vw,43px);max-width:350px}
+  .culture-home .kc-campaign-copy>p {max-width:340px;font-size:14px}
+  .culture-home .kc-campaign-controls {right:10px;bottom:10px}
+  .culture-home .kc-campaign-tabs button {gap:8px;padding:12px;font-size:11px;line-height:1.5}
+  .culture-home .kc-hero-feature h2 {font-size:clamp(26px,7vw,32px);max-width:85%}
+  .culture-home .kc-hero-feature>p {max-width:80%}
+  .culture-home .kc-hero-learn h2 {max-width:calc(100% - 58px)}
+  .culture-home .kc-hero-hangul {font-size:68px;right:12px;bottom:18px}
+}
+@media(max-width:600px) {
+  .culture-home .culture-category {min-height:225px;padding:18px 16px}
+  .culture-home .culture-category h3 {font-size:17px;line-height:1.3}
+  .culture-home .culture-category p {font-size:12px;line-height:1.6;max-width:none;padding-right:12px}
+  .culture-home .culture-category-mark {font-size:clamp(32px,9vw,43px);line-height:1.9}
+  .culture-home .culture-feature h2 {font-size:clamp(29px,8vw,36px)}
+  .culture-home .culture-feature>div {padding:24px 18px;width:61%}
+  .culture-home .culture-feature .culture-kicker {font-size:10px;line-height:1.7}
+  .culture-home .culture-feature p {font-size:12px;line-height:1.7}
+  .culture-home .culture-feature .culture-text-link {font-size:12px;gap:5px}
+  .culture-home .culture-product-grid {gap:28px 16px}
+  .culture-home .culture-product h3 {font-size:14px}
+  .culture-home .culture-product-reward {font-size:11px}
+  .culture-home .culture-community-art>div {font-size:36px;padding:32px}
+  .culture-home .culture-community-art strong {font-size:70px}
+  .culture-home .culture-community h2 {font-size:clamp(28px,8vw,34px)}
+  .culture-home .culture-values>span {font-size:11px;gap:8px}
+  .culture-home .culture-values svg {flex-shrink:0}
+  .culture-header :is(button,a):not(.kc-nav-link) {min-height:36px}
+  .culture-header #header-search {min-height:44px}
+  .culture-footer a {min-height:36px}
+  .culture-footer a.block {display:flex;align-items:center}
+}
+@media(prefers-reduced-motion:reduce) {
+  .culture-home *, .culture-home *::before, .culture-home *::after {transition:none!important;animation:none!important}
+  .culture-home :is(.culture-category,.culture-product,.culture-feature):hover {transform:none}
+}
+
+/* Three-section motion prototype. No CSS hides content before enhancement. */
+.culture-home .culture-motion-discovery {position:relative;isolation:isolate}
+.culture-home .culture-motion-discovery>.culture-section-heading,
+.culture-home .culture-motion-discovery>.culture-category-grid {position:relative;z-index:1}
+.culture-home .culture-motion-hangul {position:absolute;right:32px;top:3px;z-index:0;pointer-events:none;user-select:none;font-size:clamp(74px,9vw,126px);font-weight:900;line-height:1;letter-spacing:-.06em;color:var(--kc-cocoa);opacity:.08;transform:translateY(var(--hangul-offset,0px));white-space:nowrap}
+.culture-home .culture-motion-diamond {display:inline-block;width:18px;height:18px;margin-left:20px;border:2px solid currentColor;transform:rotate(45deg);vertical-align:middle}
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  .culture-home .culture-category:hover .culture-category-mark {transform:translateY(-5px) rotate(-5deg)}
+}
+@media(max-width:1023px) {
+  .culture-home .culture-motion-hangul {font-size:74px;right:24px;top:10px;transform:none}
+}
+@media(max-width:600px) {
+  .culture-home .culture-motion-hangul {font-size:62px;right:18px;top:8px}
+  .culture-home .culture-motion-diamond {width:12px;height:12px;margin-left:12px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .culture-home .culture-motion-hangul {transform:none!important}
+}
+
+/* Desktop hero has one shared row height; both side cards fit that row. */
+@media(min-width:1200px) {
+  .culture-home .kc-hero-layout {align-items:stretch;grid-template-rows:minmax(0,1fr);height:calc(clamp(360px,28vw,430px) + 52px)}
+  .culture-home .kc-hero-layout .kc-campaign-shell {height:100%;min-height:0}
+  .culture-home .kc-hero-layout .kc-campaign-stage {height:auto;min-height:0;flex:1}
+  .culture-home .kc-hero-layout .kc-campaign-copy {padding:28px 0 20px 28px}
+  .culture-home .kc-hero-layout .kc-campaign-copy .kc-campaign-title {font-size:clamp(31px,2.7vw,43px);margin:14px 0 12px}
+  .culture-home .kc-hero-layout .kc-campaign-copy>p {font-size:13px;line-height:1.7}
+  .culture-home .kc-hero-layout .kc-campaign-actions {margin-top:16px}
+  .culture-home .kc-campaign-tabs {flex:0 0 52px}
+  .culture-home .kc-campaign-tabs button {padding-top:10px;padding-bottom:10px;min-height:52px}
+  .culture-home .kc-hero-features {align-self:stretch;min-height:0;grid-template-rows:repeat(2,minmax(0,1fr))}
+  .culture-home .kc-hero-feature {padding:14px 18px;min-height:0}
+  .culture-home .kc-hero-feature h2 {font-size:clamp(22px,1.65vw,26px);line-height:1.08;margin-top:8px}
+  .culture-home .kc-hero-feature>p {margin-top:6px;font-size:12px;line-height:1.55;max-width:85%}
+  .culture-home .kc-hero-feature-action {margin-top:5px;min-height:26px}
+  .culture-home .kc-hero-feature-links {margin-top:2px;gap:10px}
+  .culture-home .kc-hero-feature-links a {min-height:22px}
+  .culture-home .kc-hero-hangul {font-size:60px;right:10px;bottom:14px}
+  .culture-home .kc-hero-gift {right:15px;bottom:20px}
+  .culture-home .kc-hero-gift svg {width:38px;height:38px}
+}
+@media(min-width:1051px) and (max-width:1199px) {
+  .culture-home .kc-hero-layout {grid-template-columns:1fr}
+  .culture-home .kc-hero-features {grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .culture-home .kc-hero-feature {min-height:230px;padding:22px}
+}
+/* Quiet brand footer: one rose surface, aligned columns, no decorative banner. */
+body .culture-footer {background:var(--kc-footer)!important;color:#fff!important;border-top:2px solid var(--kc-brand-orange)!important;padding:36px 24px 20px}
+body .culture-footer a {color:#fff!important}
+body .culture-footer a:hover {color:#ffe1a3!important;text-decoration:underline;text-underline-offset:5px}
+body .culture-footer .footer-tagline,
+body .culture-footer .footer-description {color:#fff4f1!important}
+body .culture-footer .footer-description {max-width:300px;margin-top:14px;font-size:13px;line-height:1.8}
+body .culture-footer .footer-heading {color:#ffe1a3!important;font-size:11px;letter-spacing:.16em;font-weight:800;margin:4px 0 14px}
+.culture-footer .footer-links>a {display:flex;align-items:center;min-height:32px;font-size:13px;line-height:1.5}
+.culture-footer .footer-contact {display:inline-flex;align-items:center;gap:9px;min-height:30px;padding:0;border:0;background:none;font-size:13px;font-weight:500}
+.culture-footer address {gap:3px;margin-top:14px}
+.culture-footer address svg {flex-shrink:0;color:#ffe1a3}
+body .culture-footer .footer-legal {color:#fff4f1!important;border-color:#ffffff40;margin-top:26px;padding-top:16px;font-size:11px;line-height:1.7}
+body .culture-footer a:focus-visible {outline:2px solid #ffe1a3;outline-offset:4px;border-radius:2px}
+@media(max-width:600px) {
+  body .culture-footer {padding:28px 20px 18px}
+  .culture-footer .footer-links>a {min-height:36px;font-size:14px}
+  .culture-footer .footer-contact {min-height:36px}
+}
+
+/* Content-sized megamenus: compact cards and a horizontal editorial strip. */
+.kc-menu-panel .kc-menu-heading {padding:14px 20px}
+.kc-menu-panel .kc-menu-heading h2 {font-size:18px}
+.kc-menu-panel .kc-menu-body {display:grid;grid-template-columns:1fr;gap:14px;padding:16px 20px;align-items:start}
+.kc-menu-panel .kc-menu-cards {padding:0;gap:12px;align-items:stretch}
+.kc-menu-panel .kc-menu-cards.kc-menu-compact {grid-template-columns:repeat(2,minmax(0,1fr))}
+.kc-menu-panel .kc-menu-cards.kc-menu-four {grid-template-columns:repeat(4,minmax(0,1fr))}
+.kc-menu-panel .kc-menu-card {display:flex;flex-direction:column}
+.kc-menu-panel .kc-menu-card-main {min-height:0;padding:14px;color:var(--kc-text);gap:10px}
+.kc-menu-panel .kc-menu-card-copy>span {color:var(--kc-copy);font-size:12px;line-height:1.55;margin-top:4px}
+.kc-menu-panel .kc-menu-icon {width:32px;height:32px;background:var(--kc-surface-soft);color:var(--kc-brand-orange-ink)}
+.kc-menu-panel .kc-menu-card-children {padding:0 14px 12px;gap:6px;margin-top:auto}
+.kc-menu-panel .kc-menu-card-children a {font-size:11px;line-height:1.5;min-height:30px;padding:6px 9px}
+.kc-menu-panel .kc-menu-more summary {font-size:11px;min-height:32px}
+.kc-menu-panel .kc-menu-editorial {min-width:0;padding:14px 18px;border:1px solid var(--kc-border);border-radius:9px;background:var(--kc-pink);color:var(--kc-cocoa);display:grid;grid-template-columns:150px minmax(0,1fr) auto;column-gap:24px;align-items:center}
+.kc-menu-panel .kc-menu-editorial.peach {background:var(--kc-peach)}
+.kc-menu-panel .kc-menu-editorial.lilac {background:var(--kc-lavender)}
+.kc-menu-panel .kc-menu-editorial.mint {background:var(--kc-mint)}
+.kc-menu-editorial-mark {grid-column:1;grid-row:1;display:flex;align-items:center;gap:14px;color:var(--kc-action-deep)}
+.kc-menu-editorial-mark>span[lang] {font-size:27px;line-height:1.3;font-weight:850;letter-spacing:-.06em;white-space:nowrap;font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif}
+.kc-menu-editorial-diamond {width:8px;height:8px;background:var(--kc-brand-orange);transform:rotate(45deg);flex-shrink:0}
+.kc-menu-editorial-gloss {grid-column:1;grid-row:2;font-size:11px;margin-top:2px;color:var(--kc-copy)}
+.kc-menu-editorial h3 {grid-column:2;grid-row:1;font-size:15px;font-weight:750;line-height:1.4;margin:0}
+.kc-menu-editorial-description {grid-column:2;grid-row:2;font-size:12px;line-height:1.6;margin:3px 0 0;color:var(--kc-copy)}
+.kc-menu-editorial>a {grid-column:3;grid-row:1 / span 2;display:flex;align-items:center;gap:12px;min-height:36px;font-size:12px;font-weight:750;color:var(--kc-action-deep);text-decoration:underline;text-underline-offset:5px}
+.kc-menu-panel .kc-menu-quick {padding:11px 20px}
+.kc-menu-panel .kc-menu-events .kc-event-festival {grid-row:1 / span 3}
+.kc-menu-panel .kc-menu-events .kc-menu-card-main {min-height:0;padding:14px}
+.kc-menu-panel .kc-menu-events .kc-event-festival .kc-menu-card-main {padding:16px 16px 10px}
+.kc-menu-panel .kc-menu-events .kc-event-festival .kc-menu-card-children {padding:0 16px 16px;gap:8px;justify-content:start}
+.kc-menu-panel .kc-menu-events .kc-event-festival .kc-menu-card-children a {padding:8px 10px}
+@media(max-width:1100px) {
+  .kc-menu-panel .kc-menu-cards,.kc-menu-panel .kc-menu-cards.kc-menu-four {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kc-menu-panel .kc-menu-editorial {grid-template-columns:110px minmax(0,1fr);column-gap:18px}
+  .kc-menu-editorial>a {grid-column:2;grid-row:3;margin-top:4px}
+}
+@media(max-width:850px) {
+  .kc-menu-panel .kc-menu-body {padding:14px;gap:12px}
+  .kc-menu-panel .kc-menu-cards.kc-menu-events {grid-template-columns:1fr}
+  .kc-menu-panel .kc-menu-events>.kc-event-festival {grid-column:auto;grid-row:auto}
+}
+
+/* Product discovery: a single card surface and aligned, readable information. */
+.culture-home .culture-product-grid {align-items:stretch;gap:22px}
+.culture-home .culture-product {display:flex;flex-direction:column;min-width:0;border:1px solid var(--kc-border);border-radius:12px;overflow:hidden;background:white}
+.culture-home .culture-product-photo {aspect-ratio:4/3;border-radius:0;border-bottom:1px solid var(--kc-border-soft)}
+.culture-home .culture-product-details {display:flex;flex:1;flex-direction:column;padding:17px 18px 0;min-width:0}
+.culture-home .culture-product-meta {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:11px;line-height:1.5;color:var(--kc-copy)}
+.culture-home .culture-product-stock {padding:3px 7px;border-radius:4px;background:var(--kc-surface-soft);color:var(--kc-copy)}
+.culture-home .culture-product h3 {font-size:15px;line-height:1.5;margin:10px 0 8px;min-height:3em;font-weight:750;overflow-wrap:normal}
+.culture-home .culture-product-price {font-size:20px;line-height:1.4;margin-top:auto}
+.culture-home .culture-product-reward {display:flex;align-items:baseline;gap:5px;font-size:11px;line-height:1.6;margin:8px 0 15px;color:var(--kc-copy)}
+.culture-home .culture-product-reward svg {flex-shrink:0;color:var(--kc-action);align-self:center}
+.culture-home .culture-product-action {display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--kc-border-soft);padding:12px 0;min-height:44px;color:var(--kc-action-deep);font-size:12px;font-weight:700}
+.culture-home .culture-product-action svg {transition:transform 180ms ease}
+.culture-home .culture-product-photo>span.culture-product-image-label {font-size:10px;top:10px;left:10px;padding:4px 7px;background:#fffaf5;color:var(--kc-copy)}
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  .culture-home .culture-product:hover {border-color:var(--kc-action);box-shadow:0 8px 20px #4935340a}
+  .culture-home .culture-product:hover .culture-product-action svg {transform:translate(2px,-2px)}
+}
+@media(max-width:600px) {
+  .culture-home .culture-product-grid {gap:16px 12px}
+  .culture-home .culture-product-details {padding:12px 12px 0}
+  .culture-home .culture-product h3 {font-size:14px;min-height:4.5em}
+  .culture-home .culture-product-meta {font-size:10px}
+  .culture-home .culture-product-price {font-size:18px}
+  .culture-home .culture-product-reward {font-size:10px}
+  .culture-home .culture-product-action {font-size:11px}
+}
+
+/* Journey card: boarding-pass composition, without suggesting a booked ticket. */
+.culture-home .culture-boarding {display:block;position:relative;align-self:center;transform:rotate(2deg);padding:0;border:1px solid var(--kc-border);border-radius:14px;background:#fffdf9;overflow:hidden;box-shadow:0 6px 18px #49353406}
+.culture-boarding .culture-boarding-header {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 22px;border-bottom:1px solid var(--kc-border-soft)}
+.culture-boarding-header>span:first-child {display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.12em;font-weight:750;color:var(--kc-action-deep)}
+.culture-boarding-header>span[lang] {font-size:16px;font-weight:750;color:#73508f}
+.culture-boarding .culture-boarding-kicker {margin:21px 22px 0;max-width:none;font-size:10px;letter-spacing:.18em;color:var(--kc-copy)}
+.culture-boarding .culture-boarding-route {display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;gap:12px;padding:10px 22px 0}
+.culture-boarding-route>div:last-child {text-align:right}
+.culture-home .culture-boarding-route strong {display:block;font-size:42px;line-height:1.1;letter-spacing:-.04em;margin:0;font-weight:800}
+.culture-boarding-route>div>span {display:block;font-size:12px;color:var(--kc-copy);margin-top:5px}
+.culture-boarding-flight {display:flex;align-items:center;gap:8px;color:var(--kc-action)}
+.culture-boarding-flight>span {height:1px;flex:1;background:var(--kc-border)}
+.culture-boarding-flight>svg {flex-shrink:0;transform:rotate(45deg)}
+.culture-boarding .culture-boarding-note {font-size:12px;margin:18px 22px 22px;color:var(--kc-copy);line-height:1.6}
+.culture-boarding-bottom {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:15px 22px;border-top:1px dashed #dbc7c0;background:var(--kc-cream)}
+.culture-boarding-bottom>span {font-size:11px;color:var(--kc-copy)}
+.culture-home .culture-boarding-bottom>a {margin:0;min-height:36px;font-size:12px;color:var(--kc-action-deep);font-weight:750;display:inline-flex;align-items:center;gap:8px}
+@media(max-width:600px) {
+  .culture-home .culture-boarding {transform:rotate(1deg)}
+  .culture-home .culture-boarding-route strong {font-size:36px}
+  .culture-boarding-bottom {padding:12px 18px}
+}
+
+/* Contrast roles: primary rose stays on buttons; deep rose is used for small text. */
+.culture-home :is(.culture-kicker,.kc-hero-feature-action,.kc-hero-feature-links a,.kc-campaign-secondary,.kc-campaign-copy .kc-campaign-title em) {color:var(--kc-action-deep)}
+.culture-header #header-search::placeholder {color:var(--kc-muted);opacity:1}
+.culture-header a[aria-label="K-CUBE on Instagram"] {background:linear-gradient(110deg,#9f2859,#713787);color:white}
+
+/* Scroll-linked decoration runs natively; no per-frame JavaScript geometry reads. */
+@supports (animation-timeline: view()) {
+  @media(min-width:1024px) and (prefers-reduced-motion:no-preference) {
+    .culture-home .culture-motion-discovery {view-timeline-name:--kc-discovery;view-timeline-axis:block}
+    .culture-home .culture-motion-hangul {animation:kc-native-hangul linear both;animation-timeline:--kc-discovery;animation-range:entry 0% exit 100%}
+  }
+}
+@keyframes kc-native-hangul {
+  from {transform:translateY(calc(-1 * var(--kc-parallax-distance,15px)))}
+  to {transform:translateY(var(--kc-parallax-distance,15px))}
+}
+
+/* Exact Lighthouse text failures: Club small copy and completed-event badge. */
+.culture-home .culture-community-art {color:#ffffff}
+.culture-home .culture-community-art small,
+.culture-home .culture-community-art>span:first-child {color:#ffffff}
+.kc-festival-archive .kc-festival-status {color:var(--kc-action-deep)!important}

@@ -27,7 +27,7 @@ const tiers = [
 
 const TiersSection = () => {
   return (
-    <section className="mx-auto max-w-[1600px] py-12 lg:px-12">
+    <section className="mx-auto kc-shell py-12 lg:px-12">
       <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.3em] text-amber-300">Level Up Your K-Journey</p>

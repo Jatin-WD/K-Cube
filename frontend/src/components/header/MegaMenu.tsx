@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight, BookOpen, CalendarDays, Gift, Music2, Shoppin
 import type { Language } from '@/store/useAppStore';
 import type { MegaSection, MenuLink } from '@/lib/kcubeContent';
 import { allMenuCategories } from '@/lib/kcubeContent';
+import { megaMenuFeatures } from '@/lib/megaMenuFeatures';
 import { repairMojibakeTree } from '@/lib/repairMojibake';
 
 interface MegaMenuProps {
@@ -65,6 +66,9 @@ export default function MegaMenu({ sections, language, title, href, onNavigate, 
     ...categories.map((category) => ({ label: category.label, href: category.href, description: category.description })),
     { label: { en: t.rewards, hi: labels.hi.rewards, ko: labels.ko.rewards }, href: '/rewards', description: { en: descriptions['/rewards'], hi: labels.hi.rewards, ko: labels.ko.rewards } },
   ] : links;
+  const featureKey = !all && href && href in megaMenuFeatures ? href as keyof typeof megaMenuFeatures : '/';
+  const feature = megaMenuFeatures[featureKey];
+  const sparse = !eventsMenu && cards.length <= 4 && cards.length !== 3;
   const moreLabel = { en: 'More options', hi: '\u0914\u0930 \u0935\u093f\u0915\u0932\u094d\u092a', ko: '\ub354 \ubcf4\uae30' }[language];
 
   return <div id="desktop-mega-menu" data-mega-panel className="kc-menu-wrap kc-header-container" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
@@ -73,7 +77,8 @@ export default function MegaMenu({ sections, language, title, href, onNavigate, 
         <div><h2>{all ? t.explore : title}</h2><p>{t.hint}</p></div>
         <div className="kc-menu-heading-actions">{!all && href && <Link href={href} onClick={onNavigate}>{t.view} {title}<ArrowRight size={15} /></Link>}<button type="button" onClick={onNavigate} aria-label={t.close}><X size={18} /></button></div>
       </div>
-      <div className={`kc-menu-cards${eventsMenu ? ' kc-menu-events' : ''}`}>{cards.map((link) => {
+      <div className="kc-menu-body">
+      <div className={`kc-menu-cards${eventsMenu ? ' kc-menu-events' : ''}${sparse ? ' kc-menu-compact' : ''}${cards.length === 4 && !eventsMenu ? ' kc-menu-four' : ''}`}>{cards.map((link) => {
         const Icon = iconFor(link.href);
         const children = link.children?.filter((child) => child.href !== link.href) ?? [];
         const festival = link.href === '/india-pre-selection';
@@ -85,9 +90,17 @@ export default function MegaMenu({ sections, language, title, href, onNavigate, 
             <span className="kc-menu-card-copy">{eventsMenu && festival && <small className="kc-event-eyebrow">{language === 'en' ? 'Completed | 4-6 Oct 2026' : language === 'ko' ? '2026 | \uc885\ub8cc' : '2026 | \u0938\u0902\u092a\u0928\u094d\u0928'}</small>}<strong>{link.label[language]}</strong><span title={description}>{description}</span></span>
             {link.external ? <ArrowUpRight size={16} /> : <ArrowRight size={16} />}
           </Link>
-          {!!children.length && (festival ? <div className="kc-menu-card-children">{childLinks}</div> : <details className="kc-menu-more"><summary>{moreLabel}</summary><div className="kc-menu-card-children">{childLinks}</div></details>)}
+          {!!children.length && ((festival || !all) ? <div className="kc-menu-card-children">{childLinks}</div> : <details className="kc-menu-more" open={!all}><summary>{moreLabel}</summary><div className="kc-menu-card-children">{childLinks}</div></details>)}
         </article>;
       })}</div>
+      <aside className={`kc-menu-editorial ${feature.theme}`} aria-label={feature.title[language]}>
+        <div className="kc-menu-editorial-mark" aria-hidden="true"><span lang="ko">{feature.word}</span><span className="kc-menu-editorial-diamond" /></div>
+        <p className="kc-menu-editorial-gloss">{feature.gloss}</p>
+        <h3>{feature.title[language]}</h3>
+        <p className="kc-menu-editorial-description">{feature.description[language]}</p>
+        <Link href={feature.href} onClick={onNavigate}>{feature.action[language]}<ArrowUpRight size={16} aria-hidden="true" /></Link>
+      </aside>
+      </div>
       <div className="kc-menu-quick"><Link href="/india-pre-selection/announcement" onClick={onNavigate}>{t.updates}<ArrowUpRight size={13} /></Link><Link href="/rewards" onClick={onNavigate}>{t.rewards}<ArrowUpRight size={13} /></Link><Link href="/trip-to-korea" onClick={onNavigate}>{t.trip}<ArrowUpRight size={13} /></Link></div>
     </section>
   </div>;

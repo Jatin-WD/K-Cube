@@ -8,7 +8,8 @@ type ApiEnvelope<T> = {
 const trimSlash = (value: string) => value.replace(/\/+$/, '');
 
 export const resolveShopApiBase = (baseUrl?: string) => {
-  const configured = trimSlash(baseUrl || process.env.NEXT_PUBLIC_API_URL || '/api/v1');
+  const configured = trimSlash(baseUrl || (typeof window !== 'undefined' ? '/api/v1' : process.env.NEXT_PUBLIC_API_URL) || '/api/v1');
+  if (/^https?:\/\/[^/]+$/.test(configured)) return `${configured}/api/v1`;
   return configured || '/api/v1';
 };
 
@@ -26,11 +27,11 @@ const fetchJson = async <T,>(url: string): Promise<T | null> => {
   }
 };
 
-export const fetchLiveShopProducts = async (baseUrl?: string): Promise<ShopProduct[]> => {
-  const apiBase = resolveShopApiBase(baseUrl);
-  const products = await fetchJson<ShopProduct[]>(`${apiBase}/shop/products`);
-  return Array.isArray(products) ? products : [];
+export const fetchShopCatalog = async (baseUrl?: string): Promise<ShopProduct[] | null> => {
+  const products = await fetchJson<ShopProduct[]>(`${resolveShopApiBase(baseUrl)}/shop/products`);
+  return Array.isArray(products) ? products : null;
 };
+export const fetchLiveShopProducts = async (baseUrl?: string): Promise<ShopProduct[]> => (await fetchShopCatalog(baseUrl)) || [];
 
 export const fetchLiveShopProduct = async (slug: string, baseUrl?: string): Promise<ShopProduct | null> => {
   const apiBase = resolveShopApiBase(baseUrl);

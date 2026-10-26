@@ -65,7 +65,7 @@ const KoreanLearningHub = () => {
   return (
     <main className="kc-learning-surface min-h-screen bg-[var(--kc-bg)] text-[var(--kc-text)]">
       <section className="border-b border-white/10 px-4 py-4 sm:px-6 lg:px-10">
-        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto flex kc-content flex-wrap items-center justify-between gap-3">
           <div>
             <p className="kc-eyebrow">{language === 'en' ? 'Learning Gateway' : language === 'ko' ? '학습 게이트웨이' : 'लर्निंग गेटवे'}</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{language === 'en' ? 'Korean learning, points, and login-gated progress' : language === 'ko' ? '한국어 학습, 포인트 및 로그인 기반 진행' : 'Korean learning, पॉइंट्स और लॉगिन आधारित प्रोग्रेस'}</h1>
@@ -77,7 +77,7 @@ const KoreanLearningHub = () => {
       </section>
 
       <section className="px-4 py-8 sm:px-6 lg:px-10">
-        <div className="mx-auto grid max-w-[1320px] gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="mx-auto grid kc-content gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <article className="overflow-hidden rounded-xl border border-[var(--kc-border)] bg-white p-6 shadow-[0_6px_20px_rgba(81,33,55,0.07)] sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="max-w-3xl">

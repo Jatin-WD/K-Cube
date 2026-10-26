@@ -1,6 +1,8 @@
 "use client";
 
+import { contact } from '@/lib/contact';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAppStore, type Language } from '@/store/useAppStore';
 import { repairMojibakeTree } from '@/lib/repairMojibake';
 
@@ -69,10 +71,16 @@ const Footer = () => {
 
   return (
     <footer className="border-t border-[var(--kc-border)] bg-white/90 px-5 py-12 text-[var(--kc-text-secondary)] lg:px-10">
-      <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid kc-content gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <p className="text-2xl font-black tracking-tight text-[var(--kc-text)]">K-CUBE</p>
+          <Link href="/" aria-label="K-CUBE home" className="inline-flex">
+            <Image src="/assets/k-cube-logo.png" alt="K-CUBE" width={1316} height={1195} sizes="110px" className="h-24 w-auto object-contain" />
+          </Link>
           <p className="mt-3 max-w-sm text-sm leading-7">{t.line}</p>
+          <address className="mt-4 flex flex-col items-start gap-2 text-sm not-italic">
+            <a href={contact.phoneHref} className="font-semibold underline-offset-4 hover:underline">{contact.phone}</a>
+            <a href={`mailto:${contact.email}`} className="break-all font-semibold underline-offset-4 hover:underline">{contact.email}</a>
+          </address>
         </div>
         <div className="space-y-3">
           <p className="text-sm font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">{t.platform}</p>
@@ -85,7 +93,7 @@ const Footer = () => {
           <p className="text-sm font-black uppercase tracking-[0.24em] text-[var(--kc-blue-700)]">{t.support}</p>
           <Link href="/events" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.events}</Link>
           <Link href="/about" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.about}</Link>
-          <Link href="/about#contact" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.contact}</Link>
+          <Link href="/contact" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.contact}</Link>
           <Link href="/apply-for-manpower" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.manpower}</Link>
         </div>
         <div className="space-y-3">
@@ -96,7 +104,7 @@ const Footer = () => {
           <Link href="/trip-to-korea" className="block text-sm hover:text-[var(--kc-blue-700)]">{t.trip}</Link>
         </div>
       </div>
-      <div className="mx-auto mt-10 max-w-[1480px] border-t border-[var(--kc-border-soft)] pt-6 text-sm text-[var(--kc-text-muted)]">
+      <div className="mx-auto mt-10 kc-content border-t border-[var(--kc-border-soft)] pt-6 text-sm text-[var(--kc-text-muted)]">
         © 2026 K-CUBE. {t.rights}
       </div>
     </footer>

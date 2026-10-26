@@ -1,5 +1,7 @@
 "use client";
 
+import { contact } from '@/lib/contact';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Check, Coins, ExternalLink, MapPin, Plane, Star, UsersRound } from 'lucide-react';
@@ -286,10 +288,10 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
   }, [pageKey]);
 
   return (
-    <main className="mx-auto min-h-screen max-w-[1320px] overflow-hidden bg-white text-[var(--kc-text)] shadow-[0_6px_20px_rgba(81,33,55,0.07)]">
+    <main className="mx-auto min-h-screen kc-page-frame overflow-hidden bg-white text-[var(--kc-text)] shadow-[0_6px_20px_rgba(81,33,55,0.07)]">
 
       <section className="border-b border-[var(--kc-border)] bg-white px-3 py-2 text-xs text-[var(--kc-text)] sm:px-4 sm:py-3 sm:text-sm lg:px-10">
-        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-3">
+        <div className="mx-auto flex kc-content flex-wrap items-center gap-3">
           <span className="rounded-full px-3 py-1 font-black text-white shadow-[0_10px_20px_rgba(48,37,45,0.14)]" style={{ backgroundColor: visual.accentHex }}>{tickerLabel}</span>
           <span className="font-semibold leading-5 text-[var(--kc-text-secondary)]">{pageKey === 'home' ? bannerText.strip : visual.strip}</span>
           <Link href="/dashboard" className="hidden items-center gap-2 rounded-full border border-[var(--kc-border)] px-3 py-1 font-bold text-[var(--kc-text)] transition hover:border-[var(--kc-blue-700)] hover:text-[var(--kc-blue-700)] sm:ml-auto sm:inline-flex">
@@ -303,13 +305,13 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
         style={{
           backgroundImage: pageKey === 'home'
             ? `linear-gradient(120deg, rgb(6 43 99) 0%, rgb(11 78 174 / 75%) 52%, rgb(29 103 201 / 0%) 100%), url(${visual.hero})`
-            : `linear-gradient(90deg, rgba(247,251,255,0.92) 0%, rgba(247,251,255,0.78) 32%, rgba(211,27,103,0.48) 68%, rgba(74,25,52,0.82) 100%), url(${visual.hero})`,
+            : `linear-gradient(90deg, rgba(255,252,245,0.92) 0%, rgba(255,252,245,0.78) 32%, rgba(166,83,0,0.48) 68%, rgba(53,38,25,0.82) 100%), url(${visual.hero})`,
         }}
       >
-        <div className="mx-auto grid max-w-[1320px] gap-6 lg:grid-cols-1 lg:items-stretch">
+        <div className="mx-auto grid kc-content gap-6 lg:grid-cols-1 lg:items-stretch">
           {pageKey === 'home' ? (
             <>
-            <div className="relative overflow-hidden rounded-[24px] border border-white/25 bg-[linear-gradient(115deg,rgba(6,43,99,0.94)_0%,rgba(211,27,103,0.82)_52%,rgba(29,103,201,0.56)_100%),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(6,43,99,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+            <div className="relative overflow-hidden rounded-[24px] border border-white/25 bg-[linear-gradient(115deg,rgba(53,38,25,0.94)_0%,rgba(166,83,0,0.82)_52%,rgba(217,119,6,0.56)_100%),url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center px-5 py-7 text-white shadow-[0_18px_50px_rgba(53,38,25,0.22)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
               <div className="relative max-w-3xl">
                 <p className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#fff3b0]">{featuredText.eyebrow}</p>
                 <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">{featuredText.title}</h1>
@@ -360,7 +362,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                   </div>
 
                   <div className="mt-4">
-                    {false && (<article className="relative overflow-hidden rounded-[20px] border border-[var(--kc-blue-700)]/20 bg-[linear-gradient(135deg,var(--kc-surface-blue)_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(211,27,103,0.10)]" aria-hidden="true">
+                    {false && (<article className="relative overflow-hidden rounded-[20px] border border-[var(--kc-blue-700)]/20 bg-[linear-gradient(135deg,var(--kc-surface-blue)_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(166,83,0,0.10)]" aria-hidden="true">
                       <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-[var(--kc-blue-700)]/10" />
                       <div className="relative">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--kc-blue-700)] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white"><CalendarDays className="h-3.5 w-3.5" /> New class</span>
@@ -385,7 +387,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                     </article>
                   </div>
 
-                  <div className="mt-4 rounded-[20px] border border-[var(--kc-blue-700)]/20 bg-[linear-gradient(135deg,var(--kc-surface-blue)_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(211,27,103,0.08)]">
+                  <div className="mt-4 rounded-[20px] border border-[var(--kc-blue-700)]/20 bg-[linear-gradient(135deg,var(--kc-surface-blue)_0%,#ffffff_72%)] p-4 shadow-[0_12px_30px_rgba(166,83,0,0.08)]">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--kc-blue-700)]">Community &amp; Learning Updates</p>
@@ -407,7 +409,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
                     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
                       <Link
                         href="/india-pre-selection/announcement"
-                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(211,27,103,0.18)] transition hover:bg-[var(--kc-blue-800)]"
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--kc-blue-700)] px-5 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(166,83,0,0.18)] transition hover:bg-[var(--kc-blue-800)]"
                       >
                         {bannerText.updates}
                         <ArrowRight className="h-4 w-4" />
@@ -519,7 +521,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
       {pageKey === 'rewards' && user ? (
         <section className="border-b border-[var(--kc-border)] bg-[var(--kc-surface-soft)] px-3 py-6 sm:px-4 lg:px-10">
-          <div className="mx-auto grid max-w-[1320px] gap-4 lg:grid-cols-[1.35fr_1fr]">
+          <div className="mx-auto grid kc-content gap-4 lg:grid-cols-[1.35fr_1fr]">
             <div className="rounded-2xl border border-[var(--kc-border)] bg-white p-5">
               <div className="flex items-end justify-between gap-3">
                 <div>
@@ -552,7 +554,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       {pageKey === 'home' ? <IndiaPreSelectionSection /> : null}
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-8 lg:px-10">
-        <div className="mx-auto grid max-w-[1320px] auto-cols-[78%] grid-flow-col gap-3 overflow-x-auto pb-1 sm:auto-cols-auto sm:grid-flow-row sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mx-auto grid kc-content auto-cols-[78%] grid-flow-col gap-3 overflow-x-auto pb-1 sm:auto-cols-auto sm:grid-flow-row sm:gap-4 md:grid-cols-2 xl:grid-cols-4">
           {marketplaceTiles.map((tile, index) => (
             <article key={tile.title} className="overflow-hidden rounded-[24px] border border-[var(--kc-border)] bg-white shadow-[0_12px_30px_rgba(48,37,45,0.06)]">
               <div className="h-1" style={{ backgroundColor: tileAccents[index] }} />
@@ -567,7 +569,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       </section>
 
       <section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
-        <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[var(--kc-border)] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+        <div className="mx-auto kc-content rounded-[12px] border border-[var(--kc-border)] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em]" style={{ color: visual.accentHex }}>{pageKey === 'home' ? homeText.next : visual.accent}</p>
@@ -579,11 +581,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {page.cards.map((card, index) => (
-              <article key={card.title.en} className="overflow-hidden rounded-[28px] border border-[var(--kc-border)] bg-white shadow-[0_14px_34px_rgba(48,37,45,0.07)] transition hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(211,27,103,0.14)]">
+              <article key={card.title.en} className="overflow-hidden rounded-[28px] border border-[var(--kc-border)] bg-white shadow-[0_14px_34px_rgba(48,37,45,0.07)] transition hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(166,83,0,0.14)]">
                 <div className="grid grid-rows-[220px_1fr] sm:grid-rows-[240px_1fr]">
                   <div
                     className="relative bg-cover bg-center"
-                    style={{ backgroundImage: `linear-gradient(180deg, rgba(211,27,103,0.02), rgba(74,25,52,0.62)), url(${cardImages[index % cardImages.length]})` }}
+                    style={{ backgroundImage: `linear-gradient(180deg, rgba(166,83,0,0.02), rgba(53,38,25,0.62)), url(${cardImages[index % cardImages.length]})` }}
                   >
                     <span className="absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white shadow-lg" style={{ backgroundColor: cardAccents[index % cardAccents.length] }}>
                       {pageKey === 'home' ? homeText.next : visual.accent}
@@ -611,7 +613,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
       </section>
 
       {false && (<section className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
-        <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[var(--kc-border)] bg-white p-4 text-[var(--kc-text)] shadow-[0_6px_20px_rgba(81,33,55,0.07)] sm:p-5 lg:p-6">
+        <div className="mx-auto kc-content rounded-[12px] border border-[var(--kc-border)] bg-white p-4 text-[var(--kc-text)] shadow-[0_6px_20px_rgba(81,33,55,0.07)] sm:p-5 lg:p-6">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f08a24]">{homeText.spotlight}</p>
@@ -624,7 +626,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
           <div className="grid gap-4 md:grid-cols-3">
             {featuredShopProducts.map((product) => (
               <article key={product.id} className="overflow-hidden rounded-[26px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] shadow-sm">
-                <div className="h-44 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(180deg, rgba(211,27,103,0.02), rgba(74,25,52,0.5)), url(${product.image})` }} />
+                <div className="h-44 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(180deg, rgba(166,83,0,0.02), rgba(53,38,25,0.5)), url(${product.image})` }} />
                 <div className="p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--kc-blue-700)]">{product.category[language]}</p>
@@ -650,7 +652,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
       {pageKey === 'about' ? (
         <section id="contact" className="px-3 pb-8 sm:px-4 sm:pb-10 lg:px-10">
-          <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[var(--kc-border)] bg-white p-4 text-[var(--kc-text)] shadow-sm sm:p-5">
+          <div className="mx-auto kc-content rounded-[12px] border border-[var(--kc-border)] bg-white p-4 text-[var(--kc-text)] shadow-sm sm:p-5">
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--kc-blue-700)]">Contact</p>
@@ -672,11 +674,11 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
               </article>
               <article className="rounded-[22px] border border-[var(--kc-border)] bg-[#fffaf3] p-4 sm:p-5">
                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#f08a24]">Phone</p>
-                <a href="tel:+919810097323" className="mt-2 block text-lg font-black text-[var(--kc-text)] transition hover:text-[#f08a24] sm:text-xl">
-                  9810097323
+                <a href={contact.phoneHref} className="mt-2 block text-lg font-black text-[var(--kc-text)] transition hover:text-[#f08a24] sm:text-xl">
+                  {contact.phone}
                 </a>
                 <p className="mt-2 text-sm leading-6 text-[var(--kc-text-muted)]">
-                  Mr. Tae Hwan Lim
+                  K-CUBE team
                 </p>
               </article>
             </div>
@@ -686,7 +688,7 @@ const KCubePage = ({ pageKey, showActions = true }: KCubePageProps) => {
 
       {showActions ? (
         <section id="point-actions" className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10">
-          <div className="mx-auto max-w-[1320px] rounded-[12px] border border-[var(--kc-border)] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+          <div className="mx-auto kc-content rounded-[12px] border border-[var(--kc-border)] bg-white p-4 shadow-sm sm:p-5 lg:p-6">
             <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b12704] sm:text-sm sm:tracking-[0.24em]">{t.earnPoints}</p>

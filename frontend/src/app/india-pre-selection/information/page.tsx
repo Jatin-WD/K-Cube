@@ -74,7 +74,7 @@ export default function InformationPage() {
       <IndiaPreSelectionInformationHero />
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="status-heading">
-        <div className="mx-auto grid max-w-[1320px] gap-6 rounded-[24px] border border-[var(--kc-border)] bg-white p-5 shadow-[0_12px_35px_rgba(81,33,55,0.07)] sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center lg:p-9">
+        <div className="mx-auto grid kc-content gap-6 rounded-[24px] border border-[var(--kc-border)] bg-white p-5 shadow-[0_12px_35px_rgba(81,33,55,0.07)] sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center lg:p-9">
           <div>
             <Eyebrow>Application status</Eyebrow>
             <h2 id="status-heading" className="mt-2 text-2xl font-black text-[var(--kc-text)] sm:text-3xl">2026 India Pre-Selection Has Closed</h2>
@@ -93,7 +93,7 @@ export default function InformationPage() {
       <OfficialRepresentationSection />
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="current-cycle-heading">
-        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[var(--kc-border)] bg-white p-5 shadow-[0_12px_35px_rgba(81,33,55,0.07)] sm:p-7 lg:p-9">
+        <div className="mx-auto kc-content rounded-[24px] border border-[var(--kc-border)] bg-white p-5 shadow-[0_12px_35px_rgba(81,33,55,0.07)] sm:p-7 lg:p-9">
           <SectionHeading eyebrow="2026 festival archive" title="The 2026 Festival Has Concluded">The festival took place on 4-6 October 2026 in Itaewon, Seoul. The 2026 cycle has ended; this page preserves its history.</SectionHeading>
           <div id="current-cycle-heading" className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {[
@@ -107,7 +107,7 @@ export default function InformationPage() {
       </section>
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="next-cycle-heading">
-        <div className="mx-auto grid max-w-[1320px] gap-6 overflow-hidden rounded-[24px] border border-[#d9c4f0] bg-[#f7f1ff] p-5 sm:p-7 lg:grid-cols-[1fr_260px] lg:items-center lg:p-9">
+        <div className="mx-auto grid kc-content gap-6 overflow-hidden rounded-[24px] border border-[#d9c4f0] bg-[#f7f1ff] p-5 sm:p-7 lg:grid-cols-[1fr_260px] lg:items-center lg:p-9">
           <div>
             <Eyebrow>Next participation cycle</Eyebrow>
             <h2 id="next-cycle-heading" className="mt-2 text-3xl font-black text-[var(--kc-text)] sm:text-4xl">Want to Represent India Next Time?</h2>
@@ -122,7 +122,7 @@ export default function InformationPage() {
       </section>
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="media-heading">
-        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[var(--kc-border)] bg-[var(--kc-text)] p-5 text-white shadow-[0_18px_45px_rgba(81,33,55,0.14)] sm:p-7 lg:p-9">
+        <div className="mx-auto kc-content rounded-[24px] border border-[var(--kc-border)] bg-[var(--kc-text)] p-5 text-white shadow-[0_18px_45px_rgba(81,33,55,0.14)] sm:p-7 lg:p-9">
           <SectionHeading eyebrow="Experience Itaewon" title="See the Festival in Seoul">Music, culture, remembrance and international voices came together in Itaewon, Seoul.</SectionHeading>
           <div className="mt-6 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
             <div className="order-2 overflow-hidden rounded-[20px] border border-[var(--kc-border)] bg-white text-[var(--kc-text)] lg:order-1">
@@ -140,7 +140,7 @@ export default function InformationPage() {
       </section>
 
       <section id="festival-story" className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="story-heading">
-        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[var(--kc-border)] bg-white p-5 sm:p-7 lg:p-9">
+        <div className="mx-auto kc-content rounded-[24px] border border-[var(--kc-border)] bg-white p-5 sm:p-7 lg:p-9">
           <SectionHeading eyebrow="About the festival" title="Four Ideas at the Heart of the Festival">A cultural meeting point shaped by music, remembrance and international community.</SectionHeading>
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {storyCards.map(([number, title, text]) => <article key={title} className="rounded-[18px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-5"><p className="text-xs font-black tracking-[0.16em] text-[var(--kc-blue-700)]">{number}</p><h3 id={number === '01' ? 'story-heading' : undefined} className="mt-4 text-lg font-black capitalize text-[var(--kc-text)]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--kc-text-secondary)]">{text}</p></article>)}
@@ -149,7 +149,7 @@ export default function InformationPage() {
       </section>
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="journey-heading">
-        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[var(--kc-border)] bg-white p-5 sm:p-7 lg:p-9">
+        <div className="mx-auto kc-content rounded-[24px] border border-[var(--kc-border)] bg-white p-5 sm:p-7 lg:p-9">
           <SectionHeading eyebrow="India x K-CUBE" title="From India to Itaewon">India participation is supported through the appointed International Director representing India. K-CUBE provides the India-side platform for official announcements and participation guidance.</SectionHeading>
           <div id="journey-heading" className="mt-7 grid overflow-hidden rounded-[18px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] md:grid-cols-5">
             {journey.map((item, index) => <div key={item} className="relative flex items-center gap-3 border-b border-[var(--kc-border)] p-4 last:border-b-0 md:flex-col md:items-start md:border-b-0 md:border-r md:last:border-r-0 md:p-5"><span className="text-xs font-black tracking-[0.16em] text-[var(--kc-blue-700)]">0{index + 1}</span><span className="text-sm font-bold capitalize text-[var(--kc-text)]">{item}</span>{index < journey.length - 1 && <ArrowRight className="absolute right-4 hidden h-4 w-4 text-[#b77900] md:block" />}</div>)}
@@ -159,17 +159,17 @@ export default function InformationPage() {
       </section>
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="points-heading">
-        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[var(--kc-border)] bg-white p-5 sm:p-7 lg:p-9">
+        <div className="mx-auto kc-content rounded-[24px] border border-[var(--kc-border)] bg-white p-5 sm:p-7 lg:p-9">
           <SectionHeading eyebrow="2026 participation journey - archive / for reference" title="How the 2026 India Pre-Selection Worked">This section reflects the completed 2026 India Pre-Selection journey and is retained for historical reference only. These stages are not an active registration offer.</SectionHeading>
           <div id="points-heading" className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">{pointsJourney.map(([number, points, title, description]) => <article key={title} className="rounded-[18px] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-5"><div className="flex items-center justify-between"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--kc-surface-blue)] text-xs font-black text-[var(--kc-blue-700)]">{number}</span><span className="text-sm font-black text-[#b77900]">{points}</span></div><h3 className="mt-5 text-base font-black text-[var(--kc-text)]">{title}</h3><p className="mt-3 text-sm leading-6 text-[var(--kc-text-secondary)]">{description}</p></article>)}</div>
         </div>
       </section>
 
       <section className="px-3 pb-7 sm:px-4 sm:pb-9 lg:px-10" aria-labelledby="timeline-heading">
-        <div className="mx-auto max-w-[1320px] rounded-[24px] border border-[var(--kc-border)] bg-white p-5 sm:p-7 lg:p-9"><SectionHeading eyebrow="Festival timeline" title="A journey across seasons">The 2026 festival concluded on October 6. This timeline is archived; future dates will be announced only after official confirmation.</SectionHeading><div id="timeline-heading" className="mt-7 grid gap-4 xl:grid-cols-5">{timeline.map(([date, title, text], index) => <article key={date} className={`relative rounded-[18px] border p-5 ${index === 2 ? 'border-[#dfbdce] bg-[var(--kc-surface-blue)]' : 'border-[var(--kc-border)] bg-[var(--kc-surface-soft)]'}`}><div className="flex items-center gap-2 text-[var(--kc-blue-700)]"><CalendarDays className="h-4 w-4" /><span className="text-xs font-black tracking-[0.14em]">{date}</span></div><h3 className="mt-4 text-base font-black leading-6 text-[var(--kc-text)]">{title}</h3><p className="mt-2 text-sm leading-6 text-[var(--kc-text-secondary)]">{text}</p>{index === 0 && <a href="#media-heading" className="mt-4 inline-flex text-xs font-black text-[var(--kc-blue-700)] hover:underline">View archive video <ArrowRight className="ml-1 h-4 w-4" /></a>}{index < timeline.length - 1 && <ArrowRight className="absolute -right-3 top-1/2 z-10 hidden h-5 w-5 rounded-full bg-white text-[#b77900] xl:block" />}</article>)}</div></div>
+        <div className="mx-auto kc-content rounded-[24px] border border-[var(--kc-border)] bg-white p-5 sm:p-7 lg:p-9"><SectionHeading eyebrow="Festival timeline" title="A journey across seasons">The 2026 festival concluded on October 6. This timeline is archived; future dates will be announced only after official confirmation.</SectionHeading><div id="timeline-heading" className="mt-7 grid gap-4 xl:grid-cols-5">{timeline.map(([date, title, text], index) => <article key={date} className={`relative rounded-[18px] border p-5 ${index === 2 ? 'border-[#dfbdce] bg-[var(--kc-surface-blue)]' : 'border-[var(--kc-border)] bg-[var(--kc-surface-soft)]'}`}><div className="flex items-center gap-2 text-[var(--kc-blue-700)]"><CalendarDays className="h-4 w-4" /><span className="text-xs font-black tracking-[0.14em]">{date}</span></div><h3 className="mt-4 text-base font-black leading-6 text-[var(--kc-text)]">{title}</h3><p className="mt-2 text-sm leading-6 text-[var(--kc-text-secondary)]">{text}</p>{index === 0 && <a href="#media-heading" className="mt-4 inline-flex text-xs font-black text-[var(--kc-blue-700)] hover:underline">View archive video <ArrowRight className="ml-1 h-4 w-4" /></a>}{index < timeline.length - 1 && <ArrowRight className="absolute -right-3 top-1/2 z-10 hidden h-5 w-5 rounded-full bg-white text-[#b77900] xl:block" />}</article>)}</div></div>
       </section>
 
-      <section className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10" aria-labelledby="stay-connected-heading"><div className="mx-auto max-w-[1320px] rounded-[24px] border border-[var(--kc-border)] bg-white p-6 text-center sm:p-9"><Eyebrow>Stay connected</Eyebrow><h2 id="stay-connected-heading" className="mt-2 text-3xl font-black text-[var(--kc-text)] sm:text-4xl">Stay Connected to the Festival Journey</h2><p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[var(--kc-text-secondary)]">The 2026 journey is still underway. Follow official K-CUBE announcements for updates from the current India selection process, the ITAEWON World Music Spirit Festival in Seoul, and future India participation opportunities.</p><div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><Link href="/india-pre-selection/announcement" className="kc-button kc-button-primary">View latest announcements<ArrowRight className="h-4 w-4" /></Link><a href="https://www.instagram.com/k_cube_store/" target="_blank" rel="noreferrer" className="kc-button kc-button-secondary"><Camera className="h-4 w-4" />Follow on Instagram</a></div><p className="mt-4 text-xs text-[var(--kc-text-muted)]">Future India participation dates are subject to official confirmation.</p></div></section>
+      <section className="px-3 pb-12 sm:px-4 sm:pb-16 lg:px-10" aria-labelledby="stay-connected-heading"><div className="mx-auto kc-content rounded-[24px] border border-[var(--kc-border)] bg-white p-6 text-center sm:p-9"><Eyebrow>Stay connected</Eyebrow><h2 id="stay-connected-heading" className="mt-2 text-3xl font-black text-[var(--kc-text)] sm:text-4xl">Stay Connected to the Festival Journey</h2><p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[var(--kc-text-secondary)]">The 2026 journey is still underway. Follow official K-CUBE announcements for updates from the current India selection process, the ITAEWON World Music Spirit Festival in Seoul, and future India participation opportunities.</p><div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row"><Link href="/india-pre-selection/announcement" className="kc-button kc-button-primary">View latest announcements<ArrowRight className="h-4 w-4" /></Link><a href="https://www.instagram.com/k_cube_store/" target="_blank" rel="noreferrer" className="kc-button kc-button-secondary"><Camera className="h-4 w-4" />Follow on Instagram</a></div><p className="mt-4 text-xs text-[var(--kc-text-muted)]">Future India participation dates are subject to official confirmation.</p></div></section>
 
       <div className="sr-only">Media source record: {mediaSources.map((source) => `${source.title}, ${source.source}, ${source.year}, ${source.mediaType}, ${source.url}`).join(' | ')}</div>
     </main>

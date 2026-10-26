@@ -1013,6 +1013,7 @@ export const navItems: NavItem[] = [
       },
     ],
   },
+  { label: txt('Cosmetics', '코스메틱', 'Cosmetics'), href: '/shop?category=beauty' },
   {
     label: txt('Rewards', '리워드', 'Rewards'),
     href: '/rewards',
@@ -1199,8 +1200,8 @@ export const pages: Record<PageKey, PageContent> = {
     primaryCta: txt('Open inquiry form', '문의 양식 열기', 'Inquiry form kholo'),
     primaryHref: '/contact',
     cards: [
-      { title: txt('Partner colleges', '파트너 대학', 'Partner colleges'), description: txt('Track institutions, programs, and intake cycles.', '기관, 프로그램, 모집 주기를 추적합니다.', 'Institutions, programs aur intake cycles track karein.'), href: '/about#contact', cta: txt('See partners', '파트너 보기', 'Partners dekhein') },
-      { title: txt('Visa support', '비자 지원', 'Visa support'), description: txt('Document checklists, deadlines, and support notes.', '서류 체크리스트, 마감일, 지원 메모.', 'Document checklists, deadlines aur support notes.'), href: '/about#contact', cta: txt('View support', '지원 보기', 'Support dekhein') },
+      { title: txt('Partner colleges', '파트너 대학', 'Partner colleges'), description: txt('Track institutions, programs, and intake cycles.', '기관, 프로그램, 모집 주기를 추적합니다.', 'Institutions, programs aur intake cycles track karein.'), href: '/contact', cta: txt('See partners', '파트너 보기', 'Partners dekhein') },
+      { title: txt('Visa support', '비자 지원', 'Visa support'), description: txt('Document checklists, deadlines, and support notes.', '서류 체크리스트, 마감일, 지원 메모.', 'Document checklists, deadlines aur support notes.'), href: '/contact', cta: txt('View support', '지원 보기', 'Support dekhein') },
       { title: txt('Intake tracking', '모집 추적', 'Intake tracking'), description: txt('Keep inquiries, applicants, and follow-ups organized.', '문의, 지원자, 후속 조치를 정리합니다.', 'Inquiries, applicants aur follow-ups organize karein.'), href: '/admin', cta: txt('Open admin', '관리자 열기', 'Admin kholo') },
     ],
   },

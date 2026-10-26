@@ -1,6 +1,6 @@
 const JoinSection = () => {
   return (
-    <section className="mx-auto max-w-[1600px] py-12 lg:px-12">
+    <section className="mx-auto kc-shell py-12 lg:px-12">
       <div className="rounded-[2rem] border border-white/10 bg-gradient-to-r from-slate-950/95 via-slate-900/95 to-slate-950/95 p-10 shadow-2xl shadow-slate-950/40">
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
           <div>

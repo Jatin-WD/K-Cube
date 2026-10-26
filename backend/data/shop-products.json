@@ -143,7 +143,7 @@
       "ko": "스낵",
       "hi": "Snacks"
     },
-    "image": "https://images.unsplash.com/photo-1583224964978-2f4f7aaf4230?auto=format&fit=crop&w=1200&q=80",
+    "image": "",
     "price": 290,
     "compareAtPrice": 350,
     "rewardPoints": 45,
@@ -1273,7 +1273,7 @@
       "ko": "스낵",
       "hi": "Snacks"
     },
-    "image": "https://images.unsplash.com/photo-1583224964978-2f4f7aaf4230?auto=format&fit=crop&w=1200&q=80",
+    "image": "",
     "price": 200,
     "compareAtPrice": 280,
     "rewardPoints": 24,
@@ -1333,7 +1333,7 @@
       "ko": "스낵",
       "hi": "Snacks"
     },
-    "image": "https://images.unsplash.com/photo-1583224964978-2f4f7aaf4230?auto=format&fit=crop&w=1200&q=80",
+    "image": "",
     "price": 180,
     "rewardPoints": 20,
     "inStock": true,

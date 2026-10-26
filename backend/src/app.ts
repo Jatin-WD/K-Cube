@@ -40,6 +40,8 @@ const allowedOrigins = new Set(
     ...CORS_ORIGINS,
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://localhost:3100',
+    'http://127.0.0.1:3100',
     'http://localhost:3001',
     'http://127.0.0.1:3001',
   ]
@@ -52,7 +54,7 @@ app.use(helmet({
     useDefaults: true,
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", 'data:', 'blob:', 'https://images.unsplash.com', 'https://plus.unsplash.com'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       fontSrc: ["'self'", 'data:'],

@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import Link from 'next/link';
+import ProductMediaEditor from '@/components/ProductMediaEditor';
 import { useRouter } from 'next/navigation';
 import {
   Activity,
@@ -340,6 +341,10 @@ type KFoodProductRow = {
   category: LocalizedText;
   categoryKey: string;
   image: string;
+  gallery: string[];
+  status: 'draft' | 'published';
+  featured: boolean;
+  externalProductUrl: string;
   price: number;
   compareAtPrice?: number;
   rewardPoints: number;
@@ -364,6 +369,10 @@ type KFoodProductForm = {
   description_hi: string;
   categoryKey: string;
   image: string;
+  gallery: string[];
+  status: 'draft' | 'published';
+  featured: boolean;
+  externalProductUrl: string;
   price: string;
   compareAtPrice: string;
   rewardPoints: string;
@@ -372,6 +381,8 @@ type KFoodProductForm = {
   stockLabel_ko: string;
   stockLabel_hi: string;
   badges_json: string;
+  badges_text: string;
+  includes_text: string;
   includes_json: string;
 };
 
@@ -682,6 +693,10 @@ const emptyKFoodProductForm: KFoodProductForm = {
   description_hi: '',
   categoryKey: 'sauces',
   image: '',
+  gallery: [],
+  status: 'draft',
+  featured: false,
+  externalProductUrl: '',
   price: '0',
   compareAtPrice: '',
   rewardPoints: '0',
@@ -690,6 +705,8 @@ const emptyKFoodProductForm: KFoodProductForm = {
   stockLabel_ko: 'In stock',
   stockLabel_hi: 'In stock',
   badges_json: '[]',
+  badges_text: '',
+  includes_text: '',
   includes_json: '[]',
 };
 
@@ -756,13 +773,17 @@ const parseKFoodProductForm = (form: KFoodProductForm) => ({
   description: buildLocalizedText(form.description_en, form.description_ko, form.description_hi, form.title_en || 'New product'),
   categoryKey: form.categoryKey.trim() || 'sauces',
   image: form.image.trim(),
+  gallery: form.gallery,
+  status: form.status,
+  featured: form.featured,
+  externalProductUrl: form.externalProductUrl.trim(),
   price: Number(form.price || 0),
-  compareAtPrice: form.compareAtPrice.trim() ? Number(form.compareAtPrice) : undefined,
+  compareAtPrice: form.compareAtPrice.trim() ? Number(form.compareAtPrice) : null,
   rewardPoints: Number(form.rewardPoints || 0),
   inStock: Boolean(form.inStock),
   stockLabel: buildLocalizedText(form.stockLabel_en, form.stockLabel_ko, form.stockLabel_hi, form.inStock ? 'In stock' : 'Out of stock'),
-  badges: readLocalizedArray(safeJson(form.badges_json, []), 'Badge'),
-  includes: readLocalizedArray(safeJson(form.includes_json, []), 'Item'),
+  badges: form.badges_text.split('\n').map((value) => value.trim()).filter(Boolean).map((value) => readLocalizedArray(safeJson(form.badges_json, []), 'Badge').find((item) => item.en === value) || buildLocalizedText(value, '', '')),
+  includes: form.includes_text.split('\n').map((value) => value.trim()).filter(Boolean).map((value) => readLocalizedArray(safeJson(form.includes_json, []), 'Item').find((item) => item.en === value) || buildLocalizedText(value, '', '')),
 });
 
 const formFromKFoodProduct = (product: KFoodProductRow): KFoodProductForm => ({
@@ -780,6 +801,10 @@ const formFromKFoodProduct = (product: KFoodProductRow): KFoodProductForm => ({
   description_hi: product.description.hi,
   categoryKey: product.categoryKey,
   image: product.image,
+  gallery: product.gallery || [],
+  status: product.status || 'published',
+  featured: Boolean(product.featured),
+  externalProductUrl: product.externalProductUrl || '',
   price: String(product.price ?? 0),
   compareAtPrice: product.compareAtPrice == null ? '' : String(product.compareAtPrice),
   rewardPoints: String(product.rewardPoints ?? 0),
@@ -788,6 +813,8 @@ const formFromKFoodProduct = (product: KFoodProductRow): KFoodProductForm => ({
   stockLabel_ko: product.stockLabel.ko,
   stockLabel_hi: product.stockLabel.hi,
   badges_json: JSON.stringify(product.badges || [], null, 2),
+  badges_text: (product.badges || []).map((item) => item.en).join('\n'),
+  includes_text: (product.includes || []).map((item) => item.en).join('\n'),
   includes_json: JSON.stringify(product.includes || [], null, 2),
 });
 
@@ -1206,6 +1233,8 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   const [kfoodOverview, setKfoodOverview] = useState<KFoodOverviewRow | null>(null);
   const [selectedKFoodProductSlug, setSelectedKFoodProductSlug] = useState('');
   const [kfoodProductForm, setKFoodProductForm] = useState<KFoodProductForm>(emptyKFoodProductForm);
+  const [productSaving, setProductSaving] = useState(false);
+  const [productUploading, setProductUploading] = useState(false);
   const [kfoodImportUrls, setKFoodImportUrls] = useState('');
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [selectedSubmissionKey, setSelectedSubmissionKey] = useState<string | null>(null);
@@ -2267,17 +2296,23 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
   };
 
   const selectKFoodProduct = (product: KFoodProductRow) => {
+    if (productUploading || productSaving) return;
     setSelectedKFoodProductSlug(product.slug);
     setKFoodProductForm(formFromKFoodProduct(product));
   };
 
   const resetKFoodProductForm = () => {
+    if (productUploading) return;
     setSelectedKFoodProductSlug('');
     setKFoodProductForm(emptyKFoodProductForm);
   };
 
   const saveKFoodProduct = async () => {
+    if (productSaving || productUploading) return;
     const payload = parseKFoodProductForm(kfoodProductForm);
+    if (!kfoodProductForm.title_en.trim() || !Number.isFinite(payload.price) || payload.price < 0) { setNotice('Enter a product title and a valid non-negative price.'); return; }
+    setProductSaving(true);
+    try {
     if (selectedKFoodProduct) {
       await api.patch(`/admin/kfood/products/${selectedKFoodProduct.slug}`, payload);
       setNotice(`K-Food product "${payload.title.en}" updated.`);
@@ -2285,6 +2320,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
       await api.post('/admin/kfood/products', payload);
       setNotice(`K-Food product "${payload.title.en}" created.`);
     }
+    window.localStorage.setItem('kcube-catalog-updated', String(Date.now()));
     await loadAdminData();
     const nextProducts = (await api.get('/admin/kfood/products')).data?.data ?? [];
     const savedProduct = nextProducts.find((product: KFoodProductRow) => product.slug === payload.slug) || nextProducts[0] || null;
@@ -2294,14 +2330,21 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
     } else {
       resetKFoodProductForm();
     }
+    } catch (error) {
+      const failure = error as { response?: { data?: { error?: { message?: string } } } };
+      setNotice(failure.response?.data?.error?.message || 'Could not save product. Please retry.');
+    } finally { setProductSaving(false); }
   };
 
   const deleteKFoodProduct = async () => {
-    if (!selectedKFoodProduct) return;
+    if (productUploading || productSaving || !selectedKFoodProduct || !window.confirm(`Delete product "${selectedKFoodProduct.title.en}"?`)) return;
+    try {
     await api.delete(`/admin/kfood/products/${selectedKFoodProduct.slug}`);
+    window.localStorage.setItem('kcube-catalog-updated', String(Date.now()));
     setNotice(`K-Food product "${selectedKFoodProduct.title.en}" deleted.`);
     await loadAdminData();
     resetKFoodProductForm();
+    } catch { setNotice('Could not delete product. Please retry.'); }
   };
 
   const syncKFoodProducts = async () => {
@@ -4521,7 +4564,7 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
                           <div>
                             <div className="flex flex-wrap items-center gap-2">
                               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#ffc400]">{product.category.en}</p>
-                              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">{product.sku || product.slug}</span>
+                              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-[#d4dbe7]">{product.sku || product.slug}</span><span className="text-xs font-semibold text-white">{product.status || 'published'}{product.featured ? ' ? Homepage pick' : ''}</span>
                             </div>
                             <h3 className="mt-2 text-lg font-black text-white">{product.title.en}</h3>
                             <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#aab5c6]">{product.subtitle.en}</p>
@@ -4602,14 +4645,17 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
                 </Field>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Field label="Category key">
-                    <input className={inputClass} value={kfoodProductForm.categoryKey} onChange={(event) => setKFoodProductForm((state) => ({ ...state, categoryKey: event.target.value }))} />
+                  <Field label="Category">
+                    <select className={inputClass} value={kfoodProductForm.categoryKey} onChange={(event) => setKFoodProductForm((state) => ({ ...state, categoryKey: event.target.value }))}>{[...new Set(['noodles','snacks','tea-coffee','seaweed','health','sauces','beauty','lifestyle',kfoodProductForm.categoryKey])].map((key) => <option key={key} value={key}>{key}</option>)}</select>
                   </Field>
-                  <Field label="Image URL">
-                    <input className={inputClass} value={kfoodProductForm.image} onChange={(event) => setKFoodProductForm((state) => ({ ...state, image: event.target.value }))} />
+                  <Field label="Publication status">
+                    <select className={inputClass} value={kfoodProductForm.status} onChange={(event) => setKFoodProductForm((state) => ({ ...state, status: event.target.value as 'draft' | 'published' }))}><option value="draft">Draft ? hidden from visitors</option><option value="published">Published</option></select>
                   </Field>
                 </div>
 
+                <ProductMediaEditor onBusyChange={setProductUploading} image={kfoodProductForm.image} gallery={kfoodProductForm.gallery} onChange={(image, gallery) => setKFoodProductForm((state) => ({ ...state, image, gallery }))} />
+                <label className="flex items-center gap-3 text-sm text-white"><input type="checkbox" checked={kfoodProductForm.featured} onChange={(event) => setKFoodProductForm((state) => ({ ...state, featured: event.target.checked }))} />Feature in homepage Today&apos;s Picks</label>
+                <Field label="Destination product URL (optional HTTPS)"><input className={inputClass} value={kfoodProductForm.externalProductUrl} onChange={(event) => setKFoodProductForm((state) => ({ ...state, externalProductUrl: event.target.value }))} /></Field>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <Field label="Price">
                     <input className={inputClass} type="number" value={kfoodProductForm.price} onChange={(event) => setKFoodProductForm((state) => ({ ...state, price: event.target.value }))} />
@@ -4635,26 +4681,26 @@ const AdminControlCenter = ({ initialSection = 'communityMap' }: { initialSectio
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Field label="Badges JSON">
-                    <textarea className={`${inputClass} min-h-24`} value={kfoodProductForm.badges_json} onChange={(event) => setKFoodProductForm((state) => ({ ...state, badges_json: event.target.value }))} />
+                  <Field label="Badges ? one per line (optional)">
+                    <textarea className={`${inputClass} min-h-24`} value={kfoodProductForm.badges_text} onChange={(event) => setKFoodProductForm((state) => ({ ...state, badges_text: event.target.value }))} />
                   </Field>
-                  <Field label="Includes JSON">
-                    <textarea className={`${inputClass} min-h-24`} value={kfoodProductForm.includes_json} onChange={(event) => setKFoodProductForm((state) => ({ ...state, includes_json: event.target.value }))} />
+                  <Field label="What is included ? one per line (optional)">
+                    <textarea className={`${inputClass} min-h-24`} value={kfoodProductForm.includes_text} onChange={(event) => setKFoodProductForm((state) => ({ ...state, includes_text: event.target.value }))} />
                   </Field>
                 </div>
 
                 <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-[#d4dbe7]">
                   <input type="checkbox" checked={kfoodProductForm.inStock} onChange={(event) => setKFoodProductForm((state) => ({ ...state, inStock: event.target.checked }))} />
-                  Active stock / visible on live shop
+                  In stock (publication is controlled separately above)
                 </label>
 
                 <div className="flex flex-wrap gap-3">
-                  <button type="button" onClick={saveKFoodProduct} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
+                  <button type="button" onClick={saveKFoodProduct} disabled={productSaving || productUploading} className="inline-flex items-center gap-2 rounded-xl bg-[#ffc400] px-4 py-3 text-sm font-black text-[#111]">
                     <Save className="h-4 w-4" />
-                    {selectedKFoodProduct ? 'Save product' : 'Create product'}
+                    {productUploading ? 'Uploading images?' : productSaving ? 'Saving?' : selectedKFoodProduct ? 'Save product' : 'Create product'}
                   </button>
                   {selectedKFoodProduct ? (
-                    <button type="button" onClick={deleteKFoodProduct} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
+                    <button type="button" onClick={deleteKFoodProduct} disabled={productSaving || productUploading} className="inline-flex items-center gap-2 rounded-xl border border-red-500/40 px-4 py-3 text-sm font-black text-red-300">
                       <Trash2 className="h-4 w-4" />
                       Delete product
                     </button>

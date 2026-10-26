@@ -822,7 +822,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
   return (
     <main className="min-h-screen bg-[var(--kc-surface-soft)] text-[var(--kc-text)]">
       <section className="bg-[#382635] px-4 py-8 text-white sm:px-5 lg:px-10">
-        <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[1fr_360px]">
+        <div className="mx-auto grid kc-content gap-8 lg:grid-cols-[1fr_360px]">
           <div>
             <Link href="/learning" className="inline-flex items-center gap-2 text-sm font-black text-[var(--kc-text-muted)] hover:text-white">
               <ChevronRight className="h-4 w-4 rotate-180" /> Korean Learning
@@ -858,7 +858,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
       </section>
 
       <section className="px-4 py-8 sm:px-5 lg:px-10">
-        <div className="mx-auto grid max-w-[1480px] gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="mx-auto grid kc-content gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
           <section className="rounded-lg bg-[#382635] p-5 text-white">
             <div className="flex items-center gap-5">
               <button onClick={restartTrack} className="text-[var(--kc-text-muted)]" aria-label="Restart track">
@@ -929,7 +929,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
       </section>
 
       <section className="px-4 pb-10 sm:px-5 lg:px-10">
-        <div className="mx-auto max-w-[1480px]">
+        <div className="mx-auto kc-content">
           <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.2em] text-[var(--kc-blue-700)]">Guide books</p>
@@ -997,7 +997,7 @@ const LearningTrackPage = ({ slug }: { slug: string }) => {
       </section>
 
       <section className="px-4 pb-10 sm:px-5 lg:px-10">
-        <div className="mx-auto max-w-[1480px]">
+        <div className="mx-auto kc-content">
           <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.2em] text-[#b12704]">Buy a course</p>

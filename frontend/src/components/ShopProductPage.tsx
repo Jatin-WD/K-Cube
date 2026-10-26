@@ -18,7 +18,7 @@ const ShopProductPage = ({ product }: ShopProductPageProps) => {
 
   return (
     <main className="min-h-screen bg-[#f4f0e8] px-4 py-8 text-[var(--kc-text)] lg:px-10">
-      <div className="mx-auto max-w-[1760px]">
+      <div className="mx-auto kc-content">
         <div className="rounded-[2rem] border border-[var(--kc-border)] bg-white p-5 shadow-[0_20px_40px_rgba(0,0,0,0.08)] sm:p-8">
           <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr_340px]">
             <div className="overflow-hidden rounded-[1.75rem] border border-[var(--kc-border)] bg-[var(--kc-surface-soft)]">

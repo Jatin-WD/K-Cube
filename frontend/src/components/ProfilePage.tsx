@@ -106,7 +106,7 @@ const ProfilePage = () => {
 
   return (
     <main className="min-h-screen bg-[#070708] px-4 py-8 text-white sm:px-5 lg:px-10 lg:py-12">
-      <div className="mx-auto max-w-[1180px]">
+      <div className="mx-auto kc-content">
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm font-bold text-[#dfbdce] transition hover:text-[#ffc400]"><ArrowLeft className="h-4 w-4" /> {t.backDashboard}</Link>
         <section className="mt-6 overflow-hidden rounded-xl border border-white/10 bg-[#111113]">
           <div className="border-b border-white/10 bg-[linear-gradient(110deg,rgba(255,196,0,0.16),rgba(17,17,19,0.2)_48%,rgba(17,17,19,1))] p-6 sm:p-8">

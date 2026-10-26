@@ -1,20 +1,21 @@
 import AuthExperience from '@/components/AuthExperience';
 
 interface SignInPageProps {
-  searchParams?: {
+  searchParams?: Promise<{
     returnTo?: string;
     verified?: string;
     email?: string;
-  };
+  }>;
 }
 
-const SignInPage = ({ searchParams }: SignInPageProps) => {
+const SignInPage = async ({ searchParams }: SignInPageProps) => {
+  const params = await searchParams;
   return (
     <AuthExperience
       mode="signin"
-      returnTo={searchParams?.returnTo ?? null}
-      verified={searchParams?.verified ?? null}
-      verifiedEmail={searchParams?.email ?? null}
+      returnTo={params?.returnTo ?? null}
+      verified={params?.verified ?? null}
+      verifiedEmail={params?.email ?? null}
     />
   );
 };

@@ -2,8 +2,9 @@
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { BriefcaseBusiness, Camera, ChevronDown, ExternalLink, Globe2, Languages, Menu, Phone, Plane, Search, Store, User, X } from 'lucide-react';
+import { BriefcaseBusiness, Camera, ChevronDown, ExternalLink, Globe2, Languages, Menu, Phone, Plane, Search, Sparkles, Store, User, X } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import { copy, navItems } from '@/lib/kcubeContent';
 import { shopStores } from '@/lib/shopCatalog';
@@ -136,12 +137,19 @@ const Header = () => {
   return (
     <header ref={headerRef} className="culture-header relative z-50 border-b border-[var(--kc-border)] bg-white/90 text-[var(--kc-text)] shadow-[0_14px_40px_rgba(48,37,45,0.08)] backdrop-blur md:sticky md:top-0">
       <div className="hidden border-b border-[var(--kc-border-soft)] bg-[var(--kc-bg)] sm:block">
-        <div className="mx-auto flex max-w-[1320px] items-center gap-4 overflow-x-auto px-4 py-1.5 text-[11px] text-[var(--kc-text-secondary)] sm:justify-end sm:text-xs lg:px-8">
+        <div className="mx-auto flex kc-shell items-center gap-4 overflow-x-auto px-4 py-1.5 text-[11px] text-[var(--kc-text-secondary)] sm:justify-end sm:text-xs lg:px-8">
+          <div aria-hidden="true" className="mr-auto hidden items-center gap-3 text-[11px] font-medium text-[var(--kc-text-secondary)] lg:flex">
+            <span lang="ko" className="text-[var(--kc-blue-700)]">배우다</span><span>Learn</span>
+            <Sparkles className="h-3 w-3 text-[var(--kc-brand-orange-ink)]" />
+            <span lang="ko" className="text-[var(--kc-blue-700)]">즐기다</span><span>Explore</span>
+            <span className="text-[var(--kc-brand-orange-ink)]">·</span>
+            <span lang="ko" className="text-[var(--kc-blue-700)]">함께</span><span>Together</span>
+          </div>
           <Link href="/apply-for-manpower" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[var(--kc-blue-700)]">
             <BriefcaseBusiness className="h-4 w-4" />
             {t.manpower}
           </Link>
-          <Link href="/about#contact" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[var(--kc-blue-700)]">
+          <Link href="/contact" className="inline-flex shrink-0 items-center gap-2 transition hover:text-[var(--kc-blue-700)]">
             <Phone className="h-4 w-4" />
             {t.contact}
           </Link>
@@ -152,14 +160,12 @@ const Header = () => {
       </div>
 
       <div className="border-b border-[var(--kc-border-soft)] bg-white/95">
-        <div className="mx-auto grid max-w-[1320px] grid-cols-[1fr_auto] gap-2.5 px-3 py-2.5 sm:px-4 md:grid-cols-[210px_minmax(260px,1fr)] xl:grid-cols-[250px_minmax(360px,1fr)_auto] xl:items-center xl:px-8">
-          <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--kc-blue-700)] text-[15px] font-black text-white shadow-[0_10px_20px_rgba(211,27,103,0.22)] sm:h-9 sm:w-9">
-              K
-            </span>
-            <span className="min-w-0">
-              <span className="block text-[17px] font-black leading-none tracking-tight text-[var(--kc-text)] sm:text-[20px]">K-CUBE</span>
-              <span className="block text-[8px] font-bold uppercase tracking-[0.18em] text-[var(--kc-blue-700)] sm:text-[10px] sm:tracking-[0.3em]">Korean Ecosystem</span>
+        <div className="mx-auto grid kc-shell grid-cols-[1fr_auto] gap-2 px-3 py-1.5 sm:px-4 md:grid-cols-[210px_minmax(260px,1fr)] xl:grid-cols-[250px_minmax(360px,1fr)_auto] xl:items-center xl:px-8">
+          <Link href="/" aria-label="K-CUBE home" className="inline-flex w-fit shrink-0 items-center gap-3">
+            <Image src="/assets/k-cube-logo.png" alt="K-CUBE" width={1316} height={1195} priority sizes="(min-width: 640px) 62px, 53px" className="h-12 w-auto object-contain sm:h-14" />
+            <span className="hidden border-l border-[var(--kc-border)] pl-3 sm:block">
+              <span className="flex items-center gap-1.5 text-lg font-extrabold leading-tight text-[var(--kc-blue-700)]"><span lang="ko">안녕!</span><Sparkles aria-hidden="true" className="h-3.5 w-3.5 text-[var(--kc-brand-orange-ink)]" /></span>
+              <span className="mt-1 block text-[10px] font-medium leading-tight text-[var(--kc-text-secondary)]">Your Korean world</span>
             </span>
           </Link>
 
@@ -190,7 +196,7 @@ const Header = () => {
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--kc-bg)] text-[var(--kc-text)] transition hover:bg-[var(--kc-border)] md:hidden"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--kc-bg)] text-[var(--kc-text)] transition hover:bg-[var(--kc-border)] min-[1200px]:hidden"
             >
               {mobileMenuOpen ? <X className="h-[18px] w-[18px]" /> : <Menu className="h-[18px] w-[18px]" />}
             </button>
@@ -296,7 +302,7 @@ const Header = () => {
       </div>
 
       {mobileMenuOpen ? (
-        <div className="border-b border-[var(--kc-border)] bg-white px-3 py-3 md:hidden">
+        <div className="kc-mobile-menu border-b border-[var(--kc-border)] bg-white px-3 py-3 min-[1200px]:hidden">
           <div className="grid gap-3">
             {user ? (
               <div className="grid gap-1 rounded-2xl border border-[var(--kc-border)] bg-[var(--kc-surface-soft)] p-2">
@@ -397,7 +403,7 @@ const Header = () => {
                 {t.manpower}
               </Link>
               <Link
-                href="/about#contact"
+                href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--kc-border)] bg-white px-3 py-2 text-xs font-bold text-[var(--kc-text-secondary)]"
               >
@@ -411,7 +417,7 @@ const Header = () => {
 
       <nav
         aria-label="Primary navigation"
-        className="culture-nav group/nav relative hidden md:block"
+        className="culture-nav group/nav relative hidden min-[1200px]:block"
         onMouseEnter={clearMenuTimers}
         onMouseLeave={scheduleCloseMenus}
         onBlur={(event) => {
