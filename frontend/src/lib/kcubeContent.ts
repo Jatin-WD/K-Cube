@@ -1013,7 +1013,7 @@ export const navItems: NavItem[] = [
       },
     ],
   },
-  { label: txt('Cosmetics', '코스메틱', 'Cosmetics'), href: '/shop?category=beauty' },
+  { label: txt('K-Beauty', 'K-뷰티', 'K-Beauty'), href: '/shop?category=beauty' },
   {
     label: txt('Rewards', '리워드', 'Rewards'),
     href: '/rewards',

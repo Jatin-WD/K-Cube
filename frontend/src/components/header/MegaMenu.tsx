@@ -72,8 +72,9 @@ export default function MegaMenu({ sections, language, title, href, onNavigate, 
   const moreLabel = { en: 'More options', hi: '\u0914\u0930 \u0935\u093f\u0915\u0932\u094d\u092a', ko: '\ub354 \ubcf4\uae30' }[language];
 
   return <div id="desktop-mega-menu" data-mega-panel className="kc-menu-wrap kc-header-container" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-    <section className="kc-menu-panel" aria-label={all ? t.explore : title}>
-      <div className="kc-menu-heading">
+    <section className={`kc-menu-panel${!all && href ? ` kc-menu-${href.replace(/^\//, '').split('/')[0].replace(/[^a-z0-9-]/gi, '')}` : ' kc-menu-all'}`} aria-label={all ? t.explore : title}>
+      <div className={`kc-menu-heading${eventsMenu ? ' kc-menu-heading-events' : ''}`}>
+        {eventsMenu && <div className="kc-menu-cultural-mark" aria-hidden="true"><span lang="ko">문화</span><i /></div>}
         <div><h2>{all ? t.explore : title}</h2><p>{t.hint}</p></div>
         <div className="kc-menu-heading-actions">{!all && href && <Link href={href} onClick={onNavigate}>{t.view} {title}<ArrowRight size={15} /></Link>}<button type="button" onClick={onNavigate} aria-label={t.close}><X size={18} /></button></div>
       </div>
@@ -84,7 +85,8 @@ export default function MegaMenu({ sections, language, title, href, onNavigate, 
         const festival = link.href === '/india-pre-selection';
         const description = language === 'en' ? descriptions[link.href] ?? link.description.en : link.description[language];
         const childLinks = children.map((child) => <Link key={`${child.href}-${child.label.en}`} href={child.href} onClick={onNavigate} {...(child.external ? { target: '_blank', rel: 'noreferrer' } : {})}>{child.label[language]}{child.external ? <ArrowUpRight size={12} /> : <ArrowRight size={12} />}</Link>);
-        return <article key={`${link.href}-${link.label.en}`} className={`kc-menu-card${eventsMenu && festival ? ' kc-event-festival' : ''}`}>
+        const eventVisual = eventsMenu ? link.href.includes('language') ? ' kc-event-language' : link.href.includes('workshops') ? ' kc-event-workshops' : link.href.includes('conference') ? ' kc-event-conference' : festival ? ' kc-event-festival' : '' : '';
+        return <article key={`${link.href}-${link.label.en}`} className={`kc-menu-card${eventVisual}`}>
           <Link className="kc-menu-card-main" href={link.href} onClick={onNavigate} {...(link.external ? { target: '_blank', rel: 'noreferrer' } : {})}>
             <span className="kc-menu-icon"><Icon size={21} strokeWidth={1.7} /></span>
             <span className="kc-menu-card-copy">{eventsMenu && festival && <small className="kc-event-eyebrow">{language === 'en' ? 'Completed | 4-6 Oct 2026' : language === 'ko' ? '2026 | \uc885\ub8cc' : '2026 | \u0938\u0902\u092a\u0928\u094d\u0928'}</small>}<strong>{link.label[language]}</strong><span title={description}>{description}</span></span>
